@@ -1,5 +1,6 @@
 import PySimpleGUI as sg
 import copy
+import math
 
 class Player:
     def __init__(self,playerName=None,columns = None,rows = None,window = None,gameBoard = None):
@@ -30,6 +31,8 @@ class Piece:
         #what it looks like
         self. avatar = f".//player{playerTurn}default.png"
         self.ownedBy = playerTurn
+        self.distanceMax = 1
+    
 
 
 def initializeField(player1,player2,columns,rows,window):
@@ -51,7 +54,11 @@ def gamePlay(playerTurn, window, gameBoard):
         displayBoard(window,gameBoard)
 
 
-
+def getDistance(a,b,c,d):
+    verticalDistance = abs(c-a)
+    horizontalDistance = abs(d-b)
+    distance = verticalDistance + horizontalDistance
+    return distance
 
 
 def displayBoard(window,gameBoard):
@@ -74,7 +81,8 @@ def displayBoard(window,gameBoard):
 
 def movePiece(playerTurn, window, gameBoard):
     while True:
-        sg.popup(f" It's ({playerTurn}'s) turn.")
+        #sg.popup_timed(f" It's player {playerTurn}'s turn.",font = "Cambria, 20",auto_close_duration=1)
+        window['playerTurn'].update(f"{playerTurn}")
         event = window.read()
         startLocation = event[0]
         event = window.read()
@@ -86,25 +94,39 @@ def movePiece(playerTurn, window, gameBoard):
             
             
         except:
-            sg.popup(f"Piece doesn't exist,  {gameBoard[ startLocation[0] ] [ startLocation[1] ]}", )
+            window['information'].update(f"Nothing exists on the initial square!")
+            #sg.popup(f"Piece doesn't exist,  {gameBoard[ startLocation[0] ] [ startLocation[1] ]}", )
+            continue
 
         
         #if the spot you're moving from contains a piece
         if( gameBoard[ startLocation[0] ] [ startLocation[1] ] ) != 0:
             #if the piece is yours
             if (gameBoard[ startLocation[0] ] [ startLocation[1] ].ownedBy == playerTurn):
+
+
+
+                if getDistance(startLocation[0],startLocation[1],endLocation[0],endLocation[1]) >  gameBoard[ startLocation[0] ] [ startLocation[1] ].distanceMax:
+                    window['information'].update(f"That location is too far for you to move to!")
+                    print( f" {getDistance(startLocation[0],startLocation[1],endLocation[0],endLocation[1])} attempted, {gameBoard[ startLocation[0] ] [ startLocation[1] ].distanceMax} allowed")
+                    continue
+
+
+                
                 #if the landing spot is empty
                 if gameBoard[ endLocation[0] ] [ endLocation[1] ] == 0:
+                    print( f" {getDistance(startLocation[0],startLocation[1],endLocation[0],endLocation[1])} attempted, {gameBoard[ startLocation[0] ] [ startLocation[1] ].distanceMax} allowed")
                     gameBoard[ startLocation[0] ] [ startLocation[1] ].location = (endLocation[0],endLocation[1])
                     gameBoard[ endLocation[0] ] [ endLocation[1] ] = gameBoard[ startLocation[0] ] [ startLocation[1] ]
                     gameBoard[ startLocation[0] ] [ startLocation[1] ] = 0
+                    window['information'].update(f"Moved successfully!")
                     print("Moved!")
                     return 1
 
 
                 #killing own piece (illegal)
                 elif gameBoard[ endLocation[0] ] [ endLocation[1] ].ownedBy == playerTurn:
-                    sg.popup("Can't kill own piece")
+                    window['information'].update(f"You can't jumpkill your own piece.")
                     continue
 
                 #kill enemy piece
@@ -112,17 +134,17 @@ def movePiece(playerTurn, window, gameBoard):
                     gameBoard[ startLocation[0] ] [ startLocation[1] ].location = (endLocation[0],endLocation[1])
                     gameBoard[ endLocation[0] ] [ endLocation[1] ] = gameBoard[ startLocation[0] ] [ startLocation[1] ]
                     gameBoard[ startLocation[0] ] [ startLocation[1] ] = 0
-                    print("KILL")
+                    window['information'].update(f"Jumpkilled an enemy piece!")
                     return 2
                     
 
 
             else:
-                sg.popup("Not your piece.")
+                window['information'].update(f"That's not your piece!")
                 continue
                 
         else:
-            sg.popup("Nothing here to move")
+            window['information'].update(f"Nothing here to move!")
             continue
             
         
@@ -135,12 +157,18 @@ def main():
     gameBoard = []
     
     #window
+
+    frame_layout = [
+        [sg.T(f"Player:",font = "Cambria 30",pad = (30,30)), sg.T(f"",key='playerTurn',font = "Cambria 30",pad = (30,30))],
+        [sg.T(f" "*100,key = 'information',font="Cambria 30")]
+        ]
     layout = [
         [sg.T("MegaCheckers")]
         ]
     layout += [
             [sg.Button(image_filename = ".\\blank.png",key=(i,j),size = (20,20), pad = (10,10))for j in range (columns)]for i in range(0,rows)
             ]
+    layout += [ [sg.Frame('Information:', frame_layout,font='Calibri 20', title_color='blue')] ]
     
     window = sg.Window("MegaCheckers",layout).finalize()
 
