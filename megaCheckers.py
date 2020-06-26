@@ -1,6 +1,7 @@
 import PySimpleGUI as sg
 import copy
 import math
+from time import sleep
 
 class Player:
     def __init__(self,playerName=None,columns = None,rows = None,window = None,gameBoard = None):
@@ -45,11 +46,25 @@ def initializeField(player1,player2,columns,rows,window):
             window[rows-j-1,i].update(image_filename="player2default.png")
 
 
+
+def countPieces(gameBoard,window):
+    player1count = 0
+    player2count = 0
+    print(gameBoard)
+    for i in gameBoard:
+        for j in i:
+            if j != 0:
+                if j.ownedBy == 1:
+                    player1count+=1
+                elif j.ownedBy == 2:
+                    player2count+=1
+    print(f"playercount1 is {player1count} playercount2 is {player2count}")
+    window['player1piececount'].update(f"Player 1 controls: {player1count}")
+    window['player2piececount'].update(f"Player 2 controls: {player2count}")
+    window.refresh()
+
 def gamePlay(playerTurn, window, gameBoard):
-
-
-    
-
+        countPieces(gameBoard,window)
         movePiece(playerTurn, window,gameBoard)
         displayBoard(window,gameBoard)
 
@@ -68,7 +83,7 @@ def displayBoard(window,gameBoard):
         for j in range(len(gameBoard[0])):
 
             if gameBoard[i][j] == 0:
-                window[i,j].update(image_filename="blank.png")
+                window[i,j].update(image_filename="blank.png")    
             else:
                 if gameBoard[i][j].ownedBy == 1:
                     window[i,j].update(image_filename="player1default.png")
@@ -82,9 +97,14 @@ def displayBoard(window,gameBoard):
 def movePiece(playerTurn, window, gameBoard):
     while True:
         #sg.popup_timed(f" It's player {playerTurn}'s turn.",font = "Cambria, 20",auto_close_duration=1)
+        window.refresh()
+        sleep(1.25)
         window['playerTurn'].update(f"{playerTurn}")
+        window['information'].update(f"Pick a piece to move.")
         event = window.read()
+        
         startLocation = event[0]
+        window['information'].update(f"Selection made, pick destination.")
         event = window.read()
         endLocation = event[0]
 
@@ -95,6 +115,7 @@ def movePiece(playerTurn, window, gameBoard):
             
         except:
             window['information'].update(f"Nothing exists on the initial square!")
+            window.refresh
             #sg.popup(f"Piece doesn't exist,  {gameBoard[ startLocation[0] ] [ startLocation[1] ]}", )
             continue
 
@@ -108,6 +129,7 @@ def movePiece(playerTurn, window, gameBoard):
 
                 if getDistance(startLocation[0],startLocation[1],endLocation[0],endLocation[1]) >  gameBoard[ startLocation[0] ] [ startLocation[1] ].distanceMax:
                     window['information'].update(f"That location is too far for you to move to!")
+                    window.refresh
                     print( f" {getDistance(startLocation[0],startLocation[1],endLocation[0],endLocation[1])} attempted, {gameBoard[ startLocation[0] ] [ startLocation[1] ].distanceMax} allowed")
                     continue
 
@@ -120,6 +142,7 @@ def movePiece(playerTurn, window, gameBoard):
                     gameBoard[ endLocation[0] ] [ endLocation[1] ] = gameBoard[ startLocation[0] ] [ startLocation[1] ]
                     gameBoard[ startLocation[0] ] [ startLocation[1] ] = 0
                     window['information'].update(f"Moved successfully!")
+                    window.refresh
                     print("Moved!")
                     return 1
 
@@ -127,6 +150,7 @@ def movePiece(playerTurn, window, gameBoard):
                 #killing own piece (illegal)
                 elif gameBoard[ endLocation[0] ] [ endLocation[1] ].ownedBy == playerTurn:
                     window['information'].update(f"You can't jumpkill your own piece.")
+                    window.refresh
                     continue
 
                 #kill enemy piece
@@ -135,16 +159,19 @@ def movePiece(playerTurn, window, gameBoard):
                     gameBoard[ endLocation[0] ] [ endLocation[1] ] = gameBoard[ startLocation[0] ] [ startLocation[1] ]
                     gameBoard[ startLocation[0] ] [ startLocation[1] ] = 0
                     window['information'].update(f"Jumpkilled an enemy piece!")
+                    sleep(1)
                     return 2
                     
 
 
             else:
                 window['information'].update(f"That's not your piece!")
+                window.refresh
                 continue
                 
         else:
             window['information'].update(f"Nothing here to move!")
+            window.refresh
             continue
             
         
@@ -159,8 +186,12 @@ def main():
     #window
 
     frame_layout = [
-        [sg.T(f"Player:",font = "Cambria 30",pad = (30,30)), sg.T(f"",key='playerTurn',font = "Cambria 30",pad = (30,30))],
-        [sg.T(f" "*100,key = 'information',font="Cambria 30")]
+        [sg.T(f"Player:",font = "Cambria 30",pad = (4,4)), sg.T(f"",key='playerTurn',font = "Cambria 30",pad = (4,4))],
+        [sg.T(f" "*100,key = 'information',size = (40,2),font="Cambria 30")]
+        ]
+    frame_layout2 = [
+        [sg.T(f"Player 1 Controls: xx", key = 'player1piececount',font = "Cambria 20", text_color="blue"),sg.T(f"Player 2 Controls: xx",key = 'player2piececount',font = "Cambria 20",text_color="red")],
+        
         ]
     layout = [
         [sg.T("MegaCheckers")]
@@ -168,11 +199,15 @@ def main():
     layout += [
             [sg.Button(image_filename = ".\\blank.png",key=(i,j),size = (20,20), pad = (10,10))for j in range (columns)]for i in range(0,rows)
             ]
-    layout += [ [sg.Frame('Information:', frame_layout,font='Calibri 20', title_color='blue')] ]
+    layout += [
+        [sg.Frame('Information:', frame_layout,font='Calibri 20', title_color='blue')],
+        [sg.Frame('Remaining pieces:', frame_layout2,font='Calibri 20', title_color='blue')]
+        ]
     
     window = sg.Window("MegaCheckers",layout).finalize()
 
-
+    
+    
     #gameBoard for logic
     gameBoard = []
     line = []
