@@ -20,9 +20,15 @@ from time import sleep
 ##                    gameBoard[rows-1-i][j][1]=(playerPiece[j])
 
 
-class publicStats:
-    def __init__(self):
-        turnCount = 1
+class PublicStats:
+    
+    turnCount = 1
+    cycle = 0
+    orbCycleList = [0,0,0,0,3,1,0,2,1]
+    def getOrbCount(self):
+        
+        cycle = PublicStats.turnCount%9
+        return PublicStats.orbCycleList[cycle]
                 
 class Piece:
     def __init__(self,row = None,column = None,playerTurn = None):
@@ -57,7 +63,7 @@ def initializeField(columns,rows,window,gameBoard):
             piece = Piece(playerTurn = 1)
             gameBoard[i][j][1]=piece
             gameBoard[i][j][1].location = (i,j)
-            gameBoard[i][j][1].tileType = "player1default"
+            gameBoard[i][j][0].tileType = "player1default"
             
     for i in range(2):
         for j in range(columns):
@@ -67,7 +73,7 @@ def initializeField(columns,rows,window,gameBoard):
             #print("Created a piece for player 2")
             gameBoard[rows-i-1][j][1]=piece
             gameBoard[rows-i-1][j][1].location = (i,j)
-            gameBoard[i][j][1].tileType = "player2default"
+            gameBoard[rows-i-1][j][0].tileType = "player2default"
     
 
 
@@ -96,6 +102,9 @@ def gamePlay(playerTurn, window, gameBoard):
         createOrbs(window,gameBoard)
         displayBoard(window,gameBoard)
         movePiece(playerTurn, window,gameBoard)
+        PublicStats.turnCount += 1
+        
+        print(f"Turn count is {PublicStats.turnCount}")
         
 
 
@@ -111,7 +120,24 @@ def createOrbs(window,gameBoard):
         for j in i:
                 if j[0].tileType == "default":
                     emptySpots+=1
-    #sg.popup(f"There are {emptySpots} emptySpots")
+    publicStats = PublicStats()
+    orbsToPlace = publicStats.getOrbCount()
+
+    if orbsToPlace > emptySpots:
+        orbsToPlace = emptySpots
+
+    while orbsToPlace > 0:
+        i = random.randint(0,len(gameBoard)-1)
+        j = random.randint(0,len(gameBoard[0])-1)
+        print(i,j)
+        if gameBoard[i][j] == 0:
+            print("Dire error")
+        if gameBoard[i][j][0].tileType == "default":
+            orbsToPlace -= 1
+            print("Placing item orb")
+            gameBoard[i][j][0].tileType = "itemOrb"
+    
+    sg.popup(f"There are {emptySpots} emptySpots")
 
         
 def displayBoard(window,gameBoard):
@@ -123,14 +149,23 @@ def displayBoard(window,gameBoard):
             if gameBoard[i][j][0].occupied == False:
                 #print("empty")
                 if gameBoard[i][j][0].tileType == "default":
-                    window[i,j].update(image_filename="blank.png")    
+                    window[i,j].update(image_filename="blank.png")
+                elif gameBoard[i][j][0].tileType == "itemOrb":
+                    print("Showing item orbs")
+                    window[i,j].update(image_filename="itemOrb.png")
             else:
                 if gameBoard[i][j][0].occupied:
                     if gameBoard[i][j][1].ownedBy == 1:
                         window[i,j].update(image_filename="player1default.png")
                     else:
                         window[i,j].update(image_filename="player2default.png")
+                if gameBoard[i][j][0].occupied == False:
+                    print("Not occupied")
 
+                    
+def pickUpItemOrb(gameBoard,x,y):
+    items = ["Suicide Row"]
+    #gameBoard[x][y][1].itemList
 
                        
 
@@ -168,21 +203,25 @@ def movePiece(playerTurn, window, gameBoard):
             if (gameBoard[ startLocation[0] ] [ startLocation[1] ][1].ownedBy == playerTurn):
 
 
-
+                #if it's too far
                 if getDistance(startLocation[0],startLocation[1],endLocation[0],endLocation[1]) >  gameBoard[ startLocation[0] ] [ startLocation[1] ][1].distanceMax:
                     window['information'].update(f"That location is too far for you to move to!")
                     window.refresh
                     #print( f" {getDistance(startLocation[0],startLocation[1],endLocation[0],endLocation[1])} attempted, {gameBoard[ startLocation[0] ] [ startLocation[1] ].distanceMax} allowed")
                     continue
 
+                #
+                #if it's close enough:
+                #
 
-                
+                #if the landing spot is an item Orb:
+                if gameBoard[ endLocation[0] ] [ endLocation[1] ][0].tileType == "itemOrb":
+                    print("ITEM ORB STEPPED ON")
+                    pickUpItemOrb(gameBoard,endLocation[0],endLocation[1])
+                    
                 #if the landing spot is empty
                 if gameBoard[ endLocation[0] ] [ endLocation[1] ][0].occupied == False:
                     #print( f" {getDistance(startLocation[0],startLocation[1],endLocation[0],endLocation[1])} attempted, {gameBoard[ startLocation[0] ] [ startLocation[1] ][1].distanceMax} allowed")
-                    
-                    #change the internal address location of the piece to where the piece moved to
-                    #gameBoard[startLocation[0]] [startLocation[1]][1].location = (endLocation[0],endLocation[1])
 
                     #copy the actual object over from the old address to the new one
                     gameBoard[endLocation[0]][endLocation[1]][1] = gameBoard[startLocation[0]][startLocation[1]][1]
@@ -194,7 +233,7 @@ def movePiece(playerTurn, window, gameBoard):
 
                     #set the new location as occupied; set the tile as the type of the tile that moved (needs to be updated in future revisions)
                     gameBoard[ endLocation[0] ] [ endLocation[1] ][0].occupied = True
-                    #print(f"does it exist here? {gameBoard[ endLocation[0] ] [ endLocation[1] ][0].occupied}")
+                    
                     gameBoard[ endLocation[0]][endLocation[1]][0].tileType = f"player{playerTurn}default"
                     
                     window['information'].update(f"Moved successfully!")
@@ -202,13 +241,15 @@ def movePiece(playerTurn, window, gameBoard):
                     print("Moved!")
                     return 1
 
-
+                
                 #killing own piece (illegal)
                 elif gameBoard[ endLocation[0] ] [ endLocation[1] ][1].ownedBy == playerTurn:
                     window['information'].update(f"You can't jumpkill your own piece.")
                     window.refresh
                     continue
 
+                
+                    
                 #kill enemy piece; elif enemy owns the ending location
                 elif gameBoard[ endLocation[0] ] [ endLocation[1] ][1].ownedBy != playerTurn:
                     #set the internal location of the piece to where you want to end up
