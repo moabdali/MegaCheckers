@@ -2,6 +2,13 @@ MegaCheckers:
 
 A game where you take turns moving pieces to kill all of your enemy's pieces.  To do this, your pieces jump onto the enemy piece to crush them.  In order to aid you with this goal, every few turns a random number of mystery items will appear on empty spaces.  You pick up an item and on any subsequent turn,  you can use the item (depending on what the item is) to destroy enemy pieces, to set up traps, to alter the playing field (raise/lower, destroy, magnetize, make one way, push pieces, etc), to power up your piece, and so on.  Eventually networking will be enabled.  
 
+
+v 0.6:
+	Can keep track of empty spaces now. Orbs exist now. You can pick up items now.  The only item implemented is the "suicide row", but it's confirmed working.  The avatar attribute is now in effect.  Your piece's avatar changes color when it's holding an item.  (Haven't tested whether it disappears when it's used up since the only working item right now kills you anyway).  Corrected in error in keeping track of the location of pieces (forgot to change i,j to rows-i-1,j for the initialization procedure).  Added an item button that greys out when not valid.  Changed the visual size of the field to help fit on smaller monitors.  To do: add the option to view the stats of an orb (maybe via a context menu?), add more items (shield most likely).  Test to make sure pieces revert to normal when they don't have an item held anymore.
+
+v 0.5.1:
+	Spawn orbs now.  Spawns in legal locations.
+
 v 0.5:
 	Major logic changes.  No longer use a "player" class, as it seems pointless, at least at the moment.  Instead, the gameBoard list now contains two elements per location - a tile object slot to keep track of the tile (its conditions), and a piece object to keep track of the pieces (their items, location, and ownership).  This should result in easier coding going forward.  Beginning work on tracking empty spaces for item orb spawns.  
 

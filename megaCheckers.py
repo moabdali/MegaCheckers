@@ -4,27 +4,13 @@ import math
 import random
 from time import sleep
 
-##class Player:
-##    def __init__(self,playerName=None,columns = None,rows = None,window = None,gameBoard = None):
-##        if playerName == 1:
-##            playerPiece = []
-##            for i in range(2):
-##                for j in range(columns):
-##                    playerPiece.append(Piece(row = i, column = j, playerTurn = playerName))
-##                    gameBoard[i][j][1]=(playerPiece[j])
-##        elif playerName == 2:
-##            playerPiece = []
-##            for i in range(2):
-##                for j in range(columns):
-##                    playerPiece.append(Piece(row = rows-i, column = j, playerTurn = playerName))
-##                    gameBoard[rows-1-i][j][1]=(playerPiece[j])
 
 
 class PublicStats:
     
     turnCount = 1
     cycle = 0
-    orbCycleList = [0,0,0,0,3,1,0,2,1]
+    orbCycleList = [5,10,0,0,3,1,0,2,1]
     def getOrbCount(self):
         
         cycle = PublicStats.turnCount%9
@@ -35,13 +21,13 @@ class Piece:
         #where the piece is currently residing
         self.location = (row,column)
         #what bonuses the player has
-        self.activeBuffs = ()
+        self.activeBuffs = []
         #what maluses the player has
-        self.activeDebuffs = ()
+        self.activeDebuffs = []
         #what the player is holding (need a max; 5?)
-        self.storedItems = ()
+        self.storedItems = []
         #what it looks like
-        #self. avatar = f".//player{playerTurn}default.png"
+        self. avatar = f".//player{playerTurn}default.png"
         self.ownedBy = playerTurn
         self.distanceMax = 1
     
@@ -64,6 +50,8 @@ def initializeField(columns,rows,window,gameBoard):
             gameBoard[i][j][1]=piece
             gameBoard[i][j][1].location = (i,j)
             gameBoard[i][j][0].tileType = "player1default"
+            gameBoard[i][j][1].avatar = "default"
+            
             
     for i in range(2):
         for j in range(columns):
@@ -72,8 +60,9 @@ def initializeField(columns,rows,window,gameBoard):
             piece = Piece(playerTurn = 2)
             #print("Created a piece for player 2")
             gameBoard[rows-i-1][j][1]=piece
-            gameBoard[rows-i-1][j][1].location = (i,j)
+            gameBoard[rows-i-1][j][1].location = (rows-i-1,j)
             gameBoard[rows-i-1][j][0].tileType = "player2default"
+            gameBoard[rows-i-1][j][1].avatar = "default"
     
 
 
@@ -84,14 +73,16 @@ def countPieces(gameBoard,window):
     #print(gameBoard)
     for i in gameBoard:
         for j in i:
-            #print(f"J[1] is {j[1]}")
+            
             if j[1] != 0:
-                #print(f"J[1] is {j[1]}")
+                
                 if j[1].ownedBy == 1:
+                    print(f"{player1count}: Player one piece at {j[1].location}")
                     player1count+=1
                 elif j[1].ownedBy == 2:
                     player2count+=1
-    #print(f"playercount1 is {player1count} playercount2 is {player2count}")
+                    print(f"{player2count}: Player two piece at {j[1].location}")
+    
     window['player1piececount'].update(f"Player 1 controls: {player1count}")
     window['player2piececount'].update(f"Player 2 controls: {player2count}")
     window.refresh()
@@ -137,7 +128,7 @@ def createOrbs(window,gameBoard):
             print("Placing item orb")
             gameBoard[i][j][0].tileType = "itemOrb"
     
-    sg.popup(f"There are {emptySpots} emptySpots")
+    #sg.popup(f"There are {emptySpots} emptySpots")
 
         
 def displayBoard(window,gameBoard):
@@ -145,45 +136,122 @@ def displayBoard(window,gameBoard):
     for i in range(len(gameBoard)):
 
         for j in range(len(gameBoard[0])):
-            #print(gameBoard[i][j])
+            
             if gameBoard[i][j][0].occupied == False:
-                #print("empty")
+                
                 if gameBoard[i][j][0].tileType == "default":
                     window[i,j].update(image_filename="blank.png")
                 elif gameBoard[i][j][0].tileType == "itemOrb":
-                    print("Showing item orbs")
                     window[i,j].update(image_filename="itemOrb.png")
             else:
+               
                 if gameBoard[i][j][0].occupied:
+                    
                     if gameBoard[i][j][1].ownedBy == 1:
-                        window[i,j].update(image_filename="player1default.png")
+                        if gameBoard[i][j][1].avatar=="default":
+                            window[i,j].update(image_filename="player1default.png")
+                        elif gameBoard[i][j][1].avatar=="player1stored":
+                            window[i,j].update(image_filename="player1stored.png")
                     else:
-                        window[i,j].update(image_filename="player2default.png")
+                        if gameBoard[i][j][1].avatar=="default":
+                            window[i,j].update(image_filename="player2default.png")
+                        elif gameBoard[i][j][1].avatar=="player2stored":
+                            window[i,j].update(image_filename="player2stored.png")
                 if gameBoard[i][j][0].occupied == False:
                     print("Not occupied")
 
                     
 def pickUpItemOrb(gameBoard,x,y):
     items = ["Suicide Row"]
-    #gameBoard[x][y][1].itemList
+    randItem = random.choice(items)
+    gameBoard[x][y][1].storedItems.append(randItem)
+    playerOwned = gameBoard[x][y][1].ownedBy
+    gameBoard[x][y][1].avatar = f"player{playerOwned}stored"
+    print(f"Piece has {len(gameBoard[x][y][1].storedItems)}")
 
-                       
+
+
+
+def useItems(gameBoard,x,y,window):
+    layout = []
+    for i in gameBoard[x][y][1].storedItems:
+        layout+= [ [sg.Button(i)] ]
+    layout+= [ [sg.Button("CANCEL")] ]
+    itemsMenu = sg.Window("Items Menu", layout,disable_close=True )
+
+    while True:
+        event = itemsMenu.read()
+
+        #if you use Suicide Row
+        print (event)
+        for i in event:
+            
+            if str.find(i,"Suicide")>=0:
+                print("SUICIDING")
+                #for each item inside the specific gameBoard row
+                for j in gameBoard[x]:
+                    if isinstance(j[1],Piece):
+                        if "Shield" in j[1].activeBuffs:
+                            print("Shield!")
+                            j[1].activeBuffs.remove("Shield")
+                            #### Make a function for this
+                            j[1].avatar = "default"
+                        else:   
+                            #set the tile to be empty
+                            j[0].occupied = False
+                            j[1] = 0
+                            j[0].tileType = "default"
+            else:
+                print("SUICIDE NOT FOUND")
+            
+            itemsMenu.close()
+            return
+        if event[0] == "CANCEL":
+            itemsMenu.close()
+            return
+    
+        
 
 
 
 
 def movePiece(playerTurn, window, gameBoard):
     while True:
+        usedItem = False
         #sg.popup_timed(f" It's player {playerTurn}'s turn.",font = "Cambria, 20",auto_close_duration=1)
+        window["itemButton"].update(disabled = True)
         window.refresh()
         sleep(1.25)
         window['playerTurn'].update(f"{playerTurn}")
         window['information'].update(f"Pick a piece to move.")
         event = window.read()
+        window["itemButton"].update(disabled = False)
+        
+                
         
         startLocation = event[0]
         window['information'].update(f"Selection made, pick destination.")
         event = window.read()
+
+        print(event)
+        
+        if "itemButton" in event and gameBoard[ startLocation[0] ] [ startLocation[1] ] [0].occupied == True:
+            print("Pressed item button")
+            
+            if len(gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].storedItems) > 0 and gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].ownedBy == playerTurn:
+                print("VALID")
+                useItems(gameBoard,startLocation[0],startLocation[1],window)
+                countPieces(gameBoard,window)
+                displayBoard(window,gameBoard)
+                continue
+            elif len(gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].storedItems )< 1:
+                print("No items")
+                sg.popup("No items")
+                continue
+            elif gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].ownedBy != playerTurn:
+                print("Not yours")
+                sg.popup("Not yours")
+                continue
         endLocation = event[0]
 
 
@@ -217,7 +285,7 @@ def movePiece(playerTurn, window, gameBoard):
                 #if the landing spot is an item Orb:
                 if gameBoard[ endLocation[0] ] [ endLocation[1] ][0].tileType == "itemOrb":
                     print("ITEM ORB STEPPED ON")
-                    pickUpItemOrb(gameBoard,endLocation[0],endLocation[1])
+                    pickUpItemOrb(gameBoard,startLocation[0],startLocation[1])
                     
                 #if the landing spot is empty
                 if gameBoard[ endLocation[0] ] [ endLocation[1] ][0].occupied == False:
@@ -233,7 +301,7 @@ def movePiece(playerTurn, window, gameBoard):
 
                     #set the new location as occupied; set the tile as the type of the tile that moved (needs to be updated in future revisions)
                     gameBoard[ endLocation[0] ] [ endLocation[1] ][0].occupied = True
-                    
+                    gameBoard[ endLocation[0] ] [ endLocation[1] ][1].location = (endLocation[0],endLocation[1])
                     gameBoard[ endLocation[0]][endLocation[1]][0].tileType = f"player{playerTurn}default"
                     
                     window['information'].update(f"Moved successfully!")
@@ -292,6 +360,7 @@ def main():
     rows = 10
     gameBoard = []
     
+    
     #window
 
     frame_layout = [
@@ -303,7 +372,7 @@ def main():
         
         ]
     layout = [
-        [sg.T("MegaCheckers")]
+        [sg.T("MegaCheckers",font="Cambria 50"),sg.Button("USE ITEMS",key="itemButton",image_filename = "backpack.png")]
         ]
     layout += [
             [sg.Button(image_filename = ".\\blank.png",key=(i,j),size = (20,20), pad = (10,10))for j in range (columns)]for i in range(0,rows)
