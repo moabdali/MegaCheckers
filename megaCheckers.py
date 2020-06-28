@@ -30,13 +30,40 @@ class Piece:
         self. avatar = f".//player{playerTurn}default.png"
         self.ownedBy = playerTurn
         self.distanceMax = 1
+
+    
     
 class Tile:
     def __init__(self, occupied = False):
         self.tileHeight = 0
         self.tileType = "default"
         self.occupied = occupied
-
+    def describeSelf(self):
+        
+        if self.tileType == "default":
+            sg.popup(f"This is a regular tile with an elevation of {self.tileHeight}")
+            return
+        elif self.tileType == "itemOrb":
+            sg.popup(f"This is an item orb tile with an elevation of {self.tileHeight}")
+            return
+        elif self.tileType == "destroyed":
+            sg.popup(f"This tile has been destroyed!  But don't worry, it'll come back in 5 turns.")
+            return
+        elif self.tileType == "damaged4":
+            sg.popup(f"This tile is being repaired.  It'll be ready for business in 4 turns.")
+            return
+        elif self.tileType == "damaged3":
+            sg.popup(f"This tile is being repaired.  It'll be up and at 'em in 3 turns.")
+            return
+        elif self.tileType == "damaged2":
+            sg.popup(f"This tile is being repaired.  It'll be repaired in 2 turns.")
+            return
+        elif self.tileType == "damaged1":
+            sg.popup(f"This tile is almost ready!  It'll be ready on the next turn!")
+            return
+        elif self.tileType == "boobyTrap":
+            sg.popup(f"There's an obvious booby trap on this tile.  Don't move here without protection! It has an elevation of {self.tileHeight}")
+            return
         
         
 def initializeField(columns,rows,window,gameBoard):
@@ -125,7 +152,7 @@ def createOrbs(window,gameBoard):
             print("Dire error")
         if gameBoard[i][j][0].tileType == "default":
             orbsToPlace -= 1
-            print("Placing item orb")
+            #print("Placing item orb")
             gameBoard[i][j][0].tileType = "itemOrb"
     
     #sg.popup(f"There are {emptySpots} emptySpots")
@@ -141,6 +168,7 @@ def displayBoard(window,gameBoard):
                 
                 if gameBoard[i][j][0].tileType == "default":
                     window[i,j].update(image_filename="blank.png")
+                    
                 elif gameBoard[i][j][0].tileType == "itemOrb":
                     window[i,j].update(image_filename="itemOrb.png")
             else:
@@ -157,8 +185,7 @@ def displayBoard(window,gameBoard):
                             window[i,j].update(image_filename="player2default.png")
                         elif gameBoard[i][j][1].avatar=="player2stored":
                             window[i,j].update(image_filename="player2stored.png")
-                if gameBoard[i][j][0].occupied == False:
-                    print("Not occupied")
+                
 
                     
 def pickUpItemOrb(gameBoard,x,y):
@@ -220,20 +247,56 @@ def movePiece(playerTurn, window, gameBoard):
         usedItem = False
         #sg.popup_timed(f" It's player {playerTurn}'s turn.",font = "Cambria, 20",auto_close_duration=1)
         window["itemButton"].update(disabled = True)
+        window["examineItem"].update(disabled = False)
         window.refresh()
         sleep(1.25)
         window['playerTurn'].update(f"{playerTurn}")
         window['information'].update(f"Pick a piece to move.")
         event = window.read()
+
+
+
+        if "examineItem" in event:
+            window["examineItem"].update(disabled = True)
+            window['information'].update(f"What do you want to examine?",text_color = "red")
+            event = window.read()
+
+            
+            #if no pieces exist here:
+            if gameBoard[event[0][0]][event[0][1]][0].occupied == False:
+                print("TEST")
+                gameBoard[event[0][0]][event[0][1]][0].describeSelf()
+
+            #if there is a piece:
+            else:
+                if playerTurn == gameBoard[event[0][0]][event[0][1]][1].ownedBy:
+                    owner = "you"
+                else:
+                    owner = "your opponent"
+                buffslist =None
+                debuffslist = None
+                for i in gameBoard[event[0][0]][event[0][1]][1].activeBuffs:
+                    buffslist += i + "/n"
+                for i in gameBoard[event[0][0]][event[0][1]][1].activeDebuffs:
+                    debuffslist += i + "/n"
+                
+                sg.popup(f"The piece here belongs to {owner}.\nIt currently holds {len(gameBoard[event[0][0]][event[0][1]][1].storedItems)} inactive items.\nIt has the following buffs:\n{buffslist}\nIt has the current debuffs:\n{debuffslist}")
+            window["examineItem"].update(disabled = False)
+            continue
+
+
+            
         window["itemButton"].update(disabled = False)
-        
+        window["examineItem"].update(disabled = True)
                 
         
         startLocation = event[0]
         window['information'].update(f"Selection made, pick destination.")
         event = window.read()
-
+        window["examineItem"].update(disabled = True)
         print(event)
+
+        
         
         if "itemButton" in event and gameBoard[ startLocation[0] ] [ startLocation[1] ] [0].occupied == True:
             print("Pressed item button")
@@ -254,7 +317,7 @@ def movePiece(playerTurn, window, gameBoard):
                 continue
         endLocation = event[0]
 
-
+        
         if (gameBoard[ startLocation[0] ] [ startLocation[1] ] [0].occupied == False ):
             window['information'].update(f"Nothing exists on the initial square!")
             window.refresh
@@ -372,10 +435,10 @@ def main():
         
         ]
     layout = [
-        [sg.T("MegaCheckers",font="Cambria 50"),sg.Button("USE ITEMS",key="itemButton",image_filename = "backpack.png")]
+        [sg.T("MegaCheckers",font="Cambria 50"),sg.Button("USE ITEMS",key="itemButton",image_filename = "backpack.png"),sg.Button("EXAMINE PIECE", key="examineItem",image_filename="examine.png")]
         ]
     layout += [
-            [sg.Button(image_filename = ".\\blank.png",key=(i,j),size = (20,20), pad = (10,10))for j in range (columns)]for i in range(0,rows)
+            [sg.Button(image_filename = ".\\blank.png",key=(i,j),size = (20,20), tooltip = "tooltip", pad = (10,10))for j in range (columns)]for i in range(0,rows)
             ]
     layout += [
         [sg.Frame('Information:', frame_layout,font='Calibri 20', title_color='blue')],
@@ -383,6 +446,7 @@ def main():
         ]
     
     window = sg.Window("MegaCheckers",layout).finalize()
+
     
     
     
