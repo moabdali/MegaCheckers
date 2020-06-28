@@ -133,8 +133,8 @@ def countPieces(gameBoard,window):
                     player2count+=1
                     
     
-    window['player1piececount'].update(f"Player 1 controls: {player1count}")
-    window['player2piececount'].update(f"Player 2 controls: {player2count}")
+    window['player1piececount'].update(f"Player 1 controls: {player1count}\n")
+    window['player2piececount'].update(f"Player 2 controls: {player2count}\n")
     window.refresh()
 
 def gamePlay(playerTurn, window, gameBoard):
@@ -233,8 +233,8 @@ def displayBoard(window,gameBoard):
 
                     
 def pickUpItemOrb(gameBoard,x,y):
-    items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike"]
-
+    #items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike"]
+    items = ["Wololo (convert to your side)"]
 
 
     
@@ -255,13 +255,15 @@ def useItems(gameBoard,x,y,window):
     itemsMenu = sg.Window("Items Menu", layout,disable_close=True )
 
     while True:
-        event = itemsMenu.read()
+            event = itemsMenu.read()
         
-        #if you use suicideBomb Row
-        print (event)
-        for i in event:
+            #if you use suicideBomb Row
+            print (event[0])
+            i = event[0]
 
-            
+            if i == None:
+                break
+            print(i)
             #suicidebomb row
             if str.find(i,"suicideBomb Row")>=0:
                 gameBoard[x][y][1].storedItems.remove("suicideBomb Row")
@@ -301,6 +303,31 @@ def useItems(gameBoard,x,y,window):
                             j[y][1] = 0
                             j[y][0].tileType = "default"
 
+                            
+            elif str.find(i,"Wololo (convert to your side)") >=0:
+                    itemsMenu.close()
+                    
+                    window["information"].update("Choose an enemy to recruit")
+                    
+                    event = window.read()
+                    player = gameBoard[x][y][1].ownedBy
+                    if player == 1:
+                        enemy = 2
+                    elif player == 2:
+                        enemy = 1
+                    if gameBoard[event[0][0]][event[0][1]][1] == 0:
+                        window["information"].update("Choose an enemy, not a vacant tile...")
+                        sleep(1)
+                        continue
+                    elif gameBoard[event[0][0]][event[0][1]][1].ownedBy == enemy:
+                        gameBoard[event[0][0]][event[0][1]][1].ownedBy = player
+                        gameBoard[x][y][1].storedItems.remove("Wololo (convert to your side)")
+                    else:
+                        window["information"].update("Wololo only works on enemies.")
+                        sleep(1)
+                    displayBoard(window, gameBoard)
+                    window.refresh()
+                    
 
             elif str.find(i,"Haphazard Airstrike") >=0:
                 
@@ -328,7 +355,6 @@ def useItems(gameBoard,x,y,window):
                             gameBoard[x][y][1].activeBuffs.remove("Energy Forcefield")
                             continue
                         else:
-                            
                             gameBoard[x][y][0].occupied = False
                             gameBoard[x][y][1] = 0
                             gameBoard[x][y][0].tileType = "exploding"
@@ -348,12 +374,12 @@ def useItems(gameBoard,x,y,window):
                         sleep(1)
                         gameBoard[x][y][0].tileType = "destroyed"
                     
-            if itemsMenu:    
+                if itemsMenu:    
+                    itemsMenu.close()
+                return
+            if event[0] == "CANCEL":
                 itemsMenu.close()
-            return
-        if event[0] == "CANCEL":
-            itemsMenu.close()
-            return
+                return
         
 def repairFloor (window, gameBoard):
     for i in gameBoard:
@@ -433,22 +459,22 @@ def movePiece(playerTurn, window, gameBoard):
 
         
         
-        if "itemButton" in event and gameBoard[ startLocation[0] ] [ startLocation[1] ] [0].occupied == True:
-            print("Pressed item button")
+        if ("itemButton" in event and gameBoard[ startLocation[0] ] [ startLocation[1] ] [0].occupied == True) or (startLocation == endLocation and gameBoard[ startLocation[0] ] [ startLocation[1] ] [0].occupied == True):
             
-            if len(gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].storedItems) > 0 and gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].ownedBy == playerTurn:
-                print("VALID")
+            
+            if len(gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].storedItems) > 0 and (gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].ownedBy == playerTurn):
+                
                 useItems(gameBoard,startLocation[0],startLocation[1],window)
                 countPieces(gameBoard,window)
                 displayBoard(window,gameBoard)
                 continue
             elif len(gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].storedItems )< 1:
-                print("No items")
-                sg.popup("No items")
+                
+                sg.popup("No items here")
                 continue
             elif gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].ownedBy != playerTurn:
-                print("Not yours")
-                sg.popup("Not yours")
+                
+                sg.popup("That's not yours to use.")
                 continue
             else:
                 sg.popup("Look for this line!!!")
@@ -566,24 +592,33 @@ def main():
     
     
     #window
+    frame_main = [
+                    [sg.Button(image_filename = ".\\blank.png",key=(i,j),size = (20,20), tooltip = "tooltip", pad = (10,10))for j in range (columns)]for i in range(0,rows)
+    ]
+    
+    
 
+    
     frame_layout = [
         [sg.T(f"Player:",font = "Cambria 30",pad = (4,4)), sg.T(f"",key='playerTurn',font = "Cambria 30",pad = (4,4))],
-        [sg.T(f" "*100,key = 'information',size = (40,2),font="Cambria 30")]
+        [sg.T(f" "*100,key = 'information',size = (37,2),font="Cambria 30")]
         ]
     frame_layout2 = [
-        [sg.T(f"Player 1 Controls: xx", key = 'player1piececount',font = "Cambria 20", text_color="blue"),sg.T(f"Player 2 Controls: xx",key = 'player2piececount',font = "Cambria 20",text_color="red")],
+
+        [sg.T(f"Player 1 Controls: xx", key = 'player1piececount',font = "Cambria 20", text_color="blue")],
+        [sg.T(f"Player 2 Controls: xx",key = 'player2piececount',font = "Cambria 20",text_color="red")]
         
         ]
     layout = [
-        [sg.T("MegaCheckers",font="Cambria 50"),sg.Button("USE ITEMS",key="itemButton",image_filename = "backpack.png"),sg.Button("EXAMINE PIECE", key="examineItem",image_filename="examine.png")]
+        [sg.T("MegaCheckers",font="Cambria 50"),sg.Button("USE ITEMS",key="itemButton",image_filename = "backpack.png"),sg.Button("Look",button_color=("Blue","White"),tooltip = "Examine",font = "Cambria 20", key="examineItem",image_filename="examine.png")]
         ]
     layout += [
-            [sg.Button(image_filename = ".\\blank.png",key=(i,j),size = (20,20), tooltip = "tooltip", pad = (10,10))for j in range (columns)]for i in range(0,rows)
-            ]
+                        [sg.Frame("Playing Field", frame_main),
+                        sg.Frame('Remaining pieces:', frame_layout2,font='Calibri 20', title_color='blue')]]
+        
+            
     layout += [
         [sg.Frame('Information:', frame_layout,font='Calibri 20', title_color='blue')],
-        [sg.Frame('Remaining pieces:', frame_layout2,font='Calibri 20', title_color='blue')]
         ]
     
     window = sg.Window("MegaCheckers",layout).finalize()
