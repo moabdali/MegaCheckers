@@ -27,9 +27,31 @@ class Piece:
         #what the player is holding (need a max; 5?)
         self.storedItems = []
         #what it looks like
-        self. avatar = f".//player{playerTurn}default.png"
+        #self. avatar = f".//player{playerTurn}default.png"
+        self. avatar = "default"
         self.ownedBy = playerTurn
         self.distanceMax = 1
+
+    def determineAvatar(self):
+
+        #if you have a shield
+        if "Energy Forcefield" in self.activeBuffs:
+            #and holding an item
+            if len(self.storedItems)>0:
+                #shield + item
+                self.avatar = "shIt"
+            else:
+                #just shield
+                self.avatar = "sh"
+        #if you don't have a shield
+        else:
+            # if you have items
+            if len(self.storedItems )>0:
+                #items only
+                self.avatar = f"player{self.ownedBy}stored"
+            else:
+                #nothing at all
+                self. avatar = "default"
 
     
     
@@ -172,24 +194,37 @@ def displayBoard(window,gameBoard):
                 elif gameBoard[i][j][0].tileType == "itemOrb":
                     window[i,j].update(image_filename="itemOrb.png")
             else:
-               
                 if gameBoard[i][j][0].occupied:
+                    gameBoard[i][j][1].determineAvatar()
                     
-                    if gameBoard[i][j][1].ownedBy == 1:
-                        if gameBoard[i][j][1].avatar=="default":
-                            window[i,j].update(image_filename="player1default.png")
-                        elif gameBoard[i][j][1].avatar=="player1stored":
-                            window[i,j].update(image_filename="player1stored.png")
-                    else:
-                        if gameBoard[i][j][1].avatar=="default":
-                            window[i,j].update(image_filename="player2default.png")
-                        elif gameBoard[i][j][1].avatar=="player2stored":
-                            window[i,j].update(image_filename="player2stored.png")
+                    if gameBoard[i][j][1].avatar=="default":
+                        
+                        window[i,j].update(image_filename=f"player{gameBoard[i][j][1].ownedBy}default.png")
+                    elif gameBoard[i][j][1].avatar==f"player{gameBoard[i][j][1].ownedBy}stored":
+                        window[i,j].update(image_filename=f"player{gameBoard[i][j][1].ownedBy}stored.png")
+    
+                    elif gameBoard[i][j][1].avatar==f"shIt":
+                        window[i,j].update(image_filename=f"p{gameBoard[i][j][1].ownedBy}shIt.png")
+                    elif gameBoard[i][j][1].avatar==f"sh":
+                        window[i,j].update(image_filename=f"p{gameBoard[i][j][1].ownedBy}sh.png")
+                    
+##                if gameBoard[i][j][0].occupied:
+##                    gameBoard[i][j][1].determineAvatar()
+##                    if gameBoard[i][j][1].ownedBy == 1:
+##                        if gameBoard[i][j][1].avatar=="default":
+##                            window[i,j].update(image_filename="player1default.png")
+##                        elif gameBoard[i][j][1].avatar=="player1stored":
+##                            window[i,j].update(image_filename="player1stored.png")
+##                    else:
+##                        if gameBoard[i][j][1].avatar=="default":
+##                            window[i,j].update(image_filename="player2default.png")
+##                        elif gameBoard[i][j][1].avatar=="player2stored":
+##                            window[i,j].update(image_filename="player2stored.png")
                 
 
                     
 def pickUpItemOrb(gameBoard,x,y):
-    items = ["Suicide Row"]
+    items = ["Suicide Row","Energy Forcefield"]
     randItem = random.choice(items)
     gameBoard[x][y][1].storedItems.append(randItem)
     playerOwned = gameBoard[x][y][1].ownedBy
@@ -213,23 +248,33 @@ def useItems(gameBoard,x,y,window):
         print (event)
         for i in event:
             
-            if str.find(i,"Suicide")>=0:
-                print("SUICIDING")
+            if str.find(i,"Suicide Row")>=0:
+
+                gameBoard[x][y][1].storedItems.remove("Suicide Row")
                 #for each item inside the specific gameBoard row
                 for j in gameBoard[x]:
                     if isinstance(j[1],Piece):
-                        if "Shield" in j[1].activeBuffs:
-                            print("Shield!")
-                            j[1].activeBuffs.remove("Shield")
-                            #### Make a function for this
-                            j[1].avatar = "default"
+                        if "Energy Forcefield" in j[1].activeBuffs:
+                            print("Energy Forcefield!")
+                            j[1].activeBuffs.remove("Energy Forcefield")
+                            
                         else:   
                             #set the tile to be empty
                             j[0].occupied = False
                             j[1] = 0
                             j[0].tileType = "default"
-            else:
-                print("SUICIDE NOT FOUND")
+
+
+            elif str.find(i,"Energy Forcefield")>=0:
+                
+                gameBoard[x][y][1].storedItems.remove("Energy Forcefield")
+                gameBoard[x][y][1].activeBuffs.append("Energy Forcefield")
+                displayBoard(window, gameBoard)
+                #gameBoard[x][y][1].avatar = "Shield"
+
+
+
+
             
             itemsMenu.close()
             return
@@ -273,13 +318,16 @@ def movePiece(playerTurn, window, gameBoard):
                     owner = "you"
                 else:
                     owner = "your opponent"
-                buffslist =None
-                debuffslist = None
+                buffslist =""
+                debuffslist = ""
                 for i in gameBoard[event[0][0]][event[0][1]][1].activeBuffs:
-                    buffslist += i + "/n"
+                    buffslist += i + "\n"
                 for i in gameBoard[event[0][0]][event[0][1]][1].activeDebuffs:
-                    debuffslist += i + "/n"
-                
+                    debuffslist += i + "\n"
+                if buffslist == "":
+                    buffslist = "NONE"
+                if debuffslist == "":
+                    debuffslist = "NONE"
                 sg.popup(f"The piece here belongs to {owner}.\nIt currently holds {len(gameBoard[event[0][0]][event[0][1]][1].storedItems)} inactive items.\nIt has the following buffs:\n{buffslist}\nIt has the current debuffs:\n{debuffslist}")
             window["examineItem"].update(disabled = False)
             continue
