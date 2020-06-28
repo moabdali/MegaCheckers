@@ -2,6 +2,12 @@ MegaCheckers:
 
 A game where you take turns moving pieces to kill all of your enemy's pieces.  To do this, your pieces jump onto the enemy piece to crush them.  In order to aid you with this goal, every few turns a random number of mystery items will appear on empty spaces.  You pick up an item and on any subsequent turn,  you can use the item (depending on what the item is) to destroy enemy pieces, to set up traps, to alter the playing field (raise/lower, destroy, magnetize, make one way, push pieces, etc), to power up your piece, and so on.  Eventually networking will be enabled.  
 
+
+
+v.0.8.1:
+	Renamed suicideRow to SuicideBomb Row (so that you know it kills everyone and that it's not just suiciding your pieces).  Added a suicide column.
+
+
 v.0.8:
 	Has an updated avatar serving function.  It'll automatically keep track of what your avatar should be so that you (I) don't have to manually reassign them for each scenario.  Also, the shield (forcefield) feature has been successfully implemented.  Avatars appear to properly update on every combination involving (or not involving) shields and holding items.
 

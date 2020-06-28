@@ -126,11 +126,11 @@ def countPieces(gameBoard,window):
             if j[1] != 0:
                 
                 if j[1].ownedBy == 1:
-                    print(f"{player1count}: Player one piece at {j[1].location}")
+                    
                     player1count+=1
                 elif j[1].ownedBy == 2:
                     player2count+=1
-                    print(f"{player2count}: Player two piece at {j[1].location}")
+                    
     
     window['player1piececount'].update(f"Player 1 controls: {player1count}")
     window['player2piececount'].update(f"Player 2 controls: {player2count}")
@@ -224,7 +224,7 @@ def displayBoard(window,gameBoard):
 
                     
 def pickUpItemOrb(gameBoard,x,y):
-    items = ["Suicide Row","Energy Forcefield"]
+    items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column"]
     randItem = random.choice(items)
     gameBoard[x][y][1].storedItems.append(randItem)
     playerOwned = gameBoard[x][y][1].ownedBy
@@ -244,13 +244,13 @@ def useItems(gameBoard,x,y,window):
     while True:
         event = itemsMenu.read()
 
-        #if you use Suicide Row
+        #if you use suicideBomb Row
         print (event)
         for i in event:
             
-            if str.find(i,"Suicide Row")>=0:
+            if str.find(i,"suicideBomb Row")>=0:
 
-                gameBoard[x][y][1].storedItems.remove("Suicide Row")
+                gameBoard[x][y][1].storedItems.remove("suicideBomb Row")
                 #for each item inside the specific gameBoard row
                 for j in gameBoard[x]:
                     if isinstance(j[1],Piece):
@@ -272,7 +272,21 @@ def useItems(gameBoard,x,y,window):
                 displayBoard(window, gameBoard)
                 #gameBoard[x][y][1].avatar = "Shield"
 
+            elif str.find(i,"suicideBomb Column")>=0:
 
+                gameBoard[x][y][1].storedItems.remove("suicideBomb Column")
+                #for each item inside the specific gameBoard row
+                for j in gameBoard:
+                    if isinstance(j[y][1],Piece):
+                        if "Energy Forcefield" in j[y][1].activeBuffs:
+                            print("Energy Forcefield!")
+                            j[y][1].activeBuffs.remove("Energy Forcefield")
+                            
+                        else:   
+                            #set the tile to be empty
+                            j[y][0].occupied = False
+                            j[y][1] = 0
+                            j[y][0].tileType = "default"
 
 
             
@@ -309,7 +323,6 @@ def movePiece(playerTurn, window, gameBoard):
             
             #if no pieces exist here:
             if gameBoard[event[0][0]][event[0][1]][0].occupied == False:
-                print("TEST")
                 gameBoard[event[0][0]][event[0][1]][0].describeSelf()
 
             #if there is a piece:
@@ -342,6 +355,7 @@ def movePiece(playerTurn, window, gameBoard):
         window['information'].update(f"Selection made, pick destination.")
         event = window.read()
         window["examineItem"].update(disabled = True)
+        endLocation = event[0]
         print(event)
 
         
@@ -363,13 +377,14 @@ def movePiece(playerTurn, window, gameBoard):
                 print("Not yours")
                 sg.popup("Not yours")
                 continue
-        endLocation = event[0]
+            else:
+                sg.popup("Look for this line!!!")
+        
 
         
         if (gameBoard[ startLocation[0] ] [ startLocation[1] ] [0].occupied == False ):
             window['information'].update(f"Nothing exists on the initial square!")
             window.refresh
-            #sg.popup(f"Piece doesn't exist,  {gameBoard[ startLocation[0] ] [ startLocation[1] ]}", )
             continue
 
             
