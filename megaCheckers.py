@@ -80,12 +80,13 @@ class Tile:
         elif self.tileType == "damaged2":
             sg.popup(f"This tile is being repaired.  It'll be repaired in 2 turns.")
             return
-        elif self.tileType == "damaged1":
+        elif self.tileType == "damaged":
             sg.popup(f"This tile is almost ready!  It'll be ready on the next turn!")
             return
         elif self.tileType == "boobyTrap":
             sg.popup(f"There's an obvious booby trap on this tile.  Don't move here without protection! It has an elevation of {self.tileHeight}")
             return
+
         
         
 def initializeField(columns,rows,window,gameBoard):
@@ -143,6 +144,7 @@ def gamePlay(playerTurn, window, gameBoard):
         displayBoard(window,gameBoard)
         movePiece(playerTurn, window,gameBoard)
         PublicStats.turnCount += 1
+        repairFloor(window,gameBoard)
         
         print(f"Turn count is {PublicStats.turnCount}")
         
@@ -185,6 +187,22 @@ def displayBoard(window,gameBoard):
     for i in range(len(gameBoard)):
 
         for j in range(len(gameBoard[0])):
+
+            if gameBoard[i][j][0].tileType == "exploding":
+                window[i,j].update(image_filename="exploding.png")
+                
+            if gameBoard[i][j][0].tileType == "damaged4":
+                window[i,j].update(image_filename="damaged4.png")
+                
+            if gameBoard[i][j][0].tileType == "damaged3":
+                window[i,j].update(image_filename="damaged3.png")
+
+            if gameBoard[i][j][0].tileType == "damaged2":
+                window[i,j].update(image_filename="damaged2.png")
+
+            if gameBoard[i][j][0].tileType == "damaged":
+                window[i,j].update(image_filename="damaged.png")
+    
             
             if gameBoard[i][j][0].occupied == False:
                 
@@ -193,6 +211,9 @@ def displayBoard(window,gameBoard):
                     
                 elif gameBoard[i][j][0].tileType == "itemOrb":
                     window[i,j].update(image_filename="itemOrb.png")
+
+                elif gameBoard[i][j][0].tileType == "destroyed":
+                    window[i,j].update(image_filename="destroyed.png")
             else:
                 if gameBoard[i][j][0].occupied:
                     gameBoard[i][j][1].determineAvatar()
@@ -208,23 +229,15 @@ def displayBoard(window,gameBoard):
                     elif gameBoard[i][j][1].avatar==f"sh":
                         window[i,j].update(image_filename=f"p{gameBoard[i][j][1].ownedBy}sh.png")
                     
-##                if gameBoard[i][j][0].occupied:
-##                    gameBoard[i][j][1].determineAvatar()
-##                    if gameBoard[i][j][1].ownedBy == 1:
-##                        if gameBoard[i][j][1].avatar=="default":
-##                            window[i,j].update(image_filename="player1default.png")
-##                        elif gameBoard[i][j][1].avatar=="player1stored":
-##                            window[i,j].update(image_filename="player1stored.png")
-##                    else:
-##                        if gameBoard[i][j][1].avatar=="default":
-##                            window[i,j].update(image_filename="player2default.png")
-##                        elif gameBoard[i][j][1].avatar=="player2stored":
-##                            window[i,j].update(image_filename="player2stored.png")
                 
 
                     
 def pickUpItemOrb(gameBoard,x,y):
-    items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column"]
+    items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike"]
+
+
+
+    
     randItem = random.choice(items)
     gameBoard[x][y][1].storedItems.append(randItem)
     playerOwned = gameBoard[x][y][1].ownedBy
@@ -243,13 +256,14 @@ def useItems(gameBoard,x,y,window):
 
     while True:
         event = itemsMenu.read()
-
+        
         #if you use suicideBomb Row
         print (event)
         for i in event:
-            
-            if str.find(i,"suicideBomb Row")>=0:
 
+            
+            #suicidebomb row
+            if str.find(i,"suicideBomb Row")>=0:
                 gameBoard[x][y][1].storedItems.remove("suicideBomb Row")
                 #for each item inside the specific gameBoard row
                 for j in gameBoard[x]:
@@ -264,16 +278,15 @@ def useItems(gameBoard,x,y,window):
                             j[1] = 0
                             j[0].tileType = "default"
 
-
+            #energy forcefield
             elif str.find(i,"Energy Forcefield")>=0:
-                
                 gameBoard[x][y][1].storedItems.remove("Energy Forcefield")
                 gameBoard[x][y][1].activeBuffs.append("Energy Forcefield")
                 displayBoard(window, gameBoard)
-                #gameBoard[x][y][1].avatar = "Shield"
+                
 
+            #suicidebomb column
             elif str.find(i,"suicideBomb Column")>=0:
-
                 gameBoard[x][y][1].storedItems.remove("suicideBomb Column")
                 #for each item inside the specific gameBoard row
                 for j in gameBoard:
@@ -289,12 +302,72 @@ def useItems(gameBoard,x,y,window):
                             j[y][0].tileType = "default"
 
 
-            
-            itemsMenu.close()
+            elif str.find(i,"Haphazard Airstrike") >=0:
+                
+                gameBoard[x][y][1].storedItems.remove("Haphazard Airstrike")
+                i = 5
+                itemsMenu.close()
+                while (i > 0):
+                    i-=1
+                    
+                    x = random.randint(0,len(gameBoard)-1)
+                    y = random.randint(0,len(gameBoard[0])-1)
+                    print(x,y)
+                    #if someone is on the spot
+                    if gameBoard[x][y][0].occupied == True:
+                        #if someone has a forcefield there, don't kill them
+                        if "Energy Forcefield" in gameBoard[x][y][1].activeBuffs:
+                            print("Energy Forcefield!")
+                           
+                            backupTile = gameBoard[x][y][0].tileType
+                            gameBoard[x][y][0].tileType = "exploding"
+                            displayBoard(window,gameBoard)
+                            window.refresh()
+                            sleep(1)
+                            gameBoard[x][y][0].tileType = backupTile
+                            gameBoard[x][y][1].activeBuffs.remove("Energy Forcefield")
+                            continue
+                        else:
+                            
+                            gameBoard[x][y][0].occupied = False
+                            gameBoard[x][y][1] = 0
+                            gameBoard[x][y][0].tileType = "exploding"
+                            displayBoard(window,gameBoard)
+                            window.refresh()
+                            sleep(1)
+                            gameBoard[x][y][0].tileType = "destroyed"
+                            
+                    else:
+                        
+                        
+                        gameBoard[x][y][0].occupied = False
+                        gameBoard[x][y][1] = 0
+                        gameBoard[x][y][0].tileType = "exploding"
+                        displayBoard(window,gameBoard)
+                        window.refresh()
+                        sleep(1)
+                        gameBoard[x][y][0].tileType = "destroyed"
+                    
+            if itemsMenu:    
+                itemsMenu.close()
             return
         if event[0] == "CANCEL":
             itemsMenu.close()
             return
+        
+def repairFloor (window, gameBoard):
+    for i in gameBoard:
+        for j in i:
+            if j[0].tileType == "destroyed":
+                j[0].tileType = "damaged4"
+            elif j[0].tileType == "damaged4":
+                j[0].tileType = "damaged3"
+            elif j[0].tileType == "damaged3":
+                j[0].tileType = "damaged2"
+            elif j[0].tileType == "damaged2":
+                j[0].tileType = "damaged"
+            elif j[0].tileType == "damaged":
+                j[0].tileType = "default"
     
         
 
@@ -412,7 +485,12 @@ def movePiece(playerTurn, window, gameBoard):
                 if gameBoard[ endLocation[0] ] [ endLocation[1] ][0].tileType == "itemOrb":
                     print("ITEM ORB STEPPED ON")
                     pickUpItemOrb(gameBoard,startLocation[0],startLocation[1])
-                    
+
+
+
+                if gameBoard[ endLocation[0] ] [ endLocation[1] ][0].tileType in ["destroyed","damaged4","damaged3","damaged2","damaged"]:
+                    window['information'].update(f"Can't move here!")
+                    continue
                 #if the landing spot is empty
                 if gameBoard[ endLocation[0] ] [ endLocation[1] ][0].occupied == False:
                     #print( f" {getDistance(startLocation[0],startLocation[1],endLocation[0],endLocation[1])} attempted, {gameBoard[ startLocation[0] ] [ startLocation[1] ][1].distanceMax} allowed")
@@ -524,10 +602,6 @@ def main():
     for j in range(rows):
         gameBoard[j] = copy.deepcopy(line)
 
-    
-    
-    #player1 = Player(playerName = 1,columns = columns, window = window,gameBoard = gameBoard)
-    #player2 = Player(playerName = 2, columns = columns, rows = rows, window = window,gameBoard = gameBoard)
 
     initializeField(columns,rows,window,gameBoard)
     

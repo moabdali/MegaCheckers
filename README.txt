@@ -2,7 +2,8 @@ MegaCheckers:
 
 A game where you take turns moving pieces to kill all of your enemy's pieces.  To do this, your pieces jump onto the enemy piece to crush them.  In order to aid you with this goal, every few turns a random number of mystery items will appear on empty spaces.  You pick up an item and on any subsequent turn,  you can use the item (depending on what the item is) to destroy enemy pieces, to set up traps, to alter the playing field (raise/lower, destroy, magnetize, make one way, push pieces, etc), to power up your piece, and so on.  Eventually networking will be enabled.  
 
-
+v.0.8.2:
+	Added a haphazard bombing run.  Added floor damage (and floor repair).  Added some explosions.  Next update should make it to where if a piece is exploded, an explosion shows up.
 
 v.0.8.1:
 	Renamed suicideRow to SuicideBomb Row (so that you know it kills everyone and that it's not just suiciding your pieces).  Added a suicide column.
