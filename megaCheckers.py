@@ -31,6 +31,7 @@ class Piece:
         self. avatar = "default"
         self.ownedBy = playerTurn
         self.distanceMax = 1
+        self.grey = False
 
     def determineAvatar(self):
 
@@ -208,6 +209,7 @@ def displayBoard(window,gameBoard):
                 
                 if gameBoard[i][j][0].tileType == "default":
                     window[i,j].update(image_filename="blank.png")
+                        
                     
                 elif gameBoard[i][j][0].tileType == "itemOrb":
                     window[i,j].update(image_filename="itemOrb.png")
@@ -221,13 +223,20 @@ def displayBoard(window,gameBoard):
                     if gameBoard[i][j][1].avatar=="default":
                         
                         window[i,j].update(image_filename=f"player{gameBoard[i][j][1].ownedBy}default.png")
+                        if gameBoard[i][j][1].grey == True:
+                            window[i,j].update(image_filename=f"Gplayer{gameBoard[i][j][1].ownedBy}default.png")
                     elif gameBoard[i][j][1].avatar==f"player{gameBoard[i][j][1].ownedBy}stored":
                         window[i,j].update(image_filename=f"player{gameBoard[i][j][1].ownedBy}stored.png")
-    
+                        if gameBoard[i][j][1].grey == True:
+                            window[i,j].update(image_filename=f"Gplayer{gameBoard[i][j][1].ownedBy}stored.png")
                     elif gameBoard[i][j][1].avatar==f"shIt":
-                        window[i,j].update(image_filename=f"p{gameBoard[i][j][1].ownedBy}shIt.png")
+                        window[i,j].update(image_filename=f"Gp{gameBoard[i][j][1].ownedBy}shIt.png")
+                        if gameBoard[i][j][1].grey == True:
+                            window[i,j].update(image_filename=f"Gp{gameBoard[i][j][1].ownedBy}shIt.png")
                     elif gameBoard[i][j][1].avatar==f"sh":
                         window[i,j].update(image_filename=f"p{gameBoard[i][j][1].ownedBy}sh.png")
+                        if gameBoard[i][j][1].grey == True:
+                            window[i,j].update(image_filename=f"p{gameBoard[i][j][1].ownedBy}sh.png")
                     
                 
 
@@ -461,10 +470,23 @@ def movePiece(playerTurn, window, gameBoard):
                 
         
         startLocation = event[0]
+        
+        
+
+        
         window['information'].update(f"Selection made, pick destination.")
+
+        if gameBoard[startLocation[0]][startLocation[1]][1] != 0:
+            gameBoard[startLocation[0]][startLocation[1]][1].grey = True
+
+
+
+        displayBoard(window,gameBoard)
         event = window.read()
+        
         window["examineItem"].update(disabled = True)
         endLocation = event[0]
+
         
 
         
@@ -475,6 +497,7 @@ def movePiece(playerTurn, window, gameBoard):
             if len(gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].storedItems) > 0 and (gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].ownedBy == playerTurn):
                 
                 useItems(gameBoard,startLocation[0],startLocation[1],window)
+                gameBoard[startLocation[0]][startLocation[1]][1].grey = False
                 countPieces(gameBoard,window)
                 displayBoard(window,gameBoard)
                 continue
@@ -487,7 +510,7 @@ def movePiece(playerTurn, window, gameBoard):
                 sg.popup("That's not yours to use.")
                 continue
             else:
-                sg.popup("Look for this line!!!")
+                sg.popup("An error occured in item lookups")
         
 
         
@@ -496,8 +519,9 @@ def movePiece(playerTurn, window, gameBoard):
             window.refresh
             continue
 
-            
-            
+        if gameBoard[startLocation[0]][startLocation[1]][1] != 0:
+            gameBoard[startLocation[0]][startLocation[1]][1].grey = False
+        displayBoard(window,gameBoard)    
             
         
         #if the spot you're moving from contains a piece
@@ -602,12 +626,13 @@ def begin():
     
     
     #window
-    frame_main = [
-                    [sg.Button(image_filename = ".\\blank.png",key=(i,j),size = (20,20), tooltip = "tooltip", pad = (10,10))for j in range (columns)]for i in range(0,rows)
+    frame_main = [  #pad was 10,10
+                    [sg.Button(image_filename = ".\\blank.png",key=(i,j),size = (20,20), tooltip = "tooltip", pad = (2,2))for j in range (columns)]for i in range(0,rows)
     ]
     
     
-
+    frame_layoutTurn = [ [sg.Image("up.png", key = "turn",visible = True)]]
+    
     
     frame_layout = [
         [sg.T(f"Player:",font = "Cambria 30",pad = (4,4)), sg.T(f"",key='playerTurn',font = "Cambria 30",pad = (4,4))],
@@ -623,15 +648,16 @@ def begin():
         [sg.T("MegaCheckers",font="Cambria 50"),sg.Button("USE ITEMS",key="itemButton",image_filename = "backpack.png"),sg.Button("Look",button_color=("Blue","White"),tooltip = "Examine",font = "Cambria 20", key="examineItem",image_filename="examine.png"),sg.Button("Exit",key="exit")]
         ]
     layout += [
-                        [sg.Frame("Playing Field", frame_main),
+                        [   sg.Frame("Player Turn", frame_layoutTurn),
+                            sg.Frame("Playing Field", frame_main),
                         sg.Frame('Remaining pieces:', frame_layout2,font='Calibri 20', title_color='blue')]]
         
-            
+      
     layout += [
         [sg.Frame('Information:', frame_layout,font='Calibri 20', title_color='blue')],
         ]
     
-    window = sg.Window("MegaCheckers",layout,disable_close = True, location = (0,0)).finalize()
+    window = sg.Window("MegaCheckers",layout,no_titlebar = True,disable_close = True, grab_anywhere = True, location = (0,0)).finalize()
 
     
     
@@ -657,8 +683,10 @@ def begin():
         
         gamePlay(playerTurn, window, gameBoard)
         if playerTurn == 1:
+            window["turn"].update(filename = "down.png")
             playerTurn = 2
         else:
+            window["turn"].update(filename = "up.png")
             playerTurn = 1
 
 
@@ -678,7 +706,7 @@ def tutorial():
             [sg.Button("How to move",key="move")],
             [sg.Button("Items",key="items")],
             [sg.Button("Getting info on pieces",key="info")],
-            [sg.Button("EXIT")]
+            [sg.Button("EXIT",key = "EXIT")]
 
         ]
     frame_2 = [
@@ -734,6 +762,10 @@ def tutorial():
 
     while True:
         event = window.read()
+        if event[0] == "EXIT":
+            #QUIT
+            window.close()
+            raise SystemExit
         if event[0] == "object":
             window["gamePlay"].update(visible = True)
             myText = """OBJECT: The object of the game is to destroy all of your opponent's pieces or make it impossible for them to take a turn.  Your main method to do this will be by jumping on enemy pieces to kill them (don't worry, the pieces aren't sentient, so no one is getting hurt).  You will also be able to employ items that you find on the field to either protect yourself from your enemies or to blow them up someway or another."""
