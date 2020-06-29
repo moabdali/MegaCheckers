@@ -95,7 +95,7 @@ def initializeField(columns,rows,window,gameBoard):
         for j in range(columns): 
             #window[i,j].update(image_filename="player1default.png")
             gameBoard[i][j][0]=Tile(occupied=True)
-            #print("Created a piece for player 1")
+            
             piece = Piece(playerTurn = 1)
             gameBoard[i][j][1]=piece
             gameBoard[i][j][1].location = (i,j)
@@ -108,7 +108,7 @@ def initializeField(columns,rows,window,gameBoard):
             #window[rows-i-1,j].update(image_filename="player2default.png")
             gameBoard[rows-i-1][j][0]=Tile(occupied=True)
             piece = Piece(playerTurn = 2)
-            #print("Created a piece for player 2")
+            
             gameBoard[rows-i-1][j][1]=piece
             gameBoard[rows-i-1][j][1].location = (rows-i-1,j)
             gameBoard[rows-i-1][j][0].tileType = "player2default"
@@ -120,7 +120,7 @@ def initializeField(columns,rows,window,gameBoard):
 def countPieces(gameBoard,window):
     player1count = 0
     player2count = 0
-    #print(gameBoard)
+    
     for i in gameBoard:
         for j in i:
             
@@ -146,7 +146,7 @@ def gamePlay(playerTurn, window, gameBoard):
         PublicStats.turnCount += 1
         repairFloor(window,gameBoard)
         
-        print(f"Turn count is {PublicStats.turnCount}")
+        
         
 
 
@@ -171,15 +171,15 @@ def createOrbs(window,gameBoard):
     while orbsToPlace > 0:
         i = random.randint(0,len(gameBoard)-1)
         j = random.randint(0,len(gameBoard[0])-1)
-        print(i,j)
-        if gameBoard[i][j] == 0:
-            print("Dire error")
+        
+        
+            
         if gameBoard[i][j][0].tileType == "default":
             orbsToPlace -= 1
-            #print("Placing item orb")
+            
             gameBoard[i][j][0].tileType = "itemOrb"
     
-    #sg.popup(f"There are {emptySpots} emptySpots")
+    
 
         
 def displayBoard(window,gameBoard):
@@ -242,7 +242,7 @@ def pickUpItemOrb(gameBoard,x,y):
     gameBoard[x][y][1].storedItems.append(randItem)
     playerOwned = gameBoard[x][y][1].ownedBy
     gameBoard[x][y][1].avatar = f"player{playerOwned}stored"
-    print(f"Piece has {len(gameBoard[x][y][1].storedItems)}")
+    
 
 
 
@@ -258,12 +258,12 @@ def useItems(gameBoard,x,y,window):
             event = itemsMenu.read()
         
             #if you use suicideBomb Row
-            print (event[0])
+            
             i = event[0]
 
             if i == None:
                 break
-            print(i)
+            
             #suicidebomb row
             if str.find(i,"suicideBomb Row")>=0:
                 gameBoard[x][y][1].storedItems.remove("suicideBomb Row")
@@ -271,7 +271,7 @@ def useItems(gameBoard,x,y,window):
                 for j in gameBoard[x]:
                     if isinstance(j[1],Piece):
                         if "Energy Forcefield" in j[1].activeBuffs:
-                            print("Energy Forcefield!")
+                            
                             j[1].activeBuffs.remove("Energy Forcefield")
                             
                         else:   
@@ -294,7 +294,7 @@ def useItems(gameBoard,x,y,window):
                 for j in gameBoard:
                     if isinstance(j[y][1],Piece):
                         if "Energy Forcefield" in j[y][1].activeBuffs:
-                            print("Energy Forcefield!")
+                            
                             j[y][1].activeBuffs.remove("Energy Forcefield")
                             
                         else:   
@@ -339,12 +339,12 @@ def useItems(gameBoard,x,y,window):
                     
                     x = random.randint(0,len(gameBoard)-1)
                     y = random.randint(0,len(gameBoard[0])-1)
-                    print(x,y)
+                    
                     #if someone is on the spot
                     if gameBoard[x][y][0].occupied == True:
                         #if someone has a forcefield there, don't kill them
                         if "Energy Forcefield" in gameBoard[x][y][1].activeBuffs:
-                            print("Energy Forcefield!")
+                            
                            
                             backupTile = gameBoard[x][y][0].tileType
                             gameBoard[x][y][0].tileType = "exploding"
@@ -402,6 +402,7 @@ def repairFloor (window, gameBoard):
 
 def movePiece(playerTurn, window, gameBoard):
     while True:
+        window["exit"].update(disabled = False)
         usedItem = False
         #sg.popup_timed(f" It's player {playerTurn}'s turn.",font = "Cambria, 20",auto_close_duration=1)
         window["itemButton"].update(disabled = True)
@@ -411,7 +412,16 @@ def movePiece(playerTurn, window, gameBoard):
         window['playerTurn'].update(f"{playerTurn}")
         window['information'].update(f"Pick a piece to move.")
         event = window.read()
-
+        window["exit"].update(disabled = False)
+        if "exit" in event:
+            a = sg.popup_yes_no("Seriously, you want to exit this awesome game?")
+            if a == "Yes":
+                sg.popup("Wow, your loss.")
+                window.close()
+                raise SystemExit
+            else:
+                continue
+        window["exit"].update(disabled = True)
 
 
         if "examineItem" in event:
@@ -455,7 +465,7 @@ def movePiece(playerTurn, window, gameBoard):
         event = window.read()
         window["examineItem"].update(disabled = True)
         endLocation = event[0]
-        print(event)
+        
 
         
         
@@ -500,7 +510,7 @@ def movePiece(playerTurn, window, gameBoard):
                 if getDistance(startLocation[0],startLocation[1],endLocation[0],endLocation[1]) >  gameBoard[ startLocation[0] ] [ startLocation[1] ][1].distanceMax:
                     window['information'].update(f"That location is too far for you to move to!")
                     window.refresh
-                    #print( f" {getDistance(startLocation[0],startLocation[1],endLocation[0],endLocation[1])} attempted, {gameBoard[ startLocation[0] ] [ startLocation[1] ].distanceMax} allowed")
+                    
                     continue
 
                 #
@@ -509,7 +519,7 @@ def movePiece(playerTurn, window, gameBoard):
 
                 #if the landing spot is an item Orb:
                 if gameBoard[ endLocation[0] ] [ endLocation[1] ][0].tileType == "itemOrb":
-                    print("ITEM ORB STEPPED ON")
+                    
                     pickUpItemOrb(gameBoard,startLocation[0],startLocation[1])
 
 
@@ -519,7 +529,7 @@ def movePiece(playerTurn, window, gameBoard):
                     continue
                 #if the landing spot is empty
                 if gameBoard[ endLocation[0] ] [ endLocation[1] ][0].occupied == False:
-                    #print( f" {getDistance(startLocation[0],startLocation[1],endLocation[0],endLocation[1])} attempted, {gameBoard[ startLocation[0] ] [ startLocation[1] ][1].distanceMax} allowed")
+                   
 
                     #copy the actual object over from the old address to the new one
                     gameBoard[endLocation[0]][endLocation[1]][1] = gameBoard[startLocation[0]][startLocation[1]][1]
@@ -536,7 +546,7 @@ def movePiece(playerTurn, window, gameBoard):
                     
                     window['information'].update(f"Moved successfully!")
                     window.refresh
-                    print("Moved!")
+                    
                     return 1
 
                 
@@ -610,7 +620,7 @@ def begin():
         
         ]
     layout = [
-        [sg.T("MegaCheckers",font="Cambria 50"),sg.Button("USE ITEMS",key="itemButton",image_filename = "backpack.png"),sg.Button("Look",button_color=("Blue","White"),tooltip = "Examine",font = "Cambria 20", key="examineItem",image_filename="examine.png")]
+        [sg.T("MegaCheckers",font="Cambria 50"),sg.Button("USE ITEMS",key="itemButton",image_filename = "backpack.png"),sg.Button("Look",button_color=("Blue","White"),tooltip = "Examine",font = "Cambria 20", key="examineItem",image_filename="examine.png"),sg.Button("Exit",key="exit")]
         ]
     layout += [
                         [sg.Frame("Playing Field", frame_main),
@@ -621,7 +631,7 @@ def begin():
         [sg.Frame('Information:', frame_layout,font='Calibri 20', title_color='blue')],
         ]
     
-    window = sg.Window("MegaCheckers",layout).finalize()
+    window = sg.Window("MegaCheckers",layout,disable_close = True, location = (0,0)).finalize()
 
     
     
@@ -676,12 +686,12 @@ def tutorial():
         ]
     frame_3 = [
 
-        [sg.T(" "*100, key = "tutorialInfo", font = "Cambria 20",size= (50,10))]
+        [sg.T(" "*100, key = "tutorialInfo", font = "Cambria 20",size= (50,5))]
 
         ]
     frame_4 = [
 
-        [sg.T(" "* 100,key = "information", font = "Cambria 20",size = (50,10) ) ]
+        [sg.T(" "* 100,key = "information", font = "Cambria 20",size = (50,5) ) ]
 
         ]
     
@@ -692,7 +702,7 @@ def tutorial():
         ]
     layout+= [
         
-        [sg.Frame("Main screen",frame_1,key= "options",visible = True), sg.Frame("Game Play", frame_2, key = "gamePlay",visible=False)]
+        [sg.Frame("Main screen",frame_1,key= "options",visible = True), sg.Frame("Game Play", frame_2, key = "gamePlay",visible=True)]
          ]
     layout += [
         [sg.Frame( "Tutorial Info",frame_3), sg.Frame("Information", frame_4)]
@@ -715,7 +725,7 @@ def tutorial():
 
     
 
-    window = sg.Window("MegaCheckers",layout).finalize()
+    window = sg.Window("MegaCheckers",layout,location = (0,0)).finalize()
 
     initializeField(columns,rows,window,gameBoard)
             
@@ -725,7 +735,7 @@ def tutorial():
     while True:
         event = window.read()
         if event[0] == "object":
-            window["gamePlay"].update(visible = False)
+            window["gamePlay"].update(visible = True)
             myText = """OBJECT: The object of the game is to destroy all of your opponent's pieces or make it impossible for them to take a turn.  Your main method to do this will be by jumping on enemy pieces to kill them (don't worry, the pieces aren't sentient, so no one is getting hurt).  You will also be able to employ items that you find on the field to either protect yourself from your enemies or to blow them up someway or another."""
             window["tutorialInfo"].update(myText)
 
@@ -900,7 +910,7 @@ def tutorial():
                             gameBoard[rowOrig+1][colOrig][0].occupied = True
                             gameBoard[rowOrig+1][colOrig][1].storedItems.append("Energy Forcefield")
                             gameBoard[rowOrig+1][colOrig][1].determineAvatar()
-                            print(gameBoard[rowOrig+1][colOrig][1].avatar)
+                            
                             displayBoard(window,gameBoard)
                             window.refresh()
                             
@@ -982,7 +992,7 @@ def tutorial():
 
                             
         else:
-            myText = "That's an invalid choice.  Let's try this again."
+            myText = "Invalid choice.  Try clicking something on the menu."
             window["tutorialInfo"].update(myText)
             
                 
