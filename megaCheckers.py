@@ -64,28 +64,28 @@ class Tile:
     def describeSelf(self):
         
         if self.tileType == "default":
-            sg.popup(f"This is a regular tile with an elevation of {self.tileHeight}")
+            sg.popup(f"This is a regular tile with an elevation of {self.tileHeight}",keep_on_top=True)
             return
         elif self.tileType == "itemOrb":
-            sg.popup(f"This is an item orb tile with an elevation of {self.tileHeight}")
+            sg.popup(f"This is an item orb tile with an elevation of {self.tileHeight}",keep_on_top=True)
             return
         elif self.tileType == "destroyed":
-            sg.popup(f"This tile has been destroyed!  But don't worry, it'll come back in 5 turns.")
+            sg.popup(f"This tile has been destroyed!  But don't worry, it'll come back in 5 turns.",keep_on_top=True)
             return
         elif self.tileType == "damaged4":
-            sg.popup(f"This tile is being repaired.  It'll be ready for business in 4 turns.")
+            sg.popup(f"This tile is being repaired.  It'll be ready for business in 4 turns.",keep_on_top=True)
             return
         elif self.tileType == "damaged3":
-            sg.popup(f"This tile is being repaired.  It'll be up and at 'em in 3 turns.")
+            sg.popup(f"This tile is being repaired.  It'll be up and at 'em in 3 turns.",keep_on_top=True)
             return
         elif self.tileType == "damaged2":
-            sg.popup(f"This tile is being repaired.  It'll be repaired in 2 turns.")
+            sg.popup(f"This tile is being repaired.  It'll be repaired in 2 turns.",keep_on_top=True)
             return
         elif self.tileType == "damaged":
-            sg.popup(f"This tile is almost ready!  It'll be ready on the next turn!")
+            sg.popup(f"This tile is almost ready!  It'll be ready on the next turn!",keep_on_top=True)
             return
         elif self.tileType == "boobyTrap":
-            sg.popup(f"There's an obvious booby trap on this tile.  Don't move here without protection! It has an elevation of {self.tileHeight}")
+            sg.popup(f"There's an obvious booby trap on this tile.  Don't move here without protection! It has an elevation of {self.tileHeight}",keep_on_top=True)
             return
 
         
@@ -423,9 +423,9 @@ def movePiece(playerTurn, window, gameBoard):
         event = window.read()
         window["exit"].update(disabled = False)
         if "exit" in event:
-            a = sg.popup_yes_no("Seriously, you want to exit this awesome game?")
+            a = sg.popup_yes_no("Seriously, you want to exit this awesome game?",keep_on_top=True)
             if a == "Yes":
-                sg.popup("Wow, your loss.")
+                sg.popup("Wow, your loss.",keep_on_top=True)
                 window.close()
                 raise SystemExit
             else:
@@ -459,7 +459,7 @@ def movePiece(playerTurn, window, gameBoard):
                     buffslist = "NONE"
                 if debuffslist == "":
                     debuffslist = "NONE"
-                sg.popup(f"The piece here belongs to {owner}.\nIt currently holds {len(gameBoard[event[0][0]][event[0][1]][1].storedItems)} inactive items.\nIt has the following buffs:\n{buffslist}\nIt has the current debuffs:\n{debuffslist}")
+                sg.popup(f"The piece here belongs to {owner}.\nIt currently holds {len(gameBoard[event[0][0]][event[0][1]][1].storedItems)} inactive items.\nIt has the following buffs:\n{buffslist}\nIt has the current debuffs:\n{debuffslist}",keep_on_top=True)
             window["examineItem"].update(disabled = False)
             continue
 
@@ -503,14 +503,14 @@ def movePiece(playerTurn, window, gameBoard):
                 continue
             elif len(gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].storedItems )< 1:
                 
-                sg.popup("No items here")
+                sg.popup("No items here",keep_on_top=True)
                 continue
             elif gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].ownedBy != playerTurn:
                 
-                sg.popup("That's not yours to use.")
+                sg.popup("That's not yours to use.",keep_on_top=True)
                 continue
             else:
-                sg.popup("An error occured in item lookups")
+                sg.popup("An error occured in item lookups",keep_on_top=True)
         
 
         
@@ -659,6 +659,7 @@ def begin():
     
     window = sg.Window("MegaCheckers",layout,no_titlebar = True,disable_close = True, grab_anywhere = True, location = (0,0)).finalize()
 
+    window.maximize()
     
     
     
@@ -784,11 +785,11 @@ def tutorial():
                 event = window.read()
 
                 if event[0] in ["object","select","move","items","info","cancel"]:
-                    sg.popup("Restarting tutorial")
+                    sg.popup("Restarting tutorial",keep_on_top=True)
                     window.close()
                     tutorial()
                 if event[0] == "EXIT":
-                    sg.popup("Exiting to main screen.")
+                    sg.popup("Exiting to main screen.",keep_on_top=True)
                     window.close()
                     main()
 
@@ -953,7 +954,7 @@ def tutorial():
                                 event = window.read()
                                 window["tutorialInfo"].update(myText)
                                 if event[0] != (2,4):
-                                    sg.popup("Click on the piece that you just moved")
+                                    sg.popup("Click on the piece that you just moved",keep_on_top=True)
                                     continue
                                 else:
                                     window["use item"].update(visible = True)
@@ -1003,14 +1004,14 @@ def tutorial():
                                                     window[rows-i-1,j].update(image_filename="blank.png")
                                             window.refresh()
                                             sleep(5)
-                                        sg.popup("Restarting the tutorial")
+                                        sg.popup("Restarting the tutorial",keep_on_top=True)
                                         tutorial()
                                             
 
                                         
 
                                     else:
-                                        sg.popup("Nope, try again")
+                                        sg.popup("Nope, try again",keep_on_top=True)
                                         continue
                                 
                                     
