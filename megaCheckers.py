@@ -583,7 +583,7 @@ def movePiece(playerTurn, window, gameBoard):
             
         
     
-def main():
+def begin():
 
     #variables 
     columns = 10
@@ -650,6 +650,369 @@ def main():
             playerTurn = 2
         else:
             playerTurn = 1
-        
 
+
+
+def tutorial():
+
+
+    #variables 
+    columns = 10
+    rows = 10
+    gameBoard = []
+    
+    frame_1 = [
+        
+            [sg.Button("Object of the game",key="object")],
+            [sg.Button("How to select a piece",key="select")],
+            [sg.Button("How to move",key="move")],
+            [sg.Button("Items",key="items")],
+            [sg.Button("Getting info on pieces",key="info")],
+            [sg.Button("EXIT")]
+
+        ]
+    frame_2 = [
+        [sg.Button(image_filename = ".\\blank.png",key=(i,j),size = (20,20), tooltip = "tooltip", pad = (10,10))for j in range (columns)]for i in range(0,rows)
+        ]
+    frame_3 = [
+
+        [sg.T(" "*100, key = "tutorialInfo", font = "Cambria 20",size= (50,10))]
+
+        ]
+    frame_4 = [
+
+        [sg.T(" "* 100,key = "information", font = "Cambria 20",size = (50,10) ) ]
+
+        ]
+    
+    layout = [
+                [sg.T("MegaCheckers", font = "Cambria 50",key = "title"), sg.Button("use item",image_filename = "./backpack.png",visible = False)],
+                
+                
+        ]
+    layout+= [
+        
+        [sg.Frame("Main screen",frame_1,key= "options",visible = True), sg.Frame("Game Play", frame_2, key = "gamePlay",visible=False)]
+         ]
+    layout += [
+        [sg.Frame( "Tutorial Info",frame_3), sg.Frame("Information", frame_4)]
+        ]
+
+
+
+
+    #gameBoard for logic
+    gameBoard = []
+    line = []
+    for i in range(columns):
+        line.append([Tile(),0])
+        gameBoard.append(0)
+    
+    
+    for j in range(rows):
+        gameBoard[j] = copy.deepcopy(line)
+
+
+    
+
+    window = sg.Window("MegaCheckers",layout).finalize()
+
+    initializeField(columns,rows,window,gameBoard)
+            
+    
+    window["options"].update(visible = True)
+
+    while True:
+        event = window.read()
+        if event[0] == "object":
+            window["gamePlay"].update(visible = False)
+            myText = """OBJECT: The object of the game is to destroy all of your opponent's pieces or make it impossible for them to take a turn.  Your main method to do this will be by jumping on enemy pieces to kill them (don't worry, the pieces aren't sentient, so no one is getting hurt).  You will also be able to employ items that you find on the field to either protect yourself from your enemies or to blow them up someway or another."""
+            window["tutorialInfo"].update(myText)
+
+            
+        elif event[0] == "select":
+            window["gamePlay"].update(visible = True)
+            while True:
+                myText = """SELECTING A PIECE: to select your piece, simply left click on it.  Try it now!  Left click a blue piece."""
+                window["tutorialInfo"].update(myText)
+                displayBoard(window,gameBoard)
+                
+
+                
+                event = window.read()
+
+                if event[0] in ["object","select","move","items","info","cancel"]:
+                    sg.popup("Restarting tutorial")
+                    window.close()
+                    tutorial()
+                if event[0] == "EXIT":
+                    sg.popup("Exiting to main screen.")
+                    window.close()
+                    main()
+
+                
+                x = int(event[0][0])
+                y = int(event[0][1])
+                if gameBoard[event[0][0]][event[0][1]][1]!=0 and gameBoard[x][y][1].ownedBy == 1:
+                    myText = "Great job!  You've selected a piece.  Move onto a different topic."
+                    window["tutorialInfo"].update(myText)
+                    break
+                else:
+                    myText = "Sorry, that's not right.  Left click on a blue piece."
+                    window["tutorialInfo"].update(myText,text_color="red")
+                    window.refresh()
+                    sleep(1)
+                    window["tutorialInfo"].update(myText,text_color="white")
+                    
+                    
+        elif event[0] == "move":
+                window["gamePlay"].update(visible = True)
+                outOfRangeTutorialIncomplete = True
+                while True:
+                    
+                    while True:
+                        notValidSelection = True
+                        myText = """MOVING: normally you can move once per turn, and can only move one piece per turn.  Unless they have specific items, pieces can only move one space forward/back/sideways.  Let's try moving a piece now!  Start by selecting a blue piece on the second row from the top."""
+                        window["tutorialInfo"].update(myText)
+                        displayBoard(window,gameBoard)
+                        while notValidSelection:
+                            event = window.read()
+                            
+                            if event[0][0] == 1:
+                                validSelection = False
+                                myText = "Good work!  Now we can continue on to the next step."
+                                rowOrig = event[0][0]
+                                colOrig = event[0][1]
+                                window["tutorialInfo"].update(myText)
+                                window.refresh()
+                                sleep(1.5)
+                                break
+                            else:
+                                myText = "That's not correct.  You'll have to select a blue piece on the second row before we can continue."
+                                window["tutorialInfo"].update(myText,text_color="red")
+                                window.refresh()
+                                sleep(1)
+                                window["tutorialInfo"].update(myText,text_color="white")
+                                
+                        
+                        window['information'].update(f"Piece selected!  Choose a destination tile within range.")
+                        window.refresh
+                        if outOfRangeTutorialIncomplete == True:
+                            myText = """Now that we have clicked on one of your pieces, we can move it.  Notice that the information window lets you know that your piece was selected.  It's asking you to choose a location within range.  HOWEVER - try clicking on any empty space EXCEPT the one that's right in front of your selected piece."""
+                        else:
+                            myText = """Now that you know what it looks like when you try to move to an invalid space, let's do a valid space.  Choose the spot right in front of your selected piece."""
+                            
+                        window["tutorialInfo"].update(myText)
+                        window.refresh()
+                        event = window.read()
+                        
+                        if (event[0][0] < 2) or (event[0][0]) > (rows-2) and outOfRangeTutorialIncomplete == True:
+                            myText = """That's not right.  For this tutorial, we need you to click on an empty space.  You clicked on a space that's occupied.  No worries, let's start over."""
+                            window["tutorialInfo"].update(myText,text_color = "red")
+                            sleep(2)
+                            window["tutorialInfo"].update(myText,text_color = "white")
+                            break
+                        if (event[0][0] == rowOrig+1) and (event[0][1] == colOrig) and outOfRangeTutorialIncomplete == True :
+                            myText = """You're getting ahead of yourself.  Normally this would be the right move, but trust me...  Just do what the tutorial says and pick any empty spot except for this one."""
+                            window["tutorialInfo"].update(myText,text_color = "red")
+                            window["information"].update("")
+                            window.refresh()
+                            sleep(4)
+                            window["tutorialInfo"].update(myText,text_color = "white")
+                            continue
+                        if outOfRangeTutorialIncomplete == False and event[0][0] == rowOrig+1 and event[0][1] == colOrig:
+                            myText = "Good job!  You've successfully moved a piece!  If you move onto a enemy in this way, you kill it!  Click on the items tutorial next!"
+                            
+                           
+                            window["tutorialInfo"].update(myText,text_color = "white")
+                            playerBackup = gameBoard[rowOrig][colOrig][1]
+                            gameBoard[rowOrig][colOrig][1] = 0
+                            gameBoard[event[0][0]][event[0][1]][1] = playerBackup
+
+
+                            
+
+                            
+                            gameBoard[rowOrig][colOrig][0].occupied = False
+                            gameBoard[rowOrig][colOrig][0].tileType = "default"
+                            gameBoard[rowOrig+1][colOrig][0].occupied = True
+                            displayBoard(window,gameBoard)
+                            window.refresh()
+                            window.read()
+                            window.close()
+                            tutorial()
+                        else:
+                            if outOfRangeTutorialIncomplete == True:
+                                window['information'].update(f"That location is too far for you to move to!")
+                                myText = "Good work!  Notice the error message in the information box.  During normal gameplay, you can keep an eye out on it to see what you can do.  Alright, now that you know what happens if you try to move out of range, let's try doing an actual move.  Choose a blue piece and then move it one square forward."""
+                                window["tutorialInfo"].update(myText,text_color = "white")
+                                window.refresh()
+                                sleep(4)
+                                window["information"].update("")
+                                outOfRangeTutorialIncomplete = False
+                                window.refresh
+                                sleep(2)
+                                break
+                            else:
+                                myText = """That's not a valid choice.  Let's try again."""
+                                window["tutorialInfo"].update(myText,text_color = "white")
+                                window.refresh()
+                                sleep(1)
+                            
+                                
+        elif event[0] == "items":
+            myText = "This part of the tutorial assumes you've mastered selecting your pieces and moving around.  If you're still not familiar with that, please practice that some more before doing this next part.  Please grab the power tile in the middle: do this by selecting your blue tile that's next to it."
+            window["gamePlay"].update(visible = True)
+            window["tutorialInfo"].update(myText)
+            gameBoard[2][4][0].tileType = "itemOrb"
+            displayBoard(window,gameBoard)
+
+            #click the thingy
+            while True:
+                event = window.read()
+                if event[0] != (1,4):
+                    myText = "You have to select the piece that's right next to the item orb tile"
+                    window["tutorialInfo"].update(myText)
+                    window.refresh()
+                    continue
+                else:
+                    
+                    while True:
+                        myText = "Now that you've selected your piece, we need to click on the item orb to have your piece grab it."
+                        window["tutorialInfo"].update(myText)
+                        event = window.read()
+                        if event[0] != (2,4):
+                            myText = "That's not right.  You have to move your piece onto the item orb to grab it.  Let's try again."
+                            window["tutorialInfo"].update(myText)
+                            window.refresh()
+                            sleep(1)
+                            continue
+                        else:
+                            myText = "Cool, your piece now holds a powerup!  Notice how it looks different compared to the others.  Let's try it out!  Normally you have to take turns, but we'll just cheat - I've disabled red from having any turns."
+                            window["tutorialInfo"].update(myText)
+                            rowOrig = 1
+                            colOrig = 4
+                            playerBackup = gameBoard[rowOrig][colOrig][1]
+                            gameBoard[rowOrig][colOrig][1] = 0
+                            gameBoard[event[0][0]][event[0][1]][1] = playerBackup
+                            gameBoard[rowOrig][colOrig][0].occupied = False
+                            gameBoard[rowOrig][colOrig][0].tileType = "default"
+                            gameBoard[rowOrig+1][colOrig][0].occupied = True
+                            gameBoard[rowOrig+1][colOrig][1].storedItems.append("Energy Forcefield")
+                            gameBoard[rowOrig+1][colOrig][1].determineAvatar()
+                            print(gameBoard[rowOrig+1][colOrig][1].avatar)
+                            displayBoard(window,gameBoard)
+                            window.refresh()
+                            
+                            sleep(1)
+                            while True:
+                                myText = "Alright, click on the powered up piece"
+                                
+                                event = window.read()
+                                window["tutorialInfo"].update(myText)
+                                if event[0] != (2,4):
+                                    sg.popup("Click on the piece that you just moved")
+                                    continue
+                                else:
+                                    window["use item"].update(visible = True)
+                                    myText = "There are two ways to use an item.  You can either click on the selected piece again, or you can click on the Use Item icon near the top.  Do either one."
+                                
+                                    event = window.read()
+                                    window["tutorialInfo"].update(myText)
+
+                                    if event[0]  == "use item" or event[0] == (2,4):
+                                        myText = "There are two ways to use an item.  You can either click on the selected piece again, or you can click on the Use Item icon near the top.  Do either one."
+                                        explodeLayout = [ [sg.Button("Cheater's Instawin Item of Instant Winning")] ]
+                                        x = sg.Window("Items",explodeLayout)
+                                        
+                                        event = x.read()
+                                        window["tutorialInfo"].update(myText)
+
+                                        if event[0] == "Cheater's Instawin Item of Instant Winning":
+                                            x.close()
+                                            myText = "Congrats, you cheater.  This weapon (which only exists in this tutorial mode) will instantly destroy any enemy pieces on the field.  You now know pretty much everything you need to know to win.  Go out there and start playing with a friend."
+                                            
+                                            
+                                            window["tutorialInfo"].update(myText)
+                                            window.refresh()
+                                            sleep(1)
+                                            
+                                            for i in range(2):
+                                                for j in range(columns):
+                                                    window[rows-i-1,j].update(image_filename="exploding.png")
+                                            window.refresh()
+                                            sleep(1)
+                                            
+                                            for i in range(2):
+                                                for j in range(columns):
+                                                    window[rows-i-1,j].update(image_filename="destroyed.png")
+                                            window.refresh()
+                                            sleep(1)
+
+                                            
+                                            for i in range(2):
+                                                for j in range(columns):
+                                                    window[rows-i-1,j].update(image_filename="exploding.png")
+                                            window.refresh()
+                                            sleep(1)
+                                            
+                                            for i in range(2):
+                                                for j in range(columns):
+                                                    window[rows-i-1,j].update(image_filename="blank.png")
+                                            window.refresh()
+                                            sleep(5)
+                                        sg.popup("Restarting the tutorial")
+                                        tutorial()
+                                            
+
+                                        
+
+                                    else:
+                                        sg.popup("Nope, try again")
+                                        continue
+                                
+                                    
+                            
+                        
+                        
+                    
+                            
+                        
+                            
+
+                            
+        else:
+            myText = "That's an invalid choice.  Let's try this again."
+            window["tutorialInfo"].update(myText)
+            
+                
+                
+            
+
+
+    
+    
+def main():
+
+    introLayout = [[sg.Text("MegaCheckers",font = "Cambria 100")]]
+    frame_1 = [
+        [sg.Button("Begin game",key="begin")],
+        [sg.Button("How to play",key="tutorial")]
+        ]
+    introLayout+= [[sg.Frame("Choose an option",frame_1,key="options")]]
+    introWindow = sg.Window("MegaCheckers",introLayout)
+    event = introWindow.read()
+    if event[0] == "tutorial":
+        introWindow.close()
+        tutorial()
+    if event[0] == "begin":
+        introWindow.close()
+        begin()
+
+
+    
+    
+    
+
+    
 main()
