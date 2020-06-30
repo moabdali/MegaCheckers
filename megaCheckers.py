@@ -88,8 +88,57 @@ class Tile:
             sg.popup(f"There's an obvious booby trap on this tile.  Don't move here without protection! It has an elevation of {self.tileHeight}",keep_on_top=True)
             return
 
-        
-        
+def getColumn(location, gameBoard, grow = False):
+    validLocations = []
+    if grow == False:
+        for i in range(len( gameBoard ) ):
+            validLocations.append( i,location[1])
+    return validLocations
+
+def getRow(location, gameBoard):
+    validLocations = []
+    if grow == False:
+        for i in range(len( gameBoard[0] ) ):
+            validLocations.append( location[0],i)
+    return validLocations
+
+def getRadial(location, gameBoard, grow = False):
+    validLocations = []
+    rows = len(gameBoard)
+    columns = len(gameBoard[0])
+    
+    if grow == False:
+        #check if you can go one row up
+        if location[0]-1 != -1:
+            #check if you can also go left after going up (only false if you're in the top left corner)
+            if location[1]-1 != -1:
+                validLocations.append( (location[0]-1,location[1]-1) )
+            #one row up (guaranteed already)
+            validLocations.append( (location[0]-1,location[1]+0) )
+            #check if you can also go right after going up (only false if you're in the top right corner)
+            if location[1]+1 != columns:
+                validLocations.append( (location[0]-1,location[1]+1) )
+        #check if you can go left
+        if location[1]-1 != -1:
+            validLocations.append( (location[0],location[1]-1) )
+        #you are guaranteed to append yourself
+        validLocations.append( (location[0],location[1]) )
+        #check if you can go right
+        if location[1]+1 != columns:
+            validLocations.append( (location[0],location[1]+1) )
+        #check if you can go down
+        if location[0]+1 != rows:
+            #check bottom left
+            if location[1]-1 != -1:
+                validLocations.append( (location[0]+1,location[1]-1) )
+            #bottom guaranteed
+            validLocations.append( (location[0]+1,location[1]) )
+            #check bottom right
+            if location[1]+1 != columns:
+                validLocations.append( (location[0]+1,location[1]+1) )
+    return validLocations
+
+       
 def initializeField(columns,rows,window,gameBoard):
     
     for i in range(2):
@@ -242,9 +291,8 @@ def displayBoard(window,gameBoard):
 
                     
 def pickUpItemOrb(gameBoard,x,y):
-    #items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike"]
-    items = ["Wololo (convert to your side)"]
-
+    items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial"]
+    
 
     
     randItem = random.choice(items)
@@ -265,9 +313,6 @@ def useItems(gameBoard,x,y,window):
 
     while True:
             event = itemsMenu.read()
-        
-            #if you use suicideBomb Row
-            
             i = event[0]
 
             if i == None:
@@ -289,12 +334,6 @@ def useItems(gameBoard,x,y,window):
                             j[1] = 0
                             j[0].tileType = "default"
 
-            #energy forcefield
-            elif str.find(i,"Energy Forcefield")>=0:
-                gameBoard[x][y][1].storedItems.remove("Energy Forcefield")
-                gameBoard[x][y][1].activeBuffs.append("Energy Forcefield")
-                displayBoard(window, gameBoard)
-                
 
             #suicidebomb column
             elif str.find(i,"suicideBomb Column")>=0:
@@ -311,8 +350,35 @@ def useItems(gameBoard,x,y,window):
                             j[y][0].occupied = False
                             j[y][1] = 0
                             j[y][0].tileType = "default"
-
                             
+            #suicidebomb radial
+            elif str.find(i,"suicideBomb Radial") >=0:
+                gameBoard[x][y][1].storedItems.remove("suicideBomb Radial")
+                validTargets = getRadial((x,y),gameBoard)
+                
+                
+                for i in validTargets:
+                    x = i[0]
+                    y = i[1]
+                    
+                    if isinstance(gameBoard[x][y][1],Piece):
+                        if "Energy Forcefield" in gameBoard[x][y][1].activeBuffs:
+                            
+                            gameBoard[x][y][1].activeBuffs.remove("Energy Forcefield")
+                            
+                        else:   
+                            #set the tile to be empty
+                            gameBoard[x][y][0].occupied = False
+                            gameBoard[x][y][1] = 0
+                            gameBoard[x][y][0].tileType = "default"
+                            
+            #energy forcefield
+            elif str.find(i,"Energy Forcefield")>=0:
+                gameBoard[x][y][1].storedItems.remove("Energy Forcefield")
+                gameBoard[x][y][1].activeBuffs.append("Energy Forcefield")
+                displayBoard(window, gameBoard)
+
+            #wololo
             elif str.find(i,"Wololo (convert to your side)") >=0:
                     itemsMenu.close()
                     
@@ -371,6 +437,7 @@ def useItems(gameBoard,x,y,window):
                             window.refresh()
                             sleep(1)
                             gameBoard[x][y][0].tileType = "destroyed"
+                            continue
                             
                     else:
                         
@@ -382,10 +449,16 @@ def useItems(gameBoard,x,y,window):
                         window.refresh()
                         sleep(1)
                         gameBoard[x][y][0].tileType = "destroyed"
-                    
-                if itemsMenu:    
-                    itemsMenu.close()
-                return
+
+
+                
+
+
+
+                
+            if itemsMenu:    
+                itemsMenu.close()
+            return
             if event[0] == "CANCEL":
                 itemsMenu.close()
                 return
@@ -411,6 +484,7 @@ def repairFloor (window, gameBoard):
 
 def movePiece(playerTurn, window, gameBoard):
     while True:
+        displayBoard(window, gameBoard)
         window["exit"].update(disabled = False)
         usedItem = False
         #sg.popup_timed(f" It's player {playerTurn}'s turn.",font = "Cambria, 20",auto_close_duration=1)
@@ -497,18 +571,24 @@ def movePiece(playerTurn, window, gameBoard):
             if len(gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].storedItems) > 0 and (gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].ownedBy == playerTurn):
                 
                 useItems(gameBoard,startLocation[0],startLocation[1],window)
-                gameBoard[startLocation[0]][startLocation[1]][1].grey = False
+                
+                print(startLocation[0],startLocation[1])
+                if gameBoard[startLocation[0]][startLocation[1]][0].occupied == True:
+                    gameBoard[startLocation[0]][startLocation[1]][1].grey = False
                 countPieces(gameBoard,window)
                 displayBoard(window,gameBoard)
                 continue
-            elif len(gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].storedItems )< 1:
-                
-                sg.popup("No items here",keep_on_top=True)
-                continue
+            
             elif gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].ownedBy != playerTurn:
-                
-                sg.popup("That's not yours to use.",keep_on_top=True)
+                gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].grey = False
+                sg.popup("That's not your piece.",keep_on_top=True)
                 continue
+
+            elif len(gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].storedItems )< 1:
+                gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].grey = False
+                sg.popup("No items on this piece.",keep_on_top=True)
+                continue
+            
             else:
                 sg.popup("An error occured in item lookups",keep_on_top=True)
         
@@ -659,7 +739,7 @@ def begin():
     
     window = sg.Window("MegaCheckers",layout,no_titlebar = True,disable_close = True, grab_anywhere = True, location = (0,0)).finalize()
 
-    window.maximize()
+    #window.maximize()
     
     
     
