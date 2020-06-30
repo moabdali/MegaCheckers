@@ -191,17 +191,17 @@ def initializeField(columns,rows,window,gameBoard):
 
 
     ###### DELETE ME ##########
-##    for i in range(2):
-##        for j in range(columns):
-##            rows = 6
-##            #window[rows-i-1,j].update(image_filename="player2default.png")
-##            gameBoard[rows-i-1][j][0]=Tile(occupied=True)
-##            piece = Piece(playerTurn = 2)
-##            
-##            gameBoard[rows-i-1][j][1]=piece
-##            gameBoard[rows-i-1][j][1].location = (rows-i-1,j)
-##            gameBoard[rows-i-1][j][0].tileType = "player2default"
-##            gameBoard[rows-i-1][j][1].avatar = "default"    
+    for i in range(2):
+        for j in range(columns):
+            rows = 6
+            #window[rows-i-1,j].update(image_filename="player2default.png")
+            gameBoard[rows-i-1][j][0]=Tile(occupied=True)
+            piece = Piece(playerTurn = 2)
+            
+            gameBoard[rows-i-1][j][1]=piece
+            gameBoard[rows-i-1][j][1].location = (rows-i-1,j)
+            gameBoard[rows-i-1][j][0].tileType = "player2default"
+            gameBoard[rows-i-1][j][1].avatar = "default"    
 
 
 
@@ -341,7 +341,7 @@ def displayBoard(window,gameBoard):
 def pickUpItemOrb(gameBoard,x,y):
     #items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
     #items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
-    items = ["napalm column"]
+    items = ["napalm radial"]
 
     
     randItem = random.choice(items)
@@ -420,16 +420,63 @@ def useItems(gameBoard,x,y,window):
                             gameBoard[x][y][0].occupied = False
                             gameBoard[x][y][1] = 0
                             gameBoard[x][y][0].tileType = "default"
+
+            #napalm row
+            elif str.find(i,"napalm row")>=0:
+                gameBoard[x][y][1].storedItems.remove("napalm row")
+                #for each column inside the row
+                for j in gameBoard[x]:
+                    if isinstance(j[1],Piece):
+                        
+                        #if there is a piece
+                        if j[0].occupied == True:
+                            
+                            #if it's the enemy's piece
+                            if j[1].ownedBy != playerTurn:
+                                #test for forcefield
+                                if "Energy Forcefield" in j[1].activeBuffs:
+                                    backupTile = j=[0].tileType
+                                    j[0].tileType = "exploding"
+                                    displayBoard(window,gameBoard)
+                                    window.refresh()
+                                    sleep(1)
+                                    j[0].tileType = backupTile
+                                    j[1].activeBuffs.remove("Energy Forcefield")
+                                    continue
+                                #if no forcefield, kill
+                                else:
+                                    
+                                    j[0].occupied = False
+                                    j[1] = 0
+                                    j[0].tileType = "exploding"
+                                    displayBoard(window,gameBoard)
+                                    window.refresh()
+                                    sleep(1)
+                                    j[0].tileType = "destroyed"
+                                    continue
+                        #if there isn't a piece    
+                        else:   
+                            formerTileType = j[0].tileType
+                            j[0].tileType = "exploding"
+                            displayBoard(window,gameBoard)
+                            window.refresh()
+                            sleep(1)
+                        
+                            j[0].tileType = formerTileType
+                            displayBoard(window,gameBoard)
+                            window.refresh()
+                            sleep(1)                                     
+                            
             #napalm column
             elif str.find(i,"napalm column")>=0:
                 gameBoard[x][y][1].storedItems.remove("napalm column")
                 #for each item inside the specific gameBoard row
                 for j in gameBoard:
                     if isinstance(j[y][1],Piece):
-                        print(j[y][0])
+                        
                         #if there is a piece
                         if j[y][0].occupied == True:
-                            print("occupied true")
+                            
                             #if it's the enemy's piece
                             if j[y][1].ownedBy != playerTurn:
                                 #test for forcefield
@@ -444,7 +491,6 @@ def useItems(gameBoard,x,y,window):
                                     continue
                                 #if no forcefield, kill
                                 else:
-                                    print("Boom")
                                     j[y][0].occupied = False
                                     j[y][1] = 0
                                     j[y][0].tileType = "exploding"
@@ -464,7 +510,58 @@ def useItems(gameBoard,x,y,window):
                             gameBoard[x][y][0].tileType = formerTileType
                             displayBoard(window,gameBoard)
                             window.refresh()
-                            sleep(1)                      
+                            sleep(1)
+
+
+            #napalm Radial
+            elif str.find(i,"napalm radial")>=0:
+                gameBoard[x][y][1].storedItems.remove("napalm radial")
+                validSpots = getRadial((x,y), gameBoard)
+                for i in validSpots:
+                    
+                    g = gameBoard[i[0]][i[1]]
+
+                    #if there's a piece
+                    if g[0].occupied == True:
+
+                        if g[1].ownedBy != playerTurn:
+                            #test for forcefield
+                            if "Energy Forcefield" in g[1].activeBuffs:
+                                backupTile = g[0].tileType
+                                g[0].tileType = "exploding"
+                                displayBoard(window,gameBoard)
+                                window.refresh()
+                                sleep(1)
+                                g[0].tileType = backupTile
+                                g[1].activeBuffs.remove("Energy Forcefield")
+                                continue
+                            #if no forcefield, kill
+                            else:
+                                g[0].occupied = False
+                                g[1] = 0
+                                g[0].tileType = "exploding"
+                                displayBoard(window,gameBoard)
+                                window.refresh()
+                                sleep(1)
+                                g[0].tileType = "destroyed"
+                                continue
+                    #if there isn't a piece    
+                        else:   
+                            formerTileType = g[0].tileType
+                            g[0].tileType = "exploding"
+                            displayBoard(window,gameBoard)
+                            window.refresh()
+                            sleep(1)
+                        
+                            g[0].tileType = formerTileType
+                            displayBoard(window,gameBoard)
+                            window.refresh()
+                            sleep(1)
+                    
+                
+
+
+                            
             #energy forcefield
             elif str.find(i,"Energy Forcefield")>=0:
                 gameBoard[x][y][1].storedItems.remove("Energy Forcefield")
