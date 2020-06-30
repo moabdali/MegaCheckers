@@ -291,9 +291,9 @@ def displayBoard(window,gameBoard):
 
                     
 def pickUpItemOrb(gameBoard,x,y):
-    #items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof"]
-    items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof"]
-    
+    #items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
+    items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
+    #items = ["smartBombs"]
 
     
     randItem = random.choice(items)
@@ -311,7 +311,7 @@ def useItems(gameBoard,x,y,window):
         layout+= [ [sg.Button(i)] ]
     layout+= [ [sg.Button("CANCEL")] ]
     itemsMenu = sg.Window("Items Menu", layout,disable_close=True )
-
+    playerTurn = gameBoard[x][y][1].ownedBy
     while True:
             event = itemsMenu.read()
             i = event[0]
@@ -458,12 +458,77 @@ def useItems(gameBoard,x,y,window):
                         sleep(1)
                         gameBoard[x][y][0].tileType = "destroyed"
 
+            
+            elif str.find(i,"smartBombs") >=0:
+                attempts = 0
+                gameBoard[x][y][1].storedItems.remove("smartBombs")
+                i = 3
+                itemsMenu.close()
+                while (i > 0):
+                    i-=1
+                    #a check to make sure the plane doesn't get stuck in a pseudo infinite loop in case of special scenarios where pretty much the entire field is full of allied squares
+                    attempts += 1
+                    if attempts > 100:
+                        sg.popup("The plane had trouble finding targets, so it flew away early.")
+                        if itemsMenu:    
+                            itemsMenu.close()
+                        break
 
+                    
+                    
+                    #generate a random target location on the field
+                    x = random.randint(0,len(gameBoard)-1)
+                    y = random.randint(0,len(gameBoard[0])-1)
+                    
+                    #if someone is on the spot
+                    if gameBoard[x][y][0].occupied == True:
+
+                        #if the piece belongs to you, don't attack
+                        if gameBoard[x][y][1].ownedBy == playerTurn:
+                            #continue the loop by incrementing the conditional
+                            i+=1
+                            continue
+                        #if someone has a forcefield there, don't kill them
+                        if "Energy Forcefield" in gameBoard[x][y][1].activeBuffs:
+                            backupTile = gameBoard[x][y][0].tileType
+                            gameBoard[x][y][0].tileType = "exploding"
+                            displayBoard(window,gameBoard)
+                            window.refresh()
+                            sleep(1)
+                            gameBoard[x][y][0].tileType = backupTile
+                            gameBoard[x][y][1].activeBuffs.remove("Energy Forcefield")
+                            continue
+                        #if the enemy is targeted and doesn't have a force field, kill them and the block
+                        else:
+                            gameBoard[x][y][0].occupied = False
+                            gameBoard[x][y][1] = 0
+                            gameBoard[x][y][0].tileType = "exploding"
+                            displayBoard(window,gameBoard)
+                            window.refresh()
+                            sleep(1)
+                            gameBoard[x][y][0].tileType = "destroyed"
+                            continue
+                        
+                    #attack an unoccupied area        
+                    else:
+                        #smart bombs have a 20% chance of not hitting empty spaces.  If the 80% check succeeds, try a new spot.
+                        redo = random.randint(0,10)
+                        if redo < 8:
+                            i+=1
+                            continue
+                        #destroy the piece and the floor
+                        gameBoard[x][y][0].occupied = False
+                        gameBoard[x][y][1] = 0
+                        gameBoard[x][y][0].tileType = "exploding"
+                        displayBoard(window,gameBoard)
+                        window.refresh()
+                        sleep(1)
+                        gameBoard[x][y][0].tileType = "destroyed"
                 
 
 
 
-                
+            #after using the menu, close it
             if itemsMenu:    
                 itemsMenu.close()
             return
@@ -501,6 +566,7 @@ def movePiece(playerTurn, window, gameBoard):
         window.refresh()
         sleep(1.25)
         window['playerTurn'].update(f"{playerTurn}")
+        window['information'].update(text_color = "white")
         window['information'].update(f"Pick a piece to move.")
         event = window.read()
         window["exit"].update(disabled = False)
@@ -519,6 +585,7 @@ def movePiece(playerTurn, window, gameBoard):
             window["examineItem"].update(disabled = True)
             window['information'].update(f"What do you want to examine?",text_color = "red")
             event = window.read()
+            window['information'].update(text_color = "white")
 
             
             #if no pieces exist here:
@@ -555,9 +622,23 @@ def movePiece(playerTurn, window, gameBoard):
         
         
 
-        
-        window['information'].update(f"Selection made, pick destination.")
-
+        if gameBoard[event[0][0]][event[0][1]][0].occupied == True:
+            if playerTurn == gameBoard[event[0][0]][event[0][1]][1].ownedBy and len(gameBoard[event[0][0]][event[0][1]][1].storedItems) > 0:
+                window['information'].update(f"Selection made, pick a destination or click the same piece again to access items.")
+            elif playerTurn != gameBoard[event[0][0]][event[0][1]][1].ownedBy:
+                window['information'].update(f"That's not your piece...")
+                window['information'].update(text_color = "red")
+                window.refresh()
+                continue
+            else:
+                window['information'].update(f"Selection made, pick a destination.")
+        else:
+            window['information'].update(text_color = "red")
+            window['information'].update(f"You can't interact directly with unoccupied spaces.")
+            window.refresh()
+            
+            sleep(1)
+            continue
         if gameBoard[startLocation[0]][startLocation[1]][1] != 0:
             gameBoard[startLocation[0]][startLocation[1]][1].grey = True
 
@@ -722,7 +803,7 @@ def begin():
     
     #window
     frame_main = [  #pad was 10,10
-                    [sg.Button(image_filename = ".\\blank.png",key=(i,j),size = (20,20), tooltip = "tooltip", pad = (2,2))for j in range (columns)]for i in range(0,rows)
+                    [sg.Button(image_filename = ".\\blank.png",key=(i,j),size = (20,20), tooltip = "square", pad = (2,2))for j in range (columns)]for i in range(0,rows)
     ]
     
     
