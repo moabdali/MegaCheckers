@@ -138,6 +138,31 @@ def getRadial(location, gameBoard, grow = False):
                 validLocations.append( (location[0]+1,location[1]+1) )
     return validLocations
 
+def getCross(location, gameBoard, grow = False):
+    validLocations = []
+    rows = len(gameBoard)
+    columns = len(gameBoard[0])
+    #check if you can go up one
+    if location[0]-1 != -1:
+            
+        #one row up (guaranteed already)
+        validLocations.append( (location[0]-1,location[1]+0) )
+    #check if you can go left
+    if location[1]-1 != -1:
+        validLocations.append( (location[0],location[1]-1) )
+    #you are guaranteed to append yourself
+    #validLocations.append( (location[0],location[1]) )
+            
+    #check if you can go right
+    if location[1]+1 != columns:
+        validLocations.append( (location[0],location[1]+1) )
+    #check if you can go down
+    if location[0]+1 != rows:
+            
+        #bottom guaranteed
+        validLocations.append( (location[0]+1,location[1]) )
+            
+    return validLocations
        
 def initializeField(columns,rows,window,gameBoard):
     
@@ -240,19 +265,29 @@ def displayBoard(window,gameBoard):
 
             if gameBoard[i][j][0].tileType == "exploding":
                 window[i,j].update(image_filename="exploding.png")
+                continue
                 
-            if gameBoard[i][j][0].tileType == "damaged4":
+            elif gameBoard[i][j][0].tileType == "damaged4":
                 window[i,j].update(image_filename="damaged4.png")
+                continue
                 
-            if gameBoard[i][j][0].tileType == "damaged3":
+            elif gameBoard[i][j][0].tileType == "damaged3":
                 window[i,j].update(image_filename="damaged3.png")
+                continue
 
-            if gameBoard[i][j][0].tileType == "damaged2":
+            elif gameBoard[i][j][0].tileType == "damaged2":
                 window[i,j].update(image_filename="damaged2.png")
+                continue
 
-            if gameBoard[i][j][0].tileType == "damaged":
+            elif gameBoard[i][j][0].tileType == "damaged":
                 window[i,j].update(image_filename="damaged.png")
+                continue
     
+
+            elif gameBoard[i][j][0].tileType == "snake":
+                window[i,j].update(image_filename="snake.png")
+                continue
+
             
             if gameBoard[i][j][0].occupied == False:
                 
@@ -292,8 +327,8 @@ def displayBoard(window,gameBoard):
                     
 def pickUpItemOrb(gameBoard,x,y):
     #items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
-    items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
-    #items = ["smartBombs"]
+    #items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
+    items = ["Snake Tunneling"]
 
     
     randItem = random.choice(items)
@@ -524,7 +559,61 @@ def useItems(gameBoard,x,y,window):
                         window.refresh()
                         sleep(1)
                         gameBoard[x][y][0].tileType = "destroyed"
-                
+                        
+            #snake tunneling
+            elif str.find(i,"Snake Tunneling") >=0:
+                gameBoard[x][y][1].storedItems.remove("Snake Tunneling")
+
+                i = 5
+                lastSpace = (x,y)
+                while i > 0:
+                    i-=1
+                    
+                    validPoints = getCross( (lastSpace[0],lastSpace[1]), gameBoard)
+                    attackSquare = random.choice(validPoints)
+                    s1 = attackSquare[0]
+                    s2 = attackSquare[1]
+                    if attackSquare == lastSpace:
+                        i+=1
+                        continue
+                    lastSpace = attackSquare
+                    pieceVictim = gameBoard[s1][s2][1]
+                    #tileVictim = gameBoard[s1][s2][0].tileType
+                    tileVictim = copy.deepcopy(gameBoard[s1][s2][0])
+                    #tileVictim = gameBoard[s1][s2][0]
+
+                    gameBoard[s1][s2][0].tileType = "snake"
+                    displayBoard(window,gameBoard)
+                    window.refresh()
+                    sleep(1)
+
+                    if gameBoard[s1][s2][0].occupied == True:
+                        if gameBoard[s1][s2][1].ownedBy != playerTurn:
+                            gameBoard[s1][s2][0].occupied = False
+                            gameBoard[s1][s2][1] = 0
+                            gameBoard[s1][s2][0].tileType = "exploding"
+                            displayBoard(window,gameBoard)
+                            window.refresh()
+                            sleep(1)
+                            gameBoard[s1][s2][0].tileType = "default"
+                            displayBoard(window,gameBoard)
+                            window.refresh()
+                            sleep(1)
+                            
+                            gameBoard[s1][s2][0].tileHeight = 3
+                        else:
+                            gameBoard[s1][s2][0] = copy.deepcopy(tileVictim)
+                            gameBoard[s1][s2][0].tileHeight = 3
+                    else:
+                        gameBoard[s1][s2][0] = copy.deepcopy(tileVictim)
+                        gameBoard[s1][s2][0].tileHeight = 3
+                    
+                    
+                    
+                    
+                    displayBoard(window,gameBoard)
+                    window.refresh()
+                    sleep(1)
 
 
 
