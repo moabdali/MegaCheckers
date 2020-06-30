@@ -291,7 +291,8 @@ def displayBoard(window,gameBoard):
 
                     
 def pickUpItemOrb(gameBoard,x,y):
-    items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial"]
+    #items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof"]
+    items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof"]
     
 
     
@@ -378,6 +379,13 @@ def useItems(gameBoard,x,y,window):
                 gameBoard[x][y][1].activeBuffs.append("Energy Forcefield")
                 displayBoard(window, gameBoard)
 
+            #jump proof
+            elif str.find(i,"jumpProof")>=0:
+                gameBoard[x][y][1].storedItems.remove("jumpProof")
+                gameBoard[x][y][1].activeBuffs.append("jumpProof")
+                displayBoard(window, gameBoard)
+                
+                
             #wololo
             elif str.find(i,"Wololo (convert to your side)") >=0:
                     itemsMenu.close()
@@ -572,7 +580,7 @@ def movePiece(playerTurn, window, gameBoard):
                 
                 useItems(gameBoard,startLocation[0],startLocation[1],window)
                 
-                print(startLocation[0],startLocation[1])
+                
                 if gameBoard[startLocation[0]][startLocation[1]][0].occupied == True:
                     gameBoard[startLocation[0]][startLocation[1]][1].grey = False
                 countPieces(gameBoard,window)
@@ -664,6 +672,13 @@ def movePiece(playerTurn, window, gameBoard):
                     
                 #kill enemy piece; elif enemy owns the ending location
                 elif gameBoard[ endLocation[0] ] [ endLocation[1] ][1].ownedBy != playerTurn:
+                    #test to see if the piece can be jumped
+                    if "jumpProof" in gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeBuffs:
+                        window['information'].update(f"This opponent is jump proof!")
+                        window.refresh()
+                        sleep(1)
+                        continue
+                        
                     #set the internal location of the piece to where you want to end up
                     gameBoard[ startLocation[0] ] [ startLocation[1] ][1].location = (endLocation[0],endLocation[1])
                     #move the piece object
