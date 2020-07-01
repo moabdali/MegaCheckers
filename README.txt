@@ -2,6 +2,10 @@ MegaCheckers:
 
 A game where you take turns moving pieces to kill all of your enemy's pieces.  To do this, your pieces jump onto the enemy piece to crush them.  In order to aid you with this goal, every few turns a random number of mystery items will appear on empty spaces.  You pick up an item and on any subsequent turn,  you can use the item (depending on what the item is) to destroy enemy pieces, to set up traps, to alter the playing field (raise/lower, destroy, magnetize, make one way, push pieces, etc), to power up your piece, and so on.  Eventually networking will be enabled.  
 
+v.0.9.8 Added a "stunned" debuff concept.  Pieces that are stunned cannot move or attack until the player has had one turn (this means if you stun your own piece, you can't use it this turn, but you can the next. However, if you stun your opponent's piece, their piece won't be unstunned until you finish your current turn AND their turn ends)
+
+v.0.9.7 Added trip mine radial, including updating the move function to account for a player moving.  Need testing to see if forcefields properly protect you.  Functionality intends that you can use one shield to protect against any number of simultaneous trip mine blasts. 
+
 v.0.9.6 Added purify radial and abolish foe power radial.
 
 v.0.9.5 Added napalm radial  Consider adding a cheat menu for easier debugging

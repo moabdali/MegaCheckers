@@ -206,7 +206,7 @@ def initializeField(columns,rows,window,gameBoard):
             gameBoard[rows-i-1][j][1].avatar = "default"
 
             
-            gameBoard[i][j][1].activeDebuffs.append("Poisoned")
+            gameBoard[rows-i-1][j][1].activeDebuffs.append("stunned")
             gameBoard[i][j][1].activeBuffs.append("Strong")
     ####### DEND DELETE ME###########
 
@@ -354,7 +354,7 @@ def displayBoard(window,gameBoard):
 def pickUpItemOrb(gameBoard,x,y):
     #items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
     #items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
-    items = ["abolish foe powers radial"]
+    items = ["trip mine radial"]
 
     
     randItem = random.choice(items)
@@ -396,7 +396,25 @@ def useItems(gameBoard,x,y,window):
                             j[1] = 0
                             j[0].tileType = "default"
 
+            #trip mine radial
+            if str.find(i,"trip mine radial")>=0:
+                gameBoard[x][y][1].storedItems.remove("trip mine radial")
+                validTargets = getRadial( (x,y), gameBoard)
 
+                for i in validTargets:
+                    g = gameBoard[i[0]][i[1]]
+
+                    if g[0].occupied == True:
+
+                        if g[1].ownedBy != playerTurn:
+                            g[1].activeDebuffs.append("trip mine")
+                            window["information"].update("Trip mine has been placed")
+                            window.refresh()
+                            sleep(.5)
+                            #add code for graphics
+                            
+                            
+                            
             #suicidebomb column
             elif str.find(i,"suicideBomb Column")>=0:
                 gameBoard[x][y][1].storedItems.remove("suicideBomb Column")
@@ -973,7 +991,13 @@ def movePiece(playerTurn, window, gameBoard):
         
 
         if gameBoard[event[0][0]][event[0][1]][0].occupied == True:
-            if playerTurn == gameBoard[event[0][0]][event[0][1]][1].ownedBy and len(gameBoard[event[0][0]][event[0][1]][1].storedItems) > 0:
+            if playerTurn == gameBoard[event[0][0]][event[0][1]][1].ownedBy and "stunned" in gameBoard[event[0][0]][event[0][1]][1].activeDebuffs:
+                window['information'].update(f"You cannot use a stunned.sleeping piece.")
+                window['information'].update(text_color = "red")
+                sleep(1)
+                window.refresh()
+                continue
+            elif playerTurn == gameBoard[event[0][0]][event[0][1]][1].ownedBy and len(gameBoard[event[0][0]][event[0][1]][1].storedItems) > 0:
                 window['information'].update(f"Selection made, pick a destination or click the same piece again to access items.")
             elif playerTurn != gameBoard[event[0][0]][event[0][1]][1].ownedBy:
                 window['information'].update(f"That's not your piece...")
@@ -1003,10 +1027,10 @@ def movePiece(playerTurn, window, gameBoard):
         
 
         
-        
+        #trying to use item
         if ("itemButton" in event and gameBoard[ startLocation[0] ] [ startLocation[1] ] [0].occupied == True) or (startLocation == endLocation and gameBoard[ startLocation[0] ] [ startLocation[1] ] [0].occupied == True):
             
-            
+            #check to see if it's legal to use item
             if len(gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].storedItems) > 0 and (gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].ownedBy == playerTurn):
                 
                 useItems(gameBoard,startLocation[0],startLocation[1],window)
@@ -1064,8 +1088,7 @@ def movePiece(playerTurn, window, gameBoard):
                 if gameBoard[ endLocation[0] ] [ endLocation[1] ][0].tileType == "itemOrb":
                     
                     pickUpItemOrb(gameBoard,startLocation[0],startLocation[1])
-
-
+                    
 
                 if gameBoard[ endLocation[0] ] [ endLocation[1] ][0].tileType in ["destroyed","damaged4","damaged3","damaged2","damaged"]:
                     window['information'].update(f"Can't move here!")
@@ -1087,6 +1110,29 @@ def movePiece(playerTurn, window, gameBoard):
                     gameBoard[ endLocation[0] ] [ endLocation[1] ][1].location = (endLocation[0],endLocation[1])
                     gameBoard[ endLocation[0]][endLocation[1]][0].tileType = f"player{playerTurn}default"
                     
+                    if "trip mine" in gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeDebuffs:
+                        
+                        
+                        if "Energy Forcefield" in gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeBuffs:
+                            gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeBuffs.remove("Energy Forcefield")
+                            sg.popup("Trip mine went off!")
+                            sg.popup("But your forcefield saved you.")
+                            while ("trip mine" in gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeBuffs):
+                                gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeDebuffs.remove("trip mine")
+
+                        else:
+                            gameBoard[ endLocation[0] ] [ endLocation[1] ][0].occupied = False
+                            gameBoard[ endLocation[0] ] [ endLocation[1] ][1] = 0
+                            
+                            
+                            gameBoard[ endLocation[0] ] [ endLocation[1] ][1] = 0
+                            gameBoard[ endLocation[0] ] [ endLocation[1] ][0].tileType = "exploding"
+                            displayBoard(window,gameBoard)
+                            window.refresh()
+                            sg.popup("Trip mine went off!")
+                            gameBoard[ endLocation[0] ] [ endLocation[1] ][0].tileType = "default"
+                            continue
+                        
                     window['information'].update(f"Moved successfully!")
                     window.refresh
                     
@@ -1209,11 +1255,27 @@ def begin():
     
         
         gamePlay(playerTurn, window, gameBoard)
+
+        #end player one's turn, begin player two's turn
         if playerTurn == 1:
             window["turn"].update(filename = "down.png")
+            for i in gameBoard:
+                for j in i:
+                    if j[0].occupied == True:
+                        if j[1].ownedBy == 1:
+                            if "stunned" in j[1].activeDebuffs:
+                                j[1].activeDebuffs.remove("stunned")
             playerTurn = 2
+            
+        #end player two's turn, begin player one's turn
         else:
             window["turn"].update(filename = "up.png")
+            for i in gameBoard:
+                for j in i:
+                    if j[0].occupied == True:
+                        if j[1].ownedBy == 2:
+                            if "stunned" in j[1].activeDebuffs:
+                                j[1].activeDebuffs.remove("stunned")
             playerTurn = 1
 
 
