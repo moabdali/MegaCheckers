@@ -188,6 +188,8 @@ def initializeField(columns,rows,window,gameBoard):
             gameBoard[rows-i-1][j][1].location = (rows-i-1,j)
             gameBoard[rows-i-1][j][0].tileType = "player2default"
             gameBoard[rows-i-1][j][1].avatar = "default"
+            
+            
 
 
     ###### DELETE ME ##########
@@ -201,8 +203,12 @@ def initializeField(columns,rows,window,gameBoard):
             gameBoard[rows-i-1][j][1]=piece
             gameBoard[rows-i-1][j][1].location = (rows-i-1,j)
             gameBoard[rows-i-1][j][0].tileType = "player2default"
-            gameBoard[rows-i-1][j][1].avatar = "default"    
+            gameBoard[rows-i-1][j][1].avatar = "default"
 
+            
+            gameBoard[i][j][1].activeDebuffs.append("Poisoned")
+            gameBoard[i][j][1].activeBuffs.append("Strong")
+    ####### DEND DELETE ME###########
 
 
 def countPieces(gameBoard,window):
@@ -300,7 +306,14 @@ def displayBoard(window,gameBoard):
             elif gameBoard[i][j][0].tileType == "snake":
                 window[i,j].update(image_filename="snake.png")
                 continue
+            
+            elif gameBoard[i][j][0].tileType == "purified":
+                window[i,j].update(image_filename="purified.png")
+                continue
 
+            elif gameBoard[i][j][0].tileType == "abolished":
+                window[i,j].update(image_filename="abolished.png")
+                continue
             
             if gameBoard[i][j][0].occupied == False:
                 
@@ -341,7 +354,7 @@ def displayBoard(window,gameBoard):
 def pickUpItemOrb(gameBoard,x,y):
     #items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
     #items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
-    items = ["napalm radial"]
+    items = ["abolish foe powers radial"]
 
     
     randItem = random.choice(items)
@@ -558,8 +571,99 @@ def useItems(gameBoard,x,y,window):
                             window.refresh()
                             sleep(1)
                     
-                
+           #purify radial
+            elif str.find(i,"purify radial")>=0:
+                gameBoard[x][y][1].storedItems.remove("purify radial")
+                validSpots = getRadial((x,y), gameBoard)
+                cleanCheck = False
+                for i in validSpots:
+                    
+                    g = gameBoard[i[0]][i[1]]
 
+                    #if there's a piece
+                    if g[0].occupied == True:
+
+                        if g[1].ownedBy == playerTurn:
+                            cleanCheck = False
+                            if len(g[1].activeDebuffs) > 0:
+                                print("CLEANING")
+                                print(g[1].activeDebuffs)
+                                for i in g[1].activeDebuffs:
+                                    cleanCheck = True
+                                    previousTile = g[0].tileType
+                                    g[0].tileType = "purified"
+                                    displayBoard(window,gameBoard)
+                                    window.refresh()
+                                    sleep(1)
+                                    listOfDebuffs = ""
+                                    for j in g[1].activeDebuffs:
+                                       listOfDebuffs+=j+"\n"
+                                    window["information"].update(f"Removed  {listOfDebuffs}")
+                                    for j in g[1].activeDebuffs:
+                                       g[1].activeDebuffs.remove(j)
+                                    window["information"].update(text_color = "blue")
+                                    window.refresh()
+                                    sleep(1)
+                                    window["information"].update(text_color = "white")
+                                    g[0].tileType = previousTile
+                                    displayBoard(window,gameBoard)
+                                    window.refresh()
+                                    sleep(1)
+                            
+                    if cleanCheck == False:
+                        window["information"].update(f"No corrupted allies were in range. Nothing happened. Well, that was a pointless waste.")
+                        window["information"].update(text_color = "red")
+                        window.refresh()
+                        sleep(1)
+                        window["information"].update(text_color = "white")
+                                   
+                                    
+                                    
+            #abolish foe powers radial
+            elif str.find(i,"abolish foe powers radial")>=0:
+                gameBoard[x][y][1].storedItems.remove("abolish foe powers radial")
+                validSpots = getRadial((x,y), gameBoard)
+                abolishCheck = False
+                for i in validSpots:
+                    
+                    g = gameBoard[i[0]][i[1]]
+
+                    #if there's a piece
+                    if g[0].occupied == True:
+
+                        if g[1].ownedBy != playerTurn:
+                            abolishCheck = False
+                            if len(g[1].activeBuffs) > 0:
+                                print("abolishing")
+                                print(g[1].activeBuffs)
+                                for i in g[1].activeBuffs:
+                                    abolishCheck = True
+                                    previousTile = g[0].tileType
+                                    g[0].tileType = "abolished"
+                                    displayBoard(window,gameBoard)
+                                    window.refresh()
+                                    sleep(1)
+                                    listOfBuffs = ""
+                                    for j in g[1].activeBuffs:
+                                       listOfBuffs+=j+"\n"
+                                    window["information"].update(f"Removed  {listOfBuffs}")
+                                    for j in g[1].activeBuffs:
+                                       g[1].activeBuffs.remove(j)
+                                    window["information"].update(text_color = "blue")
+                                    window.refresh()
+                                    sleep(1)
+                                    window["information"].update(text_color = "white")
+                                    g[0].tileType = previousTile
+                                    displayBoard(window,gameBoard)
+                                    window.refresh()
+                                    sleep(1)
+                            
+                    if abolishCheck == False:
+                        window["information"].update(f"No powered enemies were in range. Nothing happened. Well, that was a pointless waste.")
+                        window["information"].update(text_color = "red")
+                        window.refresh()
+                        sleep(1)
+                        window["information"].update(text_color = "white")
 
                             
             #energy forcefield
