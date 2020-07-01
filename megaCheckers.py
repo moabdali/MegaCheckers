@@ -138,7 +138,7 @@ def getRadial(location, gameBoard, grow = False):
                 validLocations.append( (location[0]+1,location[1]+1) )
     return validLocations
 
-def getCross(location, gameBoard, grow = False):
+def getCross(location, gameBoard, grow = False, includeSelf = False):
     validLocations = []
     rows = len(gameBoard)
     columns = len(gameBoard[0])
@@ -150,8 +150,9 @@ def getCross(location, gameBoard, grow = False):
     #check if you can go left
     if location[1]-1 != -1:
         validLocations.append( (location[0],location[1]-1) )
-    #you are guaranteed to append yourself
-    #validLocations.append( (location[0],location[1]) )
+
+    if includeSelf == True:
+        validLocations.append( (location[0],location[1]) )
             
     #check if you can go right
     if location[1]+1 != columns:
@@ -204,10 +205,12 @@ def initializeField(columns,rows,window,gameBoard):
             gameBoard[rows-i-1][j][1].location = (rows-i-1,j)
             gameBoard[rows-i-1][j][0].tileType = "player2default"
             gameBoard[rows-i-1][j][1].avatar = "default"
+            gameBoard[rows-i-1][j][1].storedItems.append("haymaker")
+            gameBoard[i][j][1].storedItems.append("haymaker")
 
             
-            gameBoard[rows-i-1][j][1].activeDebuffs.append("stunned")
-            gameBoard[i][j][1].activeBuffs.append("Strong")
+            
+            
     ####### DEND DELETE ME###########
 
 
@@ -353,8 +356,8 @@ def displayBoard(window,gameBoard):
                     
 def pickUpItemOrb(gameBoard,x,y):
     #items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
-    #items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
-    items = ["trip mine radial"]
+    #items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs", "trip mine radial", "purify radial", "napalm radial", "abolish foe powers radial"]
+    items = ["haymaker"]
 
     
     randItem = random.choice(items)
@@ -373,6 +376,8 @@ def useItems(gameBoard,x,y,window):
     layout+= [ [sg.Button("CANCEL")] ]
     itemsMenu = sg.Window("Items Menu", layout,disable_close=True )
     playerTurn = gameBoard[x][y][1].ownedBy
+    rows = len(gameBoard)
+    columns = len(gameBoard[0])
     while True:
             event = itemsMenu.read()
             i = event[0]
@@ -690,6 +695,121 @@ def useItems(gameBoard,x,y,window):
                 gameBoard[x][y][1].activeBuffs.append("Energy Forcefield")
                 displayBoard(window, gameBoard)
 
+            #haymaker
+            elif str.find(i,"haymaker")>=0:
+                
+                validTargets = getCross( (x,y), gameBoard)
+                window["information"].update("Pick an opponent that is in range")
+                event = window.read()
+                #print(validTargets)
+                #print(event[0])
+                #if the target is within range
+                if event[0] in validTargets:
+                    #print("It is in the events")
+
+                    
+                    
+
+                    #s1 is the victim's row, compare to x
+                    s1 = event[0][0]
+
+                    #s2 is the victim's column, compare to y
+                    s2 = event[0][1]
+                    if gameBoard[s1][s2][0].occupied == False:
+                        sg.popup("There's no one to punch at that location!")
+                        itemsMenu.close()
+                        return
+                    
+                    gameBoard[x][y][1].storedItems.remove("haymaker")
+                    direction = 0
+                    #print(x)
+                    #print(y)
+                    #print(s1)
+                    #print(s2)
+                    #if they are in the same row:
+                    if x == s1:
+                        #if x is to the left of the target
+                        if y < s2:
+                            direction = "push right"
+                        #if it's to the right:
+                        else:
+                            direction = "push left"
+                    #if they're in the same column
+                    elif y == s2:
+                        #if the target is below:
+                        if x < s1:
+                            #print("pushing down")
+                            direction = "push down"
+                        #if the target is above
+                        else:
+                            direction = "push up"
+
+                    else:
+                        sg.popup("ERROR IN HAYMAKER DIRECTION CALCULATION")
+
+                        
+                    
+                    if direction == "push down":
+                        #print("enter pushing down")
+                        #######TRIPMINE FORCEFIELD CHECK NEEDED#####
+
+                        #copy the original piece
+                        tempCopyVictim = copy.deepcopy(gameBoard[s1][s2][1])
+                        tempCopyTileType = "default"
+                        while True:
+                        #check for lower wall
+                            
+                            if s1 == rows:
+                                gameBoard[s1][s2][1].activeDebuffs.append("stunned")
+                                #######TRIPMINE FORCEFIELD CHECK NEEDED#####
+                                break
+                            
+                            #if the next block is empty
+                            elif gameBoard[s1+1][s2][0].occupied == False:
+                                #print("next block below is empty")
+                                #do laser or land mine check here
+
+                                #end laser or land mine check here
+
+
+                                #if the next location is a hole
+                                if gameBoard[s1+1][s2][0].tileType in ["destroyed","damaged4","damaged3","damaged2","damaged"]:
+                                    #kill the piece
+                                    gameBoard[s1][s2][1] = 0
+                                    gameBoard[s1][s2][0].occupied = False
+                                    sg.popup("Brutal!  You just pushed that piece into the void.")
+                                    break
+
+                                #if the next location is safe
+                                else:
+                                    
+                                    
+                                    
+                                    gameBoard[s1][s2][0].occupied = False
+                                    gameBoard[s1+1][s2][0].occupied = True
+                                    gameBoard[s1][s2][0].tileType = tempCopyTileType
+                                    gameBoard[s1][s2][1] = 0
+                                    gameBoard[s1+1][s2][1] = copy.deepcopy(tempCopyVictim)
+                                    gameBoard[s1+1][s2][1].occupied = True
+                                    s1 = s1+1
+                                    displayBoard(window, gameBoard)
+                                    window.refresh()
+                                    sleep(.75)
+                                    tempCopyTileType = gameBoard[s1+1][s2][0].tileType 
+                               
+                                    
+
+                            elif gameBoard[s1+1][s2][0].occupied == True:
+                                
+                                gameBoard[s1][s2][1].activeDebuffs.append("stunned")
+                                gameBoard[s1+1][s2][1].activeDebuffs.append("stunned")
+                                sg.popup("Both pieces are stunned")
+                                break
+                                
+                                
+                            
+                        
+                
             #jump proof
             elif str.find(i,"jumpProof")>=0:
                 gameBoard[x][y][1].storedItems.remove("jumpProof")
@@ -926,6 +1046,7 @@ def repairFloor (window, gameBoard):
 def movePiece(playerTurn, window, gameBoard):
     while True:
         displayBoard(window, gameBoard)
+        pickedUpItem = False
         window["exit"].update(disabled = False)
         usedItem = False
         #sg.popup_timed(f" It's player {playerTurn}'s turn.",font = "Cambria, 20",auto_close_duration=1)
@@ -992,7 +1113,7 @@ def movePiece(playerTurn, window, gameBoard):
 
         if gameBoard[event[0][0]][event[0][1]][0].occupied == True:
             if playerTurn == gameBoard[event[0][0]][event[0][1]][1].ownedBy and "stunned" in gameBoard[event[0][0]][event[0][1]][1].activeDebuffs:
-                window['information'].update(f"You cannot use a stunned.sleeping piece.")
+                window['information'].update(f"You cannot use a stunned/sleeping piece.")
                 window['information'].update(text_color = "red")
                 sleep(1)
                 window.refresh()
@@ -1088,6 +1209,7 @@ def movePiece(playerTurn, window, gameBoard):
                 if gameBoard[ endLocation[0] ] [ endLocation[1] ][0].tileType == "itemOrb":
                     
                     pickUpItemOrb(gameBoard,startLocation[0],startLocation[1])
+                    pickedUpItem = True
                     
 
                 if gameBoard[ endLocation[0] ] [ endLocation[1] ][0].tileType in ["destroyed","damaged4","damaged3","damaged2","damaged"]:
@@ -1167,6 +1289,11 @@ def movePiece(playerTurn, window, gameBoard):
 
                     #set the new location as full
                     gameBoard[ endLocation[0] ] [ endLocation[1] ] [0].occupied = True
+
+                    #if gameBoard[startLocation[0]][startLocation[1]][0].tileType == "itemOrb":
+                    if pickedUpItem == True:
+                        sg.popup("The piece you just killed was sitting on an item orb.  You picked it up.  Lucky you got to it before he recovered from his stun")
+                        #pickUpItemOrb(gameBoard,x,y)
                     #set the original tile as default look
                     gameBoard[startLocation[0]][startLocation[1]][0].tileType = "default"
                     
@@ -1231,7 +1358,7 @@ def begin():
     
     window = sg.Window("MegaCheckers",layout,no_titlebar = True,disable_close = True, grab_anywhere = True, location = (0,0)).finalize()
 
-    window.maximize()
+    #window.maximize()
     
     
     
@@ -1255,27 +1382,40 @@ def begin():
     
         
         gamePlay(playerTurn, window, gameBoard)
-
+        x = -1
+        y = -1
         #end player one's turn, begin player two's turn
         if playerTurn == 1:
             window["turn"].update(filename = "down.png")
             for i in gameBoard:
+                x+=1
                 for j in i:
+                    y+=1
                     if j[0].occupied == True:
                         if j[1].ownedBy == 1:
                             if "stunned" in j[1].activeDebuffs:
                                 j[1].activeDebuffs.remove("stunned")
+                                if j[0].tileType == "itemOrb":
+                                    sg.popup("A stunned piece recovered and picked up the item orb it had landed on")
+                                    pickUpItemOrb(gameBoard,x,y)
+                y=-1
             playerTurn = 2
             
         #end player two's turn, begin player one's turn
         else:
             window["turn"].update(filename = "up.png")
             for i in gameBoard:
+                x+=1
                 for j in i:
+                    y+=1
                     if j[0].occupied == True:
                         if j[1].ownedBy == 2:
                             if "stunned" in j[1].activeDebuffs:
                                 j[1].activeDebuffs.remove("stunned")
+                                if j[0].tileType == "itemOrb":
+                                    sg.popup("A stunned piece recovered and picked up the item orb it had landed on")
+                                    pickUpItemOrb(gameBoard,x,y)
+                y=-1
             playerTurn = 1
 
 
