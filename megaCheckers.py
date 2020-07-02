@@ -32,6 +32,7 @@ class Piece:
         self.ownedBy = playerTurn
         self.distanceMax = 1
         self.grey = False
+        self.moveAgain = 0
 
     def determineAvatar(self):
 
@@ -213,8 +214,8 @@ def initializeField(columns,rows,window,gameBoard):
             gameBoard[rows-i-1][j][1].location = (rows-i-1,j)
             gameBoard[rows-i-1][j][0].tileType = "player2default"
             gameBoard[rows-i-1][j][1].avatar = "default"
-            gameBoard[rows-i-1][j][1].storedItems.append("move diagonal")
-            gameBoard[i][j][1].storedItems.append("move diagonal")
+            gameBoard[rows-i-1][j][1].storedItems.append("move again")
+            gameBoard[i][j][1].storedItems.append("move again")
 
             
             
@@ -397,8 +398,8 @@ def displayBoard(window,gameBoard):
                     
 def pickUpItemOrb(gameBoard,x,y):
     #items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
-    #items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs", "move diagonal", "trip mine radial", "purify radial", "napalm radial", "abolish foe powers radial", "haymaker"]
-    items = ["move diagonal"]
+    #items = ["move again","suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs", "move diagonal", "trip mine radial", "purify radial", "napalm radial", "abolish foe powers radial", "haymaker"]
+    items = ["move again"]
 
     
     randItem = random.choice(items)
@@ -443,7 +444,7 @@ def useItems(gameBoard,x,y,window):
                             j[0].tileType = "default"
 
             #trip mine radial
-            if str.find(i,"trip mine radial")>=0:
+            elif str.find(i,"trip mine radial")>=0:
                 gameBoard[x][y][1].storedItems.remove("trip mine radial")
                 validTargets = getRadial( (x,y), gameBoard)
 
@@ -742,6 +743,17 @@ def useItems(gameBoard,x,y,window):
                 gameBoard[x][y][1].activeBuffs.append("Energy Forcefield")
                 displayBoard(window, gameBoard)
 
+
+            #move again
+            elif str.find(i,"move again")>=0:
+                gameBoard[x][y][1].storedItems.remove("move again")
+                gameBoard[x][y][1].activeBuffs.append("move again")
+                gameBoard[x][y][1].moveAgain +=1
+                #sg.popup(f"Activated move again.  Bonus moves per turn: {gameBoard[x][y][1].moveAgain}")
+                print(f"Activated move again.  Bonus moves per turn: {gameBoard[x][y][1].moveAgain}")
+                displayBoard(window, gameBoard)
+
+                
             #haymaker
             elif str.find(i,"haymaker")>=0:
                 
@@ -1272,7 +1284,10 @@ def repairFloor (window, gameBoard):
 
 
 def movePiece(playerTurn, window, gameBoard):
+    #a small list that is used to make sure a player that gets a second turn for a piece can only use that specific piece twice
+    repeatRestrictor = [False, (-1,-1)]
     while True:
+
         displayBoard(window, gameBoard)
         pickedUpItem = False
         window["exit"].update(disabled = False)
@@ -1283,10 +1298,24 @@ def movePiece(playerTurn, window, gameBoard):
         
         window['playerTurn'].update(f"{playerTurn}")
         window['information'].update(text_color = "white")
+
+
+
+        #pick your piece to move
         window['information'].update(f"Pick a piece to move.")
         print(f"Pick a piece to move.")
-        event = window.read()
-        window["exit"].update(disabled = False)
+
+        #check to see if this is your second (or higher) turn (you don't get to choose a new piece)
+        if repeatRestrictor[0] == False:
+            event = window.read()
+            window["exit"].update(disabled = False)
+        elif repeatRestrictor[0] == True:
+            event = []
+            event.append(repeatRestrictor[1])
+            if event[0] == (-1.-1):
+                sg.popup("An error has occurred in repeat restrictor's (-1,-1)")
+                repeatRestrictor = False
+                return
         if "exit" in event:
             a = sg.popup_yes_no("Seriously, you want to exit this awesome game?",keep_on_top=True)
             print("You're a fool if you're wanting to quit this game.")
@@ -1303,13 +1332,10 @@ def movePiece(playerTurn, window, gameBoard):
             window["examineItem"].update(disabled = True)
             window['information'].update(f"What do you want to examine?",text_color = "red")
             event = window.read()
-            window['information'].update(text_color = "white")
-
-            
+            window['information'].update(text_color = "white")     
             #if no pieces exist here:
             if gameBoard[event[0][0]][event[0][1]][0].occupied == False:
                 gameBoard[event[0][0]][event[0][1]][0].describeSelf()
-
             #if there is a piece:
             else:
                 if playerTurn == gameBoard[event[0][0]][event[0][1]][1].ownedBy:
@@ -1332,34 +1358,52 @@ def movePiece(playerTurn, window, gameBoard):
             continue
 
 
-            
+        
         window["itemButton"].update(disabled = False)
         window["examineItem"].update(disabled = True)
                 
         
         startLocation = event[0]
+        #print(f"{startLocation} and {repeatRestrictor[1]}")
+        if (repeatRestrictor[0] == True) and (startLocation != repeatRestrictor[1]):
+            getChoice = sg.popup_yes_no("You can only move the same piece twice.  Click yes to force that piece to be selected.  Otherwise choose no to end your turn.")
+            if getChoice == "Yes":
+                startLocation = repeatRestrictor[1]
+            else:
+                return
+        if (repeatRestrictor[0] == True) and (startLocation == repeatRestrictor[1]):
+            gameBoard[startLocation[0]][startLocation[1]][1].grey = True
+            displayBoard(window, gameBoard)
+            
         
-        
-
+        #if a square is picked and a piece exists on it
         if gameBoard[event[0][0]][event[0][1]][0].occupied == True:
+
+            #if that piece is stunned
             if playerTurn == gameBoard[event[0][0]][event[0][1]][1].ownedBy and "stunned" in gameBoard[event[0][0]][event[0][1]][1].activeDebuffs:
                 window['information'].update(f"You cannot use a stunned/sleeping piece.")
                 print(f"Pick a piece to move.")
                 window['information'].update(text_color = "red")
                 window.refresh()
                 continue
+            
+            #if the piece belongs to you and it has items (and isn't stunned)
             elif playerTurn == gameBoard[event[0][0]][event[0][1]][1].ownedBy and len(gameBoard[event[0][0]][event[0][1]][1].storedItems) > 0:
                 window['information'].update(f"Selection made, pick a destination or click the same piece again to access items.")
                 print(f"Selection made, pick a destination or click the same piece again to access items.")
+            #if the piece doesn't belong to you
             elif playerTurn != gameBoard[event[0][0]][event[0][1]][1].ownedBy:
                 window['information'].update(f"That's not your piece...")
                 print(f"That's not your piece...")
                 window['information'].update(text_color = "red")
                 window.refresh()
                 continue
+            #if the piece belongs to you but doesn't have items
             else:
                 window['information'].update(f"Selection made, pick a destination.")
                 print(f"Selection made, pick a destination.")
+                
+        #if there's no piece on that square
         else:
             window['information'].update(text_color = "red")
             window['information'].update(f"You can't interact directly with unoccupied spaces.")
@@ -1368,15 +1412,23 @@ def movePiece(playerTurn, window, gameBoard):
             
             sleep(.5)
             continue
+        
+        #if there is a piece there and it belongs to you, highlight it to show you selected it
         if gameBoard[startLocation[0]][startLocation[1]][1] != 0:
             gameBoard[startLocation[0]][startLocation[1]][1].grey = True
+        
 
-
-
+        #update the board (to show highlighting)
         displayBoard(window,gameBoard)
+
+
+        #get the next location
         event = window.read()
+
         
         window["examineItem"].update(disabled = True)
+
+        #this is where we're attempting to move
         endLocation = event[0]
 
         
@@ -1421,6 +1473,7 @@ def movePiece(playerTurn, window, gameBoard):
             window.refresh
             continue
 
+        #if the piece no longer exists on the original point, ungrey it
         if gameBoard[startLocation[0]][startLocation[1]][1] != 0:
             gameBoard[startLocation[0]][startLocation[1]][1].grey = False
         displayBoard(window,gameBoard)    
@@ -1511,8 +1564,27 @@ def movePiece(playerTurn, window, gameBoard):
                     window['information'].update(f"Moved successfully!")
                     print("Moved successfully")
                     window.refresh
+
+
+                    #go again if you have moveAgain equipped
+
+                 
                     
-                    return 1
+                    if gameBoard[ endLocation[0] ] [ endLocation[1] ][1]!=0 and gameBoard[ endLocation[0] ] [ endLocation[1] ][1].moveAgain >0:
+                        
+                        window['information'].update(f"This piece gets to move again; {gameBoard[ endLocation[0] ] [ endLocation[1] ][1].moveAgain} remaining!")
+                        sleep(1)
+                        displayBoard(window, gameBoard)
+                        moveAgainCheck = sg.popup_yes_no("Would you like to move it again?")
+                        print(moveAgainCheck)
+                        if moveAgainCheck == "Yes":
+                            gameBoard[ endLocation[0] ] [ endLocation[1] ][1].moveAgain -=1
+                            repeatRestrictor[0] = True
+                            repeatRestrictor[1] = ( (endLocation[0],endLocation[1]) )
+                            continue
+                        
+                    else:
+                        return 1
 
                 
                 #killing own piece (illegal)
@@ -1557,6 +1629,25 @@ def movePiece(playerTurn, window, gameBoard):
                     
                     window['information'].update(f"Jumpkilled an enemy piece!")
                     print("Jumpkilled an enemy piece!")
+
+
+
+                    #go again if you have moveAgain equipped
+                    if gameBoard[ endLocation[0] ] [ endLocation[1] ][1]!=0 and gameBoard[ endLocation[0] ] [ endLocation[1] ][1].moveAgain >0:
+
+
+                        sg.popup(f"Jump killer repeater {gameBoard[ endLocation[0] ] [ endLocation[1] ][1].moveAgain}")
+                        
+                        window['information'].update(f"This piece gets to move again; {gameBoard[ endLocation[0] ] [ endLocation[1] ][1].moveAgain} remaining!")
+                        sleep(1)
+                        moveAgainCheck = sg.popup_yes_no("Would you like to move it again?")
+                        print(moveAgainCheck)
+                        if moveAgainCheck == "Yes":
+                            print("YES CHOSEN")
+                            gameBoard[ endLocation[0] ] [ endLocation[1] ][1].moveAgain -=1
+                            repeatRestrictor[0] = True
+                            repeatRestrictor[1] = ( (endLocation[0],endLocation[1]))
+                            continue
                     return 2
                     
 
@@ -1572,8 +1663,21 @@ def movePiece(playerTurn, window, gameBoard):
             print("Nothing here to move!")
             window.refresh
             continue
-            
         
+def resetMoveAgain(gameBoard):
+    moveAgainCount = 0
+    for i in gameBoard:
+        for j in i:
+            moveAgainCount = 0
+            if j[0].occupied == True:
+                if len(j[1].activeBuffs)>0:
+                    for k in j[1].activeBuffs:
+                        if k == "move again":
+                            moveAgainCount +=1
+            if j[0].occupied == True:
+                j[1].moveAgain = moveAgainCount
+                if j[1].moveAgain > 0:
+                    print(j[1].moveAgain)
     
 def begin():
     
@@ -1656,6 +1760,7 @@ def begin():
                                     pickUpItemOrb(gameBoard,x,y)
                 y=-1
             playerTurn = 2
+            resetMoveAgain(gameBoard)
             
         #end player two's turn, begin player one's turn
         else:
@@ -1673,7 +1778,7 @@ def begin():
                                     pickUpItemOrb(gameBoard,x,y)
                 y=-1
             playerTurn = 1
-
+            resetMoveAgain(gameBoard)
 
 
 def tutorial():

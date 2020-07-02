@@ -2,6 +2,7 @@ MegaCheckers:
 
 A game where you take turns moving pieces to kill all of your enemy's pieces.  To do this, your pieces jump onto the enemy piece to crush them.  In order to aid you with this goal, every few turns a random number of mystery items will appear on empty spaces.  You pick up an item and on any subsequent turn,  you can use the item (depending on what the item is) to destroy enemy pieces, to set up traps, to alter the playing field (raise/lower, destroy, magnetize, make one way, push pieces, etc), to power up your piece, and so on.  Eventually networking will be enabled.  
 
+v.0.9.13 Mostly complete with "move again".  There appears to be a glitch occurring with stacking move again powerups - if you keep moving around normally, there are no issues.  But it seems that you lose turns if you click on a wrong piece between moves or if you pick up an item.  More testing will  need to be done, but uploading this build, along with a temporary limit of one "move again buff" so that my code is backed up for the former, and so that I don't spend too much time on a situation that will likely rarely occur anyway (for the latter).
 
 v.0.9.12 Added move diagonal.  
 
