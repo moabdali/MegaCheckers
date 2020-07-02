@@ -364,7 +364,12 @@ def displayBoard(window,gameBoard):
                         forcefield = Image.open("forcefield.png").convert("RGBA")
                         avatar.paste(forcefield, (0,0), forcefield)
 
-                    #if it's highlighted... then highlight it
+                    #if the piece is stunned
+                    if "stunned" in g.activeDebuffs:
+                        stunned = Image.open("stunned.png").convert("RGBA")
+                        avatar.paste(stunned, (0,0), stunned)
+
+                    #if it's supposed to be highlighted... then highlight it
                     if g.grey == True:
                         grey = Image.open("highlight.png").convert("RGBA")
                         avatar = Image.blend(grey,avatar,.50)
@@ -726,7 +731,8 @@ def useItems(gameBoard,x,y,window):
             elif str.find(i,"haymaker")>=0:
                 
                 validTargets = getCross( (x,y), gameBoard)
-                window["information"].update("Pick an opponent that is in range")
+                window["information"].update("Pick a target that is within range")
+                print("Pick a target that is within range.")
                 event = window.read()
                 #print(validTargets)
                 #print(event[0])
@@ -743,7 +749,8 @@ def useItems(gameBoard,x,y,window):
                     #s2 is the victim's column, compare to y
                     s2 = event[0][1]
                     if gameBoard[s1][s2][0].occupied == False:
-                        sg.popup("There's no one to punch at that location!")
+                        window["information"].update("There's no one to punch at that location!")
+                        print("There's no one to punch at that location!")
                         itemsMenu.close()
                         return
                     
@@ -786,7 +793,7 @@ def useItems(gameBoard,x,y,window):
                         while True:
                         #check for lower wall
                             
-                            if s1 == rows:
+                            if s1 == rows-1:
                                 gameBoard[s1][s2][1].activeDebuffs.append("stunned")
                                 #######TRIPMINE FORCEFIELD CHECK NEEDED#####
                                 break
@@ -804,7 +811,8 @@ def useItems(gameBoard,x,y,window):
                                     #kill the piece
                                     gameBoard[s1][s2][1] = 0
                                     gameBoard[s1][s2][0].occupied = False
-                                    sg.popup("Brutal!  You just pushed that piece into the void.")
+                                    window["information"].update("Brutal!  You just pushed that piece into the void.")
+                                    print("Brutal!  You just pushed that piece into the void.")
                                     break
 
                                 #if the next location is safe
@@ -830,18 +838,194 @@ def useItems(gameBoard,x,y,window):
                                 
                                 gameBoard[s1][s2][1].activeDebuffs.append("stunned")
                                 gameBoard[s1+1][s2][1].activeDebuffs.append("stunned")
-                                sg.popup("Both pieces are stunned")
+                                window["information"].update("Both of the collided pieces are stunned.")
+                                print("Both of the collided pieces are stunned.")
                                 break
                                 
                                 
+                    elif direction == "push up":
+                        #######TRIPMINE FORCEFIELD CHECK NEEDED#####
+
+                        #copy the original piece
+                        tempCopyVictim = copy.deepcopy(gameBoard[s1][s2][1])
+                        tempCopyTileType = "default"
+                        while True:
+                        #check for upper wall
                             
+                            if s1 == 0:
+                                gameBoard[s1][s2][1].activeDebuffs.append("stunned")
+                                #######TRIPMINE FORCEFIELD CHECK NEEDED#####
+                                break
+                            
+                            #if the next block is empty
+                            elif gameBoard[s1-1][s2][0].occupied == False:
+                                
+                                #do laser or land mine check here
+
+                                #end laser or land mine check here
+
+
+                                #if the next location is a hole
+                                if gameBoard[s1-1][s2][0].tileType in ["destroyed","damaged4","damaged3","damaged2","damaged"]:
+                                    #kill the piece
+                                    gameBoard[s1][s2][1] = 0
+                                    gameBoard[s1][s2][0].occupied = False
+                                    window["information"].update("Brutal!  You just pushed that piece into the void.")
+                                    print("Brutal!  You just pushed that piece into the void.")
+                                    break
+
+                                #if the next location is safe
+                                else:
+                                    
+                                    
+                                    
+                                    gameBoard[s1][s2][0].occupied = False
+                                    gameBoard[s1-1][s2][0].occupied = True
+                                    gameBoard[s1][s2][0].tileType = tempCopyTileType
+                                    gameBoard[s1][s2][1] = 0
+                                    gameBoard[s1-1][s2][1] = copy.deepcopy(tempCopyVictim)
+                                    gameBoard[s1-1][s2][1].occupied = True
+                                    s1 = s1-1
+                                    displayBoard(window, gameBoard)
+                                    window.refresh()
+                                    sleep(.75)
+                                    tempCopyTileType = gameBoard[s1-1][s2][0].tileType 
+                               
+                                    
+
+                            elif gameBoard[s1-1][s2][0].occupied == True:
+                                
+                                gameBoard[s1][s2][1].activeDebuffs.append("stunned")
+                                gameBoard[s1-1][s2][1].activeDebuffs.append("stunned")
+                                window["information"].update("Both of the collided pieces are stunned.")
+                                print("Both of the collided pieces are stunned.")
+                                break
+                                                            
+                    elif direction == "push right":
                         
+                        #######TRIPMINE FORCEFIELD CHECK NEEDED#####
+
+                        #copy the original piece
+                        tempCopyVictim = copy.deepcopy(gameBoard[s1][s2][1])
+                        tempCopyTileType = "default"
+                        while True:
+                        #check for right wall
+                            
+                            if s2 == columns-1:
+                                gameBoard[s1][s2][1].activeDebuffs.append("stunned")
+                                #######TRIPMINE FORCEFIELD CHECK NEEDED#####
+                                break
+                            
+                            #if the next block is empty
+                            elif gameBoard[s1][s2+1][0].occupied == False:
+                                
+                                #do laser or land mine check here
+
+                                #end laser or land mine check here
+
+
+                                #if the next location is a hole
+                                if gameBoard[s1][s2+1][0].tileType in ["destroyed","damaged4","damaged3","damaged2","damaged"]:
+                                    #kill the piece
+                                    gameBoard[s1][s2][1] = 0
+                                    gameBoard[s1][s2][0].occupied = False
+                                    window["information"].update("Brutal!  You just pushed that piece into the void.")
+                                    print("Brutal!  You just pushed that piece into the void.")
+                                    break
+
+                                #if the next location is safe
+                                else:
+                                    
+                                    
+                                    
+                                    gameBoard[s1][s2][0].occupied = False
+                                    gameBoard[s1][s2+1][0].occupied = True
+                                    gameBoard[s1][s2][0].tileType = tempCopyTileType
+                                    gameBoard[s1][s2][1] = 0
+                                    gameBoard[s1][s2+1][1] = copy.deepcopy(tempCopyVictim)
+                                    gameBoard[s1][s2+1][1].occupied = True
+                                    s2 = s2+1
+                                    displayBoard(window, gameBoard)
+                                    window.refresh()
+                                    sleep(.75)
+                                    tempCopyTileType = gameBoard[s1][s2+1][0].tileType 
+                               
+                                    
+
+                            elif gameBoard[s1][s2+1][0].occupied == True:
+                                
+                                gameBoard[s1][s2][1].activeDebuffs.append("stunned")
+                                gameBoard[s1][s2+1][1].activeDebuffs.append("stunned")
+                                window["information"].update("Both of the collided pieces are stunned.")
+                                print("Both of the collided pieces are stunned.")
+                                break
+
+                            
+                    elif direction == "push left":
+                        
+                        #######TRIPMINE FORCEFIELD CHECK NEEDED#####
+
+                        #copy the original piece
+                        tempCopyVictim = copy.deepcopy(gameBoard[s1][s2][1])
+                        tempCopyTileType = "default"
+                        while True:
+                        #check for left
+                            
+                            if s2 == 0:
+                                gameBoard[s1][s2][1].activeDebuffs.append("stunned")
+                                #######TRIPMINE FORCEFIELD CHECK NEEDED#####
+                                break
+                            
+                            #if the next block is empty
+                            elif gameBoard[s1][s2-1][0].occupied == False:
+                                
+                                #do laser or land mine check here
+
+                                #end laser or land mine check here
+
+
+                                #if the next location is a hole
+                                if gameBoard[s1][s2-1][0].tileType in ["destroyed","damaged4","damaged3","damaged2","damaged"]:
+                                    #kill the piece
+                                    gameBoard[s1][s2][1] = 0
+                                    gameBoard[s1][s2][0].occupied = False
+                                    window["information"].update("Brutal!  You just pushed that piece into the void.")
+                                    print("Brutal!  You just pushed that piece into the void.")
+                                    break
+
+                                #if the next location is safe
+                                else:
+                                    
+                                    
+                                    
+                                    gameBoard[s1][s2][0].occupied = False
+                                    gameBoard[s1][s2-1][0].occupied = True
+                                    gameBoard[s1][s2][0].tileType = tempCopyTileType
+                                    gameBoard[s1][s2][1] = 0
+                                    gameBoard[s1][s2-1][1] = copy.deepcopy(tempCopyVictim)
+                                    gameBoard[s1][s2-1][1].occupied = True
+                                    s2 = s2-1
+                                    displayBoard(window, gameBoard)
+                                    window.refresh()
+                                    sleep(.75)
+                                    tempCopyTileType = gameBoard[s1][s2-1][0].tileType 
+                               
+                                    
+
+                            elif gameBoard[s1][s2-1][0].occupied == True:
+                                
+                                gameBoard[s1][s2][1].activeDebuffs.append("stunned")
+                                gameBoard[s1][s2-1][1].activeDebuffs.append("stunned")
+                                window["information"].update("Both of the collided pieces are stunned.")
+                                print("Both of the collided pieces are stunned.")
+                                break 
                 
             #jump proof
             elif str.find(i,"jumpProof")>=0:
                 gameBoard[x][y][1].storedItems.remove("jumpProof")
                 gameBoard[x][y][1].activeBuffs.append("jumpProof")
                 displayBoard(window, gameBoard)
+                window["information"].update("Congrats; both of your collided pieces are stunned.")
                 
                 
             #wololo
@@ -849,6 +1033,7 @@ def useItems(gameBoard,x,y,window):
                     itemsMenu.close()
                     
                     window["information"].update("Choose an enemy to recruit")
+                    print("Choose an enemy to recruit")
                     
                     event = window.read()
                     player = gameBoard[x][y][1].ownedBy
@@ -865,6 +1050,7 @@ def useItems(gameBoard,x,y,window):
                         gameBoard[x][y][1].storedItems.remove("Wololo (convert to your side)")
                     else:
                         window["information"].update("Wololo only works on enemies.")
+                        print("Wololo only works on enemies.")
                         sleep(1)
                     displayBoard(window, gameBoard)
                     window.refresh()
@@ -928,6 +1114,7 @@ def useItems(gameBoard,x,y,window):
                     attempts += 1
                     if attempts > 100:
                         sg.popup("The plane had trouble finding targets, so it flew away early.")
+                        print("The plane had trouble finding targets, so it flew away early.")
                         if itemsMenu:    
                             itemsMenu.close()
                         break

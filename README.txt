@@ -2,6 +2,9 @@ MegaCheckers:
 
 A game where you take turns moving pieces to kill all of your enemy's pieces.  To do this, your pieces jump onto the enemy piece to crush them.  In order to aid you with this goal, every few turns a random number of mystery items will appear on empty spaces.  You pick up an item and on any subsequent turn,  you can use the item (depending on what the item is) to destroy enemy pieces, to set up traps, to alter the playing field (raise/lower, destroy, magnetize, make one way, push pieces, etc), to power up your piece, and so on.  Eventually networking will be enabled.  
 
+
+v.0.9.11 Finished all directions of the haymaker.  Still need to do laser/mine checks.  Will probably do that after I actually program some mines and lasers.
+
 v.0.9.10 Overhauled the graphics.  Uses 3d images made in Paint 3d along with dynamically generated pieces with regards to power ups and whatnot.  Also changed some errors in code flow (continues when finishing up each activity in displayBoard) and added a console output in case someone misses a message (also removed many sleep commands now that it's ok for them to miss a message; this helps the game feel more responsive). 
 
 v.0.9.9 Added haymaker power up as well as fixed some logic errors with items not getting picked up if a piece was forced there (this was technically not a glitch because until now there wasn't a way to end up on an item tile without intentionally moving there; this is more of a new feature, if anything)
