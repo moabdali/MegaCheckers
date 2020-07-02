@@ -214,8 +214,10 @@ def initializeField(columns,rows,window,gameBoard):
             gameBoard[rows-i-1][j][1].location = (rows-i-1,j)
             gameBoard[rows-i-1][j][0].tileType = "player2default"
             gameBoard[rows-i-1][j][1].avatar = "default"
+            
             gameBoard[rows-i-1][j][1].storedItems.append("move again")
             gameBoard[i][j][1].storedItems.append("move again")
+            gameBoard[i][j][1].activeBuffs.append("move diagonal")
 
             
             
@@ -260,7 +262,6 @@ def getDistance(a,b,c,d):
     verticalDistance = abs(c-a)
     horizontalDistance = abs(d-b)
     distance = verticalDistance + horizontalDistance
-    print(f"Distance is {distance}")
     return distance
 
 def createOrbs(window,gameBoard):
@@ -383,6 +384,18 @@ def displayBoard(window,gameBoard):
                         diagonal = Image.open("diagonal.png").convert("RGBA")
                         avatar.paste(diagonal,(0,0),diagonal)
 
+                    if g.moveAgain == 1:
+                        step1 = Image.open("moveAgain1.png").convert("RGBA")
+                        avatar.paste(step1, (0,0), step1)
+                    elif g.moveAgain == 2:
+                        step2 = Image.open("moveAgain2.png").convert("RGBA")
+                        avatar.paste(step2, (0,0), step2)
+                    elif g.moveAgain == 3:
+                        step3 = Image.open("moveAgain3.png").convert("RGBA")
+                        avatar.paste(step3, (0,0), step3)
+                    elif g.moveAgain > 4:
+                        stepMax = Image.open("moveAgainMax.png").convert("RGBA")
+                        avatar.paste(stepMax, (0,0), stepMax)
 
 
                     avatar.save("avatar.png","png")
@@ -1641,9 +1654,9 @@ def movePiece(playerTurn, window, gameBoard):
                         window['information'].update(f"This piece gets to move again; {gameBoard[ endLocation[0] ] [ endLocation[1] ][1].moveAgain} remaining!")
                         sleep(1)
                         moveAgainCheck = sg.popup_yes_no("Would you like to move it again?")
-                        print(moveAgainCheck)
+                        
                         if moveAgainCheck == "Yes":
-                            print("YES CHOSEN")
+                            
                             gameBoard[ endLocation[0] ] [ endLocation[1] ][1].moveAgain -=1
                             repeatRestrictor[0] = True
                             repeatRestrictor[1] = ( (endLocation[0],endLocation[1]))
