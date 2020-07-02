@@ -213,8 +213,8 @@ def initializeField(columns,rows,window,gameBoard):
             gameBoard[rows-i-1][j][1].location = (rows-i-1,j)
             gameBoard[rows-i-1][j][0].tileType = "player2default"
             gameBoard[rows-i-1][j][1].avatar = "default"
-            gameBoard[rows-i-1][j][1].storedItems.append("haymaker")
-            gameBoard[i][j][1].storedItems.append("haymaker")
+            gameBoard[rows-i-1][j][1].storedItems.append("move diagonal")
+            gameBoard[i][j][1].storedItems.append("move diagonal")
 
             
             
@@ -259,6 +259,7 @@ def getDistance(a,b,c,d):
     verticalDistance = abs(c-a)
     horizontalDistance = abs(d-b)
     distance = verticalDistance + horizontalDistance
+    print(f"Distance is {distance}")
     return distance
 
 def createOrbs(window,gameBoard):
@@ -374,6 +375,15 @@ def displayBoard(window,gameBoard):
                         grey = Image.open("highlight.png").convert("RGBA")
                         avatar = Image.blend(grey,avatar,.50)
 
+
+
+                    #if move diagonal exists:
+                    if "move diagonal" in g.activeBuffs:
+                        diagonal = Image.open("diagonal.png").convert("RGBA")
+                        avatar.paste(diagonal,(0,0),diagonal)
+
+
+
                     avatar.save("avatar.png","png")
                     
 
@@ -387,8 +397,8 @@ def displayBoard(window,gameBoard):
                     
 def pickUpItemOrb(gameBoard,x,y):
     #items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
-    #items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs", "trip mine radial", "purify radial", "napalm radial", "abolish foe powers radial", "haymaker"]
-    items = ["haymaker"]
+    #items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs", "move diagonal", "trip mine radial", "purify radial", "napalm radial", "abolish foe powers radial", "haymaker"]
+    items = ["move diagonal"]
 
     
     randItem = random.choice(items)
@@ -673,7 +683,12 @@ def useItems(gameBoard,x,y,window):
                         window["information"].update(text_color = "white")
                                    
                                     
-                                    
+            #move diagonal
+            elif str.find(i,"move diagonal")>=0:
+                gameBoard[x][y][1].storedItems.remove("move diagonal")
+                gameBoard[x][y][1].activeBuffs.append("move diagonal")
+                
+                        
             #abolish foe powers radial
             elif str.find(i,"abolish foe powers radial")>=0:
                 gameBoard[x][y][1].storedItems.remove("abolish foe powers radial")
@@ -1416,9 +1431,19 @@ def movePiece(playerTurn, window, gameBoard):
             #if the piece is yours
             if (gameBoard[ startLocation[0] ] [ startLocation[1] ][1].ownedBy == playerTurn):
 
+                diagonalCheck = False
+                #if it's too far...
+                #...but you have a move diagonal and it turns out you're actually within range:
+                if getDistance(startLocation[0],startLocation[1],endLocation[0],endLocation[1]) > 1:
+                    if "move diagonal" in gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].activeBuffs:
+                        validRange = getRadial( (startLocation[0],startLocation[1]),gameBoard)
+                        
+                        if (endLocation[0],endLocation[1]) in validRange:
+                            diagonalCheck = True
+                            
 
-                #if it's too far
-                if getDistance(startLocation[0],startLocation[1],endLocation[0],endLocation[1]) >  gameBoard[ startLocation[0] ] [ startLocation[1] ][1].distanceMax:
+                #....and it's not because you want to move diagonally with a move diagonal
+                if (getDistance(startLocation[0],startLocation[1],endLocation[0],endLocation[1]) >  gameBoard[ startLocation[0] ] [ startLocation[1] ][1].distanceMax) and diagonalCheck == False:
                     window['information'].update(f"That location is too far for you to move to!")
                     print(f"That location is too far for you to move to!")
                     window.refresh
