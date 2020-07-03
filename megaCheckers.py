@@ -6,13 +6,59 @@ from time import sleep
 from PIL import Image
 
 
+def initializeField(columns,rows,window,gameBoard):
+    for i in range(2):
+        for j in range(columns): 
+            #window[i,j].update(image_filename="player1default.png")
+            gameBoard[i][j][0]=Tile(occupied=True)
+            piece = Piece(playerTurn = 1)
+            gameBoard[i][j][1]=piece
+            gameBoard[i][j][1].location = (i,j)
+            gameBoard[i][j][0].tileType = "player1default"
+            gameBoard[i][j][1].avatar = "default"       
+    for i in range(2):
+        for j in range(columns):
+            #window[rows-i-1,j].update(image_filename="player2default.png")
+            gameBoard[rows-i-1][j][0]=Tile(occupied=True)
+            piece = Piece(playerTurn = 2) 
+            gameBoard[rows-i-1][j][1]=piece
+            gameBoard[rows-i-1][j][1].location = (rows-i-1,j)
+            gameBoard[rows-i-1][j][0].tileType = "player2default"
+            gameBoard[rows-i-1][j][1].avatar = "default"
+    ###### DELETE ME ##########
+    for i in range(2):
+        for j in range(columns):
+            rows = 6
+            #window[rows-i-1,j].update(image_filename="player2default.png")
+            gameBoard[rows-i-1][j][0]=Tile(occupied=True)
+            piece = Piece(playerTurn = 2)
+            gameBoard[rows-i-1][j][1]=piece
+            gameBoard[rows-i-1][j][1].location = (rows-i-1,j)
+            gameBoard[rows-i-1][j][0].tileType = "player2default"
+            gameBoard[rows-i-1][j][1].avatar = "default"
+            gameBoard[rows-i-1][j][1].storedItems.append("move again")
+            gameBoard[rows-i-1][j][1].activeBuffs.append("move again")
+            gameBoard[rows-i-1][j][1].activeBuffs.append("move again")
+            gameBoard[rows-i-1][j][1].activeBuffs.append("move again")
+            gameBoard[i][j][1].storedItems.append("move again")
+            gameBoard[i][j][1].activeDebuffs.append("trip mine")
+            gameBoard[i][j][1].storedItems.append("place mine")
+            gameBoard[i][j][1].storedItems.append("trip mine radial")
+            gameBoard[i][j][1].activeBuffs.append("move diagonal")
+            gameBoard[i][j][1].activeBuffs.append("move again")
+            gameBoard[i][j][1].activeBuffs.append("move again")
+            gameBoard[i][j][1].activeBuffs.append("move again")
+            gameBoard[i][j][1].storedItems.append("abolish foe powers radial")
+            gameBoard[i][j][1].storedItems.append("purify radial")
+            
+    ####### END DELETE ME###########
+
+            
 class PublicStats:
-    
     turnCount = 1
     cycle = 0
     orbCycleList = [5,10,0,0,3,1,0,2,1]
-    def getOrbCount(self):
-        
+    def getOrbCount(self):     
         cycle = PublicStats.turnCount%9
         return PublicStats.orbCycleList[cycle]
                 
@@ -34,29 +80,8 @@ class Piece:
         self.grey = False
         self.moveAgain = 0
         self.standingOnSelfOrb = False
-
     def determineAvatar(self):
-
-        #if you have a shield
-        if "Energy Forcefield" in self.activeBuffs:
-            #and holding an item
-            if len(self.storedItems)>0:
-                #shield + item
-                self.avatar = "shIt"
-            else:
-                #just shield
-                self.avatar = "sh"
-        #if you don't have a shield
-        else:
-            # if you have items
-            if len(self.storedItems )>0:
-                #items only
-                self.avatar = f"player{self.ownedBy}stored"
-            else:
-                #nothing at all
-                self. avatar = "default"
-
-    
+        pass
     
 class Tile:
     def __init__(self, occupied = False):
@@ -169,112 +194,46 @@ def getCross(location, gameBoard, grow = False, includeSelf = False):
     columns = len(gameBoard[0])
     #check if you can go up one
     if location[0]-1 != -1:
-            
         #one row up (guaranteed already)
         validLocations.append( (location[0]-1,location[1]+0) )
     #check if you can go left
     if location[1]-1 != -1:
         validLocations.append( (location[0],location[1]-1) )
-
     if includeSelf == True:
         validLocations.append( (location[0],location[1]) )
-            
     #check if you can go right
     if location[1]+1 != columns:
         validLocations.append( (location[0],location[1]+1) )
     #check if you can go down
     if location[0]+1 != rows:
-            
         #bottom guaranteed
         validLocations.append( (location[0]+1,location[1]) )
-            
     return validLocations
        
-def initializeField(columns,rows,window,gameBoard):
-    
-    for i in range(2):
-        for j in range(columns): 
-            #window[i,j].update(image_filename="player1default.png")
-            gameBoard[i][j][0]=Tile(occupied=True)
-            
-            piece = Piece(playerTurn = 1)
-            gameBoard[i][j][1]=piece
-            gameBoard[i][j][1].location = (i,j)
-            gameBoard[i][j][0].tileType = "player1default"
-            gameBoard[i][j][1].avatar = "default"
-            
-            
-    for i in range(2):
-        for j in range(columns):
-            #window[rows-i-1,j].update(image_filename="player2default.png")
-            gameBoard[rows-i-1][j][0]=Tile(occupied=True)
-            piece = Piece(playerTurn = 2)
-            
-            gameBoard[rows-i-1][j][1]=piece
-            gameBoard[rows-i-1][j][1].location = (rows-i-1,j)
-            gameBoard[rows-i-1][j][0].tileType = "player2default"
-            gameBoard[rows-i-1][j][1].avatar = "default"
-            
-            
 
-
-    ###### DELETE ME ##########
-    for i in range(2):
-        for j in range(columns):
-            rows = 6
-            #window[rows-i-1,j].update(image_filename="player2default.png")
-            gameBoard[rows-i-1][j][0]=Tile(occupied=True)
-            piece = Piece(playerTurn = 2)
-            
-            gameBoard[rows-i-1][j][1]=piece
-            gameBoard[rows-i-1][j][1].location = (rows-i-1,j)
-            gameBoard[rows-i-1][j][0].tileType = "player2default"
-            gameBoard[rows-i-1][j][1].avatar = "default"
-            
-            gameBoard[rows-i-1][j][1].storedItems.append("move again")
-            gameBoard[i][j][1].storedItems.append("move again")
-            gameBoard[i][j][1].storedItems.append("place mine")
-            gameBoard[i][j][1].storedItems.append("trip mine radial")
-            gameBoard[i][j][1].activeBuffs.append("move diagonal")
-
-            
-            
-            
-    ####### END DELETE ME###########
 
 
 def countPieces(gameBoard,window):
     player1count = 0
     player2count = 0
-    
     for i in gameBoard:
         for j in i:
-            
-            if j[1] != 0:
-                
-                if j[1].ownedBy == 1:
-                    
+            if j[1] != 0: 
+                if j[1].ownedBy == 1:      
                     player1count+=1
                 elif j[1].ownedBy == 2:
                     player2count+=1
-                    
-    
     window['player1piececount'].update(f"Player 1 controls: {player1count}\n")
     window['player2piececount'].update(f"Player 2 controls: {player2count}\n")
     window.refresh()
 
 def gamePlay(playerTurn, window, gameBoard):
-    
         countPieces(gameBoard,window)
         createOrbs(window,gameBoard)
         displayBoard(window,gameBoard)
         movePiece(playerTurn, window,gameBoard)
         PublicStats.turnCount += 1
         repairFloor(window,gameBoard)
-        
-        
-        
-
 
 def getDistance(a,b,c,d):
     verticalDistance = abs(c-a)
@@ -283,7 +242,7 @@ def getDistance(a,b,c,d):
     return distance
 
 def createOrbs(window,gameBoard):
-    dangerTurn = 1
+    dangerTurn = 15
     emptySpots = 0
     if PublicStats.turnCount == dangerTurn:
         sg.popup("Warning: mines disguised as item orbs may spawn from now on!  They will explode if either player steps on them.", keep_on_top = True)
@@ -293,26 +252,19 @@ def createOrbs(window,gameBoard):
                     emptySpots+=1
     publicStats = PublicStats()
     orbsToPlace = publicStats.getOrbCount()
-
     if orbsToPlace > emptySpots:
         orbsToPlace = emptySpots
-    
     while orbsToPlace > 0:
         i = random.randint(0,len(gameBoard)-1)
         j = random.randint(0,len(gameBoard[0])-1)
-            
         if gameBoard[i][j][0].tileType == "default":
             orbsToPlace -= 1
-
             if PublicStats.turnCount > dangerTurn:
                 chanceCheck = random.randint(0,10)
                 if chanceCheck > 7:
                      gameBoard[i][j][0].tileType = "trap orb 0"
-                     continue
-                    
+                     continue    
             gameBoard[i][j][0].tileType = "itemOrb"
-            
-    
     
 def deathCheck(window, gameBoard):
     for i in gameBoard:
@@ -377,10 +329,7 @@ def deathCheck(window, gameBoard):
 def displayBoard(window,gameBoard):
     
     for i in range(len(gameBoard)):
-
         for j in range(len(gameBoard[0])):
-
-
             #unoccupied spaces
             if gameBoard[i][j][0].tileType == "exploding":
                 window[i,j].update(image_filename="exploding.png")
@@ -407,9 +356,6 @@ def displayBoard(window,gameBoard):
                 window[i,j].update(image_filename="snake.png")
                 continue
             
-            elif gameBoard[i][j][0].tileType == "purified":
-                window[i,j].update(image_filename="purified.png")
-                continue
 
             elif gameBoard[i][j][0].tileType == "abolished":
                 window[i,j].update(image_filename="abolished.png")
@@ -421,7 +367,6 @@ def displayBoard(window,gameBoard):
                 if gameBoard[i][j][0].tileType == "default":
                     window[i,j].update(image_filename="blank.png")
                     continue
-                    
                 elif gameBoard[i][j][0].tileType == "itemOrb":
                     window[i,j].update(image_filename="itemOrb.png")
                     continue
@@ -469,19 +414,18 @@ def displayBoard(window,gameBoard):
                     if "trip mine" in g.activeDebuffs:
                         tripmine = Image.open("tripmine.png").convert("RGBA")
                         avatar.paste(tripmine, (0,0), tripmine)
+                    
+                    if "purified" in g.activeBuffs:
+                        purified = Image.open("purified.png").convert("RGBA")
+                        avatar.paste(purified, (0,0), purified)
 
-                    #if it's supposed to be highlighted... then highlight it
-                    if g.grey == True:
-                        grey = Image.open("highlight.png").convert("RGBA")
-                        avatar = Image.blend(grey,avatar,.50)
-
-
-
+                    
                     #if move diagonal exists:
                     if "move diagonal" in g.activeBuffs:
                         diagonal = Image.open("diagonal.png").convert("RGBA")
                         avatar.paste(diagonal,(0,0),diagonal)
 
+                    #see which type of shoe icon needs to be applied
                     if g.moveAgain == 1:
                         step1 = Image.open("moveAgain1.png").convert("RGBA")
                         avatar.paste(step1, (0,0), step1)
@@ -491,36 +435,40 @@ def displayBoard(window,gameBoard):
                     elif g.moveAgain == 3:
                         step3 = Image.open("moveAgain3.png").convert("RGBA")
                         avatar.paste(step3, (0,0), step3)
-                    elif g.moveAgain > 4:
+                    elif g.moveAgain > 3:
                         stepMax = Image.open("moveAgainMax.png").convert("RGBA")
                         avatar.paste(stepMax, (0,0), stepMax)
 
 
-                    avatar.save("avatar.png","png")
-                    
+                    if "abolished" in g.activeDebuffs:
+                        abolished = Image.open("abolished.png").convert("RGBA")
+                        avatar.paste(abolished, (0,0), abolished)
+                        
+                    #if it's supposed to be highlighted... then highlight it
+                    if g.grey == True:
+                        grey = Image.open("highlight.png").convert("RGBA")
+                        avatar = Image.blend(grey,avatar,.50)
 
-            
+                #for making sure the game doesn't crash due to slow harddrives
+                try:
+                    avatar.save("avatar.png","png")
+                except:
+                    window["information"].update("Wait for load...")
+                    print("Loading pieces...")
+                    sleep(.05)
+                    avatar.save("avatar.png","png")
             window[i,j].update(image_filename="avatar.png")
                     
-
-                    
-                
-
-                    
+                  
 def pickUpItemOrb(gameBoard,x,y):
     #items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
     #items = ["trap orb","place mine","move again","suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs", "move diagonal", "trip mine radial", "purify radial", "napalm radial", "abolish foe powers radial", "haymaker"]
     items = ["trap orb"]
-
-    
     randItem = random.choice(items)
     gameBoard[x][y][1].storedItems.append(randItem)
     playerOwned = gameBoard[x][y][1].ownedBy
     gameBoard[x][y][1].avatar = f"player{playerOwned}stored"
     
-
-
-
 
 def useItems(gameBoard,x,y,window):
     layout = []
@@ -754,6 +702,7 @@ def useItems(gameBoard,x,y,window):
                 gameBoard[x][y][1].storedItems.remove("purify radial")
                 validSpots = getRadial((x,y), gameBoard)
                 cleanCheck = False
+                itemsMenu.close()
                 for i in validSpots:
                     
                     g = gameBoard[i[0]][i[1]]
@@ -762,17 +711,18 @@ def useItems(gameBoard,x,y,window):
                     if g[0].occupied == True:
 
                         if g[1].ownedBy == playerTurn:
-                            cleanCheck = False
+                            
                             if len(g[1].activeDebuffs) > 0:
-                                print("CLEANING")
-                                print(g[1].activeDebuffs)
+                                print("Purifying...")
+                                
                                 for i in g[1].activeDebuffs:
                                     cleanCheck = True
                                     previousTile = g[0].tileType
-                                    g[0].tileType = "purified"
+                                    g[1].activeBuffs.append("purified")
                                     displayBoard(window,gameBoard)
                                     window.refresh()
-                                    sleep(1)
+                                    sleep(.5)
+                                    g[1].activeBuffs.remove("purified")
                                     listOfDebuffs = ""
                                     for j in g[1].activeDebuffs:
                                        listOfDebuffs+=j+"\n"
@@ -781,12 +731,12 @@ def useItems(gameBoard,x,y,window):
                                        g[1].activeDebuffs.remove(j)
                                     window["information"].update(text_color = "blue")
                                     window.refresh()
-                                    sleep(1)
+                                    sleep(.5)
                                     window["information"].update(text_color = "white")
                                     g[0].tileType = previousTile
                                     displayBoard(window,gameBoard)
                                     window.refresh()
-                                    sleep(1)
+                                    sleep(.5)
                             
                     if cleanCheck == False:
                         window["information"].update(f"No corrupted allies were in range. Nothing happened. Well, that was a pointless waste.")
@@ -852,15 +802,13 @@ def useItems(gameBoard,x,y,window):
                     print("Can't place that there.  Only in an ampty space in range.")
                     continue
                     
-
-
-
-                
+     
             #abolish foe powers radial
             elif str.find(i,"abolish foe powers radial")>=0:
                 gameBoard[x][y][1].storedItems.remove("abolish foe powers radial")
                 validSpots = getRadial((x,y), gameBoard)
                 abolishCheck = False
+                itemsMenu.close()
                 for i in validSpots:
                     
                     g = gameBoard[i[0]][i[1]]
@@ -869,17 +817,17 @@ def useItems(gameBoard,x,y,window):
                     if g[0].occupied == True:
 
                         if g[1].ownedBy != playerTurn:
-                            abolishCheck = False
                             if len(g[1].activeBuffs) > 0:
                                 print("abolishing")
                                 print(g[1].activeBuffs)
                                 for i in g[1].activeBuffs:
                                     abolishCheck = True
                                     previousTile = g[0].tileType
-                                    g[0].tileType = "abolished"
+                                    g[1].debuffsList.append("abolished")
                                     displayBoard(window,gameBoard)
                                     window.refresh()
-                                    sleep(1)
+                                    g[1].debuffsList.remove("abolished")
+                                    sleep(.5)
                                     listOfBuffs = ""
                                     for j in g[1].activeBuffs:
                                        listOfBuffs+=j+"\n"
@@ -888,19 +836,19 @@ def useItems(gameBoard,x,y,window):
                                        g[1].activeBuffs.remove(j)
                                     window["information"].update(text_color = "blue")
                                     window.refresh()
-                                    sleep(1)
+                                    sleep(.5)
                                     window["information"].update(text_color = "white")
                                     g[0].tileType = previousTile
                                     displayBoard(window,gameBoard)
                                     window.refresh()
-                                    sleep(1)
+                                    sleep(.5)
                             
-                    if abolishCheck == False:
-                        window["information"].update(f"No powered enemies were in range. Nothing happened. Well, that was a pointless waste.")
-                        window["information"].update(text_color = "red")
-                        window.refresh()
-                        sleep(1)
-                        window["information"].update(text_color = "white")
+                if abolishCheck == False:
+                    window["information"].update(f"No powered enemies were in range. Nothing happened. Well, that was a pointless waste.")
+                    window["information"].update(text_color = "red")
+                    window.refresh()
+                    sleep(1)
+                    window["information"].update(text_color = "white")
 
                             
             #energy forcefield
@@ -1022,7 +970,7 @@ def useItems(gameBoard,x,y,window):
                                     s1 = s1+1
                                     displayBoard(window, gameBoard)
                                     window.refresh()
-                                    sleep(.75)
+                                    #sleep(.75)
                                     tempCopyTileType = gameBoard[s1+1][s2][0].tileType 
                                
                                     
@@ -1081,7 +1029,7 @@ def useItems(gameBoard,x,y,window):
                                     s1 = s1-1
                                     displayBoard(window, gameBoard)
                                     window.refresh()
-                                    sleep(.75)
+                                    #sleep(.75)
                                     tempCopyTileType = gameBoard[s1-1][s2][0].tileType 
                                
                                     
@@ -1140,7 +1088,7 @@ def useItems(gameBoard,x,y,window):
                                     s2 = s2+1
                                     displayBoard(window, gameBoard)
                                     window.refresh()
-                                    sleep(.75)
+                                    #sleep(.75)
                                     tempCopyTileType = gameBoard[s1][s2+1][0].tileType 
                                
                                     
@@ -1200,7 +1148,7 @@ def useItems(gameBoard,x,y,window):
                                     s2 = s2-1
                                     displayBoard(window, gameBoard)
                                     window.refresh()
-                                    sleep(.75)
+                                    #sleep(.75)
                                     tempCopyTileType = gameBoard[s1][s2-1][0].tileType 
                                
                                     
@@ -1444,10 +1392,6 @@ def repairFloor (window, gameBoard):
                 j[0].tileType = "damaged"
             elif j[0].tileType == "damaged":
                 j[0].tileType = "default"
-    
-
-
-
 
 def movePiece(playerTurn, window, gameBoard):
     #a small list that is used to make sure a player that gets a second turn for a piece can only use that specific piece twice
@@ -1464,8 +1408,6 @@ def movePiece(playerTurn, window, gameBoard):
         
         window['playerTurn'].update(f"{playerTurn}")
         window['information'].update(text_color = "white")
-
-
 
         #pick your piece to move
         window['information'].update(f"Pick a piece to move.")
@@ -1524,7 +1466,6 @@ def movePiece(playerTurn, window, gameBoard):
             continue
 
 
-        
         window["itemButton"].update(disabled = False)
         window["examineItem"].update(disabled = True)
                 
@@ -1576,7 +1517,7 @@ def movePiece(playerTurn, window, gameBoard):
             print(f"You can't interact directly with unoccupied spaces.")
             window.refresh()
             
-            sleep(.5)
+            sleep(.25)
             continue
         
         #if there is a piece there and it belongs to you, highlight it to show you selected it
@@ -1759,7 +1700,6 @@ def movePiece(playerTurn, window, gameBoard):
                     if gameBoard[ endLocation[0] ] [ endLocation[1] ][1]!=0 and gameBoard[ endLocation[0] ] [ endLocation[1] ][1].moveAgain >0:
                         
                         window['information'].update(f"This piece gets to move again; {gameBoard[ endLocation[0] ] [ endLocation[1] ][1].moveAgain} remaining!")
-                        sleep(1)
                         displayBoard(window, gameBoard)
                         moveAgainCheck = sg.popup_yes_no("Would you like to move it again?",keep_on_top=True)
                         if moveAgainCheck == "Yes":
@@ -1816,7 +1756,29 @@ def movePiece(playerTurn, window, gameBoard):
                         gameBoard[startLocation[0]][startLocation[1]][0].tileType = f"trap orb {playerTurn}"
                     else:
                         gameBoard[startLocation[0]][startLocation[1]][0].tileType = "default"
-                    
+                        
+                    if "Energy Forcefield" in gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeBuffs:
+                            gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeBuffs.remove("Energy Forcefield")
+                            window["information"].update("Trip mine went off!")
+                            print("Trip mine went off!")
+                            sleep(1)
+                            window["information"].update("But your forcefield saved you.")
+                            print("...But your forcefield saved you.")
+                            while ("trip mine" in gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeBuffs):
+                                gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeDebuffs.remove("trip mine")
+
+                    else:
+                            gameBoard[ endLocation[0] ] [ endLocation[1] ][0].occupied = False
+                            gameBoard[ endLocation[0] ] [ endLocation[1] ][1] = 0
+                            
+                            
+                            gameBoard[ endLocation[0] ] [ endLocation[1] ][1] = 0
+                            gameBoard[ endLocation[0] ] [ endLocation[1] ][0].tileType = "exploding"
+                            displayBoard(window,gameBoard)
+                            window.refresh()
+                            sg.popup("Trip mine went off!",keep_on_top=True)
+                            gameBoard[ endLocation[0] ] [ endLocation[1] ][0].tileType = "default"
+                            break
                     
                     
                     window['information'].update(f"Jumpkilled an enemy piece!")
@@ -1831,7 +1793,7 @@ def movePiece(playerTurn, window, gameBoard):
                         #sg.popup(f"Jump killer repeater {gameBoard[ endLocation[0] ] [ endLocation[1] ][1].moveAgain}",keep_on_top=True)
                         
                         window['information'].update(f"This piece gets to move again; {gameBoard[ endLocation[0] ] [ endLocation[1] ][1].moveAgain} remaining!")
-                        sleep(1)
+                        #sleep(1)
                         moveAgainCheck = sg.popup_yes_no("Would you like to move it again?",keep_on_top=True)
                         
                         if moveAgainCheck == "Yes":
@@ -1929,6 +1891,7 @@ def begin():
     
 
     initializeField(columns,rows,window,gameBoard)
+    resetMoveAgain(gameBoard)
     
     
     playerTurn = 1
@@ -2289,37 +2252,18 @@ def tutorial():
                                             sleep(5)
                                         sg.popup("Restarting the tutorial",keep_on_top=True)
                                         tutorial()
-                                            
-
-                                        
 
                                     else:
                                         sg.popup("Nope, try again",keep_on_top=True)
                                         continue
                                 
-                                    
-                            
-                        
-                        
-                    
-                            
-                        
-                            
-
-                            
+                       
         else:
             myText = "Invalid choice.  Try clicking something on the menu."
             window["tutorialInfo"].update(myText)
             
-                
-                
-            
-
-
-    
-    
+ 
 def main():
-
     introLayout = [[sg.Text("MegaCheckers",font = "Cambria 100")]]
     frame_1 = [
         [sg.Button("Begin game",key="begin")],
@@ -2336,9 +2280,11 @@ def main():
         begin()
 
 
-    
-    
-    
 
-    
+#delete me after debug
+begin()
+ #delete me
+
+
+ 
 main()
