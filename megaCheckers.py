@@ -302,22 +302,24 @@ def createOrbs(window,gameBoard):
     
 def deathCheck(window, gameBoard):
     for i in gameBoard:
-        for j in gameBoard:
-            g = gameBoard[i][j]
-            if g[0].occupied == True and g[0].tileType in ["mine","trapOrb","laser"]:
-                if "forceField" in g[1].activeBuffs:
-                    g[1].activeBuffs.remove("forecefield")
-                    sg.popup("You were protected from certain death by your forcefield")
-                    g[0].tileType = "default"
+        for j in i:
+            
+            if j[0].occupied == True and j[0].tileType in ["mine","trapOrb","laser"]:
+                if "forceField" in j[1].activeBuffs:
+                    j[1].activeBuffs.remove("forecefield")
+                    sg.popup("You were protected from certain death by your forcefield",keep_on_top=True)
+                    j[0].tileType = "default"
                 else:
-                    g[0].tileType = "exploding"
-                    g[1] = 0
+                    j[0].tileType = "exploding"
+                    j[1] = 0
+                    j[0].occupied = False
                     displayBoard(window, gameBoard)
                     window.refresh()
                     sleep(1)
-                    g[0].tileType = "default"
+                    j[0].tileType = "default"
+                    displayBoard(window, gameBoard)
                     window.refresh()
-                    sg.popup("A piece died!")
+                    sg.popup("A piece died!",keep_on_top=True)
             #do something for holes
                     
         
@@ -382,7 +384,7 @@ def displayBoard(window,gameBoard):
                     window[i,j].update(image_filename="trapOrb.png")
                     continue
                 else:
-                    sg.popup(f"A tile error has occurred, with type {gameBoard[i][j][0].tileType}")
+                    sg.popup(f"A tile error has occurred, with type {gameBoard[i][j][0].tileType}",keep_on_top=True)
                     window[i,j].update(image_filename="glitch.png")
                     continue
             else:
@@ -748,13 +750,11 @@ def useItems(gameBoard,x,y,window):
             #place mine
             elif str.find(i,"place mine")>=0:
                 itemsMenu.close()
-                sg.popup("Pick a location to put the mine")
                 validLocations = getRadial(location,gameBoard)
-                print(f"All locations are {validLocations}")
                 validLocations = filterEmpty(gameBoard,validLocations)
-                print(f"ValidLocations are {validLocations}")
                 
                 
+                window["information"].update("Where would you like to place the mine?")
                 print("Where would you like to place the mine?")
                 event = window.read()
                 if (event[0][0],event[0][1]) in validLocations:
@@ -892,7 +892,7 @@ def useItems(gameBoard,x,y,window):
                             direction = "push up"
 
                     else:
-                        sg.popup("ERROR IN HAYMAKER DIRECTION CALCULATION")
+                        sg.popup("ERROR IN HAYMAKER DIRECTION CALCULATION",keep_on_top=True)
 
                         
                     
@@ -1226,7 +1226,7 @@ def useItems(gameBoard,x,y,window):
                     #a check to make sure the plane doesn't get stuck in a pseudo infinite loop in case of special scenarios where pretty much the entire field is full of allied squares
                     attempts += 1
                     if attempts > 100:
-                        sg.popup("The plane had trouble finding targets, so it flew away early.")
+                        sg.popup("The plane had trouble finding targets, so it flew away early.",keep_on_top=True)
                         print("The plane had trouble finding targets, so it flew away early.")
                         if itemsMenu:    
                             itemsMenu.close()
@@ -1399,7 +1399,7 @@ def movePiece(playerTurn, window, gameBoard):
             event = []
             event.append(repeatRestrictor[1])
             if event[0] == (-1.-1):
-                sg.popup("An error has occurred in repeat restrictor's (-1,-1)")
+                sg.popup("An error has occurred in repeat restrictor's (-1,-1)",keep_on_top=True)
                 repeatRestrictor = False
                 return
         if "exit" in event:
@@ -1452,7 +1452,7 @@ def movePiece(playerTurn, window, gameBoard):
         startLocation = event[0]
         #print(f"{startLocation} and {repeatRestrictor[1]}")
         if (repeatRestrictor[0] == True) and (startLocation != repeatRestrictor[1]):
-            getChoice = sg.popup_yes_no("You can only move the same piece twice.  Click yes to force that piece to be selected.  Otherwise choose no to end your turn.")
+            getChoice = sg.popup_yes_no("You can only move the same piece twice.  Click yes to force that piece to be selected.  Otherwise choose no to end your turn.",keep_on_top=True)
             if getChoice == "Yes":
                 startLocation = repeatRestrictor[1]
             else:
@@ -1620,11 +1620,12 @@ def movePiece(playerTurn, window, gameBoard):
                     #set the new location as occupied; set the tile as the type of the tile that moved (needs to be updated in future revisions)
                     gameBoard[ endLocation[0] ] [ endLocation[1] ][0].occupied = True
                     gameBoard[ endLocation[0] ] [ endLocation[1] ][1].location = (endLocation[0],endLocation[1])
-                    gameBoard[ endLocation[0]][endLocation[1]][0].tileType = f"player{playerTurn}default"
-
                     #check for mine death
                     deathCheck(window, gameBoard)
-
+                    if gameBoard[ endLocation[0]][endLocation[1]][1] != 0:
+                        gameBoard[ endLocation[0]][endLocation[1]][0].tileType = f"player{playerTurn}default"
+                    else:
+                        break
                     
                     if "trip mine" in gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeDebuffs:
                         
@@ -1648,7 +1649,7 @@ def movePiece(playerTurn, window, gameBoard):
                             gameBoard[ endLocation[0] ] [ endLocation[1] ][0].tileType = "exploding"
                             displayBoard(window,gameBoard)
                             window.refresh()
-                            sg.popup("Trip mine went off!")
+                            sg.popup("Trip mine went off!",keep_on_top=True)
                             gameBoard[ endLocation[0] ] [ endLocation[1] ][0].tileType = "default"
                             continue
                         
@@ -1666,7 +1667,7 @@ def movePiece(playerTurn, window, gameBoard):
                         window['information'].update(f"This piece gets to move again; {gameBoard[ endLocation[0] ] [ endLocation[1] ][1].moveAgain} remaining!")
                         sleep(1)
                         displayBoard(window, gameBoard)
-                        moveAgainCheck = sg.popup_yes_no("Would you like to move it again?")
+                        moveAgainCheck = sg.popup_yes_no("Would you like to move it again?",keep_on_top=True)
                         print(moveAgainCheck)
                         if moveAgainCheck == "Yes":
                             gameBoard[ endLocation[0] ] [ endLocation[1] ][1].moveAgain -=1
@@ -1727,11 +1728,11 @@ def movePiece(playerTurn, window, gameBoard):
                     if gameBoard[ endLocation[0] ] [ endLocation[1] ][1]!=0 and gameBoard[ endLocation[0] ] [ endLocation[1] ][1].moveAgain >0:
 
 
-                        sg.popup(f"Jump killer repeater {gameBoard[ endLocation[0] ] [ endLocation[1] ][1].moveAgain}")
+                        sg.popup(f"Jump killer repeater {gameBoard[ endLocation[0] ] [ endLocation[1] ][1].moveAgain}",keep_on_top=True)
                         
                         window['information'].update(f"This piece gets to move again; {gameBoard[ endLocation[0] ] [ endLocation[1] ][1].moveAgain} remaining!")
                         sleep(1)
-                        moveAgainCheck = sg.popup_yes_no("Would you like to move it again?")
+                        moveAgainCheck = sg.popup_yes_no("Would you like to move it again?",keep_on_top=True)
                         
                         if moveAgainCheck == "Yes":
                             
@@ -1847,7 +1848,7 @@ def begin():
                             if "stunned" in j[1].activeDebuffs:
                                 j[1].activeDebuffs.remove("stunned")
                                 if j[0].tileType == "itemOrb":
-                                    sg.popup("A stunned piece recovered and picked up the item orb it had landed on")
+                                    sg.popup("A stunned piece recovered and picked up the item orb it had landed on",keep_on_top=True)
                                     pickUpItemOrb(gameBoard,x,y)
                 y=-1
             playerTurn = 2
@@ -1865,7 +1866,7 @@ def begin():
                             if "stunned" in j[1].activeDebuffs:
                                 j[1].activeDebuffs.remove("stunned")
                                 if j[0].tileType == "itemOrb":
-                                    sg.popup("A stunned piece recovered and picked up the item orb it had landed on")
+                                    sg.popup("A stunned piece recovered and picked up the item orb it had landed on",keep_on_top=True)
                                     pickUpItemOrb(gameBoard,x,y)
                 y=-1
             playerTurn = 1
