@@ -234,6 +234,7 @@ def initializeField(columns,rows,window,gameBoard):
             gameBoard[rows-i-1][j][1].storedItems.append("move again")
             gameBoard[i][j][1].storedItems.append("move again")
             gameBoard[i][j][1].storedItems.append("place mine")
+            gameBoard[i][j][1].storedItems.append("trip mine radial")
             gameBoard[i][j][1].activeBuffs.append("move diagonal")
 
             
@@ -282,7 +283,10 @@ def getDistance(a,b,c,d):
     return distance
 
 def createOrbs(window,gameBoard):
+    dangerTurn = 1
     emptySpots = 0
+    if PublicStats.turnCount == dangerTurn:
+        sg.popup("Warning: mines disguised as item orbs may spawn from now on!  They will explode if either player steps on them.", keep_on_top = True)
     for i in gameBoard:
         for j in i:
                 if j[0].tileType == "default":
@@ -292,17 +296,22 @@ def createOrbs(window,gameBoard):
 
     if orbsToPlace > emptySpots:
         orbsToPlace = emptySpots
-
+    
     while orbsToPlace > 0:
         i = random.randint(0,len(gameBoard)-1)
         j = random.randint(0,len(gameBoard[0])-1)
-        
-        
             
         if gameBoard[i][j][0].tileType == "default":
             orbsToPlace -= 1
-            
+
+            if PublicStats.turnCount > dangerTurn:
+                chanceCheck = random.randint(0,10)
+                if chanceCheck > 7:
+                     gameBoard[i][j][0].tileType = "trap orb 0"
+                     continue
+                    
             gameBoard[i][j][0].tileType = "itemOrb"
+            
     
     
 def deathCheck(window, gameBoard):
@@ -457,6 +466,10 @@ def displayBoard(window,gameBoard):
                         stunned = Image.open("stunned.png").convert("RGBA")
                         avatar.paste(stunned, (0,0), stunned)
 
+                    if "trip mine" in g.activeDebuffs:
+                        tripmine = Image.open("tripmine.png").convert("RGBA")
+                        avatar.paste(tripmine, (0,0), tripmine)
+
                     #if it's supposed to be highlighted... then highlight it
                     if g.grey == True:
                         grey = Image.open("highlight.png").convert("RGBA")
@@ -514,7 +527,7 @@ def useItems(gameBoard,x,y,window):
     for i in gameBoard[x][y][1].storedItems:
         layout+= [ [sg.Button(i)] ]
     layout+= [ [sg.Button("CANCEL")] ]
-    itemsMenu = sg.Window("Items Menu", layout,disable_close=True )
+    itemsMenu = sg.Window("Items Menu", layout,disable_close=True, keep_on_top = True )
     playerTurn = gameBoard[x][y][1].ownedBy
     rows = len(gameBoard)
     columns = len(gameBoard[0])
@@ -1730,7 +1743,7 @@ def movePiece(playerTurn, window, gameBoard):
                             window.refresh()
                             sg.popup("Trip mine went off!",keep_on_top=True)
                             gameBoard[ endLocation[0] ] [ endLocation[1] ][0].tileType = "default"
-                            continue
+                            break
 
 
                     
