@@ -2,6 +2,7 @@ MegaCheckers:
 
 A game where you take turns moving pieces to kill all of your enemy's pieces.  To do this, your pieces jump onto the enemy piece to crush them.  In order to aid you with this goal, every few turns a random number of mystery items will appear on empty spaces.  You pick up an item and on any subsequent turn,  you can use the item (depending on what the item is) to destroy enemy pieces, to set up traps, to alter the playing field (raise/lower, destroy, magnetize, make one way, push pieces, etc), to power up your piece, and so on.  Eventually networking will be enabled.  
 
+v.0.9.17 added trap orbs item (puts down a mine that looks like a normal orb, but doesn't affect you if you placed it), and fixed a glitch in move again that gave you unlimited turns (missing a return statement when a player says no to moving again, ironically). However, the item orb disappears when you step on your own, so that logic needs to be updated or the item changed to do something else if you pick it up.
 
 v.0.9.16 Corrected some death check errors that occur due to piece dying early and not properly setting the space as "not occupied".  Added "always on top" to all popups to avoid errors where the popup disappears.
 

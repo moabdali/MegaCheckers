@@ -96,6 +96,10 @@ class Tile:
             sg.popup(f"There's an obvious booby trap on this tile.  Don't move here without protection! It has an elevation of {self.tileHeight}",keep_on_top=True)
             print(f"There's an obvious booby trap on this tile.  Don't move here without protection! It has an elevation of {self.tileHeight}")
             return
+        elif self.tileType in ["trap orb 0", "trap orb 1", "trap orb 2"]:
+            sg.popup(f"This is an item orb tile with an elevation of {self.tileHeight}",keep_on_top=True)
+            print(f"This is an item orb tile with an elevation of {self.tileHeight}")
+            return
 
 def getColumn(location, gameBoard, grow = False,emptyOnly = False):
     validLocations = []
@@ -303,8 +307,8 @@ def createOrbs(window,gameBoard):
 def deathCheck(window, gameBoard):
     for i in gameBoard:
         for j in i:
-            
-            if j[0].occupied == True and j[0].tileType in ["mine","trapOrb","laser"]:
+            #if a regular mine or laser was stepped on
+            if j[0].occupied == True and j[0].tileType in ["mine","laser"]:
                 if "forceField" in j[1].activeBuffs:
                     j[1].activeBuffs.remove("forecefield")
                     sg.popup("You were protected from certain death by your forcefield",keep_on_top=True)
@@ -320,6 +324,43 @@ def deathCheck(window, gameBoard):
                     displayBoard(window, gameBoard)
                     window.refresh()
                     sg.popup("A piece died!",keep_on_top=True)
+                    
+            #if a trap belonging to your enemy was set
+            elif j[0].occupied == True and ( (j[0].tileType == "trap orb 1" and j[1].ownedBy != 1) or (j[0].tileType == "trap orb 2" and j[1].ownedBy != 2)  ):
+                if "forceField" in j[1].activeBuffs:
+                    j[1].activeBuffs.remove("forecefield")
+                    sg.popup("You were protected from certain death by your forcefield",keep_on_top=True)
+                    j[0].tileType = "default"
+                else:
+                    j[0].tileType = "exploding"
+                    j[1] = 0
+                    j[0].occupied = False
+                    displayBoard(window, gameBoard)
+                    window.refresh()
+                    sleep(1)
+                    j[0].tileType = "default"
+                    displayBoard(window, gameBoard)
+                    window.refresh()
+                    sg.popup("A piece died!",keep_on_top=True)
+                    
+            #if a neutral trap was stepped on
+            elif j[0].occupied == True and ( (j[0].tileType == "trap orb 0") ):
+                if "forceField" in j[1].activeBuffs:
+                    j[1].activeBuffs.remove("forecefield")
+                    sg.popup("You were protected from certain death by your forcefield",keep_on_top=True)
+                    j[0].tileType = "default"
+                else:
+                    j[0].tileType = "exploding"
+                    j[1] = 0
+                    j[0].occupied = False
+                    displayBoard(window, gameBoard)
+                    window.refresh()
+                    sleep(1)
+                    j[0].tileType = "default"
+                    displayBoard(window, gameBoard)
+                    window.refresh()
+                    sg.popup("A piece died!",keep_on_top=True)
+                
             #do something for holes
                     
         
@@ -380,7 +421,7 @@ def displayBoard(window,gameBoard):
                 elif gameBoard[i][j][0].tileType == "mine":
                     window[i,j].update(image_filename="mine.png")
                     continue
-                elif gameBoard[i][j][0].tileType == "trapOrb":
+                elif gameBoard[i][j][0].tileType in ["trap orb 0","trap orb 1", "trap orb 2"]:
                     window[i,j].update(image_filename="trapOrb.png")
                     continue
                 else:
@@ -454,8 +495,8 @@ def displayBoard(window,gameBoard):
                     
 def pickUpItemOrb(gameBoard,x,y):
     #items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
-    #items = ["mine","move again","suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs", "move diagonal", "trip mine radial", "purify radial", "napalm radial", "abolish foe powers radial", "haymaker"]
-    items = ["place mine"]
+    #items = ["trap orb","place mine","move again","suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs", "move diagonal", "trip mine radial", "purify radial", "napalm radial", "abolish foe powers radial", "haymaker"]
+    items = ["trap orb"]
 
     
     randItem = random.choice(items)
@@ -770,6 +811,31 @@ def useItems(gameBoard,x,y,window):
                     
                     window["information"].update("Can't place mine there.  Only in an empty space in range.")
                     print("Can't place mine there.  Only in an ampty space in range.")
+                    continue
+
+            #trap orb
+            elif str.find(i,"trap orb")>=0:
+                itemsMenu.close()
+                validLocations = getRadial(location,gameBoard)
+                validLocations = filterEmpty(gameBoard,validLocations)
+                
+                
+                window["information"].update("Where would you like to place the trap?")
+                print("Where would you like to place the trap?")
+                event = window.read()
+                if (event[0][0],event[0][1]) in validLocations:
+                    
+                    print("Done.")
+                    window["information"].update("Done.")
+                    gameBoard[ event[0][0]][event[0][1]][0].tileType = f"trap orb {playerTurn}"
+                    gameBoard[x][y][1].storedItems.remove("trap orb")
+                    displayBoard(window, gameBoard)
+                    window.refresh()
+                    continue
+                else:
+                    
+                    window["information"].update("Can't place that there.  Only in an empty space in range.")
+                    print("Can't place that there.  Only in an ampty space in range.")
                     continue
                     
 
@@ -1674,6 +1740,8 @@ def movePiece(playerTurn, window, gameBoard):
                             repeatRestrictor[0] = True
                             repeatRestrictor[1] = ( (endLocation[0],endLocation[1]) )
                             continue
+                        else:
+                            return
                         
                     else:
                         return 1
@@ -1740,6 +1808,8 @@ def movePiece(playerTurn, window, gameBoard):
                             repeatRestrictor[0] = True
                             repeatRestrictor[1] = ( (endLocation[0],endLocation[1]))
                             continue
+                        else:
+                            return
                     return 2
                     
 
