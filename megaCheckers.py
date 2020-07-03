@@ -33,6 +33,7 @@ class Piece:
         self.distanceMax = 1
         self.grey = False
         self.moveAgain = 0
+        self.standingOnSelfOrb = False
 
     def determineAvatar(self):
 
@@ -800,8 +801,8 @@ def useItems(gameBoard,x,y,window):
                 event = window.read()
                 if (event[0][0],event[0][1]) in validLocations:
                     
-                    print("mine placed at {event[0][0],event[0][1]}")
-                    window["information"].update("mine placed at {event[0][0],event[0][1]}")
+                    print(f"mine placed at {event[0][0],event[0][1]}")
+                    window["information"].update(f"mine placed at {event[0][0],event[0][1]}")
                     gameBoard[ event[0][0]][event[0][1]][0].tileType = "mine"
                     gameBoard[x][y][1].storedItems.remove("place mine")
                     displayBoard(window, gameBoard)
@@ -1619,7 +1620,7 @@ def movePiece(playerTurn, window, gameBoard):
                 window["information"].update("An error occurred in item lookups")
         
 
-        #if thre isn't any piece on the square
+        #if there isn't any piece on the square
         if (gameBoard[ startLocation[0] ] [ startLocation[1] ] [0].occupied == False ):
             window['information'].update(f"Nothing exists on the initial square!")
             print(f"Nothing exists on the initial square!")
@@ -1636,6 +1637,7 @@ def movePiece(playerTurn, window, gameBoard):
         if( gameBoard[ startLocation[0] ] [ startLocation[1] ] [0] .occupied):
             #if the piece is yours
             if (gameBoard[ startLocation[0] ] [ startLocation[1] ][1].ownedBy == playerTurn):
+                
                 #assume the player isn't trying to move diagonally at first
                 diagonalCheck = False
                 #if it's too far...
@@ -1675,23 +1677,34 @@ def movePiece(playerTurn, window, gameBoard):
                 if gameBoard[ endLocation[0] ] [ endLocation[1] ][0].occupied == False:
                    
 
-                    #copy the actual object over from the old address to the new one
+                    #copy the actual piece object over from the old address to the new one (deepcopy needed?)
                     gameBoard[endLocation[0]][endLocation[1]][1] = gameBoard[startLocation[0]][startLocation[1]][1]
                     
                     #set the original location as being empty; delete the class; set a default tile
                     gameBoard[ startLocation[0] ] [ startLocation[1] ][0].occupied = False
                     gameBoard[ startLocation[0] ] [ startLocation[1] ][1] = 0
-                    gameBoard[startLocation[0]][startLocation[1]][0].tileType = "default"
+                    
+                    if gameBoard[endLocation[0]][endLocation[1]][1].standingOnSelfOrb == True:
+                        gameBoard[startLocation[0]][startLocation[1]][0].tileType = f"trap orb {playerTurn}"
+                    else:
+                        gameBoard[startLocation[0]][startLocation[1]][0].tileType = "default"
 
                     #set the new location as occupied; set the tile as the type of the tile that moved (needs to be updated in future revisions)
                     gameBoard[ endLocation[0] ] [ endLocation[1] ][0].occupied = True
                     gameBoard[ endLocation[0] ] [ endLocation[1] ][1].location = (endLocation[0],endLocation[1])
                     #check for mine death
                     deathCheck(window, gameBoard)
-                    if gameBoard[ endLocation[0]][endLocation[1]][1] != 0:
+                    
+                    if gameBoard[ endLocation[0]][endLocation[1]][1] != 0 and gameBoard[ endLocation[0]][endLocation[1]][0].tileType != f"trap orb {playerTurn}":
                         gameBoard[ endLocation[0]][endLocation[1]][0].tileType = f"player{playerTurn}default"
-                    else:
+                    elif gameBoard[ endLocation[0]][endLocation[1]][1] == 0:
                         break
+
+
+
+                    
+                    if gameBoard[ endLocation[0] ] [ endLocation[1] ][0].tileType == f"trap orb {playerTurn}":
+                        gameBoard[ endLocation[0] ] [ endLocation[1] ][1].standingOnSelfOrb = True
                     
                     if "trip mine" in gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeDebuffs:
                         
@@ -1718,7 +1731,9 @@ def movePiece(playerTurn, window, gameBoard):
                             sg.popup("Trip mine went off!",keep_on_top=True)
                             gameBoard[ endLocation[0] ] [ endLocation[1] ][0].tileType = "default"
                             continue
-                        
+
+
+                    
                     window['information'].update(f"Moved successfully!")
                     print("Moved successfully")
                     window.refresh
@@ -1734,7 +1749,6 @@ def movePiece(playerTurn, window, gameBoard):
                         sleep(1)
                         displayBoard(window, gameBoard)
                         moveAgainCheck = sg.popup_yes_no("Would you like to move it again?",keep_on_top=True)
-                        print(moveAgainCheck)
                         if moveAgainCheck == "Yes":
                             gameBoard[ endLocation[0] ] [ endLocation[1] ][1].moveAgain -=1
                             repeatRestrictor[0] = True
@@ -1783,8 +1797,13 @@ def movePiece(playerTurn, window, gameBoard):
                         window['information'].update("The piece you just killed was sitting on an item orb.  You picked it up.  Lucky you got to it before he recovered from his stun")
                         print("The piece you just killed was sitting on an item orb.  You picked it up.  Lucky you got to it before he recovered from his stun")
                         #pickUpItemOrb(gameBoard,x,y)
-                    #set the original tile as default look
-                    gameBoard[startLocation[0]][startLocation[1]][0].tileType = "default"
+                        
+                    #set the original tile as either a trap orb or default, depending on what was there
+                    if gameBoard[endLocation[0]][endLocation[1]][1].standingOnSelfOrb == True:
+                        gameBoard[startLocation[0]][startLocation[1]][0].tileType = f"trap orb {playerTurn}"
+                    else:
+                        gameBoard[startLocation[0]][startLocation[1]][0].tileType = "default"
+                    
                     
                     
                     window['information'].update(f"Jumpkilled an enemy piece!")
@@ -1796,7 +1815,7 @@ def movePiece(playerTurn, window, gameBoard):
                     if gameBoard[ endLocation[0] ] [ endLocation[1] ][1]!=0 and gameBoard[ endLocation[0] ] [ endLocation[1] ][1].moveAgain >0:
 
 
-                        sg.popup(f"Jump killer repeater {gameBoard[ endLocation[0] ] [ endLocation[1] ][1].moveAgain}",keep_on_top=True)
+                        #sg.popup(f"Jump killer repeater {gameBoard[ endLocation[0] ] [ endLocation[1] ][1].moveAgain}",keep_on_top=True)
                         
                         window['information'].update(f"This piece gets to move again; {gameBoard[ endLocation[0] ] [ endLocation[1] ][1].moveAgain} remaining!")
                         sleep(1)
@@ -1838,8 +1857,8 @@ def resetMoveAgain(gameBoard):
                             moveAgainCount +=1
             if j[0].occupied == True:
                 j[1].moveAgain = moveAgainCount
-                if j[1].moveAgain > 0:
-                    print(j[1].moveAgain)
+                
+                    
     
 def begin():
     
