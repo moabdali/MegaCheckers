@@ -45,7 +45,7 @@ def initializeField(columns,rows,window,gameBoard):
             gameBoard[rows-i-1][j][1].activeBuffs.append("haymaker")
             gameBoard[i][j][1].storedItems.append("move again")
             gameBoard[i][j][1].storedItems.append("move again")
-            gameBoard[i][j][1].storedItems.append("move again")
+            gameBoard[i][j][1].storedItems.append("shuffle radial")
             gameBoard[i][j][1].storedItems.append("haymaker")
             gameBoard[i][j][1].activeDebuffs.append("poison")
             gameBoard[i][j][1].storedItems.append("place mine")
@@ -514,7 +514,7 @@ def useItems(gameBoard,x,y,window):
             zz = "removes all debuffs (negative effects) from all surrounding allies and this piece."
         elif z == "images/jumpProof.png":
             z = "images/jumpProof.png"
-            zz = "This piece is holding an umbrella, so naturally, he can't be jumped on by a 3 ton block of metal machinery."
+            zz = "This piece is wearing a hardhat, so naturally, he can't be jumped on by a 3 ton block of metal machinery."
         else:
             z = "images/blank.png"
             zz = "no explanation supplied... yet"
@@ -527,13 +527,6 @@ def useItems(gameBoard,x,y,window):
     listData += [[sg.Button("CANCEL")]]
     
     layout+= [ [sg.Column(listData,justification="center")] ]
-    
-    
-    
-    #for i in gameBoard[x][y][1].storedItems:
-    #    layout+= [ [sg.Button(i)]]
-    #layout+= [ [sg.Button("CANCEL")] ]
-    #itemsMenu = sg.Window("Items Menu", layout,disable_close=True, keep_on_top = True )
 
     itemsMenu = sg.Window("Items Menu", layout,disable_close=True, keep_on_top = True )
 
@@ -782,23 +775,62 @@ def useItems(gameBoard,x,y,window):
                     window.refresh()
                     sleep(.1)
                     x+=1
+
+                #shuffle locations to look cooler?
+                random.shuffle(locations)
+                #shuffle locations to look cooler?
                 
                 displayBoard(window, gameBoard)
                 window.refresh()
-                i=0
+                #i=0
                 while len(locations) > 0:
                     randCoord = random.choice(locations)
                     randTileInfo = random.choice(cg)
                     g[randCoord[0]][randCoord[1]] = randTileInfo
                     locations.remove(randCoord)
                     cg.remove(randTileInfo)
-                    i+=1
+                    #i+=1
                     displayBoard(window, g)
                     window.refresh()
                     sleep(.1)
                 displayBoard(window, g)
                 
+            #shuffle radial
+            elif str.find(i,"shuffle radial")>=0:                
+                itemsMenu.close()
+                g = gameBoard
+                if g[x][y][1].grey == True:
+                    g[x][y][1].grey = False
+                cg = []
+                locations = getRadial( (x,y),gameBoard)
 
+                #shuffle the locations to look cooler?
+                random.shuffle(locations)
+                #shuffle the locations to look cooler?
+                
+                g[x][y][1].storedItems.remove("shuffle column")
+
+                for i in locations:
+                    x = i[0]
+                    y = i[1]
+                    cg.append(copy.deepcopy(g[x][y]))
+                    g[x][y][0].tileType = "default"
+                    g[x][y][0].occupied = False
+                    displayBoard(window,g)
+                    window.refresh()
+                    sleep(.1)
+                    
+                while len(locations) > 0:
+                    randCoord = random.choice(locations)
+                    randTileInfo = random.choice(cg)
+                    g[randCoord[0]][randCoord[1]] = randTileInfo
+                    locations.remove(randCoord)
+                    cg.remove(randTileInfo)
+                    displayBoard(window, g)
+                    window.refresh()
+                    sleep(.1)
+                displayBoard(window, g)
+                
                 
             #purify radial
             elif str.find(i,"purify radial")>=0:

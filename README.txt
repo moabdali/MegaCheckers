@@ -2,8 +2,9 @@ MegaCheckers:
 
 A game where you take turns moving pieces to kill all of your enemy's pieces.  To do this, your pieces jump onto the enemy piece to crush them.  In order to aid you with this goal, every few turns a random number of mystery items will appear on empty spaces.  You pick up an item and on any subsequent turn,  you can use the item (depending on what the item is) to destroy enemy pieces, to set up traps, to alter the playing field (raise/lower, destroy, magnetize, make one way, push pieces, etc), to power up your piece, and so on.  Eventually networking will be enabled.  
 
+v.0.9.25 Shuffle radial implemented.  Added some arrows for the items, but haven't implemented them yet.  Will include with next commit hopefully, along with shuffle row.
 
-v.0.9.24 Shuffle column implemented, with a neat step by step removal and replacement of pieces.  Shuffling does not affect tripmines since technically the tile is warped out of play and replaced back into existence... the actual piece never moves off the tile. 
+v.0.9.24 Shuffle column implemented, with a neat step by step removal and replacement of pieces.  Shuffling does not affect tripmines since technically the tile is warped out of play and replaced back into existence... the actual piece never moves off the tile. Also combined the print message and window["information"] messages into one function.
 
 v.0.9.23 NO LONGER WRITES TO DISK.  HUGE PERFORMANCE GAINS! Also, corrected a glitch where pieces will explode if they kill an enemy on their second (or higher) turn.  Also moved all the images into the image folder.
 
