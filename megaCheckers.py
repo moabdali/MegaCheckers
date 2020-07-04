@@ -368,7 +368,7 @@ def displayBoard(window,gameBoard):
                     window[i,j].update(image_filename="blank.png")
                     continue
                 elif gameBoard[i][j][0].tileType == "itemOrb":
-                    window[i,j].update(image_filename="itemOrb.png")
+                    window[i,j].update(image_filename="itemOrb.gif")
                     continue
                 elif gameBoard[i][j][0].tileType == "destroyed":
                     window[i,j].update(image_filename="destroyed.png")
@@ -377,7 +377,7 @@ def displayBoard(window,gameBoard):
                     window[i,j].update(image_filename="mine.png")
                     continue
                 elif gameBoard[i][j][0].tileType in ["trap orb 0","trap orb 1", "trap orb 2"]:
-                    window[i,j].update(image_filename="trapOrb.png")
+                    window[i,j].update(image_filename="trapOrb.gif")
                     continue
                 else:
                     sg.popup(f"A tile error has occurred, with type {gameBoard[i][j][0].tileType}",keep_on_top=True)
@@ -414,12 +414,19 @@ def displayBoard(window,gameBoard):
                     if "trip mine" in g.activeDebuffs:
                         tripmine = Image.open("tripmine.png").convert("RGBA")
                         avatar.paste(tripmine, (0,0), tripmine)
-                    
-                    if "purified" in g.activeBuffs:
-                        purified = Image.open("purified.png").convert("RGBA")
-                        avatar.paste(purified, (0,0), purified)
 
+                    if "purified2" in g.activeBuffs:
+                        purified2 = Image.open("purified2.png").convert("RGBA")
+                        avatar.paste(purified2, (0,0), purified2)
+                    elif "purified1" in g.activeBuffs:
+                        purified1 = Image.open("purified1.png").convert("RGBA")
+                        avatar.paste(purified1, (0,0), purified1)
+                    elif "purified0" in g.activeBuffs:
+                        purified0 = Image.open("purified0.png").convert("RGBA")
+                        avatar.paste(purified0, (0,0), purified0)
                     
+                    
+                        
                     #if move diagonal exists:
                     if "move diagonal" in g.activeBuffs:
                         diagonal = Image.open("diagonal.png").convert("RGBA")
@@ -714,36 +721,47 @@ def useItems(gameBoard,x,y,window):
                             
                             if len(g[1].activeDebuffs) > 0:
                                 print("Purifying...")
-                                
+                                window["information"].update("Purifying...")
                                 for i in g[1].activeDebuffs:
                                     cleanCheck = True
                                     previousTile = g[0].tileType
-                                    g[1].activeBuffs.append("purified")
+                                    g[1].activeBuffs.append("purified0")
                                     displayBoard(window,gameBoard)
                                     window.refresh()
-                                    sleep(.5)
-                                    g[1].activeBuffs.remove("purified")
+                                    #sleep(.01)
+                                    g[1].activeBuffs.append("purified1")
+                                    displayBoard(window,gameBoard)
+                                    window.refresh()
+                                    #sleep(.01)
+                                    g[1].activeBuffs.append("purified2")
+                                    displayBoard(window,gameBoard)
+                                    window.refresh()
+                                    #sleep(.01)
+                                    g[1].activeBuffs.remove("purified0")
+                                    g[1].activeBuffs.remove("purified1")
+                                    g[1].activeBuffs.remove("purified2")
                                     listOfDebuffs = ""
                                     for j in g[1].activeDebuffs:
                                        listOfDebuffs+=j+"\n"
                                     window["information"].update(f"Removed  {listOfDebuffs}")
+                                    print(f"Removed  {listOfDebuffs}")
                                     for j in g[1].activeDebuffs:
                                        g[1].activeDebuffs.remove(j)
                                     window["information"].update(text_color = "blue")
                                     window.refresh()
-                                    sleep(.5)
+                                    #sleep(.5)
                                     window["information"].update(text_color = "white")
                                     g[0].tileType = previousTile
                                     displayBoard(window,gameBoard)
                                     window.refresh()
-                                    sleep(.5)
+                                    #sleep(.5)
                             
-                    if cleanCheck == False:
-                        window["information"].update(f"No corrupted allies were in range. Nothing happened. Well, that was a pointless waste.")
-                        window["information"].update(text_color = "red")
-                        window.refresh()
-                        sleep(1)
-                        window["information"].update(text_color = "white")
+                if cleanCheck == False:
+                    window["information"].update(f"No corrupted allies were in range. Nothing happened. Well, that was a pointless waste.")
+                    window["information"].update(text_color = "red")
+                    window.refresh()
+                    sleep(1)
+                    window["information"].update(text_color = "white")
                                    
                                     
             #move diagonal
@@ -819,32 +837,35 @@ def useItems(gameBoard,x,y,window):
                         if g[1].ownedBy != playerTurn:
                             if len(g[1].activeBuffs) > 0:
                                 print("abolishing")
-                                print(g[1].activeBuffs)
+                                window["information"].update("abolishing")
+                                #print(g[1].activeBuffs)
                                 for i in g[1].activeBuffs:
                                     abolishCheck = True
                                     previousTile = g[0].tileType
-                                    g[1].debuffsList.append("abolished")
+                                    g[1].activeDebuffs.append("abolished")
                                     displayBoard(window,gameBoard)
                                     window.refresh()
-                                    g[1].debuffsList.remove("abolished")
-                                    sleep(.5)
+                                    g[1].activeDebuffs.remove("abolished")
+                                    #sleep(.5)
                                     listOfBuffs = ""
                                     for j in g[1].activeBuffs:
                                        listOfBuffs+=j+"\n"
                                     window["information"].update(f"Removed  {listOfBuffs}")
+                                    print(f"Removed  {listOfBuffs}")
                                     for j in g[1].activeBuffs:
                                        g[1].activeBuffs.remove(j)
                                     window["information"].update(text_color = "blue")
                                     window.refresh()
-                                    sleep(.5)
+                                    #sleep(.5)
                                     window["information"].update(text_color = "white")
                                     g[0].tileType = previousTile
                                     displayBoard(window,gameBoard)
                                     window.refresh()
-                                    sleep(.5)
+                                    #sleep(.5)
                             
                 if abolishCheck == False:
                     window["information"].update(f"No powered enemies were in range. Nothing happened. Well, that was a pointless waste.")
+                    print(f"No powered enemies were in range. Nothing happened. Well, that was a pointless waste.")
                     window["information"].update(text_color = "red")
                     window.refresh()
                     sleep(1)
