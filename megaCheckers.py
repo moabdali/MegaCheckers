@@ -41,6 +41,10 @@ def initializeField(columns,rows,window,gameBoard):
             gameBoard[rows-i-1][j][1].activeBuffs.append("move again")
             gameBoard[rows-i-1][j][1].activeBuffs.append("move again")
             gameBoard[i][j][1].storedItems.append("move again")
+            gameBoard[i][j][1].storedItems.append("move again")
+            gameBoard[i][j][1].storedItems.append("move again")
+            gameBoard[i][j][1].activeDebuffs.append("trip mine")
+            gameBoard[i][j][1].activeDebuffs.append("poison")
             gameBoard[i][j][1].activeDebuffs.append("trip mine")
             gameBoard[i][j][1].storedItems.append("place mine")
             gameBoard[i][j][1].storedItems.append("trip mine radial")
@@ -479,10 +483,51 @@ def pickUpItemOrb(gameBoard,x,y):
 
 def useItems(gameBoard,x,y,window):
     layout = []
+    listData = [ [sg.T("Item Menu",justification = "center",font="Calibri 30")]  ]
+    
     for i in gameBoard[x][y][1].storedItems:
-        layout+= [ [sg.Button(i)] ]
-    layout+= [ [sg.Button("CANCEL")] ]
+        z = f"{i}.png"
+        if z == "move again.png":
+            z = "moveAgainMax.png"
+            zz = "Move an extra space"
+        elif z == "trip mine radial.png":
+            z = "tripMine.png"
+            zz = "set up a trip mine"
+        elif z == "place mine.png":
+            z = "mine.png"
+            zz = "place a mine"
+        elif z == "abolish foe powers radial.png":
+            z = "abolished.png"
+            zz = "removes all buffs (beneficial effects) from surrounding enemies."
+        elif z == "purify radial.png":
+            z = "purified1.png"
+            zz = "removes all debuffs (negative effects) from all surrounding allies and this piece."
+        else:
+            z = "blank.png"
+            zz = "no explanation supplied... yet"
+
+            
+        listData+= [
+            [sg.Button(i, key = i, image_filename = z, tooltip = zz, font = "Arial 20",size = (30,1),button_color = ("light blue","grey"),image_size = (400,100))]]
+        #image_size = (200,100)
+            
+    listData += [[sg.Button("CANCEL")]]
+    
+    layout+= [ [sg.Column(listData,justification="center")] ]
+    
+    
+    
+    #for i in gameBoard[x][y][1].storedItems:
+    #    layout+= [ [sg.Button(i)]]
+    #layout+= [ [sg.Button("CANCEL")] ]
+    #itemsMenu = sg.Window("Items Menu", layout,disable_close=True, keep_on_top = True )
+
     itemsMenu = sg.Window("Items Menu", layout,disable_close=True, keep_on_top = True )
+
+    #event = itemsMenu.read()
+
+
+    
     playerTurn = gameBoard[x][y][1].ownedBy
     rows = len(gameBoard)
     columns = len(gameBoard[0])
@@ -743,8 +788,8 @@ def useItems(gameBoard,x,y,window):
                                     listOfDebuffs = ""
                                     for j in g[1].activeDebuffs:
                                        listOfDebuffs+=j+"\n"
-                                    window["information"].update(f"Removed  {listOfDebuffs}")
-                                    print(f"Removed  {listOfDebuffs}")
+                                    window["information"].update(f"Removed:\n{listOfDebuffs}")
+                                    print(f"Removed:  {listOfDebuffs}")
                                     for j in g[1].activeDebuffs:
                                        g[1].activeDebuffs.remove(j)
                                     window["information"].update(text_color = "blue")
@@ -850,8 +895,8 @@ def useItems(gameBoard,x,y,window):
                                     listOfBuffs = ""
                                     for j in g[1].activeBuffs:
                                        listOfBuffs+=j+"\n"
-                                    window["information"].update(f"Removed  {listOfBuffs}")
-                                    print(f"Removed  {listOfBuffs}")
+                                    window["information"].update(f"Removed\n{listOfBuffs}")
+                                    print(f"Removed\n{listOfBuffs}")
                                     for j in g[1].activeBuffs:
                                        g[1].activeBuffs.remove(j)
                                     window["information"].update(text_color = "blue")
@@ -1436,7 +1481,13 @@ def movePiece(playerTurn, window, gameBoard):
 
         #check to see if this is your second (or higher) turn (you don't get to choose a new piece)
         if repeatRestrictor[0] == False:
+##            while True:
             event = window.read()
+##                for i in range(len(gameBoard)):
+##                    for j in range(len(gameBoard[0])):
+##                        print(i,j)
+##                        if gameBoard[i][j][0].tileType == "itemOrb" or gameBoard[i][j][0].tileType == "trap orb 1" or gameBoard[i][j][0].tileType == "trap orb 2" or gameBoard[i][j][0].tileType == "trap orb 0":
+##                            window.Element(i,j).UpdateAnimation("tileOrb.gif",  time_between_frames=50)
             window["exit"].update(disabled = False)
         elif repeatRestrictor[0] == True:
             event = []
@@ -1865,7 +1916,8 @@ def begin():
     
     
     #window
-    frame_main = [  
+    frame_main = [
+                    
                     [sg.Button(image_filename = ".\\blank.png",key=(i,j),size = (75,75), button_color = ("white","grey"), tooltip = "square", pad = (2,2))for j in range (columns)]for i in range(0,rows)
     ]
 
