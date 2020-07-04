@@ -31,26 +31,27 @@ def initializeField(columns,rows,window,gameBoard):
     for i in range(2):
         for j in range(columns):
             rows = 6
-            #window[rows-i-1,j].update(image_filename="player2default.png")
+            #window[rows-i-1,j].update(image_filename="player2default.png"
+                
             gameBoard[rows-i-1][j][0]=Tile(occupied=True)
             piece = Piece(playerTurn = 2)
             gameBoard[rows-i-1][j][1]=piece
             gameBoard[rows-i-1][j][1].location = (rows-i-1,j)
             gameBoard[rows-i-1][j][0].tileType = "player2default"
             gameBoard[rows-i-1][j][1].avatar = "default"
-            gameBoard[rows-i-1][j][1].storedItems.append("move again")
+            gameBoard[i][j][1].storedItems.append("shuffle column")
             gameBoard[rows-i-1][j][1].activeBuffs.append("move again")
             gameBoard[rows-i-1][j][1].activeBuffs.append("move again")
-            gameBoard[rows-i-1][j][1].activeBuffs.append("move again")
+            gameBoard[rows-i-1][j][1].activeBuffs.append("haymaker")
             gameBoard[i][j][1].storedItems.append("move again")
             gameBoard[i][j][1].storedItems.append("move again")
             gameBoard[i][j][1].storedItems.append("move again")
-            gameBoard[i][j][1].activeDebuffs.append("trip mine")
+            gameBoard[i][j][1].storedItems.append("haymaker")
             gameBoard[i][j][1].activeDebuffs.append("poison")
-            gameBoard[i][j][1].activeDebuffs.append("trip mine")
             gameBoard[i][j][1].storedItems.append("place mine")
             gameBoard[i][j][1].storedItems.append("trip mine radial")
             gameBoard[i][j][1].activeBuffs.append("move diagonal")
+            gameBoard[i][j][1].activeBuffs.append("jumpProof")
             gameBoard[i][j][1].activeBuffs.append("move again")
             gameBoard[i][j][1].activeBuffs.append("move again")
             gameBoard[i][j][1].activeBuffs.append("move again")
@@ -98,40 +99,31 @@ class Tile:
         
         if self.tileType == "default":
             sg.popup(f"This is a regular tile with an elevation of {self.tileHeight}",keep_on_top=True)
-            print(f"This is a regular tile with an elevation of {self.tileHeight}")
-            return
+            return(f"This is a regular tile with an elevation of {self.tileHeight}")
         elif self.tileType == "itemOrb":
             sg.popup(f"This is an item orb tile with an elevation of {self.tileHeight}",keep_on_top=True)
-            print(f"This is an item orb tile with an elevation of {self.tileHeight}")
-            return
+            return(f"This is an item orb tile with an elevation of {self.tileHeight}")
         elif self.tileType == "destroyed":
             sg.popup(f"This tile has been destroyed!  But don't worry, it'll come back in 5 turns.",keep_on_top=True)
-            print(f"This tile has been destroyed!  But don't worry, it'll come back in 5 turns.")
-            return
+            return(f"This tile has been destroyed!  But don't worry, it'll come back in 5 turns.")
         elif self.tileType == "damaged4":
             sg.popup(f"This tile is being repaired.  It'll be ready for business in 4 turns.",keep_on_top=True)
-            print(f"This tile is being repaired.  It'll be ready for business in 4 turns.")
-            return
+            return(f"This tile is being repaired.  It'll be ready for business in 4 turns.")
         elif self.tileType == "damaged3":
             sg.popup(f"This tile is being repaired.  It'll be up and at 'em in 3 turns.",keep_on_top=True)
-            print(f"This tile is being repaired.  It'll be up and at 'em in 3 turns.")
-            return
+            return(f"This tile is being repaired.  It'll be up and at 'em in 3 turns.")
         elif self.tileType == "damaged2":
             sg.popup(f"This tile is being repaired.  It'll be repaired in 2 turns.",keep_on_top=True)
-            print(f"This tile is being repaired.  It'll be repaired in 2 turns.")
-            return
+            return(f"This tile is being repaired.  It'll be repaired in 2 turns.")
         elif self.tileType == "damaged":
             sg.popup(f"This tile is almost ready!  It'll be ready on the next turn!",keep_on_top=True)
-            print(f"This tile is almost ready!  It'll be ready on the next turn!")
-            return
+            return(f"This tile is almost ready!  It'll be ready on the next turn!")
         elif self.tileType == "Mine":
             sg.popup(f"There's an obvious booby trap on this tile.  Don't move here without protection! It has an elevation of {self.tileHeight}",keep_on_top=True)
-            print(f"There's an obvious booby trap on this tile.  Don't move here without protection! It has an elevation of {self.tileHeight}")
-            return
+            return(f"There's an obvious booby trap on this tile.  Don't move here without protection! It has an elevation of {self.tileHeight}")
         elif self.tileType in ["trap orb 0", "trap orb 1", "trap orb 2"]:
             sg.popup(f"This is an item orb tile with an elevation of {self.tileHeight}",keep_on_top=True)
-            print(f"This is an item orb tile with an elevation of {self.tileHeight}")
-            return
+            return(f"This is an item orb tile with an elevation of {self.tileHeight}")
 
 def getColumn(location, gameBoard, grow = False,emptyOnly = False):
     validLocations = []
@@ -216,8 +208,10 @@ def getCross(location, gameBoard, grow = False, includeSelf = False):
         validLocations.append( (location[0]+1,location[1]) )
     return validLocations
        
-
-
+#print out messages to both the window and console
+def pm(window,message):
+    window["information"].update(message)
+    print(message)
 
 def countPieces(gameBoard,window):
     player1count = 0
@@ -407,6 +401,11 @@ def displayBoard(window,gameBoard):
                         donut = Image.open("images/donut.png").convert("RGBA")
                         avatar.paste(donut, (0,0), donut)
 
+
+                    if "jumpProof" in g.activeBuffs:
+                        jumpProof = Image.open("images/jumpProof.png").convert("RGBA")
+                        avatar.paste(jumpProof, (0,0), jumpProof)
+                        
                     #set a forcefield if it exists
                     if "Energy Forcefield" in g.activeBuffs:
                         forcefield = Image.open("images/forcefield.png").convert("RGBA")
@@ -513,6 +512,9 @@ def useItems(gameBoard,x,y,window):
         elif z == "images/purify radial.png":
             z = "images/purified1.png"
             zz = "removes all debuffs (negative effects) from all surrounding allies and this piece."
+        elif z == "images/jumpProof.png":
+            z = "images/jumpProof.png"
+            zz = "This piece is holding an umbrella, so naturally, he can't be jumped on by a 3 ton block of metal machinery."
         else:
             z = "images/blank.png"
             zz = "no explanation supplied... yet"
@@ -578,8 +580,7 @@ def useItems(gameBoard,x,y,window):
 
                         if g[1].ownedBy != playerTurn:
                             g[1].activeDebuffs.append("trip mine")
-                            window["information"].update("Trip mine has been placed")
-                            print("The mine has been placed")
+                            pm(window,"Trip mine has been placed")
                             window.refresh()
                             sleep(.5)
                             #add code for graphics
@@ -759,8 +760,47 @@ def useItems(gameBoard,x,y,window):
                             displayBoard(window,gameBoard)
                             window.refresh()
                             sleep(1)
-                    
-           #purify radial
+
+            #shuffle column
+            elif str.find(i,"shuffle column")>=0:
+                itemsMenu.close()
+                g = gameBoard
+                if g[x][y][1].grey == True:
+                    g[x][y][1].grey = False
+                cg = []
+                locations = []
+                g[x][y][1].storedItems.remove("shuffle column")
+                #for rows called i, in gameboard
+                x = 0
+                for i in g:
+                    #copy the column's tiles to cg
+                    cg.append(copy.deepcopy(i[y]))
+                    locations.append( (x,y) )
+                    g[x][y][0].tileType = "default"
+                    g[x][y][0].occupied = False
+                    displayBoard(window,g)
+                    window.refresh()
+                    sleep(.1)
+                    x+=1
+                
+                displayBoard(window, gameBoard)
+                window.refresh()
+                i=0
+                while len(locations) > 0:
+                    randCoord = random.choice(locations)
+                    randTileInfo = random.choice(cg)
+                    g[randCoord[0]][randCoord[1]] = randTileInfo
+                    locations.remove(randCoord)
+                    cg.remove(randTileInfo)
+                    i+=1
+                    displayBoard(window, g)
+                    window.refresh()
+                    sleep(.1)
+                displayBoard(window, g)
+                
+
+                
+            #purify radial
             elif str.find(i,"purify radial")>=0:
                 gameBoard[x][y][1].storedItems.remove("purify radial")
                 validSpots = getRadial((x,y), gameBoard)
@@ -776,8 +816,7 @@ def useItems(gameBoard,x,y,window):
                         if g[1].ownedBy == playerTurn:
                             
                             if len(g[1].activeDebuffs) > 0:
-                                print("Purifying...")
-                                window["information"].update("Purifying...")
+                                pm(window,"Purifying...")
                                 for i in g[1].activeDebuffs:
                                     cleanCheck = True
                                     previousTile = g[0].tileType
@@ -799,8 +838,9 @@ def useItems(gameBoard,x,y,window):
                                     listOfDebuffs = ""
                                     for j in g[1].activeDebuffs:
                                        listOfDebuffs+=j+"\n"
-                                    window["information"].update(f"Removed:\n{listOfDebuffs}")
-                                    print(f"Removed:  {listOfDebuffs}")
+                                    pm(window,f"Removed:  {listOfDebuffs}")
+
+                                    #check this for deletions on window information
                                     for j in g[1].activeDebuffs:
                                        g[1].activeDebuffs.remove(j)
                                     window["information"].update(text_color = "blue")
@@ -813,8 +853,9 @@ def useItems(gameBoard,x,y,window):
                                     #sleep(.5)
                             
                 if cleanCheck == False:
-                    window["information"].update(f"No corrupted allies were in range. Nothing happened. Well, that was a pointless waste.")
+                   
                     window["information"].update(text_color = "red")
+                    pm(window,f"No corrupted allies were in range. Nothing happened. Well, that was a pointless waste.")
                     window.refresh()
                     sleep(1)
                     window["information"].update(text_color = "white")
@@ -832,23 +873,18 @@ def useItems(gameBoard,x,y,window):
                 validLocations = getRadial(location,gameBoard)
                 validLocations = filterEmpty(gameBoard,validLocations)
                 
-                
-                window["information"].update("Where would you like to place the mine?")
-                print("Where would you like to place the mine?")
+                pm(window,"Where would you like to place the mine?")
                 event = window.read()
                 if (event[0][0],event[0][1]) in validLocations:
                     
-                    print(f"mine placed at {event[0][0],event[0][1]}")
-                    window["information"].update(f"mine placed at {event[0][0],event[0][1]}")
+                    pm(window,f"mine placed at {event[0][0],event[0][1]}")
                     gameBoard[ event[0][0]][event[0][1]][0].tileType = "mine"
                     gameBoard[x][y][1].storedItems.remove("place mine")
                     displayBoard(window, gameBoard)
                     window.refresh()
                     continue
                 else:
-                    
-                    window["information"].update("Can't place mine there.  Only in an empty space in range.")
-                    print("Can't place mine there.  Only in an ampty space in range.")
+                    pm(window,"Can't place mine there.  Only in an ampty space in range.")
                     continue
 
             #trap orb
@@ -857,23 +893,18 @@ def useItems(gameBoard,x,y,window):
                 validLocations = getRadial(location,gameBoard)
                 validLocations = filterEmpty(gameBoard,validLocations)
                 
-                
-                window["information"].update("Where would you like to place the trap?")
-                print("Where would you like to place the trap?")
+                pm(window,"Where would you like to place the trap?")
                 event = window.read()
                 if (event[0][0],event[0][1]) in validLocations:
                     
-                    print("Done.")
-                    window["information"].update("Done.")
+                    pm(window,"Done.")
                     gameBoard[ event[0][0]][event[0][1]][0].tileType = f"trap orb {playerTurn}"
                     gameBoard[x][y][1].storedItems.remove("trap orb")
                     displayBoard(window, gameBoard)
                     window.refresh()
                     continue
                 else:
-                    
-                    window["information"].update("Can't place that there.  Only in an empty space in range.")
-                    print("Can't place that there.  Only in an ampty space in range.")
+                    pm(window,"Can't place that there.  Only in an ampty space in range.")
                     continue
                     
      
@@ -892,8 +923,7 @@ def useItems(gameBoard,x,y,window):
 
                         if g[1].ownedBy != playerTurn:
                             if len(g[1].activeBuffs) > 0:
-                                print("abolishing")
-                                window["information"].update("abolishing")
+                                pm(window,"abolishing")
                                 #print(g[1].activeBuffs)
                                 for i in g[1].activeBuffs:
                                     abolishCheck = True
@@ -906,8 +936,7 @@ def useItems(gameBoard,x,y,window):
                                     listOfBuffs = ""
                                     for j in g[1].activeBuffs:
                                        listOfBuffs+=j+"\n"
-                                    window["information"].update(f"Removed\n{listOfBuffs}")
-                                    print(f"Removed\n{listOfBuffs}")
+                                    pm(window,f"Removed\n{listOfBuffs}")
                                     for j in g[1].activeBuffs:
                                        g[1].activeBuffs.remove(j)
                                     window["information"].update(text_color = "blue")
@@ -920,8 +949,7 @@ def useItems(gameBoard,x,y,window):
                                     #sleep(.5)
                             
                 if abolishCheck == False:
-                    window["information"].update(f"No powered enemies were in range. Nothing happened. Well, that was a pointless waste.")
-                    print(f"No powered enemies were in range. Nothing happened. Well, that was a pointless waste.")
+                    pm(window,f"No powered enemies were in range. Nothing happened. Well, that was a pointless waste.")
                     window["information"].update(text_color = "red")
                     window.refresh()
                     sleep(1)
@@ -941,7 +969,7 @@ def useItems(gameBoard,x,y,window):
                 gameBoard[x][y][1].activeBuffs.append("move again")
                 gameBoard[x][y][1].moveAgain +=1
                 #sg.popup(f"Activated move again.  Bonus moves per turn: {gameBoard[x][y][1].moveAgain}")
-                print(f"Activated move again.  Bonus moves per turn: {gameBoard[x][y][1].moveAgain}")
+                pm(window,f"Activated move again.  Bonus moves per turn: {gameBoard[x][y][1].moveAgain}")
                 displayBoard(window, gameBoard)
 
                 
@@ -949,8 +977,7 @@ def useItems(gameBoard,x,y,window):
             elif str.find(i,"haymaker")>=0:
                 
                 validTargets = getCross( (x,y), gameBoard)
-                window["information"].update("Pick a target that is within range")
-                print("Pick a target that is within range.")
+                pm(window,"Pick a target that is within range.")
                 event = window.read()
                 #print(validTargets)
                 #print(event[0])
@@ -967,17 +994,12 @@ def useItems(gameBoard,x,y,window):
                     #s2 is the victim's column, compare to y
                     s2 = event[0][1]
                     if gameBoard[s1][s2][0].occupied == False:
-                        window["information"].update("There's no one to punch at that location!")
-                        print("There's no one to punch at that location!")
+                        pm(window,"There's no one to punch at that location!")
                         itemsMenu.close()
                         return
                     
                     gameBoard[x][y][1].storedItems.remove("haymaker")
                     direction = 0
-                    #print(x)
-                    #print(y)
-                    #print(s1)
-                    #print(s2)
                     #if they are in the same row:
                     if x == s1:
                         #if x is to the left of the target
@@ -1018,7 +1040,6 @@ def useItems(gameBoard,x,y,window):
                             
                             #if the next block is empty
                             elif gameBoard[s1+1][s2][0].occupied == False:
-                                #print("next block below is empty")
                                 #do laser or land mine check here
 
                                 #end laser or land mine check here
@@ -1029,8 +1050,7 @@ def useItems(gameBoard,x,y,window):
                                     #kill the piece
                                     gameBoard[s1][s2][1] = 0
                                     gameBoard[s1][s2][0].occupied = False
-                                    window["information"].update("Brutal!  You just pushed that piece into the void.")
-                                    print("Brutal!  You just pushed that piece into the void.")
+                                    pm(window,"Brutal!  You just pushed that piece into the void.")
                                     break
 
                                 #if the next location is safe
@@ -1044,6 +1064,9 @@ def useItems(gameBoard,x,y,window):
                                     gameBoard[s1][s2][1] = 0
                                     gameBoard[s1+1][s2][1] = copy.deepcopy(tempCopyVictim)
                                     gameBoard[s1+1][s2][1].occupied = True
+
+                                    deathCheck(window, gameBoard)
+                                    
                                     s1 = s1+1
                                     displayBoard(window, gameBoard)
                                     window.refresh()
@@ -1056,8 +1079,7 @@ def useItems(gameBoard,x,y,window):
                                 
                                 gameBoard[s1][s2][1].activeDebuffs.append("stunned")
                                 gameBoard[s1+1][s2][1].activeDebuffs.append("stunned")
-                                window["information"].update("Both of the collided pieces are stunned.")
-                                print("Both of the collided pieces are stunned.")
+                                pm(window,"Both of the collided pieces are stunned.")
                                 break
                                 
                                 
@@ -1088,8 +1110,7 @@ def useItems(gameBoard,x,y,window):
                                     #kill the piece
                                     gameBoard[s1][s2][1] = 0
                                     gameBoard[s1][s2][0].occupied = False
-                                    window["information"].update("Brutal!  You just pushed that piece into the void.")
-                                    print("Brutal!  You just pushed that piece into the void.")
+                                    pm(window,"Brutal!  You just pushed that piece into the void.")
                                     break
 
                                 #if the next location is safe
@@ -1115,8 +1136,7 @@ def useItems(gameBoard,x,y,window):
                                 
                                 gameBoard[s1][s2][1].activeDebuffs.append("stunned")
                                 gameBoard[s1-1][s2][1].activeDebuffs.append("stunned")
-                                window["information"].update("Both of the collided pieces are stunned.")
-                                print("Both of the collided pieces are stunned.")
+                                pm(window,"Both of the collided pieces are stunned.")
                                 break
                                                             
                     elif direction == "push right":
@@ -1147,8 +1167,7 @@ def useItems(gameBoard,x,y,window):
                                     #kill the piece
                                     gameBoard[s1][s2][1] = 0
                                     gameBoard[s1][s2][0].occupied = False
-                                    window["information"].update("Brutal!  You just pushed that piece into the void.")
-                                    print("Brutal!  You just pushed that piece into the void.")
+                                    pm(window,"Brutal!  You just pushed that piece into the void.")
                                     break
 
                                 #if the next location is safe
@@ -1174,8 +1193,7 @@ def useItems(gameBoard,x,y,window):
                                 
                                 gameBoard[s1][s2][1].activeDebuffs.append("stunned")
                                 gameBoard[s1][s2+1][1].activeDebuffs.append("stunned")
-                                window["information"].update("Both of the collided pieces are stunned.")
-                                print("Both of the collided pieces are stunned.")
+                                pm(window,"Both of the collided pieces are stunned.")
                                 break
 
                             
@@ -1207,8 +1225,7 @@ def useItems(gameBoard,x,y,window):
                                     #kill the piece
                                     gameBoard[s1][s2][1] = 0
                                     gameBoard[s1][s2][0].occupied = False
-                                    window["information"].update("Brutal!  You just pushed that piece into the void.")
-                                    print("Brutal!  You just pushed that piece into the void.")
+                                    pm(window,"Brutal!  You just pushed that piece into the void.")
                                     break
 
                                 #if the next location is safe
@@ -1227,15 +1244,12 @@ def useItems(gameBoard,x,y,window):
                                     window.refresh()
                                     #sleep(.75)
                                     tempCopyTileType = gameBoard[s1][s2-1][0].tileType 
-                               
-                                    
 
                             elif gameBoard[s1][s2-1][0].occupied == True:
                                 
                                 gameBoard[s1][s2][1].activeDebuffs.append("stunned")
                                 gameBoard[s1][s2-1][1].activeDebuffs.append("stunned")
-                                window["information"].update("Both of the collided pieces are stunned.")
-                                print("Both of the collided pieces are stunned.")
+                                pm(window,"Both of the collided pieces are stunned.")
                                 break 
                 
             #jump proof
@@ -1243,15 +1257,12 @@ def useItems(gameBoard,x,y,window):
                 gameBoard[x][y][1].storedItems.remove("jumpProof")
                 gameBoard[x][y][1].activeBuffs.append("jumpProof")
                 displayBoard(window, gameBoard)
-                window["information"].update("Congrats; both of your collided pieces are stunned.")
-                
+                pm(window,"Congrats; your piece can't be jumped on.")
                 
             #wololo
             elif str.find(i,"Wololo (convert to your side)") >=0:
                     itemsMenu.close()
-                    
-                    window["information"].update("Choose an enemy to recruit")
-                    print("Choose an enemy to recruit")
+                    pm(window,"Choose an enemy to recruit")
                     
                     event = window.read()
                     player = gameBoard[x][y][1].ownedBy
@@ -1260,15 +1271,13 @@ def useItems(gameBoard,x,y,window):
                     elif player == 2:
                         enemy = 1
                     if gameBoard[event[0][0]][event[0][1]][1] == 0:
-                        window["information"].update("Choose an enemy, not a vacant tile...")
-                        sleep(1)
+                        pm(window,"Choose an enemy, not a vacant tile...")
                         continue
                     elif gameBoard[event[0][0]][event[0][1]][1].ownedBy == enemy:
                         gameBoard[event[0][0]][event[0][1]][1].ownedBy = player
                         gameBoard[x][y][1].storedItems.remove("Wololo (convert to your side)")
                     else:
-                        window["information"].update("Wololo only works on enemies.")
-                        print("Wololo only works on enemies.")
+                        pm(window,"Wololo only works on enemies.")
                         sleep(1)
                     displayBoard(window, gameBoard)
                     window.refresh()
@@ -1289,8 +1298,6 @@ def useItems(gameBoard,x,y,window):
                     if gameBoard[x][y][0].occupied == True:
                         #if someone has a forcefield there, don't kill them
                         if "Energy Forcefield" in gameBoard[x][y][1].activeBuffs:
-                            
-                           
                             backupTile = gameBoard[x][y][0].tileType
                             gameBoard[x][y][0].tileType = "exploding"
                             displayBoard(window,gameBoard)
@@ -1310,8 +1317,6 @@ def useItems(gameBoard,x,y,window):
                             continue
                             
                     else:
-                        
-                        
                         gameBoard[x][y][0].occupied = False
                         gameBoard[x][y][1] = 0
                         gameBoard[x][y][0].tileType = "exploding"
@@ -1332,13 +1337,11 @@ def useItems(gameBoard,x,y,window):
                     attempts += 1
                     if attempts > 100:
                         sg.popup("The plane had trouble finding targets, so it flew away early.",keep_on_top=True)
-                        print("The plane had trouble finding targets, so it flew away early.")
+                        pm(window,"The plane had trouble finding targets, so it flew away early.")
                         if itemsMenu:    
                             itemsMenu.close()
                         break
 
-                    
-                    
                     #generate a random target location on the field
                     x = random.randint(0,len(gameBoard)-1)
                     y = random.randint(0,len(gameBoard[0])-1)
@@ -1488,7 +1491,7 @@ def movePiece(playerTurn, window, gameBoard):
 
         #pick your piece to move
         window['information'].update(f"Pick a piece to move.")
-        print(f"Pick a piece to move.")
+        pm(window,f"Pick a piece to move.")
 
         #check to see if this is your second (or higher) turn (you don't get to choose a new piece)
         if repeatRestrictor[0] == False:
@@ -1509,7 +1512,7 @@ def movePiece(playerTurn, window, gameBoard):
                 return
         if "exit" in event:
             a = sg.popup_yes_no("Seriously, you want to exit this awesome game?",keep_on_top=True)
-            print("You're a fool if you're wanting to quit this game.")
+            pm(window,"You're a fool if you're wanting to quit this game.")
             if a == "Yes":
                 sg.popup("Wow, your loss.",keep_on_top=True)
                 window.close()
@@ -1526,7 +1529,7 @@ def movePiece(playerTurn, window, gameBoard):
             window['information'].update(text_color = "white")     
             #if no pieces exist here:
             if gameBoard[event[0][0]][event[0][1]][0].occupied == False:
-                gameBoard[event[0][0]][event[0][1]][0].describeSelf()
+                pm(window, gameBoard[event[0][0]][event[0][1]][0].describeSelf())
             #if there is a piece:
             else:
                 if playerTurn == gameBoard[event[0][0]][event[0][1]][1].ownedBy:
@@ -1543,18 +1546,14 @@ def movePiece(playerTurn, window, gameBoard):
                     buffslist = "NONE"
                 if debuffslist == "":
                     debuffslist = "NONE"
-                window["information"](f"The piece here belongs to {owner}.\nIt currently holds {len(gameBoard[event[0][0]][event[0][1]][1].storedItems)} inactive items.\nIt has the following buffs:\n{buffslist}\nIt has the current debuffs:\n{debuffslist}")
-                print(f"The piece here belongs to {owner}.\nIt currently holds {len(gameBoard[event[0][0]][event[0][1]][1].storedItems)} inactive items.\nIt has the following buffs:\n{buffslist}\nIt has the current debuffs:\n{debuffslist}")
+                pm(window,f"The piece here belongs to {owner}.\nIt currently holds {len(gameBoard[event[0][0]][event[0][1]][1].storedItems)} inactive items.\nIt has the following buffs:\n{buffslist}\nIt has the current debuffs:\n{debuffslist}")
             window["examineItem"].update(disabled = False)
             continue
-
 
         window["itemButton"].update(disabled = False)
         window["examineItem"].update(disabled = True)
                 
-        
         startLocation = event[0]
-        #print(f"{startLocation} and {repeatRestrictor[1]}")
         if (repeatRestrictor[0] == True) and (startLocation != repeatRestrictor[1]):
             getChoice = sg.popup_yes_no("You can only move the same piece twice.  Click yes to force that piece to be selected.  Otherwise choose no to end your turn.",keep_on_top=True)
             if getChoice == "Yes":
@@ -1565,14 +1564,13 @@ def movePiece(playerTurn, window, gameBoard):
             gameBoard[startLocation[0]][startLocation[1]][1].grey = True
             displayBoard(window, gameBoard)
             
-        
         #if a square is picked and a piece exists on it
         if gameBoard[event[0][0]][event[0][1]][0].occupied == True:
 
             #if that piece is stunned
             if playerTurn == gameBoard[event[0][0]][event[0][1]][1].ownedBy and "stunned" in gameBoard[event[0][0]][event[0][1]][1].activeDebuffs:
                 window['information'].update(f"You cannot use a stunned/sleeping piece.")
-                print(f"Pick a piece to move.")
+                pm(window,f"Pick a piece to move.")
                 window['information'].update(text_color = "red")
                 window.refresh()
                 continue
@@ -1580,24 +1578,24 @@ def movePiece(playerTurn, window, gameBoard):
             #if the piece belongs to you and it has items (and isn't stunned)
             elif playerTurn == gameBoard[event[0][0]][event[0][1]][1].ownedBy and len(gameBoard[event[0][0]][event[0][1]][1].storedItems) > 0:
                 window['information'].update(f"Selection made, pick a destination or click the same piece again to access items.")
-                print(f"Selection made, pick a destination or click the same piece again to access items.")
+                pm(window,f"Selection made, pick a destination or click the same piece again to access items.")
             #if the piece doesn't belong to you
             elif playerTurn != gameBoard[event[0][0]][event[0][1]][1].ownedBy:
                 window['information'].update(f"That's not your piece...")
-                print(f"That's not your piece...")
+                pm(window,f"That's not your piece...")
                 window['information'].update(text_color = "red")
                 window.refresh()
                 continue
             #if the piece belongs to you but doesn't have items
             else:
                 window['information'].update(f"Selection made, pick a destination.")
-                print(f"Selection made, pick a destination.")
+                pm(window,f"Selection made, pick a destination.")
                 
         #if there's no piece on that square
         else:
             window['information'].update(text_color = "red")
             window['information'].update(f"You can't interact directly with unoccupied spaces.")
-            print(f"You can't interact directly with unoccupied spaces.")
+            pm(window,f"You can't interact directly with unoccupied spaces.")
             window.refresh()
             
             sleep(.25)
@@ -1641,26 +1639,22 @@ def movePiece(playerTurn, window, gameBoard):
             #if the piece isn't yours
             elif gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].ownedBy != playerTurn:
                 gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].grey = False
-                window["information"].update("That's not your piece.")
-                print("That's not your piece")
+                pm(window,"That's not your piece")
                 continue
             
             #if the piece has no items
             elif len(gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].storedItems )< 1:
                 gameBoard[ startLocation[0] ] [ startLocation[1] ] [1].grey = False
-                window["information"].update("No items on this piece.")
-                print("There are no items on this piece.")
+                pm(window,"There are no items on this piece.")
                 continue
             #shouldn't get to here
             else:
-                print("An error occurred in item lookups")
-                window["information"].update("An error occurred in item lookups")
+                pm(window,"An error occurred in item lookups")
         
 
         #if there isn't any piece on the square
         if (gameBoard[ startLocation[0] ] [ startLocation[1] ] [0].occupied == False ):
-            window['information'].update(f"Nothing exists on the initial square!")
-            print(f"Nothing exists on the initial square!")
+            pm(window,f"Nothing exists on the initial square!")
             window.refresh
             continue
 
@@ -1690,7 +1684,7 @@ def movePiece(playerTurn, window, gameBoard):
                 #....and it's not because you want to move diagonally with a move diagonal
                 if (getDistance(startLocation[0],startLocation[1],endLocation[0],endLocation[1]) >  gameBoard[ startLocation[0] ] [ startLocation[1] ][1].distanceMax) and diagonalCheck == False:
                     window['information'].update(f"That location is too far for you to move to!")
-                    print(f"That location is too far for you to move to!")
+                    pm(window,f"That location is too far for you to move to!")
                     window.refresh
                     
                     continue
@@ -1708,7 +1702,7 @@ def movePiece(playerTurn, window, gameBoard):
 
                 if gameBoard[ endLocation[0] ] [ endLocation[1] ][0].tileType in ["destroyed","damaged4","damaged3","damaged2","damaged"]:
                     window['information'].update(f"Can't move here!")
-                    print("Can't move here!")
+                    pm(window,"Can't move here!")
                     continue
                 #if the landing spot is not occupied by a piece
                 if gameBoard[ endLocation[0] ] [ endLocation[1] ][0].occupied == False:
@@ -1748,19 +1742,15 @@ def movePiece(playerTurn, window, gameBoard):
                         
                         if "Energy Forcefield" in gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeBuffs:
                             gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeBuffs.remove("Energy Forcefield")
-                            window["information"].update("Trip mine went off!")
-                            print("Trip mine went off!")
+                            pm(window,"Trip mine went off!")
                             sleep(1)
-                            window["information"].update("But your forcefield saved you.")
-                            print("...But your forcefield saved you.")
+                            pm(window,"...But your forcefield saved you.")
                             while ("trip mine" in gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeBuffs):
                                 gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeDebuffs.remove("trip mine")
 
                         else:
                             gameBoard[ endLocation[0] ] [ endLocation[1] ][0].occupied = False
                             gameBoard[ endLocation[0] ] [ endLocation[1] ][1] = 0
-                            
-                            
                             gameBoard[ endLocation[0] ] [ endLocation[1] ][1] = 0
                             gameBoard[ endLocation[0] ] [ endLocation[1] ][0].tileType = "exploding"
                             displayBoard(window,gameBoard)
@@ -1769,10 +1759,7 @@ def movePiece(playerTurn, window, gameBoard):
                             gameBoard[ endLocation[0] ] [ endLocation[1] ][0].tileType = "default"
                             break
 
-
-                    
-                    window['information'].update(f"Moved successfully!")
-                    print("Moved successfully")
+                    pm(window,"Moved successfully")
                     window.refresh
 
 
@@ -1799,8 +1786,7 @@ def movePiece(playerTurn, window, gameBoard):
                 
                 #killing own piece (illegal)
                 elif gameBoard[ endLocation[0] ] [ endLocation[1] ][1].ownedBy == playerTurn:
-                    window['information'].update(f"You can't jumpkill your own piece.")
-                    print("You can't jumpkill your own piece.")
+                    pm(window,"You can't jumpkill your own piece.")
                     window.refresh
                     continue
 
@@ -1810,8 +1796,7 @@ def movePiece(playerTurn, window, gameBoard):
                 elif gameBoard[ endLocation[0] ] [ endLocation[1] ][1].ownedBy != playerTurn:
                     #test to see if the piece can be jumped
                     if "jumpProof" in gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeBuffs:
-                        window['information'].update(f"No! This opponent is jump proof!")
-                        print("No!  This opponent is jump proof!")
+                        pm(window,"No!  This opponent is jump proof!")
                         window.refresh()
                         sleep(1)
                         continue
@@ -1824,14 +1809,11 @@ def movePiece(playerTurn, window, gameBoard):
                     gameBoard[ startLocation[0] ] [ startLocation[1]][1]=0
                     #set the original location as empty
                     gameBoard[ startLocation[0] ] [ startLocation[1] ] [0].occupied = False
-
                     #set the new location as full
                     gameBoard[ endLocation[0] ] [ endLocation[1] ] [0].occupied = True
-
                     #if gameBoard[startLocation[0]][startLocation[1]][0].tileType == "itemOrb":
                     if pickedUpItem == True:
-                        window['information'].update("The piece you just killed was sitting on an item orb.  You picked it up.  Lucky you got to it before he recovered from his stun")
-                        print("The piece you just killed was sitting on an item orb.  You picked it up.  Lucky you got to it before he recovered from his stun")
+                        pm(window,"The piece you just killed was sitting on an item orb.  You picked it up.  Lucky you got to it before he recovered from his stun")
                         #pickUpItemOrb(gameBoard,x,y)
                         
                     #set the original tile as either a trap orb or default, depending on what was there
@@ -1842,19 +1824,15 @@ def movePiece(playerTurn, window, gameBoard):
                     if "trip mine" in gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeDebuffs:
                         if "Energy Forcefield" in gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeBuffs:
                             gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeBuffs.remove("Energy Forcefield")
-                            window["information"].update("Trip mine went off!")
-                            print("Trip mine went off!")
+                            pm(window,"Trip mine went off!")
                             sleep(1)
-                            window["information"].update("But your forcefield saved you.")
-                            print("...But your forcefield saved you.")
+                            pm(window,"...But your forcefield saved you.")
                             while ("trip mine" in gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeBuffs):
                                 gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeDebuffs.remove("trip mine")
 
                         else:
                             gameBoard[ endLocation[0] ] [ endLocation[1] ][0].occupied = False
                             gameBoard[ endLocation[0] ] [ endLocation[1] ][1] = 0
-                            
-                            
                             gameBoard[ endLocation[0] ] [ endLocation[1] ][1] = 0
                             gameBoard[ endLocation[0] ] [ endLocation[1] ][0].tileType = "exploding"
                             displayBoard(window,gameBoard)
@@ -1862,10 +1840,8 @@ def movePiece(playerTurn, window, gameBoard):
                             sg.popup("Trip mine went off!",keep_on_top=True)
                             gameBoard[ endLocation[0] ] [ endLocation[1] ][0].tileType = "default"
                             break
-                    
-                    
                     window['information'].update(f"Jumpkilled an enemy piece!")
-                    print("Jumpkilled an enemy piece!")
+                    pm(window,"Jumpkilled an enemy piece!")
 
 
 
@@ -1893,13 +1869,13 @@ def movePiece(playerTurn, window, gameBoard):
 
             else:
                 window['information'].update(f"That's not your piece!")
-                print("That's not your piece!")
+                pm(window,"That's not your piece!")
                 window.refresh
                 continue
                 
         else:
             window['information'].update(f"Nothing here to move!")
-            print("Nothing here to move!")
+            pm(window,"Nothing here to move!")
             window.refresh
             continue
         
