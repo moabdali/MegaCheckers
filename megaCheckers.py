@@ -5,6 +5,8 @@ import random
 from time import sleep
 from PIL import Image
 
+from io import BytesIO
+import base64
 
 def initializeField(columns,rows,window,gameBoard):
     for i in range(2):
@@ -336,56 +338,56 @@ def displayBoard(window,gameBoard):
         for j in range(len(gameBoard[0])):
             #unoccupied spaces
             if gameBoard[i][j][0].tileType == "exploding":
-                window[i,j].update(image_filename="exploding.png")
+                window[i,j].update(image_filename="images/exploding.png")
                 continue
                 
             elif gameBoard[i][j][0].tileType == "damaged4":
-                window[i,j].update(image_filename="damaged4.png")
+                window[i,j].update(image_filename="images/damaged4.png")
                 continue
                 
             elif gameBoard[i][j][0].tileType == "damaged3":
-                window[i,j].update(image_filename="damaged3.png")
+                window[i,j].update(image_filename="images/damaged3.png")
                 continue
 
             elif gameBoard[i][j][0].tileType == "damaged2":
-                window[i,j].update(image_filename="damaged2.png")
+                window[i,j].update(image_filename="images/damaged2.png")
                 continue
 
             elif gameBoard[i][j][0].tileType == "damaged":
-                window[i,j].update(image_filename="damaged.png")
+                window[i,j].update(image_filename="images/damaged.png")
                 continue
     
 
             elif gameBoard[i][j][0].tileType == "snake":
-                window[i,j].update(image_filename="snake.png")
+                window[i,j].update(image_filename="images/snake.png")
                 continue
             
 
             elif gameBoard[i][j][0].tileType == "abolished":
-                window[i,j].update(image_filename="abolished.png")
+                window[i,j].update(image_filename="images/abolished.png")
                 continue
             
             if gameBoard[i][j][0].occupied == False:
                
                 
                 if gameBoard[i][j][0].tileType == "default":
-                    window[i,j].update(image_filename="blank.png")
+                    window[i,j].update(image_filename="images/blank.png")
                     continue
                 elif gameBoard[i][j][0].tileType == "itemOrb":
-                    window[i,j].update(image_filename="itemOrb.gif")
+                    window[i,j].update(image_filename="images/itemOrb.gif")
                     continue
                 elif gameBoard[i][j][0].tileType == "destroyed":
-                    window[i,j].update(image_filename="destroyed.png")
+                    window[i,j].update(image_filename="images/destroyed.png")
                     continue
                 elif gameBoard[i][j][0].tileType == "mine":
-                    window[i,j].update(image_filename="mine.png")
+                    window[i,j].update(image_filename="images/mine.png")
                     continue
                 elif gameBoard[i][j][0].tileType in ["trap orb 0","trap orb 1", "trap orb 2"]:
-                    window[i,j].update(image_filename="trapOrb.gif")
+                    window[i,j].update(image_filename="images/trapOrb.gif")
                     continue
                 else:
                     sg.popup(f"A tile error has occurred, with type {gameBoard[i][j][0].tileType}",keep_on_top=True)
-                    window[i,j].update(image_filename="glitch.png")
+                    window[i,j].update(image_filename="images/glitch.png")
                     continue
             else:
                 if gameBoard[i][j][0].occupied:
@@ -393,82 +395,91 @@ def displayBoard(window,gameBoard):
 
                     #set the center color
                     if g.ownedBy == 1:
-                        avatar = Image.open("p1.png").convert("RGBA")
+                        avatar = Image.open("images/p1.png").convert("RGBA")
                     elif g.ownedBy == 2:
-                        avatar = Image.open("p2.png").convert("RGBA")
+                        avatar = Image.open("images/p2.png").convert("RGBA")
 
                     #set the meat of the piece
                     if len(g.storedItems) > 0:
-                        item = Image.open("items.png").convert("RGBA")
+                        item = Image.open("images/items.png").convert("RGBA")
                         avatar.paste(item, (0,0), item)
                     else:
-                        donut = Image.open("donut.png").convert("RGBA")
+                        donut = Image.open("images/donut.png").convert("RGBA")
                         avatar.paste(donut, (0,0), donut)
 
                     #set a forcefield if it exists
                     if "Energy Forcefield" in g.activeBuffs:
-                        forcefield = Image.open("forcefield.png").convert("RGBA")
+                        forcefield = Image.open("images/forcefield.png").convert("RGBA")
                         avatar.paste(forcefield, (0,0), forcefield)
 
                     #if the piece is stunned
                     if "stunned" in g.activeDebuffs:
-                        stunned = Image.open("stunned.png").convert("RGBA")
+                        stunned = Image.open("images/stunned.png").convert("RGBA")
                         avatar.paste(stunned, (0,0), stunned)
 
                     if "trip mine" in g.activeDebuffs:
-                        tripmine = Image.open("tripmine.png").convert("RGBA")
+                        tripmine = Image.open("images/tripmine.png").convert("RGBA")
                         avatar.paste(tripmine, (0,0), tripmine)
 
                     if "purified2" in g.activeBuffs:
-                        purified2 = Image.open("purified2.png").convert("RGBA")
+                        purified2 = Image.open("images/purified2.png").convert("RGBA")
                         avatar.paste(purified2, (0,0), purified2)
                     elif "purified1" in g.activeBuffs:
-                        purified1 = Image.open("purified1.png").convert("RGBA")
+                        purified1 = Image.open("images/purified1.png").convert("RGBA")
                         avatar.paste(purified1, (0,0), purified1)
                     elif "purified0" in g.activeBuffs:
-                        purified0 = Image.open("purified0.png").convert("RGBA")
+                        purified0 = Image.open("images/purified0.png").convert("RGBA")
                         avatar.paste(purified0, (0,0), purified0)
                     
                     
                         
                     #if move diagonal exists:
                     if "move diagonal" in g.activeBuffs:
-                        diagonal = Image.open("diagonal.png").convert("RGBA")
+                        diagonal = Image.open("images/diagonal.png").convert("RGBA")
                         avatar.paste(diagonal,(0,0),diagonal)
 
                     #see which type of shoe icon needs to be applied
                     if g.moveAgain == 1:
-                        step1 = Image.open("moveAgain1.png").convert("RGBA")
+                        step1 = Image.open("images/moveAgain1.png").convert("RGBA")
                         avatar.paste(step1, (0,0), step1)
                     elif g.moveAgain == 2:
-                        step2 = Image.open("moveAgain2.png").convert("RGBA")
+                        step2 = Image.open("images/moveAgain2.png").convert("RGBA")
                         avatar.paste(step2, (0,0), step2)
                     elif g.moveAgain == 3:
-                        step3 = Image.open("moveAgain3.png").convert("RGBA")
+                        step3 = Image.open("images/moveAgain3.png").convert("RGBA")
                         avatar.paste(step3, (0,0), step3)
                     elif g.moveAgain > 3:
-                        stepMax = Image.open("moveAgainMax.png").convert("RGBA")
+                        stepMax = Image.open("images/moveAgainMax.png").convert("RGBA")
                         avatar.paste(stepMax, (0,0), stepMax)
 
 
                     if "abolished" in g.activeDebuffs:
-                        abolished = Image.open("abolished.png").convert("RGBA")
+                        abolished = Image.open("images/abolished.png").convert("RGBA")
                         avatar.paste(abolished, (0,0), abolished)
                         
                     #if it's supposed to be highlighted... then highlight it
                     if g.grey == True:
-                        grey = Image.open("highlight.png").convert("RGBA")
+                        grey = Image.open("images/highlight.png").convert("RGBA")
                         avatar = Image.blend(grey,avatar,.50)
 
-                #for making sure the game doesn't crash due to slow harddrives
-                try:
-                    avatar.save("avatar.png","png")
-                except:
-                    window["information"].update("Wait for load...")
-                    print("Loading pieces...")
-                    sleep(.05)
-                    avatar.save("avatar.png","png")
-            window[i,j].update(image_filename="avatar.png")
+##                #for making sure the game doesn't crash due to slow harddrives
+##                try:
+##                    avatar.save("avatar.png","png")
+##                except:
+##                    window["information"].update("Wait for load...")
+##                    print("Loading pieces...")
+##                    sleep(.05)
+##                    avatar.save("avatar.png","png")
+##            window[i,j].update(image_filename="avatar.png")
+                        
+            im_file = BytesIO()
+            avatar.save(im_file,format = "png")
+            im_bytes = im_file.getvalue()
+            im_b64 = base64.b64encode(im_bytes)
+            
+            
+
+            window[i,j].update(image_data=im_b64)
                     
                   
 def pickUpItemOrb(gameBoard,x,y):
@@ -486,24 +497,24 @@ def useItems(gameBoard,x,y,window):
     listData = [ [sg.T("Item Menu",justification = "center",font="Calibri 30")]  ]
     
     for i in gameBoard[x][y][1].storedItems:
-        z = f"{i}.png"
-        if z == "move again.png":
-            z = "moveAgainMax.png"
+        z = f"images/{i}.png"
+        if z == "images/move again.png":
+            z = "images/moveAgainMax.png"
             zz = "Move an extra space"
-        elif z == "trip mine radial.png":
-            z = "tripMine.png"
+        elif z == "images/trip mine radial.png":
+            z = "images/tripMine.png"
             zz = "set up a trip mine"
-        elif z == "place mine.png":
-            z = "mine.png"
+        elif z == "images/place mine.png":
+            z = "images/mine.png"
             zz = "place a mine"
-        elif z == "abolish foe powers radial.png":
-            z = "abolished.png"
+        elif z == "images/abolish foe powers radial.png":
+            z = "images/abolished.png"
             zz = "removes all buffs (beneficial effects) from surrounding enemies."
-        elif z == "purify radial.png":
-            z = "purified1.png"
+        elif z == "images/purify radial.png":
+            z = "images/purified1.png"
             zz = "removes all debuffs (negative effects) from all surrounding allies and this piece."
         else:
-            z = "blank.png"
+            z = "images/blank.png"
             zz = "no explanation supplied... yet"
 
             
@@ -1828,8 +1839,8 @@ def movePiece(playerTurn, window, gameBoard):
                         gameBoard[startLocation[0]][startLocation[1]][0].tileType = f"trap orb {playerTurn}"
                     else:
                         gameBoard[startLocation[0]][startLocation[1]][0].tileType = "default"
-                        
-                    if "Energy Forcefield" in gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeBuffs:
+                    if "trip mine" in gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeDebuffs:
+                        if "Energy Forcefield" in gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeBuffs:
                             gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeBuffs.remove("Energy Forcefield")
                             window["information"].update("Trip mine went off!")
                             print("Trip mine went off!")
@@ -1839,7 +1850,7 @@ def movePiece(playerTurn, window, gameBoard):
                             while ("trip mine" in gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeBuffs):
                                 gameBoard[ endLocation[0] ] [ endLocation[1] ][1].activeDebuffs.remove("trip mine")
 
-                    else:
+                        else:
                             gameBoard[ endLocation[0] ] [ endLocation[1] ][0].occupied = False
                             gameBoard[ endLocation[0] ] [ endLocation[1] ][1] = 0
                             
@@ -1918,7 +1929,7 @@ def begin():
     #window
     frame_main = [
                     
-                    [sg.Button(image_filename = ".\\blank.png",key=(i,j),size = (75,75), button_color = ("white","grey"), tooltip = "square", pad = (2,2))for j in range (columns)]for i in range(0,rows)
+                    [sg.Button(image_filename = "images/blank.png",key=(i,j),size = (75,75), button_color = ("white","grey"), tooltip = "square", pad = (2,2))for j in range (columns)]for i in range(0,rows)
     ]
 
     frame_remaining = [ [sg.T(f"Player 1 Controls: xx", key = 'player1piececount',font = "Cambria 20", text_color="blue")],
@@ -1928,7 +1939,7 @@ def begin():
     
     
     frame_layout = [
-        [sg.Image("up.png", key = "turn",visible = True)],
+        [sg.Image("images/up.png", key = "turn",visible = True)],
         [sg.T(f"Player:",font = "Cambria 30",pad = (4,4)), sg.T(f"",key='playerTurn',font = "Cambria 30",pad = (4,4))],
         [sg.T(f" "*50,key = 'information',size = (37,3),font="Cambria 30")],
         [sg.Frame("Pieces Remaining",frame_remaining)],
@@ -1936,7 +1947,7 @@ def begin():
         ]
    
     layout = [
-        [sg.T("MegaCheckers",font="Cambria 50"),sg.Button("USE ITEMS",key="itemButton",image_filename = "backpack.png"),sg.Button("Look",button_color=("Blue","White"),tooltip = "Examine",font = "Cambria 20", key="examineItem",image_filename="examine.png"),sg.Button("Exit",key="exit")]
+        [sg.T("MegaCheckers",font="Cambria 50"),sg.Button("USE ITEMS",key="itemButton",image_filename = "images/backpack.png"),sg.Button("Look",button_color=("Blue","White"),tooltip = "Examine",font = "Cambria 20", key="examineItem",image_filename="images/examine.png"),sg.Button("Exit",key="exit")]
         ]
     layout += [
                          
@@ -1976,7 +1987,7 @@ def begin():
         y = -1
         #end player one's turn, begin player two's turn
         if playerTurn == 1:
-            window["turn"].update(filename = "down.png")
+            window["turn"].update(filename = "images/down.png")
             for i in gameBoard:
                 x+=1
                 for j in i:
@@ -1994,7 +2005,7 @@ def begin():
             
         #end player two's turn, begin player one's turn
         else:
-            window["turn"].update(filename = "up.png")
+            window["turn"].update(filename = "images/up.png")
             for i in gameBoard:
                 x+=1
                 for j in i:
@@ -2301,26 +2312,26 @@ def tutorial():
                                             
                                             for i in range(2):
                                                 for j in range(columns):
-                                                    window[rows-i-1,j].update(image_filename="exploding.png")
+                                                    window[rows-i-1,j].update(image_filename="images/exploding.png")
                                             window.refresh()
                                             sleep(1)
                                             
                                             for i in range(2):
                                                 for j in range(columns):
-                                                    window[rows-i-1,j].update(image_filename="destroyed.png")
+                                                    window[rows-i-1,j].update(image_filename="images/destroyed.png")
                                             window.refresh()
                                             sleep(1)
 
                                             
                                             for i in range(2):
                                                 for j in range(columns):
-                                                    window[rows-i-1,j].update(image_filename="exploding.png")
+                                                    window[rows-i-1,j].update(image_filename="images/exploding.png")
                                             window.refresh()
                                             sleep(1)
                                             
                                             for i in range(2):
                                                 for j in range(columns):
-                                                    window[rows-i-1,j].update(image_filename="blank.png")
+                                                    window[rows-i-1,j].update(image_filename="images/blank.png")
                                             window.refresh()
                                             sleep(5)
                                         sg.popup("Restarting the tutorial",keep_on_top=True)
