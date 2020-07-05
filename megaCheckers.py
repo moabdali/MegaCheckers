@@ -40,7 +40,7 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[rows - i - 1][j][1].activeBuffs.append("move again")
             gameBoard[rows - i - 1][j][1].activeBuffs.append("move again")
             gameBoard[rows - i - 1][j][1].activeBuffs.append("haymaker")
-            gameBoard[i][j][1].storedItems.append("magnet")
+            gameBoard[i][j][1].storedItems.append("spooky hand")
             #gameBoard[i][j][1].storedItems.append("move again")
             gameBoard[i][j][1].storedItems.append("shuffle radial")
             gameBoard[i][j][1].storedItems.append("haymaker")
@@ -60,7 +60,9 @@ class PublicStats:
     turnCount = 1
     cycle = 0
     orbCycleList = [5, 10, 0, 0, 3, 1, 0, 2, 1]
-
+    spookyHand = False
+    #spookyHandTurnCount = 5
+    spookyHandTurnCount = 5
     def getOrbCount(self):
         cycle = PublicStats.turnCount % 9
         return PublicStats.orbCycleList[cycle]
@@ -442,7 +444,8 @@ def displayBoard(window, gameBoard):
             elif gameBoard[i][j][0].tileType == "abolished":
                 window[i, j].update(image_filename="images/abolished.png")
                 continue
-
+            
+        
             if gameBoard[i][j][0].occupied == False:
 
                 if gameBoard[i][j][0].tileType == "default":
@@ -464,6 +467,8 @@ def displayBoard(window, gameBoard):
                 ]:
                     window[i, j].update(image_filename="images/trapOrb.gif")
                     continue
+                elif gameBoard[i][j][0].tileType in ["hand1","hand2","hand3"]:
+                    pass
                 else:
                     sg.popup(
                         f"A tile error has occurred, with type {gameBoard[i][j][0].tileType}",
@@ -543,6 +548,19 @@ def displayBoard(window, gameBoard):
                     if g.grey == True:
                         grey = Image.open("images/highlight.png").convert("RGBA")
                         avatar = Image.blend(grey, avatar, 0.50)
+
+                    if gameBoard[i][j][0].tileType == "hand1":
+                        hand1 = Image.open("images/hand1.png").convert("RGBA")
+                        avatar.paste(hand1, (0, 0), hand1)
+                        
+                    if gameBoard[i][j][0].tileType == "hand2":
+                        hand2 = Image.open("images/hand2.png").convert("RGBA")
+                        avatar.paste(hand2, (0, 0), hand2)
+                        
+                    if gameBoard[i][j][0].tileType == "hand3":
+                        hand3 = Image.open("images/hand3.png").convert("RGBA")
+                        avatar.paste(hand3, (0, 0), hand3)
+                        
 
             im_file = BytesIO()
             avatar.save(im_file, format="png")
@@ -714,7 +732,13 @@ def useItems(gameBoard, x, y, window):
                         j[0].occupied = False
                         j[1] = 0
                         j[0].tileType = "default"
-
+        elif str.find(i, "spooky hand") >= 0:
+            itemsMenu.close()
+            gameBoard[x][y][1].storedItems.remove("spooky hand")
+            pm(window,"A spooky hand has gone under the field.  When will he strike?  Nobody knows...")
+            sleep(1)
+            PublicStats.spookyHand = True
+            
         elif str.find(i, "magnet") >= 0:
             gameBoard[x][y][1].storedItems.remove("magnet")
             itemsMenu.close()
@@ -2418,7 +2442,7 @@ def movePiece(playerTurn, window, gameBoard):
             window.refresh
             continue
 
-
+# after your ends, get back your max "move again" turns
 def resetMoveAgain(gameBoard):
     moveAgainCount = 0
     for i in gameBoard:
@@ -2432,6 +2456,62 @@ def resetMoveAgain(gameBoard):
             if j[0].occupied == True:
                 j[1].moveAgain = moveAgainCount
 
+def spookyHand(window, gameBoard):
+    PublicStats.spookyHandTurnCount -= 1
+    attempts = 50
+    if PublicStats.spookyHandTurnCount == 0:
+        while attempts > 0:
+            attempts -= 1
+            xrand = random.randint(0, len(gameBoard)-1)
+            yrand = random.randint(0, len(gameBoard[0])-1)
+
+
+            #only attack spaces with pieces
+            if  gameBoard[xrand][yrand][0].occupied == True:
+
+                
+                gameBoard[xrand][yrand][0].tileType = "hand1"
+                displayBoard(window, gameBoard)
+                window.refresh()
+                
+                gameBoard[xrand][yrand][0].tileType = "hand2"
+                displayBoard(window, gameBoard)
+                window.refresh()
+
+                gameBoard[xrand][yrand][0].tileType = "hand3"
+                displayBoard(window, gameBoard)
+                window.refresh()
+
+                gameBoard[xrand][yrand][1].ownedby=3
+                displayBoard(window, gameBoard)
+                window.refresh()
+
+
+                gameBoard[xrand][yrand][0].tileType = "hand2"
+                displayBoard(window, gameBoard)
+                window.refresh()
+
+                
+                gameBoard[xrand][yrand][0].tileType = "hand1"
+                displayBoard(window, gameBoard)
+                window.refresh()
+                gameBoard[xrand][yrand][0].occupied = False
+                
+                gameBoard[xrand][yrand][0].tileType = "destroyed"
+                displayBoard(window, gameBoard)
+                window.refresh()
+
+                
+                gameBoard[xrand][yrand][1] = 0
+                gameBoard[xrand][yrand][0].occupied = False
+
+                PublicStats.spookyHandTurnCount = random.randint(10,15)
+
+                break
+
+                
+                
+                                
 
 def begin():
 
@@ -2569,8 +2649,13 @@ def begin():
                                     pickUpItemOrb(gameBoard, x, y)
                 y = -1
             playerTurn = 2
-            resetMoveAgain(gameBoard)
 
+            if PublicStats.spookyHand == True:
+                spookyHand(window,gameBoard)
+
+                
+            resetMoveAgain(gameBoard)
+        
         # end player two's turn, begin player one's turn
         else:
             window["turn"].update(filename="images/up.png")
@@ -2590,7 +2675,16 @@ def begin():
                                     pickUpItemOrb(gameBoard, x, y)
                 y = -1
             playerTurn = 1
+
+            
+            
+            if PublicStats.spookyHand == True:
+                spookyHand(window,gameBoard)
+
+                
             resetMoveAgain(gameBoard)
+
+            
 
 
 def tutorial():
