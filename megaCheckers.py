@@ -6,6 +6,7 @@ from time import sleep
 from PIL import Image
 from io import BytesIO
 import base64
+from playsound import playsound
 
 
 def initializeField(columns, rows, window, gameBoard):
@@ -318,6 +319,7 @@ def tripMineCheck(window, gameBoard, x, y):
         if "Energy Forcefield" in g[1].activeBuffs:
             g[1].activeBuffs.remove("Energy Forcefield")
             pm(window, "Trip mine went off!")
+            playsound("sounds/grenade.mp3", block = False)
             sleep(1)
             pm(window, "...But your forcefield saved you.")
             while "trip mine" in g[1].activeBuffs:
@@ -327,6 +329,7 @@ def tripMineCheck(window, gameBoard, x, y):
             g[0].tileType = "exploding"
             displayBoard(window, gameBoard)
             window.refresh()
+            playsound("sounds/grenade.mp3", block = False)
             sleep(0.1)
             g[0].tileType = "default"
             window.refresh()
@@ -354,8 +357,9 @@ def deathCheck(window, gameBoard, move=False):
                     j[1] = 0
                     j[0].occupied = False
                     displayBoard(window, gameBoard)
+                    
                     window.refresh()
-                    sleep(1)
+                    playsound("sounds/grenade.mp3", block = False)
                     j[0].tileType = "default"
                     displayBoard(window, gameBoard)
                     window.refresh()
@@ -369,6 +373,7 @@ def deathCheck(window, gameBoard, move=False):
             ):
                 if "forceField" in j[1].activeBuffs:
                     j[1].activeBuffs.remove("forecefield")
+                    playsound("sounds/grenade.mp3", block = False)
                     sg.popup(
                         "You were protected from certain death by your forcefield",
                         keep_on_top=True,
@@ -380,10 +385,12 @@ def deathCheck(window, gameBoard, move=False):
                     j[0].occupied = False
                     displayBoard(window, gameBoard)
                     window.refresh()
+                    playsound("sounds/grenade.mp3", block = False)
                     sleep(1)
                     j[0].tileType = "default"
                     displayBoard(window, gameBoard)
                     window.refresh()
+                    
                     sg.popup("A piece died!", keep_on_top=True)
                     return "death"
 
@@ -406,6 +413,7 @@ def deathCheck(window, gameBoard, move=False):
                     j[0].tileType = "default"
                     displayBoard(window, gameBoard)
                     window.refresh()
+                    playsound("sounds/grenade.mp3", block = False)
                     sg.popup("A piece died!", keep_on_top=True)
                     return "death"
             # do something for holes
@@ -2270,6 +2278,7 @@ def movePiece(playerTurn, window, gameBoard):
                                 1
                             ].activeBuffs.remove("Energy Forcefield")
                             pm(window, "Trip mine went off!")
+                            playsound("sounds/grenade.mp3", block = False)
                             sleep(1)
                             pm(window, "...But your forcefield saved you.")
                             while (
@@ -2293,6 +2302,7 @@ def movePiece(playerTurn, window, gameBoard):
                             ].tileType = "exploding"
                             displayBoard(window, gameBoard)
                             window.refresh()
+                            playsound("sounds/grenade.mp3", block = False)
                             sg.popup("Trip mine went off!", keep_on_top=True)
                             gameBoard[endLocation[0]][endLocation[1]][
                                 0
@@ -2392,6 +2402,7 @@ def movePiece(playerTurn, window, gameBoard):
                                 1
                             ].activeBuffs.remove("Energy Forcefield")
                             pm(window, "Trip mine went off!")
+                            playsound("sounds/grenade.mp3", block = False)
                             sleep(1)
                             pm(window, "...But your forcefield saved you.")
                             while (
@@ -2415,6 +2426,7 @@ def movePiece(playerTurn, window, gameBoard):
                             ].tileType = "exploding"
                             displayBoard(window, gameBoard)
                             window.refresh()
+                            playsound("sounds/grenade.mp3", block = False)
                             sg.popup("Trip mine went off!", keep_on_top=True)
                             gameBoard[endLocation[0]][endLocation[1]][
                                 0
