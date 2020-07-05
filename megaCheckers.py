@@ -81,9 +81,10 @@ class Piece:
         self.ownedBy = playerTurn
         self.distanceMax = 1
         self.grey = False
+        self.currentTurnPiece = False
         self.moveAgain = 0
         self.standingOnSelfOrb = False
-
+        
     def determineAvatar(self):
         pass
 
@@ -847,7 +848,7 @@ def useItems(gameBoard, x, y, window):
                         "laser",
                     ]:
 
-                        g[ix][iy][1].tileType = g[outx][outy][0].tileType
+                        g[ix][iy][0].tileType = g[outx][outy][0].tileType
                         death = deathCheck(window, gameBoard)
                         if death == "death":
                             displayBoard(window, gameBoard)
@@ -1053,6 +1054,7 @@ def useItems(gameBoard, x, y, window):
             itemsMenu.close()
             g = gameBoard
             if g[x][y][1].grey == True:
+                g[x][y][1].currentTurnPiece = True
                 g[x][y][1].grey = False
             cg = []
             locations = []
@@ -1081,6 +1083,8 @@ def useItems(gameBoard, x, y, window):
                 randCoord = random.choice(locations)
                 randTileInfo = random.choice(cg)
                 g[randCoord[0]][randCoord[1]] = randTileInfo
+                if g[randCoord[0]][randCoord[1]][0].occupied == True and g[randCoord[0]][randCoord[1]][1].currentTurnPiece == True:
+                    g[randCoord[0]][randCoord[1]][1].grey = True
                 locations.remove(randCoord)
                 cg.remove(randTileInfo)
                 # i+=1
@@ -1094,6 +1098,7 @@ def useItems(gameBoard, x, y, window):
             itemsMenu.close()
             g = gameBoard
             if g[x][y][1].grey == True:
+                g[x][y][1].currentTurnPiece = True
                 g[x][y][1].grey = False
             cg = []
             locations = getRadial((x, y), gameBoard)
@@ -1118,6 +1123,8 @@ def useItems(gameBoard, x, y, window):
                 randCoord = random.choice(locations)
                 randTileInfo = random.choice(cg)
                 g[randCoord[0]][randCoord[1]] = randTileInfo
+                if g[randCoord[0]][randCoord[1]][0].occupied == True and g[randCoord[0]][randCoord[1]][1].currentTurnPiece == True:
+                    g[randCoord[0]][randCoord[1]][1].grey = True
                 locations.remove(randCoord)
                 cg.remove(randTileInfo)
                 displayBoard(window, g)
@@ -1840,12 +1847,30 @@ def repairFloor(window, gameBoard):
             elif j[0].tileType == "damaged":
                 j[0].tileType = "default"
 
+def findCurrentTurnPiece(window, gameBoard, reset = False):
+    rowIndex = 0
+    columnIndex = 0
+    for i in gameBoard:
+        j = 0
+        for j in i:
+            
+            if j[0].occupied == True:
+                
+                if j[i].currentTurnPiece == True:
+                    return (rowIndex,columnIndex)
+            columnIndex +=1
+            
+        rowIndex +=1
 
 def movePiece(playerTurn, window, gameBoard):
     # a small list that is used to make sure a player that gets a second turn for a piece can only use that specific piece twice
     repeatRestrictor = [False, (-1, -1)]
+    pieceTeleported = False
     while True:
-
+        #flag for keeping track of pieces that were teleported
+        if pieceTeleported == True:
+            startLocation[0],startLocation[1] = findCurrentTurnPiece(window, gameBoard)
+            gameBoard[startLocation[0]][startLocation[1]][1].currentTurnPiece = True
         displayBoard(window, gameBoard)
         pickedUpItem = False
         window["exit"].update(disabled=False)
@@ -1860,7 +1885,7 @@ def movePiece(playerTurn, window, gameBoard):
         # pick your piece to move
         window["information"].update(f"Pick a piece to move.")
         pm(window, f"Pick a piece to move.")
-
+        
         # check to see if this is your second (or higher) turn (you don't get to choose a new piece)
         if repeatRestrictor[0] == False:
             event = window.read()
@@ -1933,6 +1958,7 @@ def movePiece(playerTurn, window, gameBoard):
         window["examineItem"].update(disabled=True)
 
         startLocation = event[0]
+        
         if (repeatRestrictor[0] == True) and (startLocation != repeatRestrictor[1]):
             getChoice = sg.popup_yes_no(
                 "You can only move the same piece twice.  Click yes to force that piece to be selected.  Otherwise choose no to end your turn.",
@@ -1944,6 +1970,7 @@ def movePiece(playerTurn, window, gameBoard):
                 return
         if (repeatRestrictor[0] == True) and (startLocation == repeatRestrictor[1]):
             gameBoard[startLocation[0]][startLocation[1]][1].grey = True
+            gameBoard[startLocation[0]][startLocation[1]][1].currentTurnPiece = True
             displayBoard(window, gameBoard)
 
         # if a square is picked and a piece exists on it
@@ -2001,7 +2028,7 @@ def movePiece(playerTurn, window, gameBoard):
         # if there is a piece there and it belongs to you, highlight it to show you selected it
         if gameBoard[startLocation[0]][startLocation[1]][1] != 0:
             gameBoard[startLocation[0]][startLocation[1]][1].grey = True
-
+            gameBoard[startLocation[0]][startLocation[1]][1].currentTurnPiece = True
         # update the board (to show highlighting)
         displayBoard(window, gameBoard)
 
@@ -2033,18 +2060,21 @@ def movePiece(playerTurn, window, gameBoard):
 
                 if gameBoard[startLocation[0]][startLocation[1]][0].occupied == True:
                     gameBoard[startLocation[0]][startLocation[1]][1].grey = False
+                    gameBoard[startLocation[0]][startLocation[1]][1].currentTurnPiece = False
                 countPieces(gameBoard, window)
                 displayBoard(window, gameBoard)
                 continue
             # if the piece isn't yours
             elif gameBoard[startLocation[0]][startLocation[1]][1].ownedBy != playerTurn:
                 gameBoard[startLocation[0]][startLocation[1]][1].grey = False
+                gameBoard[startLocation[0]][startLocation[1]][1].currentTurnPiece = False
                 pm(window, "That's not your piece")
                 continue
 
             # if the piece has no items
             elif len(gameBoard[startLocation[0]][startLocation[1]][1].storedItems) < 1:
                 gameBoard[startLocation[0]][startLocation[1]][1].grey = False
+                gameBoard[startLocation[0]][startLocation[1]][1].currentTurnPiece = False
                 pm(window, "There are no items on this piece.")
                 continue
             # shouldn't get to here
@@ -2053,6 +2083,7 @@ def movePiece(playerTurn, window, gameBoard):
 
         # if there isn't any piece on the square
         if gameBoard[startLocation[0]][startLocation[1]][0].occupied == False:
+            gameBoard[startLocation[0]][startLocation[1]][1].currentTurnPiece = False
             pm(window, f"Nothing exists on the initial square!")
             window.refresh
             continue
@@ -2060,6 +2091,7 @@ def movePiece(playerTurn, window, gameBoard):
         # if the piece no longer exists on the original point, ungrey it
         if gameBoard[startLocation[0]][startLocation[1]][1] != 0:
             gameBoard[startLocation[0]][startLocation[1]][1].grey = False
+            gameBoard[startLocation[0]][startLocation[1]][1].currentTurnPiece = False
         displayBoard(window, gameBoard)
 
         # if the spot you're moving from contains a piece (which it should)
@@ -2239,7 +2271,7 @@ def movePiece(playerTurn, window, gameBoard):
                         )
                         displayBoard(window, gameBoard)
                         moveAgainCheck = sg.popup_yes_no(
-                            "Would you like to move it again?", keep_on_top=True
+                            "This piece gets to go again. Would you like to use it again?", keep_on_top=True
                         )
                         if moveAgainCheck == "Yes":
                             gameBoard[endLocation[0]][endLocation[1]][1].moveAgain -= 1
