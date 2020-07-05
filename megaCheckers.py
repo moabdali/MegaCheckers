@@ -52,7 +52,7 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[i][j][1].activeBuffs.append("move again")
             gameBoard[i][j][1].activeBuffs.append("move again")
             #gameBoard[i][j][1].storedItems.append("abolish foe powers radial")
-            gameBoard[i][j][1].storedItems.append("purify radial")
+            gameBoard[i][j][1].storedItems.append("bowling ball")
 
 ####### END DELETE ME###########
 
@@ -62,7 +62,6 @@ class PublicStats:
     cycle = 0
     orbCycleList = [5, 10, 0, 0, 3, 1, 0, 2, 1]
     spookyHand = False
-    #spookyHandTurnCount = 5
     spookyHandTurnCount = 5
     def getOrbCount(self):
         cycle = PublicStats.turnCount % 9
@@ -487,12 +486,23 @@ def displayBoard(window, gameBoard):
             else:
                 if gameBoard[i][j][0].occupied:
                     g = gameBoard[i][j][1]
+                    
+                    if "bowling ball" in g.activeBuffs:
+                        avatar = Image.open(f"images/bowling ball {g.ownedBy}.png").convert("RGBA")
+                        im_file = BytesIO()
+                        avatar.save(im_file, format="png")
+                        im_bytes = im_file.getvalue()
+                        im_b64 = base64.b64encode(im_bytes)
 
+                        window[i, j].update(image_data=im_b64)
+                        continue
+                    
                     # set the center color
                     if g.ownedBy == 1:
                         avatar = Image.open("images/p1.png").convert("RGBA")
                     elif g.ownedBy == 2:
                         avatar = Image.open("images/p2.png").convert("RGBA")
+                    
 
                     # set the meat of the piece
                     if len(g.storedItems) > 0:
@@ -598,6 +608,7 @@ def pickUpItemOrb(gameBoard, x, y):
         "napalm radial",
         "abolish foe powers radial",
         "haymaker",
+        "bowling ball"
     ]
     # items = ["magnet"]
 
@@ -695,6 +706,9 @@ def useItems(gameBoard, x, y, window):
         elif z == "images/Energy Forcefield.png":
             z = "images/Forcefield.png"
             zz = "removes all buffs (beneficial effects) from surrounding enemies."
+        elif z == "images/bowling ball.png":
+            z = "images/bowling ball.png"
+            zz = "Your piece loses all of its effects and items... but turns into a crazy bowling ball."
         else:
             z = "images/blank.png"
             zz = "no explanation supplied... yet"
@@ -761,6 +775,22 @@ def useItems(gameBoard, x, y, window):
             pm(window,"A spooky hand has gone under the field.  When will he strike?  Nobody knows...")
             sleep(1)
             PublicStats.spookyHand = True
+            
+        elif str.find(i, "bowling ball") >= 0:
+            
+            yesno = sg.popup_yes_no("Warning: using bowling ball will make your piece permanently transform into a rabid bowling ball, and will lose all items and effects. Are you sure you want to use this?",keep_on_top=True)
+            itemsMenu.close()
+            if yesno == "Yes":
+                gameBoard[x][y][1].storedItems.remove("bowling ball")
+                gameBoard[x][y][1].activeDebuffs.clear()
+                gameBoard[x][y][1].activeBuffs.clear()
+                gameBoard[x][y][1].storedItems.clear()
+                gameBoard[x][y][1].activeBuffs.append("bowling ball")
+                pm(window,"You now have a bowling ball")
+            if yesno == "No":
+                break
+            
+
             
         elif str.find(i, "magnet") >= 0:
             gameBoard[x][y][1].storedItems.remove("magnet")
@@ -1929,13 +1959,29 @@ def movePiece(playerTurn, window, gameBoard):
         window["playerTurn"].update(f"{playerTurn}")
         window["information"].update(text_color="white")
 
-        # pick your piece to move
-        window["information"].update(f"Pick a piece to move.")
+        # message for pick your piece to move
         pm(window, f"Pick a piece to move.")
         
         # check to see if this is your second (or higher) turn (you don't get to choose a new piece)
         if repeatRestrictor[0] == False:
+
+
+            #FIRST PIECE PICK HERE
             event = window.read()
+
+            #try:
+            if gameBoard[event[0][0]][event[0][1]][1].activeBuffs[0] == "bowling ball":
+                bowlingLayout = [
+                    [sg.Button("Up")],
+                    [sg.Button("Left"), sg.Button("Right")],
+                    [sg.Button("Down")]
+                    ]
+                bowlingMenu = sg.Window("Direction",bowlingLayout,keep_on_top=True)
+                event = bowlingMenu.read()
+                break
+            #except:
+            #    print("Not a bowling ball")
+            #    pass
 
             if "cheetz" in event:
                 buffs = sg.popup_get_text("")
@@ -2005,6 +2051,8 @@ def movePiece(playerTurn, window, gameBoard):
         window["itemButton"].update(disabled=False)
         window["examineItem"].update(disabled=True)
 
+
+        
         startLocation = event[0]
         
         if (repeatRestrictor[0] == True) and (startLocation != repeatRestrictor[1]):
@@ -2441,7 +2489,6 @@ def movePiece(playerTurn, window, gameBoard):
                         and gameBoard[endLocation[0]][endLocation[1]][1].moveAgain > 0
                     ):
 
-                        # sg.popup(f"Jump killer repeater {gameBoard[ endLocation[0] ] [ endLocation[1] ][1].moveAgain}",keep_on_top=True)
 
                         window["information"].update(
                             f"This piece gets to move again; {gameBoard[ endLocation[0] ] [ endLocation[1] ][1].moveAgain} remaining!"

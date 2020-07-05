@@ -1,3 +1,10 @@
+ChangeLog
+
+
+v.0.9.34 July 7, 2020
+	Added the framework for a bowling ball item.  Needs to have the movement implemented.  Currently properly transforms a piece into a bowling ball and prevents it from moving normally.  Shows a menu allowing user to pick up/down/left/right (but menu doesn't work yet)
+
+
 v.0.9.33 Created this changelog (this file used to be part of the README).  Added sound support with the playsound module.
 
 v.0.9.32 Fixed some issues with the highlight feature that conflicted with shuffles.  Also found an error with an out of place remove("shuffle column") that was under the "shuffle radial" section.
