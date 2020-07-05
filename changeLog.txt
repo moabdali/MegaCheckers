@@ -1,6 +1,9 @@
 ChangeLog
 
 
+v.0.9.34.1 July 7,2020
+	Mostly down with the "down" aspect of the bowling ball. 
+
 v.0.9.34 July 7, 2020
 	Added the framework for a bowling ball item.  Needs to have the movement implemented.  Currently properly transforms a piece into a bowling ball and prevents it from moving normally.  Shows a menu allowing user to pick up/down/left/right (but menu doesn't work yet)
 
