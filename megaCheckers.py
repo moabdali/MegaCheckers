@@ -672,6 +672,21 @@ def useItems(gameBoard, x, y, window):
         elif z == "images/jumpProof.png":
             z = "images/jumpProof.png"
             zz = "This piece is wearing a hardhat, so naturally, he can't be jumped on by a 3 ton block of metal machinery."
+        elif z == "images/shuffle column.png":
+            z = "images/shuffleColumn.png"
+            zz = "Randomly shuffle a column."
+        elif z == "images/shuffle radial.png":
+            z = "images/shuffleRadial.png"
+            zz = "Shuffle your piece and all surrounding tiles around."
+        elif z == "images/spooky hand.png":
+            z = "images/Hand3.png"
+            zz = "A scary hand that will periodically grab a random piece from the field."
+        elif z == "images/haymaker.png":
+            z = "images/haymaker.png"
+            zz = "A strong punch that will send a piece flying until it smashes into something."
+        elif z == "images/Energy Forcefield.png":
+            z = "images/Forcefield.png"
+            zz = "removes all buffs (beneficial effects) from surrounding enemies."
         else:
             z = "images/blank.png"
             zz = "no explanation supplied... yet"
@@ -685,7 +700,7 @@ def useItems(gameBoard, x, y, window):
                     tooltip=zz,
                     font="Arial 20",
                     size=(30, 1),
-                    button_color=("light blue", "grey"),
+                    button_color=("pink", "grey"),
                     image_size=(400, 100),
                 )
             ]
@@ -696,7 +711,7 @@ def useItems(gameBoard, x, y, window):
 
     layout += [[sg.Column(listData, justification="center")]]
 
-    itemsMenu = sg.Window("Items Menu", layout, disable_close=True, keep_on_top=True)
+    itemsMenu = sg.Window("Items Menu", layout, disable_close=True, no_titlebar=True,keep_on_top=True)
 
     # event = itemsMenu.read()
     enemyTurn = 0
@@ -1107,8 +1122,8 @@ def useItems(gameBoard, x, y, window):
                 randCoord = random.choice(locations)
                 randTileInfo = random.choice(cg)
                 g[randCoord[0]][randCoord[1]] = randTileInfo
-                if g[randCoord[0]][randCoord[1]][0].occupied == True and g[randCoord[0]][randCoord[1]][1].currentTurnPiece == True:
-                    g[randCoord[0]][randCoord[1]][1].grey = True
+                #if g[randCoord[0]][randCoord[1]][0].occupied == True and g[randCoord[0]][randCoord[1]][1].currentTurnPiece == True:
+                #    g[randCoord[0]][randCoord[1]][1].grey = True
                 locations.remove(randCoord)
                 cg.remove(randTileInfo)
                 # i+=1
@@ -1131,7 +1146,7 @@ def useItems(gameBoard, x, y, window):
             random.shuffle(locations)
             # shuffle the locations to look cooler?
 
-            g[x][y][1].storedItems.remove("shuffle column")
+            g[x][y][1].storedItems.remove("shuffle radial")
 
             for i in locations:
                 x = i[0]
@@ -1147,8 +1162,8 @@ def useItems(gameBoard, x, y, window):
                 randCoord = random.choice(locations)
                 randTileInfo = random.choice(cg)
                 g[randCoord[0]][randCoord[1]] = randTileInfo
-                if g[randCoord[0]][randCoord[1]][0].occupied == True and g[randCoord[0]][randCoord[1]][1].currentTurnPiece == True:
-                    g[randCoord[0]][randCoord[1]][1].grey = True
+                #if g[randCoord[0]][randCoord[1]][0].occupied == True and g[randCoord[0]][randCoord[1]][1].currentTurnPiece == True:
+                #    g[randCoord[0]][randCoord[1]][1].grey = True
                 locations.remove(randCoord)
                 cg.remove(randTileInfo)
                 displayBoard(window, g)
@@ -1875,7 +1890,7 @@ def findCurrentTurnPiece(window, gameBoard, reset = False):
     rowIndex = 0
     columnIndex = 0
     for i in gameBoard:
-        j = 0
+        columnIndex = 0
         for j in i:
             
             if j[0].occupied == True:
@@ -1971,6 +1986,7 @@ def movePiece(playerTurn, window, gameBoard):
                     buffslist = "NONE"
                 if debuffslist == "":
                     debuffslist = "NONE"
+                sg.popup(f"The piece here belongs to {owner}.\nIt currently holds {len(gameBoard[event[0][0]][event[0][1]][1].storedItems)} inactive items.\nIt has the following buffs:\n{buffslist}\nIt has the current debuffs:\n{debuffslist}",)
                 pm(
                     window,
                     f"The piece here belongs to {owner}.\nIt currently holds {len(gameBoard[event[0][0]][event[0][1]][1].storedItems)} inactive items.\nIt has the following buffs:\n{buffslist}\nIt has the current debuffs:\n{debuffslist}",
@@ -1993,8 +2009,11 @@ def movePiece(playerTurn, window, gameBoard):
             else:
                 return
         if (repeatRestrictor[0] == True) and (startLocation == repeatRestrictor[1]):
-            gameBoard[startLocation[0]][startLocation[1]][1].grey = True
-            gameBoard[startLocation[0]][startLocation[1]][1].currentTurnPiece = True
+            try:
+                gameBoard[startLocation[0]][startLocation[1]][1].grey = True
+                gameBoard[startLocation[0]][startLocation[1]][1].currentTurnPiece = True
+            except:
+                startLocation[0],startLocation[1] = findCurrentTurnPiece(window, gameBoard)
             displayBoard(window, gameBoard)
 
         # if a square is picked and a piece exists on it
@@ -2587,7 +2606,7 @@ def begin():
                 key="examineItem",
                 image_filename="images/examine.png",
             ),
-            sg.Button("Exit", key="exit"),
+            sg.Button("Exit", size=(20,4), key="exit"),
             sg.Button("cheetz")
         ]
     ]
