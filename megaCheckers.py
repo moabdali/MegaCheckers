@@ -41,16 +41,16 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[rows - i - 1][j][1].activeBuffs.append("move again")
             gameBoard[rows - i - 1][j][1].activeBuffs.append("haymaker")
             gameBoard[i][j][1].storedItems.append("magnet")
-            gameBoard[i][j][1].storedItems.append("move again")
+            #gameBoard[i][j][1].storedItems.append("move again")
             gameBoard[i][j][1].storedItems.append("shuffle radial")
             gameBoard[i][j][1].storedItems.append("haymaker")
             gameBoard[i][j][1].storedItems.append("place mine")
-            gameBoard[i][j][1].storedItems.append("trip mine radial")
+            #gameBoard[i][j][1].storedItems.append("trip mine radial")
             gameBoard[i][j][1].activeBuffs.append("move diagonal")
             gameBoard[i][j][1].activeBuffs.append("jumpProof")
             gameBoard[i][j][1].activeBuffs.append("move again")
             gameBoard[i][j][1].activeBuffs.append("move again")
-            gameBoard[i][j][1].storedItems.append("abolish foe powers radial")
+            #gameBoard[i][j][1].storedItems.append("abolish foe powers radial")
             gameBoard[i][j][1].storedItems.append("purify radial")
 
 ####### END DELETE ME###########
@@ -1853,7 +1853,7 @@ def movePiece(playerTurn, window, gameBoard):
         window["itemButton"].update(disabled=True)
         window["examineItem"].update(disabled=False)
         window.refresh()
-
+        
         window["playerTurn"].update(f"{playerTurn}")
         window["information"].update(text_color="white")
 
@@ -1864,6 +1864,14 @@ def movePiece(playerTurn, window, gameBoard):
         # check to see if this is your second (or higher) turn (you don't get to choose a new piece)
         if repeatRestrictor[0] == False:
             event = window.read()
+
+            if "cheetz" in event:
+                buffs = sg.popup_get_text("")
+                for i in gameBoard:
+                    for j in i:
+                        if j[0].occupied == True:
+                            j[1].storedItems.append(buffs)
+                continue
             window["exit"].update(disabled=False)
         elif repeatRestrictor[0] == True:
             event = []
@@ -2468,6 +2476,7 @@ def begin():
                 image_filename="images/examine.png",
             ),
             sg.Button("Exit", key="exit"),
+            sg.Button("cheetz")
         ]
     ]
     layout += [
@@ -2566,6 +2575,7 @@ def tutorial():
         [sg.Button("Items", key="items")],
         [sg.Button("Getting info on pieces", key="info")],
         [sg.Button("EXIT", key="EXIT")],
+        
     ]
     frame_2 = [
         [
