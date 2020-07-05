@@ -2,6 +2,10 @@ MegaCheckers:
 
 A game where you take turns moving pieces to kill all of your enemy's pieces.  To do this, your pieces jump onto the enemy piece to crush them.  In order to aid you with this goal, every few turns a random number of mystery items will appear on empty spaces.  You pick up an item and on any subsequent turn,  you can use the item (depending on what the item is) to destroy enemy pieces, to set up traps, to alter the playing field (raise/lower, destroy, magnetize, make one way, push pieces, etc), to power up your piece, and so on.  Eventually networking will be enabled.  
 
+v.0.9.28 Made the code look formatted nicer (especially long lists).  Removed a lot of commented code that is confirmed unnecessary.
+
+v.0.9.27 Magnet fully implemented (I think).  Added a mapper function to support the suck0in effect.  
+
 v.0.9.26 Haymaker almost fully implemented - your piece should die if it has a trip mine attached or if it hits a mine/hole in any direction. I say almost fully because I have to implement tile heights as a concept before that aspect can be worked on.  But as-is, everything should be good.
 
 v.0.9.25 Shuffle radial implemented.  Added some arrows for the items, but haven't implemented them yet.  Will include with next commit hopefully, along with shuffle row.

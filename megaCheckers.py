@@ -4,7 +4,6 @@ import math
 import random
 from time import sleep
 from PIL import Image
-
 from io import BytesIO
 import base64
 
@@ -12,7 +11,6 @@ import base64
 def initializeField(columns, rows, window, gameBoard):
     for i in range(2):
         for j in range(columns):
-            # window[i,j].update(image_filename="player1default.png")
             gameBoard[i][j][0] = Tile(occupied=True)
             piece = Piece(playerTurn=1)
             gameBoard[i][j][1] = piece
@@ -21,20 +19,17 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[i][j][1].avatar = "default"
     for i in range(2):
         for j in range(columns):
-            # window[rows-i-1,j].update(image_filename="player2default.png")
             gameBoard[rows - i - 1][j][0] = Tile(occupied=True)
             piece = Piece(playerTurn=2)
             gameBoard[rows - i - 1][j][1] = piece
             gameBoard[rows - i - 1][j][1].location = (rows - i - 1, j)
             gameBoard[rows - i - 1][j][0].tileType = "player2default"
             gameBoard[rows - i - 1][j][1].avatar = "default"
-            
-    ###### DELETE ME ##########
+
+###### DELETE ME ##########
     for i in range(2):
         for j in range(columns):
             rows = 6
-            # window[rows-i-1,j].update(image_filename="player2default.png"
-
             gameBoard[rows - i - 1][j][0] = Tile(occupied=True)
             piece = Piece(playerTurn=2)
             gameBoard[rows - i - 1][j][1] = piece
@@ -45,22 +40,20 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[rows - i - 1][j][1].activeBuffs.append("move again")
             gameBoard[rows - i - 1][j][1].activeBuffs.append("move again")
             gameBoard[rows - i - 1][j][1].activeBuffs.append("haymaker")
-            gameBoard[i][j][1].storedItems.append("move again")
+            gameBoard[i][j][1].storedItems.append("magnet")
             gameBoard[i][j][1].storedItems.append("move again")
             gameBoard[i][j][1].storedItems.append("shuffle radial")
             gameBoard[i][j][1].storedItems.append("haymaker")
-            gameBoard[i][j][1].activeDebuffs.append("poison")
             gameBoard[i][j][1].storedItems.append("place mine")
             gameBoard[i][j][1].storedItems.append("trip mine radial")
             gameBoard[i][j][1].activeBuffs.append("move diagonal")
             gameBoard[i][j][1].activeBuffs.append("jumpProof")
-            gameBoard[i][j][1].activeDebuffs.append("trip mine")
             gameBoard[i][j][1].activeBuffs.append("move again")
             gameBoard[i][j][1].activeBuffs.append("move again")
             gameBoard[i][j][1].storedItems.append("abolish foe powers radial")
             gameBoard[i][j][1].storedItems.append("purify radial")
 
-    ####### END DELETE ME###########
+####### END DELETE ME###########
 
 
 class PublicStats:
@@ -84,7 +77,6 @@ class Piece:
         # what the player is holding (need a max; 5?)
         self.storedItems = []
         # what it looks like
-        # self. avatar = f".//player{playerTurn}default.png"
         self.avatar = "default"
         self.ownedBy = playerTurn
         self.distanceMax = 1
@@ -254,7 +246,7 @@ def pm(window, message):
     window["information"].update(message)
     print(message)
 
-
+# how many pieces does each player have left?
 def countPieces(gameBoard, window):
     player1count = 0
     player2count = 0
@@ -269,7 +261,7 @@ def countPieces(gameBoard, window):
     window["player2piececount"].update(f"Player 2 controls: {player2count}\n")
     window.refresh()
 
-
+# the actual loop that is used to progress turns
 def gamePlay(playerTurn, window, gameBoard):
     countPieces(gameBoard, window)
     createOrbs(window, gameBoard)
@@ -278,14 +270,14 @@ def gamePlay(playerTurn, window, gameBoard):
     PublicStats.turnCount += 1
     repairFloor(window, gameBoard)
 
-
+# determine how far two points are
 def getDistance(a, b, c, d):
     verticalDistance = abs(c - a)
     horizontalDistance = abs(d - b)
     distance = verticalDistance + horizontalDistance
     return distance
 
-
+# generate item orbs
 def createOrbs(window, gameBoard):
     dangerTurn = 15
     emptySpots = 0
@@ -314,37 +306,38 @@ def createOrbs(window, gameBoard):
                     continue
             gameBoard[i][j][0].tileType = "itemOrb"
 
-def tripMineCheck(window, gameBoard, x,y):
+# check to see if a piece should die from a trip mine
+def tripMineCheck(window, gameBoard, x, y):
     g = gameBoard[x][y]
 
     if "trip mine" in g[1].activeDebuffs:
 
-        if ("Energy Forcefield" in g[1].activeBuffs):
+        if "Energy Forcefield" in g[1].activeBuffs:
             g[1].activeBuffs.remove("Energy Forcefield")
             pm(window, "Trip mine went off!")
             sleep(1)
             pm(window, "...But your forcefield saved you.")
-            while ("trip mine" in g[1].activeBuffs):
+            while "trip mine" in g[1].activeBuffs:
                 g[1].activeDebuffs.remove("trip mine")
         else:
             g[0].occupied = False
             g[0].tileType = "exploding"
             displayBoard(window, gameBoard)
             window.refresh()
-            sleep(.1)
+            sleep(0.1)
             g[0].tileType = "default"
             window.refresh()
             sg.popup("Trip mine went off!", keep_on_top=True)
             g[1] = 0
             return "death"
-    
-    
+
+# see if any pieces are sitting on death spots
 def deathCheck(window, gameBoard, move=False):
     for i in gameBoard:
         for j in i:
-            #if a regular mine or laser was stepped on
+            # if a regular mine or laser was stepped on
             if j[0].occupied == True and j[0].tileType in ["mine", "laser"]:
-                
+
                 if "forceField" in j[1].activeBuffs:
                     j[1].activeBuffs.remove("forecefield")
                     sg.popup(
@@ -353,7 +346,7 @@ def deathCheck(window, gameBoard, move=False):
                     )
                     j[0].tileType = "default"
                 else:
-                    
+
                     j[0].tileType = "exploding"
                     j[1] = 0
                     j[0].occupied = False
@@ -365,7 +358,6 @@ def deathCheck(window, gameBoard, move=False):
                     window.refresh()
                     sg.popup("A piece died!", keep_on_top=True)
                     return "death"
-                    
 
             # if a trap belonging to your enemy was set
             elif j[0].occupied == True and (
@@ -416,6 +408,7 @@ def deathCheck(window, gameBoard, move=False):
             # do something for holes
 
 
+#display the board (update what the tiles/pieces should look like)
 def displayBoard(window, gameBoard):
 
     for i in range(len(gameBoard)):
@@ -511,7 +504,7 @@ def displayBoard(window, gameBoard):
                     if "stunned" in g.activeDebuffs:
                         stunned = Image.open("images/stunned.png").convert("RGBA")
                         avatar.paste(stunned, (0, 0), stunned)
-                        
+
                     if "purified2" in g.activeBuffs:
                         purified2 = Image.open("images/purified2.png").convert("RGBA")
                         avatar.paste(purified2, (0, 0), purified2)
@@ -550,16 +543,6 @@ def displayBoard(window, gameBoard):
                         grey = Image.open("images/highlight.png").convert("RGBA")
                         avatar = Image.blend(grey, avatar, 0.50)
 
-            ##                #for making sure the game doesn't crash due to slow harddrives
-            ##                try:
-            ##                    avatar.save("avatar.png","png")
-            ##                except:
-            ##                    window["information"].update("Wait for load...")
-            ##                    print("Loading pieces...")
-            ##                    sleep(.05)
-            ##                    avatar.save("avatar.png","png")
-            ##            window[i,j].update(image_filename="avatar.png")
-
             im_file = BytesIO()
             avatar.save(im_file, format="png")
             im_bytes = im_file.getvalue()
@@ -567,17 +550,85 @@ def displayBoard(window, gameBoard):
 
             window[i, j].update(image_data=im_b64)
 
-
+# the item list
 def pickUpItemOrb(gameBoard, x, y):
     # items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
-    # items = ["trap orb","place mine","move again","suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs", "move diagonal", "trip mine radial", "purify radial", "napalm radial", "abolish foe powers radial", "haymaker"]
-    items = ["trap orb"]
+    items = [
+        "magnet",
+        "trap orb",
+        "place mine",
+        "move again",
+        "suicideBomb Row",
+        "Energy Forcefield",
+        "suicideBomb Column",
+        "Haphazard Airstrike",
+        "suicideBomb Radial",
+        "jumpProof",
+        "smartBombs",
+        "move diagonal",
+        "trip mine radial",
+        "purify radial",
+        "napalm radial",
+        "abolish foe powers radial",
+        "haymaker",
+    ]
+    # items = ["magnet"]
+
+    #pick an item at random; should eventually have biases on the items by separating them into different lists that have different odds of being chosen
     randItem = random.choice(items)
     gameBoard[x][y][1].storedItems.append(randItem)
     playerOwned = gameBoard[x][y][1].ownedBy
+    #modifies your avatar to signify the player is holding an item(s)
     gameBoard[x][y][1].avatar = f"player{playerOwned}stored"
 
+# for finding the outer ring that surrounds the immediate surrounding pieces
+def getOuterRadialOnly(location, gameBoard):
+    g = gameBoard
+    x = location[0]
+    y = location[1]
+    rows = len(gameBoard)
+    columns = len(gameBoard[0])
+    locationList = []
+    #check for illegal boundaries outside of the playing field
+    if x < 0 or x > rows or y < 0 or y > columns:
+        return -1
+    else:
+        return (x, y)
 
+#find the corresponding inner ring location for the outer ring.   That is, the top right corner of the outer ring (and the two adjacent tiles) correspond
+#to the top right of the inner ring
+def mapping(element):
+    orientation = element[2]
+    x = element[0]
+    y = element[1]
+
+    # for top left
+    if orientation in ("tll", "tml", "mlt"):
+        return (x + 1, y + 1)
+    # for top middle
+    elif orientation in ("tm"):
+        return (x + 1, y)
+    # for top right
+    elif orientation in ("tmr", "trr", "mrt"):
+        return (x + 1, y - 1)
+    # for middle left
+    elif orientation in ("ml"):
+        return (x, y + 1)
+    # for middle right
+    elif orientation in ("mr"):
+        return (x, y - 1)
+    # for bottom left
+    elif orientation in ("mlb", "bll", "bml"):
+        return (x - 1, y + 1)
+    # for bottom middle
+    elif orientation in ("bm"):
+        return (x - 1, y)
+    # for bottom right
+    elif orientation in ("brr", "bmr", "mrb"):
+        return (x - 1, y - 1)
+
+
+# using an item
 def useItems(gameBoard, x, y, window):
     layout = []
     listData = [[sg.T("Item Menu", justification="center", font="Calibri 30")]]
@@ -629,8 +680,14 @@ def useItems(gameBoard, x, y, window):
     itemsMenu = sg.Window("Items Menu", layout, disable_close=True, keep_on_top=True)
 
     # event = itemsMenu.read()
-
+    enemyTurn = 0
     playerTurn = gameBoard[x][y][1].ownedBy
+    if playerTurn == 1:
+        enemyTurn = 2
+    elif playerTurn == 2:
+        enemyTurn = 1
+    else:
+        pm(window, "An error occurs in the turn assignment in items")
     rows = len(gameBoard)
     columns = len(gameBoard[0])
     location = (x, y)
@@ -656,6 +713,151 @@ def useItems(gameBoard, x, y, window):
                         j[0].occupied = False
                         j[1] = 0
                         j[0].tileType = "default"
+
+        elif str.find(i, "magnet") >= 0:
+            gameBoard[x][y][1].storedItems.remove("magnet")
+            itemsMenu.close()
+            g = gameBoard
+            playerTurn = gameBoard[x][y][1].ownedBy
+            innerRadial = getRadial(location, gameBoard)
+            legalOuterList = []
+            # each coordinate corresponds to a part of the outer ring.  tb = top/bottom, m = middle, lr = left/right
+            coordList = [
+                (x - 2, y - 2, "tll"),
+                (x - 2, y - 1, "tml"),
+                (x - 2, y, "tm"),
+                (x - 2, y + 1, "tmr"),
+                (x - 2, y + 2, "trr"),
+                (x - 1, y - 2, "mlt"),
+                (x - 1, y + 2, "mrt"),
+                (x, y - 2, "ml"),
+                (x, y + 2, "mr"),
+                (x + 1, y - 2, "mlb"),
+                (x + 1, y + 2, "mrb"),
+                (x + 2, y - 2, "bll"),
+                (x + 2, y - 1, "bml"),
+                (x + 2, y, "bm"),
+                (x + 2, y + 1, "bmr"),
+                (x + 2, y + 2, "brr"),
+            ]
+            for i in coordList:
+                radValue = getOuterRadialOnly(i, gameBoard)
+                if radValue == -1:
+                    continue
+                else:
+                    legalOuterList.append(i)
+        
+            forceFieldUsed = False
+            death = False
+            itemOrbDeath = False
+            for i in innerRadial:
+                ix = i[0]
+                iy = i[1]
+                # explosive list
+                # if the tile has a mine or trap orb
+                if g[ix][iy][0].tileType in [
+                    "mine",
+                    "AI bomb",
+                    "trap Orb 0",
+                    f"trap Orb {enemyTurn}",
+                ]:
+                    if g[ix][iy][0].tileType in ["trap Orb 0", f"trap Orb {enemyTurn}"]:
+                        itemOrbDeath = True
+                    if "Energy Forcefield" in g[x][y][1].activeBuffs:
+                        forceFieldUsed = True
+                    else:
+                        death = True
+                    # set the tile as empty
+                    g[ix][iy][0].tileType = "default"
+                    displayBoard(window, gameBoard)
+                    sleep(0.1)
+                    window.refresh()
+
+                # if an item orb exists in the inner circle, pick it up
+                if (
+                    g[ix][iy][0].tileType == "itemOrb"
+                    and "stunned" not in g[x][y][1].activeDebuffs
+                ):
+                    g[ix][iy][0].tileType = "default"
+                    pickUpItemOrb(gameBoard, x, y)
+                    pm(window, "You picked up an item")
+                    displayBoard(window, gameBoard)
+                    sleep(0.1)
+                    window.refresh()
+
+            if itemOrbDeath == True:
+                pm(window, "A hostile trap orb was sucked in!")
+            if forceFieldUsed == True:
+                pm(window, "You were saved from explosives by your forcefield")
+                g[x][y][1].activeBuffs.remove("Energy Forcefield")
+                displayBoard(window, gameBoard)
+                sleep(0.1)
+                window.refresh()
+            if death == True:
+                g[x][y][0].tileType = "mine"
+                deathCheck(window, gameBoard)
+
+            #for every spot that exists in the outer ring that isn't off the playing field
+            for i in legalOuterList:
+                mappedValue = mapping(i)
+                #out (x/y) = outer x/y
+                outx = i[0]
+                outy = i[1]
+                #i(x/y) means inner x/y
+                ix = mappedValue[0]
+                iy = mappedValue[1]
+
+                # if the inner slot is empty
+                if g[ix][iy][0].occupied == False:
+                    # copy the outer location into the center
+                    g[ix][iy] = copy.deepcopy(g[outx][outy])
+                    g[outx][outy][0].occupied = False
+                    g[outx][outy][0].tileType = "default"
+                    g[outx][outy][1] = 0
+                    displayBoard(window, gameBoard)
+                    sleep(0.3)
+                    window.refresh()
+                
+                if g[ix][iy][0].occupied == True:
+                    if g[outx][outy][0].tileType == "itemOrb":
+
+                        g[ix][iy][0].tileType = "itemOrb"
+
+                        if (
+                            g[ix][iy][1].ownedBy == playerTurn
+                            and "stunned" not in g[ix][iy][1].activeDebuffs
+                        ):
+                            pm(window, "You picked up an item")
+                            pickUpItemOrb(gameBoard, ix, iy)
+
+                        elif (
+                            g[ix][iy][1].ownedBy == enemyTurn
+                            and "stunned" not in g[ix][iy][1].activeDebuffs
+                        ):
+                            pm(window, "Your opponent picked up an item")
+                            pickUpItemOrb(gameBoard, ix, iy)
+
+                        g[outx][outy][0].tileType = "default"
+
+                    if g[outx][outy][0].tileType in [
+                        "mine",
+                        "trap orb 1",
+                        "trap orb 0",
+                        "trap orb 2",
+                        "laser",
+                    ]:
+
+                        g[ix][iy][1].tileType = g[outx][outy][0].tileType
+                        death = deathCheck(window, gameBoard)
+                        if death == "death":
+                            displayBoard(window, gameBoard)
+                            sleep(0.1)
+                            window.refresh()
+                        return
+
+            displayBoard(window, gameBoard)
+            sleep(0.1)
+            window.refresh()
 
         # trip mine radial
         elif str.find(i, "trip mine radial") >= 0:
@@ -962,10 +1164,9 @@ def useItems(gameBoard, x, y, window):
                                 for j in g[1].activeDebuffs:
                                     listOfDebuffs += j + "\n"
                                 pm(window, f"Removed:  {listOfDebuffs}")
-
+                                g[1].activeDebuffs.clear()
                                 # check this for deletions on window information
-                                for j in g[1].activeDebuffs:
-                                    g[1].activeDebuffs.remove(j)
+
                                 window["information"].update(text_color="blue")
                                 window.refresh()
                                 # sleep(.5)
@@ -1062,8 +1263,7 @@ def useItems(gameBoard, x, y, window):
                                 for j in g[1].activeBuffs:
                                     listOfBuffs += j + "\n"
                                 pm(window, f"Removed\n{listOfBuffs}")
-                                for j in g[1].activeBuffs:
-                                    g[1].activeBuffs.remove(j)
+                                g[1].activeBuffs.clear()
                                 window["information"].update(text_color="blue")
                                 window.refresh()
                                 # sleep(.5)
@@ -1094,7 +1294,7 @@ def useItems(gameBoard, x, y, window):
             gameBoard[x][y][1].storedItems.remove("move again")
             gameBoard[x][y][1].activeBuffs.append("move again")
             gameBoard[x][y][1].moveAgain += 1
-        
+
             pm(
                 window,
                 f"Activated move again.  Bonus moves per turn: {gameBoard[x][y][1].moveAgain}",
@@ -1107,7 +1307,7 @@ def useItems(gameBoard, x, y, window):
             validTargets = getCross((x, y), gameBoard)
             pm(window, "Pick a target that is within range.")
             event = window.read()
-            
+
             # if the target is within range
             if event[0] in validTargets:
                 # print("It is in the events")
@@ -1192,9 +1392,11 @@ def useItems(gameBoard, x, y, window):
                                 gameBoard[s1 + 1][s2][1] = copy.deepcopy(tempCopyVictim)
                                 gameBoard[s1 + 1][s2][0].occupied = True
 
-                                death = deathCheck(window, gameBoard, move = True)
+                                death = deathCheck(window, gameBoard, move=True)
                                 if death != "death":
-                                    death2 = tripMineCheck(window, gameBoard, s1+1,s2)
+                                    death2 = tripMineCheck(
+                                        window, gameBoard, s1 + 1, s2
+                                    )
                                 if death == "death" or death2 == "death":
                                     return
                                 s1 = s1 + 1
@@ -1258,12 +1460,13 @@ def useItems(gameBoard, x, y, window):
                                 gameBoard[s1 - 1][s2][1] = copy.deepcopy(tempCopyVictim)
                                 gameBoard[s1 - 1][s2][0].occupied = True
 
-                                
                                 if death != "death":
-                                    death2 = tripMineCheck(window, gameBoard, s1-1,s2)
+                                    death2 = tripMineCheck(
+                                        window, gameBoard, s1 - 1, s2
+                                    )
                                 if death == "death" or death2 == "death":
                                     return
-                                
+
                                 s1 = s1 - 1
                                 displayBoard(window, gameBoard)
                                 window.refresh()
@@ -1326,12 +1529,14 @@ def useItems(gameBoard, x, y, window):
                                 gameBoard[s1][s2 + 1][1] = copy.deepcopy(tempCopyVictim)
                                 gameBoard[s1][s2 + 1][0].occupied = True
 
-                                death = deathCheck(window, gameBoard, move = True)
+                                death = deathCheck(window, gameBoard, move=True)
                                 if death != "death":
-                                    death2 = tripMineCheck(window, gameBoard, s1,s2+1)
+                                    death2 = tripMineCheck(
+                                        window, gameBoard, s1, s2 + 1
+                                    )
                                 if death == "death" or death2 == "death":
                                     return
-                                
+
                                 s2 = s2 + 1
                                 displayBoard(window, gameBoard)
                                 window.refresh()
@@ -1394,13 +1599,14 @@ def useItems(gameBoard, x, y, window):
                                 gameBoard[s1][s2 - 1][1] = copy.deepcopy(tempCopyVictim)
                                 gameBoard[s1][s2 - 1][0].occupied = True
 
-                                death = deathCheck(window, gameBoard, move = True)
+                                death = deathCheck(window, gameBoard, move=True)
                                 if death != "death":
-                                    death2 = tripMineCheck(window, gameBoard, s1,s2-1)
+                                    death2 = tripMineCheck(
+                                        window, gameBoard, s1, s2 - 1
+                                    )
                                 if death == "death" or death2 == "death":
                                     return
 
-                                
                                 s2 = s2 - 1
                                 displayBoard(window, gameBoard)
                                 window.refresh()
@@ -1657,13 +1863,7 @@ def movePiece(playerTurn, window, gameBoard):
 
         # check to see if this is your second (or higher) turn (you don't get to choose a new piece)
         if repeatRestrictor[0] == False:
-            ##            while True:
             event = window.read()
-            ##                for i in range(len(gameBoard)):
-            ##                    for j in range(len(gameBoard[0])):
-            ##                        print(i,j)
-            ##                        if gameBoard[i][j][0].tileType == "itemOrb" or gameBoard[i][j][0].tileType == "trap orb 1" or gameBoard[i][j][0].tileType == "trap orb 2" or gameBoard[i][j][0].tileType == "trap orb 0":
-            ##                            window.Element(i,j).UpdateAnimation("tileOrb.gif",  time_between_frames=50)
             window["exit"].update(disabled=False)
         elif repeatRestrictor[0] == True:
             event = []
@@ -1909,6 +2109,7 @@ def movePiece(playerTurn, window, gameBoard):
                 if gameBoard[endLocation[0]][endLocation[1]][0].tileType == "itemOrb":
 
                     pickUpItemOrb(gameBoard, startLocation[0], startLocation[1])
+                    pm(window, "Picked up an item")
                     pickedUpItem = True
 
                 if gameBoard[endLocation[0]][endLocation[1]][0].tileType in [
@@ -1953,8 +2154,6 @@ def movePiece(playerTurn, window, gameBoard):
                     )
                     # check for mine death
                     deathCheck(window, gameBoard)
-
-                
 
                     if (
                         gameBoard[endLocation[0]][endLocation[1]][1] != 0
