@@ -1,5 +1,8 @@
 ChangeLog
 
+v.0.9.35.1 July 6, 2020
+	Implemented a message for when a piece falls into a void, and also a specific one for the bowling ball function.
+
 v.0.9.35 July 6, 2020
 	Bowling ball doesn't stun itself anymore (functionality doesn't change, as your turn ends either way), as I want the bowling ball to have a lore of being an almost unstoppable machine of destruction (on its turn).  That said, it'll be invincible against lasers on its own turn, but WILL fall into the void on opponent's turn (and die to any negative effects that occur on the opponent's turn). 
 

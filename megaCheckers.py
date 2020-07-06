@@ -37,6 +37,7 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[rows - i - 1][j][1].location = (rows - i - 1, j)
             gameBoard[rows - i - 1][j][0].tileType = "player2default"
             gameBoard[rows - i - 1][j][1].avatar = "default"
+            gameBoard[rows - i - 1][j][1].storedItems.append("Haphazard Airstrike")
             gameBoard[i][j][1].storedItems.append("shuffle column")
             #gameBoard[rows - i - 1][j][1].activeBuffs.append("move again")
             #gameBoard[rows - i - 1][j][1].activeBuffs.append("move again")
@@ -45,7 +46,7 @@ def initializeField(columns, rows, window, gameBoard):
             #gameBoard[i][j][1].storedItems.append("move again")
             gameBoard[i][j][1].storedItems.append("shuffle radial")
             gameBoard[i][j][1].storedItems.append("haymaker")
-            gameBoard[i][j][1].storedItems.append("place mine")
+            gameBoard[i][j][1].storedItems.append("Haphazard Airstrike")
             #gameBoard[i][j][1].storedItems.append("trip mine radial")
             gameBoard[i][j][1].activeBuffs.append("move diagonal")
             gameBoard[i][j][1].activeBuffs.append("jumpProof")
@@ -1456,7 +1457,9 @@ def useItems(gameBoard, x, y, window):
                             ]:
                                 # kill the piece
                                 gameBoard[s1][s2][1] = 0
+                                gameBoard[s1][s2][0].tileType = "default"
                                 gameBoard[s1][s2][0].occupied = False
+                                
                                 pm(
                                     window,
                                     "Brutal!  You just pushed that piece into the void.",
@@ -1524,6 +1527,7 @@ def useItems(gameBoard, x, y, window):
                             ]:
                                 # kill the piece
                                 gameBoard[s1][s2][1] = 0
+                                gameBoard[s1][s2][0].tileType = "default"
                                 gameBoard[s1][s2][0].occupied = False
                                 pm(
                                     window,
@@ -1593,6 +1597,7 @@ def useItems(gameBoard, x, y, window):
                             ]:
                                 # kill the piece
                                 gameBoard[s1][s2][1] = 0
+                                gameBoard[s1][s2][0].tileType = "default"
                                 gameBoard[s1][s2][0].occupied = False
                                 pm(
                                     window,
@@ -1663,6 +1668,7 @@ def useItems(gameBoard, x, y, window):
                             ]:
                                 # kill the piece
                                 gameBoard[s1][s2][1] = 0
+                                gameBoard[s1][s2][0].tileType = "default"
                                 gameBoard[s1][s2][0].occupied = False
                                 pm(
                                     window,
@@ -1913,6 +1919,10 @@ def bowlingBallFunction(window,gameBoard,location,direction):
     columns = len(gameBoard[0])
     curRow = sLocRow
     curCol = sLocCol
+
+    gameBoard[sLocRow][sLocCol][1].activeDebuffs.clear()
+    gameBoard[sLocRow][sLocCol][1].activeBuffs.clear()
+    gameBoard[sLocRow][sLocCol][1].activeBuffs.append("bowling ball")
     
     if direction == "Down":
         for eachRow in gameBoard:
@@ -1932,7 +1942,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
 
                             
                             #if the floor is a mine on the next row
-                            if gameBoard[curRow+1][curCol][0].tileType in ("mine"):
+                            if gameBoard[curRow+1][curCol][0].tileType in ("mine","trap orb 1","trap orb 0","trap orb 2"):
                                 #simplify the gameBoard
                                 j = gameBoard[curRow][curCol]
                                 #copy the existing piece
@@ -1969,7 +1979,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
 
 
                             #if the next spot is an item orb or empty    
-                            elif gameBoard[curRow+1][curCol][0].tileType in ("default","itemOrb"):
+                            elif gameBoard[curRow+1][curCol][0].tileType in ("default","itemOrb",):
                                 
                                 
                                 #simplify the gameBoard
@@ -2006,7 +2016,13 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 
                         #else if floor doesn't exist
                         else:
-                            curRow +=1
+                            j = gameBoard[curRow][curCol]
+                            j[0].occupied = False
+                            j[0].tileType = "default"
+                            j[1] = 0
+                            sg.popup("Oh no!  Your bowling ball fell into the void!")
+                            #curRow +=1
+                            return
 
                             
                     #else if there is a piece in the next spot
@@ -2169,8 +2185,13 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 
                         #else if floor doesn't exist
                         else:
-                            curRow -=1
-
+                            j = gameBoard[curRow][curCol]
+                            j[0].occupied = False
+                            j[0].tileType = "default"
+                            j[1] = 0
+                            sg.popup("Oh no!  Your bowling ball fell into the void!")
+                            #curRow -=1
+                            return
                             
                     #else if there is a piece in the next spot
                     else:
@@ -2328,8 +2349,13 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 
                         #else if floor doesn't exist
                         else:
-                            curCol -=1
-
+                            j = gameBoard[curRow][curCol]
+                            j[0].occupied = False
+                            j[0].tileType = "default"
+                            j[1] = 0
+                            sg.popup("Oh no!  Your bowling ball fell into the void!")
+                            #curCol -=1
+                            return
                             
                     #else if there is a piece in the next spot
                     else:
@@ -2477,7 +2503,6 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j[0].tileType = "default"
                                 j[0].occupied = True
                                 j[1] = copy.deepcopy(tempCopy[1])
-                                
                                 #sleep(1)
                                 displayBoard(window, gameBoard)
                                 window.refresh()
@@ -2487,7 +2512,13 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 
                         #else if floor doesn't exist
                         else:
-                            curCol +=1
+                            j = gameBoard[curRow][curCol]
+                            j[0].occupied = False
+                            j[0].tileType = "default"
+                            j[1] = 0
+                            sg.popup("Oh no!  Your bowling ball fell into the void!")
+                            #curCol +=1
+                            return
 
                             
                     #else if there is a piece in the next spot
