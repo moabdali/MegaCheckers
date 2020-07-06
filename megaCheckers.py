@@ -86,7 +86,6 @@ class Piece:
         self.currentTurnPiece = False
         self.moveAgain = 0
         self.standingOnSelfOrb = False
-        
     def determineAvatar(self):
         pass
 
@@ -175,7 +174,7 @@ def filterEmpty(gameBoard, filterList):
     return cleanedList
 
 
-def getRow(location, gameBoard):
+def getRow(location, gameBoard,grow=False):
     validLocations = []
     if grow == False:
         for i in range(len(gameBoard[0])):
@@ -343,7 +342,7 @@ def deathCheck(window, gameBoard, move=False):
             if j[0].occupied == True and j[0].tileType in ["mine", "laser"]:
 
                 if "forceField" in j[1].activeBuffs:
-                    j[1].activeBuffs.remove("forecefield")
+                    j[1].activeBuffs.remove("forcefield")
                     sg.popup(
                         "You were protected from certain death by your forcefield",
                         keep_on_top=True,
@@ -370,7 +369,7 @@ def deathCheck(window, gameBoard, move=False):
                 or (j[0].tileType == "trap orb 2" and j[1].ownedBy != 2)
             ):
                 if "forceField" in j[1].activeBuffs:
-                    j[1].activeBuffs.remove("forecefield")
+                    j[1].activeBuffs.remove("forcefield")
                     playsound("sounds/grenade.mp3", block = False)
                     sg.popup(
                         "You were protected from certain death by your forcefield",
@@ -625,7 +624,6 @@ def getOuterRadialOnly(location, gameBoard):
     y = location[1]
     rows = len(gameBoard)
     columns = len(gameBoard[0])
-    locationList = []
     #check for illegal boundaries outside of the playing field
     if x < 0 or x > rows or y < 0 or y > columns:
         return -1
@@ -731,8 +729,8 @@ def useItems(gameBoard, x, y, window):
     listData += [[sg.Button("CANCEL")]]
 
     layout += [[sg.Column(listData, justification="center")]]
-
-    itemsMenu = sg.Window("Items Menu", layout, disable_close=True, no_titlebar=True,keep_on_top=True)
+    #no_titlebar=True,
+    itemsMenu = sg.Window("Items Menu", layout, disable_close=True, keep_on_top=True)
 
     # event = itemsMenu.read()
     enemyTurn = 0
@@ -1003,7 +1001,7 @@ def useItems(gameBoard, x, y, window):
                         if j[1].ownedBy != playerTurn:
                             # test for forcefield
                             if "Energy Forcefield" in j[1].activeBuffs:
-                                backupTile = j = [0].tileType
+                                backupTile = j[0].tileType
                                 j[0].tileType = "exploding"
                                 displayBoard(window, gameBoard)
                                 window.refresh()
@@ -1903,7 +1901,7 @@ def useItems(gameBoard, x, y, window):
         # after using the menu, close it
         if itemsMenu:
             itemsMenu.close()
-        return
+        
         if event[0] == "CANCEL":
             itemsMenu.close()
             return
@@ -1924,10 +1922,15 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                 #if the next spot is legal
                 if curRow+1 < rows:
 
+                    
                     # if there are no pieces on the next row
                     if gameBoard[curRow+1][curCol][0].occupied == False:
+
+                        
                         #if the floor exists in the next row
                         if gameBoard[curRow+1][curCol][0].tileType not in ("destroyed", "damaged4", "damaged3", "damaged2", "damaged"):
+
+                            
                             #if the floor is a mine on the next row
                             if gameBoard[curRow+1][curCol][0].tileType in ("mine"):
                                 #simplify the gameBoard
@@ -1963,8 +1966,10 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 #sleep(1)
                                 displayBoard(window, gameBoard)
                                 window.refresh()
-                                
-                            elif gameBoard[curRow][curCol][0].tileType in ("default","item orb"):
+
+
+                            #if the next spot is an item orb or empty    
+                            elif gameBoard[curRow+1][curCol][0].tileType in ("default","itemOrb"):
                                 
                                 
                                 #simplify the gameBoard
@@ -1997,49 +2002,68 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 window.refresh()
                             else:
                                 curRow +=1
+                                continue
                                 
                         #else if floor doesn't exist
                         else:
                             curRow +=1
-                    #else if there is a piece
+
+                            
+                    #else if there is a piece in the next spot
                     else:
-                        #simplify the gameBoard
-                        j = gameBoard[curRow][curCol]
-                        k = gameBoard[curRow+1][curCol]
-
-                        #if j[1].ownedBy != j[1].ownedBy
-                        #copy the existing piece
-                        tempCopy = copy.deepcopy(j)
-                        print(tempCopy[1].activeBuffs)
-
-                        #delete the spot where you were
-                        j[0].occupied = False
-                        j[1] = 0
-                        #careful with this setting; may need to convert to the commented line if glitchy
-                        #j[0].tileType = tempCopy[0].tileType
-                        j[0].tileType = "default"
 
                         
-                        curRow += 1
-
-                        #j is now pointing to the destination
+                        # simplify the gameBoard
+                        # j = starting spot
                         j = gameBoard[curRow][curCol]
-                        #explode the mine
-                        j[0].tileType = "exploding"
-                        displayBoard(window, gameBoard)
-                        window.refresh()
-                        playsound("sounds/grenade.mp3", block = False)
+                        # k = forecasted spot
+                        k = gameBoard[curRow+1][curCol]
 
-                        #occupy it with the bowling ball
-                        j[0].tileType = "default"
-                        j[0].occupied = True
-                        j[1] = copy.deepcopy(tempCopy[1])
+                        #if they both belong to you
+                        if j[1].ownedBy == k[1].ownedBy:
+                            j[1].activeDebuffs.append("stunned")
+                            k[1].activeDebuffs.append("stunned")
+                            pm(window,"both collided pieces are stunned")
+                            return
 
-                        print(f"Test for buffs: {j[1].activeDebuffs}")
-                        #sleep(1)
-                        displayBoard(window, gameBoard)
-                        window.refresh()
+                        #if the piece is your enemy's
+                        elif j[1].ownedBy != k[1].ownedBy:
+                            
+                            
+                            #copy the existing piece
+                            tempCopy = copy.deepcopy(j)
+                            print(tempCopy[1].activeBuffs)
+
+                            #delete the spot where you were
+                            j[0].occupied = False
+                            j[1] = 0
+                            #careful with this setting; may need to convert to the commented line if glitchy
+                            #j[0].tileType = tempCopy[0].tileType
+                            j[0].tileType = "default"
+
+                            
+                            curRow += 1
+
+                            #j is now pointing to the destination
+                            j = gameBoard[curRow][curCol]
+                            #explode the mine
+                            j[0].tileType = "exploding"
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            playsound("sounds/grenade.mp3", block = False)
+
+                            #occupy it with the bowling ball
+                            j[0].tileType = "default"
+                            j[0].occupied = True
+                            j[1] = copy.deepcopy(tempCopy[1])
+
+                            print(f"Test for buffs: {j[1].activeDebuffs}")
+                            #sleep(1)
+                            displayBoard(window, gameBoard)
+                            window.refresh()
                             curRow +=1
+                            return
+                        
                 #else if out of bounds
                 else:
                     sg.popup("No more space")
@@ -2079,6 +2103,7 @@ def movePiece(playerTurn, window, gameBoard):
     # a small list that is used to make sure a player that gets a second turn for a piece can only use that specific piece twice
     repeatRestrictor = [False, (-1, -1)]
     pieceTeleported = False
+    startLocation = [0,0]
     while True:
         #flag for keeping track of pieces that were teleported
         if pieceTeleported == True:
@@ -2134,9 +2159,15 @@ def movePiece(playerTurn, window, gameBoard):
 
 
 
-
+            if event[0]== "exit":
+                    window.close()
+                    raise SystemExit
             
-            if gameBoard[event[0][0]][event[0][1]][1].activeBuffs[0] == "bowling ball":
+            if gameBoard[event[0][0]][event[0][1]][0].occupied == True and "bowling ball" in gameBoard[event[0][0]][event[0][1]][1].activeBuffs:
+                if gameBoard[event[0][0]][event[0][1]][1].ownedBy != playerTurn:
+                    pm(window,"That's not your piece!")
+                    continue
+                
                 xloc = event[0][0]
                 yloc = event[0][1]
                 location = (xloc,yloc)
@@ -2155,8 +2186,7 @@ def movePiece(playerTurn, window, gameBoard):
                     return
                     #shouldn't see this
                     sg.popup("Shouldn't see this")
-                elif event[0] in ("Exit"):
-                    quit()
+                
                 
                 return
         
@@ -2181,7 +2211,7 @@ def movePiece(playerTurn, window, gameBoard):
             event.append(repeatRestrictor[1])
             if event[0] == (-1.0 - 1):
                 sg.popup(
-                    "An error has occurred in repeat restrictor's (-1,-1)",
+                    "An error has occurred in repeat Restrictor's (-1,-1)",
                     keep_on_top=True,
                 )
                 repeatRestrictor = False
@@ -2862,11 +2892,11 @@ def begin():
             ),
         ],
     ]
-
+    #no_titlebar=True,
     window = sg.Window(
         "MegaCheckers",
         layout,
-        no_titlebar=True,
+        
         disable_close=True,
         grab_anywhere=True,
         location=(0, 0),
