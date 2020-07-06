@@ -37,20 +37,21 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[rows - i - 1][j][1].location = (rows - i - 1, j)
             gameBoard[rows - i - 1][j][0].tileType = "player2default"
             gameBoard[rows - i - 1][j][1].avatar = "default"
+            gameBoard[rows - i - 1][j][1].storedItems.append("Haphazard Airstrike")
             gameBoard[i][j][1].storedItems.append("shuffle column")
-            gameBoard[rows - i - 1][j][1].activeBuffs.append("move again")
-            gameBoard[rows - i - 1][j][1].activeBuffs.append("move again")
+            #gameBoard[rows - i - 1][j][1].activeBuffs.append("move again")
+            #gameBoard[rows - i - 1][j][1].activeBuffs.append("move again")
             gameBoard[rows - i - 1][j][1].activeBuffs.append("haymaker")
             gameBoard[i][j][1].storedItems.append("spooky hand")
             #gameBoard[i][j][1].storedItems.append("move again")
             gameBoard[i][j][1].storedItems.append("shuffle radial")
             gameBoard[i][j][1].storedItems.append("haymaker")
-            gameBoard[i][j][1].storedItems.append("place mine")
+            gameBoard[i][j][1].storedItems.append("Haphazard Airstrike")
             #gameBoard[i][j][1].storedItems.append("trip mine radial")
             gameBoard[i][j][1].activeBuffs.append("move diagonal")
             gameBoard[i][j][1].activeBuffs.append("jumpProof")
-            gameBoard[i][j][1].activeBuffs.append("move again")
-            gameBoard[i][j][1].activeBuffs.append("move again")
+            #gameBoard[i][j][1].activeBuffs.append("move again")
+            #gameBoard[i][j][1].activeBuffs.append("move again")
             #gameBoard[i][j][1].storedItems.append("abolish foe powers radial")
             gameBoard[i][j][1].storedItems.append("bowling ball")
 
@@ -86,7 +87,6 @@ class Piece:
         self.currentTurnPiece = False
         self.moveAgain = 0
         self.standingOnSelfOrb = False
-        
     def determineAvatar(self):
         pass
 
@@ -175,7 +175,7 @@ def filterEmpty(gameBoard, filterList):
     return cleanedList
 
 
-def getRow(location, gameBoard):
+def getRow(location, gameBoard,grow=False):
     validLocations = []
     if grow == False:
         for i in range(len(gameBoard[0])):
@@ -343,7 +343,7 @@ def deathCheck(window, gameBoard, move=False):
             if j[0].occupied == True and j[0].tileType in ["mine", "laser"]:
 
                 if "forceField" in j[1].activeBuffs:
-                    j[1].activeBuffs.remove("forecefield")
+                    j[1].activeBuffs.remove("forcefield")
                     sg.popup(
                         "You were protected from certain death by your forcefield",
                         keep_on_top=True,
@@ -370,7 +370,7 @@ def deathCheck(window, gameBoard, move=False):
                 or (j[0].tileType == "trap orb 2" and j[1].ownedBy != 2)
             ):
                 if "forceField" in j[1].activeBuffs:
-                    j[1].activeBuffs.remove("forecefield")
+                    j[1].activeBuffs.remove("forcefield")
                     playsound("sounds/grenade.mp3", block = False)
                     sg.popup(
                         "You were protected from certain death by your forcefield",
@@ -625,7 +625,6 @@ def getOuterRadialOnly(location, gameBoard):
     y = location[1]
     rows = len(gameBoard)
     columns = len(gameBoard[0])
-    locationList = []
     #check for illegal boundaries outside of the playing field
     if x < 0 or x > rows or y < 0 or y > columns:
         return -1
@@ -731,8 +730,8 @@ def useItems(gameBoard, x, y, window):
     listData += [[sg.Button("CANCEL")]]
 
     layout += [[sg.Column(listData, justification="center")]]
-
-    itemsMenu = sg.Window("Items Menu", layout, disable_close=True, no_titlebar=True,keep_on_top=True)
+    #no_titlebar=True,
+    itemsMenu = sg.Window("Items Menu", layout, disable_close=True, keep_on_top=True)
 
     # event = itemsMenu.read()
     enemyTurn = 0
@@ -1003,7 +1002,7 @@ def useItems(gameBoard, x, y, window):
                         if j[1].ownedBy != playerTurn:
                             # test for forcefield
                             if "Energy Forcefield" in j[1].activeBuffs:
-                                backupTile = j = [0].tileType
+                                backupTile = j[0].tileType
                                 j[0].tileType = "exploding"
                                 displayBoard(window, gameBoard)
                                 window.refresh()
@@ -1458,7 +1457,9 @@ def useItems(gameBoard, x, y, window):
                             ]:
                                 # kill the piece
                                 gameBoard[s1][s2][1] = 0
+                                gameBoard[s1][s2][0].tileType = "default"
                                 gameBoard[s1][s2][0].occupied = False
+                                
                                 pm(
                                     window,
                                     "Brutal!  You just pushed that piece into the void.",
@@ -1526,6 +1527,7 @@ def useItems(gameBoard, x, y, window):
                             ]:
                                 # kill the piece
                                 gameBoard[s1][s2][1] = 0
+                                gameBoard[s1][s2][0].tileType = "default"
                                 gameBoard[s1][s2][0].occupied = False
                                 pm(
                                     window,
@@ -1595,6 +1597,7 @@ def useItems(gameBoard, x, y, window):
                             ]:
                                 # kill the piece
                                 gameBoard[s1][s2][1] = 0
+                                gameBoard[s1][s2][0].tileType = "default"
                                 gameBoard[s1][s2][0].occupied = False
                                 pm(
                                     window,
@@ -1665,6 +1668,7 @@ def useItems(gameBoard, x, y, window):
                             ]:
                                 # kill the piece
                                 gameBoard[s1][s2][1] = 0
+                                gameBoard[s1][s2][0].tileType = "default"
                                 gameBoard[s1][s2][0].occupied = False
                                 pm(
                                     window,
@@ -1903,7 +1907,7 @@ def useItems(gameBoard, x, y, window):
         # after using the menu, close it
         if itemsMenu:
             itemsMenu.close()
-        return
+        
         if event[0] == "CANCEL":
             itemsMenu.close()
             return
@@ -1915,6 +1919,10 @@ def bowlingBallFunction(window,gameBoard,location,direction):
     columns = len(gameBoard[0])
     curRow = sLocRow
     curCol = sLocCol
+
+    gameBoard[sLocRow][sLocCol][1].activeDebuffs.clear()
+    gameBoard[sLocRow][sLocCol][1].activeBuffs.clear()
+    gameBoard[sLocRow][sLocCol][1].activeBuffs.append("bowling ball")
     
     if direction == "Down":
         for eachRow in gameBoard:
@@ -1924,12 +1932,17 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                 #if the next spot is legal
                 if curRow+1 < rows:
 
+                    
                     # if there are no pieces on the next row
                     if gameBoard[curRow+1][curCol][0].occupied == False:
+
+                        
                         #if the floor exists in the next row
                         if gameBoard[curRow+1][curCol][0].tileType not in ("destroyed", "damaged4", "damaged3", "damaged2", "damaged"):
+
+                            
                             #if the floor is a mine on the next row
-                            if gameBoard[curRow+1][curCol][0].tileType in ("mine"):
+                            if gameBoard[curRow+1][curCol][0].tileType in ("mine","trap orb 1","trap orb 0","trap orb 2"):
                                 #simplify the gameBoard
                                 j = gameBoard[curRow][curCol]
                                 #copy the existing piece
@@ -1963,8 +1976,10 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 #sleep(1)
                                 displayBoard(window, gameBoard)
                                 window.refresh()
-                                
-                            elif gameBoard[curRow][curCol][0].tileType in ("default","item orb"):
+
+
+                            #if the next spot is an item orb or empty    
+                            elif gameBoard[curRow+1][curCol][0].tileType in ("default","itemOrb",):
                                 
                                 
                                 #simplify the gameBoard
@@ -1997,55 +2012,584 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 window.refresh()
                             else:
                                 curRow +=1
+                                continue
                                 
                         #else if floor doesn't exist
                         else:
-                            curRow +=1
-                    #else if there is a piece
+                            j = gameBoard[curRow][curCol]
+                            j[0].occupied = False
+                            j[0].tileType = "default"
+                            j[1] = 0
+                            sg.popup("Oh no!  Your bowling ball fell into the void!")
+                            #curRow +=1
+                            return
+
+                            
+                    #else if there is a piece in the next spot
                     else:
-                        #simplify the gameBoard
-                        j = gameBoard[curRow][curCol]
-                        k = gameBoard[curRow+1][curCol]
-
-                        #if j[1].ownedBy != j[1].ownedBy
-                        #copy the existing piece
-                        tempCopy = copy.deepcopy(j)
-                        print(tempCopy[1].activeBuffs)
-
-                        #delete the spot where you were
-                        j[0].occupied = False
-                        j[1] = 0
-                        #careful with this setting; may need to convert to the commented line if glitchy
-                        #j[0].tileType = tempCopy[0].tileType
-                        j[0].tileType = "default"
 
                         
-                        curRow += 1
-
-                        #j is now pointing to the destination
+                        # simplify the gameBoard
+                        # j = starting spot
                         j = gameBoard[curRow][curCol]
-                        #explode the mine
-                        j[0].tileType = "exploding"
-                        displayBoard(window, gameBoard)
-                        window.refresh()
-                        playsound("sounds/grenade.mp3", block = False)
+                        # k = forecasted spot
+                        k = gameBoard[curRow+1][curCol]
 
-                        #occupy it with the bowling ball
-                        j[0].tileType = "default"
-                        j[0].occupied = True
-                        j[1] = copy.deepcopy(tempCopy[1])
+                        #if they both belong to you
+                        if j[1].ownedBy == k[1].ownedBy:
+                            j[1].activeDebuffs.append("stunned")
+                            k[1].activeDebuffs.append("stunned")
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            sleep(1)
+                            return
 
-                        print(f"Test for buffs: {j[1].activeDebuffs}")
-                        #sleep(1)
-                        displayBoard(window, gameBoard)
-                        window.refresh()
-                        curRow +=1
+                        #if the piece is your enemy's
+                        elif j[1].ownedBy != k[1].ownedBy:
+                            
+                            
+                            #copy the existing piece
+                            tempCopy = copy.deepcopy(j)
+                            print(tempCopy[1].activeBuffs)
+
+                            #delete the spot where you were
+                            j[0].occupied = False
+                            j[1] = 0
+                            #careful with this setting; may need to convert to the commented line if glitchy
+                            #j[0].tileType = tempCopy[0].tileType
+                            j[0].tileType = "default"
+
+                            
+                            curRow += 1
+
+                            #j is now pointing to the destination
+                            j = gameBoard[curRow][curCol]
+                            #explode the mine
+                            j[0].tileType = "exploding"
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            playsound("sounds/grenade.mp3", block = False)
+
+                            #occupy it with the bowling ball
+                            j[0].tileType = "default"
+                            j[0].occupied = True
+                            j[1] = copy.deepcopy(tempCopy[1])
+
+                            print(f"Test for buffs: {j[1].activeDebuffs}")
+                            #sleep(1)
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            curRow +=1
+                            return
+                        
                 #else if out of bounds
                 else:
-                    sg.popup("No more space")
+                    
+##                    gameBoard[curRow][curCol][1].activeDebuffs.append("stunned")
+##                    displayBoard(window, gameBoard)
+##                    window.refresh()
+##                    sleep(1)
+                    sg.popup("You slammed into the outer wall.")
+                    
                     return
                     
-            #curRow +=1
+    if direction == "Up":
+        for eachRow in gameBoard:
+
+            
+            
+                #if the next spot is legal
+                if curRow-1 >-1:
+
+                    
+                    # if there are no pieces on the next row
+                    if gameBoard[curRow-1][curCol][0].occupied == False:
+
+                        
+                        #if the floor exists in the next row
+                        if gameBoard[curRow-1][curCol][0].tileType not in ("destroyed", "damaged4", "damaged3", "damaged2", "damaged"):
+
+                            
+                            #if the floor is a mine on the next row
+                            if gameBoard[curRow-1][curCol][0].tileType in ("mine"):
+                                #simplify the gameBoard
+                                j = gameBoard[curRow][curCol]
+                                #copy the existing piece
+                                tempCopy = copy.deepcopy(j)
+                                print(tempCopy[1].activeBuffs)
+
+                                #delete the spot where you were
+                                j[0].occupied = False
+                                j[1] = 0
+                                #careful with this setting; may need to convert to the commented line if glitchy
+                                #j[0].tileType = tempCopy[0].tileType
+                                j[0].tileType = "default"
+
+                                
+                                curRow -= 1
+
+                                #j is now pointing to the destination
+                                j = gameBoard[curRow][curCol]
+                                #explode the mine
+                                j[0].tileType = "exploding"
+                                displayBoard(window, gameBoard)
+                                window.refresh()
+                                playsound("sounds/grenade.mp3", block = False)
+
+                                #occupy it with the bowling ball
+                                j[0].tileType = "default"
+                                j[0].occupied = True
+                                j[1] = copy.deepcopy(tempCopy[1])
+
+                                print(f"Test for buffs: {j[1].activeDebuffs}")
+                                #sleep(1)
+                                displayBoard(window, gameBoard)
+                                window.refresh()
+
+
+                            #if the next spot is an item orb or empty    
+                            elif gameBoard[curRow-1][curCol][0].tileType in ("default","itemOrb"):
+                                
+                                
+                                #simplify the gameBoard
+                                j = gameBoard[curRow][curCol]
+                                #copy the existing piece
+                                tempCopy = copy.deepcopy(j)
+                                print(f"tempCopy regular: {tempCopy}")
+                                print(tempCopy[1].activeBuffs)
+
+                                #delete the spot where you were
+                                j[0].occupied = False
+                                j[1] = 0
+                                #careful with this setting; may need to convert to the commented line if glitchy
+                                #j[0].tileType = tempCopy[0].tileType
+                                j[0].tileType = "default"
+
+                                
+                                curRow -= 1
+
+                                #j is now pointing to the destination
+                                j = gameBoard[curRow][curCol]
+
+                                #occupy it with the bowling ball
+                                j[0].tileType = "default"
+                                j[0].occupied = True
+                                j[1] = copy.deepcopy(tempCopy[1])
+                                
+                                #sleep(1)
+                                displayBoard(window, gameBoard)
+                                window.refresh()
+                            else:
+                                curRow -=1
+                                continue
+                                
+                        #else if floor doesn't exist
+                        else:
+                            j = gameBoard[curRow][curCol]
+                            j[0].occupied = False
+                            j[0].tileType = "default"
+                            j[1] = 0
+                            sg.popup("Oh no!  Your bowling ball fell into the void!")
+                            #curRow -=1
+                            return
+                            
+                    #else if there is a piece in the next spot
+                    else:
+
+                        
+                        # simplify the gameBoard
+                        # j = starting spot
+                        j = gameBoard[curRow][curCol]
+                        # k = forecasted spot
+                        k = gameBoard[curRow-1][curCol]
+
+                        #if they both belong to you
+                        if j[1].ownedBy == k[1].ownedBy:
+                            j[1].activeDebuffs.append("stunned")
+                            k[1].activeDebuffs.append("stunned")
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            sleep(1)
+                            return
+
+                        #if the piece is your enemy's
+                        elif j[1].ownedBy != k[1].ownedBy:
+                            
+                            
+                            #copy the existing piece
+                            tempCopy = copy.deepcopy(j)
+                            print(tempCopy[1].activeBuffs)
+
+                            #delete the spot where you were
+                            j[0].occupied = False
+                            j[1] = 0
+                            #careful with this setting; may need to convert to the commented line if glitchy
+                            #j[0].tileType = tempCopy[0].tileType
+                            j[0].tileType = "default"
+
+                            
+                            curRow -= 1
+
+                            #j is now pointing to the destination
+                            j = gameBoard[curRow][curCol]
+                            #explode the mine
+                            j[0].tileType = "exploding"
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            playsound("sounds/grenade.mp3", block = False)
+
+                            #occupy it with the bowling ball
+                            j[0].tileType = "default"
+                            j[0].occupied = True
+                            j[1] = copy.deepcopy(tempCopy[1])
+
+                            print(f"Test for buffs: {j[1].activeDebuffs}")
+                            #sleep(1)
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            curRow -=1
+                            return
+                #else if out of bounds
+                else:
+                    
+##                    gameBoard[curRow][curCol][1].activeDebuffs.append("stunned")
+##                    displayBoard(window, gameBoard)
+##                    window.refresh()
+##                    sleep(1)
+                    sg.popup("You slammed into the outer wall.")
+                    
+                    return
+
+    if direction == "Left":
+        while True:
+                #if the next spot is legal
+                if curCol-1 > -1:
+
+                    
+                    # if there are no pieces on the next row
+                    if gameBoard[curRow][curCol-1][0].occupied == False:
+
+                        
+                        #if the floor exists in the next row
+                        if gameBoard[curRow][curCol-1][0].tileType not in ("destroyed", "damaged4", "damaged3", "damaged2", "damaged"):
+
+                            
+                            #if the floor is a mine on the next row
+                            if gameBoard[curRow][curCol-1][0].tileType in ("mine"):
+                                #simplify the gameBoard
+                                j = gameBoard[curRow][curCol]
+                                #copy the existing piece
+                                tempCopy = copy.deepcopy(j)
+                                print(tempCopy[1].activeBuffs)
+
+                                #delete the spot where you were
+                                j[0].occupied = False
+                                j[1] = 0
+                                #careful with this setting; may need to convert to the commented line if glitchy
+                                #j[0].tileType = tempCopy[0].tileType
+                                j[0].tileType = "default"
+
+                                
+                                curCol -= 1
+
+                                #j is now pointing to the destination
+                                j = gameBoard[curRow][curCol]
+                                #explode the mine
+                                j[0].tileType = "exploding"
+                                displayBoard(window, gameBoard)
+                                window.refresh()
+                                playsound("sounds/grenade.mp3", block = False)
+
+                                #occupy it with the bowling ball
+                                j[0].tileType = "default"
+                                j[0].occupied = True
+                                j[1] = copy.deepcopy(tempCopy[1])
+
+                                print(f"Test for buffs: {j[1].activeDebuffs}")
+                                #sleep(1)
+                                displayBoard(window, gameBoard)
+                                window.refresh()
+
+
+                            #if the next spot is an item orb or empty    
+                            elif gameBoard[curRow][curCol-1][0].tileType in ("default","itemOrb"):
+                                
+                                
+                                #simplify the gameBoard
+                                j = gameBoard[curRow][curCol]
+                                #copy the existing piece
+                                tempCopy = copy.deepcopy(j)
+                                print(f"tempCopy regular: {tempCopy}")
+                                print(tempCopy[1].activeBuffs)
+
+                                #delete the spot where you were
+                                j[0].occupied = False
+                                j[1] = 0
+                                #careful with this setting; may need to convert to the commented line if glitchy
+                                #j[0].tileType = tempCopy[0].tileType
+                                j[0].tileType = "default"
+
+                                
+                                curCol -= 1
+
+                                #j is now pointing to the destination
+                                j = gameBoard[curRow][curCol]
+
+                                #occupy it with the bowling ball
+                                j[0].tileType = "default"
+                                j[0].occupied = True
+                                j[1] = copy.deepcopy(tempCopy[1])
+                                
+                                #sleep(1)
+                                displayBoard(window, gameBoard)
+                                window.refresh()
+                            else:
+                                curCol -=1
+                                continue
+                                
+                        #else if floor doesn't exist
+                        else:
+                            j = gameBoard[curRow][curCol]
+                            j[0].occupied = False
+                            j[0].tileType = "default"
+                            j[1] = 0
+                            sg.popup("Oh no!  Your bowling ball fell into the void!")
+                            #curCol -=1
+                            return
+                            
+                    #else if there is a piece in the next spot
+                    else:
+
+                        
+                        # simplify the gameBoard
+                        # j = starting spot
+                        j = gameBoard[curRow][curCol]
+                        # k = forecasted spot
+                        k = gameBoard[curRow][curCol-1]
+
+                        #if they both belong to you
+                        if j[1].ownedBy == k[1].ownedBy:
+                            j[1].activeDebuffs.append("stunned")
+                            k[1].activeDebuffs.append("stunned")
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            sleep(1)
+                            return
+
+                        #if the piece is your enemy's
+                        elif j[1].ownedBy != k[1].ownedBy:
+                            
+                            
+                            #copy the existing piece
+                            tempCopy = copy.deepcopy(j)
+                            print(tempCopy[1].activeBuffs)
+
+                            #delete the spot where you were
+                            j[0].occupied = False
+                            j[1] = 0
+                            #careful with this setting; may need to convert to the commented line if glitchy
+                            #j[0].tileType = tempCopy[0].tileType
+                            j[0].tileType = "default"
+
+                            
+                            curCol -= 1
+
+                            #j is now pointing to the destination
+                            j = gameBoard[curRow][curCol]
+                            #explode the mine
+                            j[0].tileType = "exploding"
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            playsound("sounds/grenade.mp3", block = False)
+
+                            #occupy it with the bowling ball
+                            j[0].tileType = "default"
+                            j[0].occupied = True
+                            j[1] = copy.deepcopy(tempCopy[1])
+
+                            print(f"Test for buffs: {j[1].activeDebuffs}")
+                            #sleep(1)
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            curCol -=1
+                            return
+                        
+                #else if out of bounds
+                else:
+                    
+##                    gameBoard[curRow][curCol][1].activeDebuffs.append("stunned")
+##                    print(curRow, curCol)
+##                    displayBoard(window, gameBoard)
+##                    window.refresh()
+##                    sleep(1)
+                    #sg.popup("You slammed into the outer wall.")
+                    return
+    if direction == "Right":
+        while True:
+                #if the next spot is legal
+                if curCol+1 < columns:
+
+                    
+                    # if there are no pieces on the next row
+                    if gameBoard[curRow][curCol+1][0].occupied == False:
+
+                        
+                        #if the floor exists in the next row
+                        if gameBoard[curRow][curCol+1][0].tileType not in ("destroyed", "damaged4", "damaged3", "damaged2", "damaged"):
+
+                            
+                            #if the floor is a mine on the next row
+                            if gameBoard[curRow][curCol+1][0].tileType in ("mine"):
+                                #simplify the gameBoard
+                                j = gameBoard[curRow][curCol]
+                                #copy the existing piece
+                                tempCopy = copy.deepcopy(j)
+                                print(tempCopy[1].activeBuffs)
+
+                                #delete the spot where you were
+                                j[0].occupied = False
+                                j[1] = 0
+                                #careful with this setting; may need to convert to the commented line if glitchy
+                                #j[0].tileType = tempCopy[0].tileType
+                                j[0].tileType = "default"
+
+                                
+                                curCol += 1
+
+                                #j is now pointing to the destination
+                                j = gameBoard[curRow][curCol]
+                                #explode the mine
+                                j[0].tileType = "exploding"
+                                displayBoard(window, gameBoard)
+                                window.refresh()
+                                playsound("sounds/grenade.mp3", block = False)
+
+                                #occupy it with the bowling ball
+                                j[0].tileType = "default"
+                                j[0].occupied = True
+                                j[1] = copy.deepcopy(tempCopy[1])
+
+                                print(f"Test for buffs: {j[1].activeDebuffs}")
+                                #sleep(1)
+                                displayBoard(window, gameBoard)
+                                window.refresh()
+
+
+                            #if the next spot is an item orb or empty    
+                            elif gameBoard[curRow][curCol+1][0].tileType in ("default","itemOrb"):
+                                
+                                
+                                #simplify the gameBoard
+                                j = gameBoard[curRow][curCol]
+                                #copy the existing piece
+                                tempCopy = copy.deepcopy(j)
+                                print(f"tempCopy regular: {tempCopy}")
+                                print(tempCopy[1].activeBuffs)
+
+                                #delete the spot where you were
+                                j[0].occupied = False
+                                j[1] = 0
+                                #careful with this setting; may need to convert to the commented line if glitchy
+                                #j[0].tileType = tempCopy[0].tileType
+                                j[0].tileType = "default"
+
+                                
+                                curCol += 1
+
+                                #j is now pointing to the destination
+                                j = gameBoard[curRow][curCol]
+
+                                #occupy it with the bowling ball
+                                j[0].tileType = "default"
+                                j[0].occupied = True
+                                j[1] = copy.deepcopy(tempCopy[1])
+                                #sleep(1)
+                                displayBoard(window, gameBoard)
+                                window.refresh()
+                            else:
+                                curCol +=1
+                                continue
+                                
+                        #else if floor doesn't exist
+                        else:
+                            j = gameBoard[curRow][curCol]
+                            j[0].occupied = False
+                            j[0].tileType = "default"
+                            j[1] = 0
+                            sg.popup("Oh no!  Your bowling ball fell into the void!")
+                            #curCol +=1
+                            return
+
+                            
+                    #else if there is a piece in the next spot
+                    else:
+
+                        
+                        # simplify the gameBoard
+                        # j = starting spot
+                        j = gameBoard[curRow][curCol]
+                        # k = forecasted spot
+                        k = gameBoard[curRow][curCol+1]
+
+                        #if they both belong to you
+                        if j[1].ownedBy == k[1].ownedBy:
+                            j[1].activeDebuffs.append("stunned")
+                            k[1].activeDebuffs.append("stunned")
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            sleep(1)
+                            return
+
+                        #if the piece is your enemy's
+                        elif j[1].ownedBy != k[1].ownedBy:
+                            
+                            
+                            #copy the existing piece
+                            tempCopy = copy.deepcopy(j)
+                            print(tempCopy[1].activeBuffs)
+
+                            #delete the spot where you were
+                            j[0].occupied = False
+                            j[1] = 0
+                            #careful with this setting; may need to convert to the commented line if glitchy
+                            #j[0].tileType = tempCopy[0].tileType
+                            j[0].tileType = "default"
+
+                            
+                            curCol += 1
+
+                            #j is now pointing to the destination
+                            j = gameBoard[curRow][curCol]
+                            #explode the mine
+                            j[0].tileType = "exploding"
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            playsound("sounds/grenade.mp3", block = False)
+
+                            #occupy it with the bowling ball
+                            j[0].tileType = "default"
+                            j[0].occupied = True
+                            j[1] = copy.deepcopy(tempCopy[1])
+
+                            print(f"Test for buffs: {j[1].activeDebuffs}")
+                            #sleep(1)
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            curCol +=1
+                            return
+                        
+                #else if out of bounds
+                else:
+                    
+##                    gameBoard[curRow][curCol][1].activeDebuffs.append("stunned")
+##                    print(curRow, curCol)
+##                    displayBoard(window, gameBoard)
+##                    window.refresh()
+##                    sleep(1)
+                    sg.popup("You slammed into the outer wall.")
+                    return
+                        
+                       
 def repairFloor(window, gameBoard):
     for i in gameBoard:
         for j in i:
@@ -2079,6 +2623,7 @@ def movePiece(playerTurn, window, gameBoard):
     # a small list that is used to make sure a player that gets a second turn for a piece can only use that specific piece twice
     repeatRestrictor = [False, (-1, -1)]
     pieceTeleported = False
+    startLocation = [0,0]
     while True:
         #flag for keeping track of pieces that were teleported
         if pieceTeleported == True:
@@ -2104,74 +2649,6 @@ def movePiece(playerTurn, window, gameBoard):
 
             #FIRST PIECE PICK HERE
             event = window.read()
-
-##            try:
-##                if gameBoard[event[0][0]][event[0][1]][1].activeBuffs[0] == "bowling ball":
-##                    event[0][0]=xloc
-##                    event[0][1]=yloc
-##                    location = (xloc,yloc)
-##                    bowlingLayout = [
-##                        [sg.Button("Up")],
-##                        [sg.Button("Left"), sg.Button("Right")],
-##                        [sg.Button("Down")]
-##                        ]
-##                    bowlingMenu = sg.Window("Direction",bowlingLayout,keep_on_top=True)
-##                    event = bowlingMenu.read()
-##                    print(f"Event is {event}")
-##                    if event[0] in ("Up", "Down", "Left", "Right"):
-##                        
-##                        bowlingBallFunction(window,gameBoard,location,event[0])
-##                        #shouldn't see this
-##                        sg.popup("Shouldn't see this")
-##                    elif event[0] in ("Exit"):
-##                        quit()
-##                    
-##                    return
-##            except:
-##                print("Not a bowling ball")
-##                pass
-
-
-
-
-
-            
-            if gameBoard[event[0][0]][event[0][1]][1].activeBuffs[0] == "bowling ball":
-                xloc = event[0][0]
-                yloc = event[0][1]
-                location = (xloc,yloc)
-                bowlingLayout = [
-                    [sg.Button("Up")],
-                    [sg.Button("Left"), sg.Button("Right")],
-                    [sg.Button("Down")]
-                    ]
-                bowlingMenu = sg.Window("Direction",bowlingLayout,keep_on_top=True)
-
-                window.disable()
-
-                
-                event = bowlingMenu.read()
-                bowlingMenu.close()
-                print(f"Event is {event}")
-                if event[0] in ("Up", "Down", "Left", "Right"):
-                    
-                    bowlingBallFunction(window,gameBoard,location,event[0])
-                    return
-                    #shouldn't see this
-                    sg.popup("Shouldn't see this")
-                elif event[0] in ("Exit"):
-                    quit()
-                
-                return
-        
-            print("Not a bowling ball")
-            pass
-
-
-
-
-
-            
             if "cheetz" in event:
                 buffs = sg.popup_get_text("")
                 for i in gameBoard:
@@ -2179,13 +2656,47 @@ def movePiece(playerTurn, window, gameBoard):
                         if j[0].occupied == True:
                             j[1].storedItems.append(buffs)
                 continue
+
+            if event[0]== "exit":
+                    window.close()
+                    raise SystemExit
+            
+            
+            if gameBoard[event[0][0]][event[0][1]][0].occupied == True and "bowling ball" in gameBoard[event[0][0]][event[0][1]][1].activeBuffs:
+                if gameBoard[event[0][0]][event[0][1]][1].ownedBy != playerTurn:
+                    pm(window,"That's not your piece!")
+                    continue
+                
+                xloc = event[0][0]
+                yloc = event[0][1]
+                location = (xloc,yloc)
+                bowlingLayout = [
+                    [sg.Button("Up",size = (55,4),image_filename = "images/bowlingUp.png",pad = (0,0))],
+                    [sg.Button("Left", image_filename = "images/bowlingLeft.png",size = (24,4),pad = (0,0)), sg.Button("Right",image_filename = "images/bowlingRight.png", size = (24,4),pad = (0,0))],
+                    [sg.Button("Down",image_filename = "images/bowlingDown.png", size = (55,4),pad = (0,0))],
+                    [sg.Button("Cancel", size = (19,1),pad = (0,0))]
+                    ]
+                bowlingMenu = sg.Window("Direction",bowlingLayout,keep_on_top=True)
+                event = bowlingMenu.read()
+                bowlingMenu.close()
+                print(f"Event is {event}")
+                if event[0] in ("Up", "Down", "Left", "Right"):
+                    
+                    bowlingBallFunction(window,gameBoard,location,event[0])
+                    #turn ends when bowling ball is moved
+                    return
+                else:
+                    continue
+                
+
+            
             window["exit"].update(disabled=False)
         elif repeatRestrictor[0] == True:
             event = []
             event.append(repeatRestrictor[1])
             if event[0] == (-1.0 - 1):
                 sg.popup(
-                    "An error has occurred in repeat restrictor's (-1,-1)",
+                    "An error has occurred in repeat Restrictor's (-1,-1)",
                     keep_on_top=True,
                 )
                 repeatRestrictor = False
@@ -2866,11 +3377,11 @@ def begin():
             ),
         ],
     ]
-
+    #no_titlebar=True,
     window = sg.Window(
         "MegaCheckers",
         layout,
-        no_titlebar=True,
+        
         disable_close=True,
         grab_anywhere=True,
         location=(0, 0),
