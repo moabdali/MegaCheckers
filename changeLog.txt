@@ -1,5 +1,9 @@
 ChangeLog
 
+
+v.0.9.36.2 July 6, 2020
+	Finished the left and right checks in haymaker.  Fixed a few errors with the bowling ball as well.  Bowling ball and haymaker should be finished for all intents and purposes (aside for dealing with lasers as they haven't been implemented yet).
+
 v.0.9.36.1 July 6, 2020
 	Fixed a few up/down errors in haymaker (crashed when hitting the walls; turns out the code wasn't properly tested; rewrote all the logic for that section).  Committing this and then working on left/right.
 

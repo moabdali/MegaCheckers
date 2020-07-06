@@ -282,7 +282,8 @@ def getDistance(a, b, c, d):
 
 # generate item orbs
 def createOrbs(window, gameBoard):
-    dangerTurn = 15
+    #dangerTurn = 15
+    dangerTurn = 1
     emptySpots = 0
     if PublicStats.turnCount == dangerTurn:
         sg.popup(
@@ -1580,6 +1581,7 @@ def useItems(gameBoard, x, y, window):
 
                                 startBoard[0].occupied = False
                                 startBoard[0].tileType = lastTurnTileType
+                                startBoard[1] = 0
 
                                 
                                 lastTurnTileType = endBoard[0].tileType
@@ -1614,6 +1616,7 @@ def useItems(gameBoard, x, y, window):
                     # copy the piece that you are punching
                     tempCopyVictim = copy.deepcopy(gameBoard[s1][s2][1])
                     tempCopyTileType = "default"
+                    lastTurnTileType = "default"
                     while True:
                         # check for right wall
 
@@ -1650,26 +1653,41 @@ def useItems(gameBoard, x, y, window):
                             # if the next location is safe
                             else:
 
-                                gameBoard[s1][s2][0].occupied = False
-                                gameBoard[s1][s2 + 1][0].occupied = True
-                                gameBoard[s1][s2][0].tileType = tempCopyTileType
-                                gameBoard[s1][s2][1] = 0
-                                gameBoard[s1][s2 + 1][1] = copy.deepcopy(tempCopyVictim)
-                                gameBoard[s1][s2 + 1][0].occupied = True
+                                #copy the tile type
+                                g = gameBoard
+                                sx = s1
+                                sy = s2
+                                ex = sx
+                                ey = sy+1
+                                
+                                tempPrevTileType = g[sx][sy][0].tileType
+                                tempPrevPiece = copy.deepcopy(g[sx][sy][1])
 
+                                
+                                startBoard = g[sx][sy]
+                                endBoard = g[ex][ey]
+
+                                startBoard[0].occupied = False
+                                startBoard[0].tileType = lastTurnTileType
+                                startBoard[1] = 0
+
+                                
+                                lastTurnTileType = endBoard[0].tileType
+                                endBoard[0].occupied = True
+                                endBoard[1] = copy.deepcopy(tempPrevPiece)
+                                
+                                #check to see if dead
                                 death = deathCheck(window, gameBoard, move=True)
                                 if death != "death":
                                     death2 = tripMineCheck(
-                                        window, gameBoard, s1, s2 + 1
+                                        window, gameBoard, s1, s2+1
                                     )
                                 if death == "death" or death2 == "death":
                                     return
 
-                                s2 = s2 + 1
                                 displayBoard(window, gameBoard)
                                 window.refresh()
-                                # sleep(.75)
-                                tempCopyTileType = gameBoard[s1][s2 - 1][0].tileType
+                                s2 += 1
 
                         elif gameBoard[s1][s2 + 1][0].occupied == True:
 
@@ -1685,6 +1703,7 @@ def useItems(gameBoard, x, y, window):
                     # copy the original piece
                     tempCopyVictim = copy.deepcopy(gameBoard[s1][s2][1])
                     tempCopyTileType = "default"
+                    lastTurnTileType = "default"
                     while True:
                         # check for left
 
@@ -1721,26 +1740,40 @@ def useItems(gameBoard, x, y, window):
                             # if the next location is safe
                             else:
 
-                                gameBoard[s1][s2][0].occupied = False
-                                gameBoard[s1][s2 - 1][0].occupied = True
-                                gameBoard[s1][s2][0].tileType = tempCopyTileType
-                                gameBoard[s1][s2][1] = 0
-                                gameBoard[s1][s2 - 1][1] = copy.deepcopy(tempCopyVictim)
-                                gameBoard[s1][s2 - 1][0].occupied = True
+                                #copy the tile type
+                                g = gameBoard
+                                sx = s1
+                                sy = s2
+                                ex = sx
+                                ey = sy-1
+                                
+                                tempPrevTileType = g[sx][sy][0].tileType
+                                tempPrevPiece = copy.deepcopy(g[sx][sy][1])
 
+                                
+                                startBoard = g[sx][sy]
+                                endBoard = g[ex][ey]
+
+                                startBoard[0].occupied = False
+                                startBoard[0].tileType = lastTurnTileType
+
+                                
+                                lastTurnTileType = endBoard[0].tileType
+                                endBoard[0].occupied = True
+                                endBoard[1] = copy.deepcopy(tempPrevPiece)
+                                
+                                #check to see if dead
                                 death = deathCheck(window, gameBoard, move=True)
                                 if death != "death":
                                     death2 = tripMineCheck(
-                                        window, gameBoard, s1, s2 - 1
+                                        window, gameBoard, s1, s2-1
                                     )
                                 if death == "death" or death2 == "death":
                                     return
 
-                                s2 = s2 - 1
                                 displayBoard(window, gameBoard)
                                 window.refresh()
-                                # sleep(.75)
-                                tempCopyTileType = gameBoard[s1][s2 - 1][0].tileType
+                                s2 -= 1
 
                         elif gameBoard[s1][s2 - 1][0].occupied == True:
 
@@ -2028,8 +2061,8 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j = gameBoard[curRow][curCol]
                                 #copy the existing piece
                                 tempCopy = copy.deepcopy(j)
-                                print(f"tempCopy regular: {tempCopy}")
-                                print(tempCopy[1].activeBuffs)
+                                #print(f"tempCopy regular: {tempCopy}")
+                                #print(tempCopy[1].activeBuffs)
 
                                 #delete the spot where you were
                                 j[0].occupied = False
@@ -2153,7 +2186,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
 
                             
                             #if the floor is a mine on the next row
-                            if gameBoard[curRow-1][curCol][0].tileType in ("mine"):
+                            if gameBoard[curRow-1][curCol][0].tileType in ("mine","trap orb 1", "trap orb 0","trap orb 2"):
                                 #simplify the gameBoard
                                 j = gameBoard[curRow][curCol]
                                 #copy the existing piece
@@ -2197,8 +2230,8 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j = gameBoard[curRow][curCol]
                                 #copy the existing piece
                                 tempCopy = copy.deepcopy(j)
-                                print(f"tempCopy regular: {tempCopy}")
-                                print(tempCopy[1].activeBuffs)
+                                #print(f"tempCopy regular: {tempCopy}")
+                                #print(tempCopy[1].activeBuffs)
 
                                 #delete the spot where you were
                                 j[0].occupied = False
@@ -2317,7 +2350,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
 
                             
                             #if the floor is a mine on the next row
-                            if gameBoard[curRow][curCol-1][0].tileType in ("mine"):
+                            if gameBoard[curRow][curCol-1][0].tileType in ("mine","trap orb 1", "trap orb 0","trap orb 2"):
                                 #simplify the gameBoard
                                 j = gameBoard[curRow][curCol]
                                 #copy the existing piece
@@ -2354,15 +2387,15 @@ def bowlingBallFunction(window,gameBoard,location,direction):
 
 
                             #if the next spot is an item orb or empty    
-                            elif gameBoard[curRow][curCol-1][0].tileType in ("default","itemOrb"):
+                            elif gameBoard[curRow][curCol-1][0].tileType in ("default","itemOrb",):
                                 
                                 
                                 #simplify the gameBoard
                                 j = gameBoard[curRow][curCol]
                                 #copy the existing piece
                                 tempCopy = copy.deepcopy(j)
-                                print(f"tempCopy regular: {tempCopy}")
-                                print(tempCopy[1].activeBuffs)
+                                #print(f"tempCopy regular: {tempCopy}")
+                                #print(tempCopy[1].activeBuffs)
 
                                 #delete the spot where you were
                                 j[0].occupied = False
@@ -2386,6 +2419,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 displayBoard(window, gameBoard)
                                 window.refresh()
                             else:
+                                sg.popup("Shouldn't see this")
                                 curCol -=1
                                 continue
                                 
@@ -2481,7 +2515,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
 
                             
                             #if the floor is a mine on the next row
-                            if gameBoard[curRow][curCol+1][0].tileType in ("mine"):
+                            if gameBoard[curRow][curCol+1][0].tileType in ("mine","trap orb 1", "trap orb 0","trap orb 2"):
                                 #simplify the gameBoard
                                 j = gameBoard[curRow][curCol]
                                 #copy the existing piece
@@ -2525,8 +2559,8 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j = gameBoard[curRow][curCol]
                                 #copy the existing piece
                                 tempCopy = copy.deepcopy(j)
-                                print(f"tempCopy regular: {tempCopy}")
-                                print(tempCopy[1].activeBuffs)
+                                #print(f"tempCopy regular: {tempCopy}")
+                                #print(tempCopy[1].activeBuffs)
 
                                 #delete the spot where you were
                                 j[0].occupied = False
