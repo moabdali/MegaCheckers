@@ -1,5 +1,8 @@
 ChangeLog
 
+v.0.9.35 July 6, 2020
+	Bowling ball doesn't stun itself anymore (functionality doesn't change, as your turn ends either way), as I want the bowling ball to have a lore of being an almost unstoppable machine of destruction (on its turn).  That said, it'll be invincible against lasers on its own turn, but WILL fall into the void on opponent's turn (and die to any negative effects that occur on the opponent's turn). 
+
 v.0.9.34.2 July 5, 2020
 	Finished most of the downwards aspect of bowling ball- found some logic flaws.  Need to still add laser check and hole check.  Currently properly collides with allied piece and destroys the first enemy piece it crashes into.  Stuns itself when it stops moving and ends your turn (it's a very strong piece).
 
