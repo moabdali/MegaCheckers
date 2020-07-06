@@ -44,7 +44,8 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[rows - i - 1][j][1].activeBuffs.append("haymaker")
             gameBoard[i][j][1].storedItems.append("spooky hand")
             #gameBoard[i][j][1].storedItems.append("move again")
-            gameBoard[i][j][1].storedItems.append("shuffle radial")
+            #gameBoard[i][j][1].storedItems.append("shuffle radial")
+            gameBoard[i][j][1].storedItems.append("place mine")
             gameBoard[i][j][1].storedItems.append("haymaker")
             gameBoard[i][j][1].storedItems.append("Haphazard Airstrike")
             #gameBoard[i][j][1].storedItems.append("trip mine radial")
@@ -746,7 +747,9 @@ def useItems(gameBoard, x, y, window):
     columns = len(gameBoard[0])
     location = (x, y)
     while True:
+        window.disable()
         event = itemsMenu.read()
+        window.enable()
         i = event[0]
 
         if i == None:
@@ -1394,10 +1397,10 @@ def useItems(gameBoard, x, y, window):
             if event[0] in validTargets:
                 # print("It is in the events")
 
-                # s1 is the victim's row, compare to x
+                # s1 is the victim's start row, compare to x
                 s1 = event[0][0]
 
-                # s2 is the victim's column, compare to y
+                # s2 is the victim's start column, compare to y
                 s2 = event[0][1]
                 if gameBoard[s1][s2][0].occupied == False:
                     pm(window, "There's no one to punch at that location!")
@@ -1436,6 +1439,7 @@ def useItems(gameBoard, x, y, window):
                     # copy the original piece
                     tempCopyVictim = copy.deepcopy(gameBoard[s1][s2][1])
                     tempCopyTileType = "default"
+                    lastTurnTileType = "default"
                     while True:
                         # check for lower wall
 
@@ -1466,16 +1470,31 @@ def useItems(gameBoard, x, y, window):
                                 )
                                 break
 
-                            # if the next location is safe
+                            # if the next location is safe to spawn in (as in it won't break the game; might still be deadly to the piece)
                             else:
+                                #copy the tile type
+                                g = gameBoard
+                                sx = s1
+                                sy = s2
+                                ex = sx+1
+                                ey = sy
+                                
+                                tempPrevTileType = g[sx][sy][0].tileType
+                                tempPrevPiece = copy.deepcopy(g[sx][sy][1])
 
-                                gameBoard[s1][s2][0].occupied = False
-                                gameBoard[s1 + 1][s2][0].occupied = True
-                                gameBoard[s1][s2][0].tileType = tempCopyTileType
-                                gameBoard[s1][s2][1] = 0
-                                gameBoard[s1 + 1][s2][1] = copy.deepcopy(tempCopyVictim)
-                                gameBoard[s1 + 1][s2][0].occupied = True
+                                
+                                startBoard = g[sx][sy]
+                                endBoard = g[ex][ey]
 
+                                startBoard[0].occupied = False
+                                startBoard[0].tileType = lastTurnTileType
+
+                                
+                                lastTurnTileType = endBoard[0].tileType
+                                endBoard[0].occupied = True
+                                endBoard[1] = copy.deepcopy(tempPrevPiece)
+                                
+                                #check to see if dead
                                 death = deathCheck(window, gameBoard, move=True)
                                 if death != "death":
                                     death2 = tripMineCheck(
@@ -1483,11 +1502,11 @@ def useItems(gameBoard, x, y, window):
                                     )
                                 if death == "death" or death2 == "death":
                                     return
-                                s1 = s1 + 1
+
                                 displayBoard(window, gameBoard)
                                 window.refresh()
-                                # sleep(.75)
-                                tempCopyTileType = gameBoard[s1 + 1][s2][0].tileType
+                                s1 += 1
+                                
 
                         elif gameBoard[s1 + 1][s2][0].occupied == True:
 
@@ -1501,7 +1520,9 @@ def useItems(gameBoard, x, y, window):
 
                     # copy the original piece
                     tempCopyVictim = copy.deepcopy(gameBoard[s1][s2][1])
+
                     tempCopyTileType = "default"
+                    lastTurnTileType = "default"
                     while True:
                         # check for upper wall
 
@@ -1538,13 +1559,35 @@ def useItems(gameBoard, x, y, window):
                             # if the next location is safe
                             else:
 
-                                gameBoard[s1][s2][0].occupied = False
-                                gameBoard[s1 - 1][s2][0].occupied = True
-                                gameBoard[s1][s2][0].tileType = tempCopyTileType
-                                gameBoard[s1][s2][1] = 0
-                                gameBoard[s1 - 1][s2][1] = copy.deepcopy(tempCopyVictim)
-                                gameBoard[s1 - 1][s2][0].occupied = True
 
+
+
+
+
+                                #copy the tile type
+                                g = gameBoard
+                                sx = s1
+                                sy = s2
+                                ex = sx-1
+                                ey = sy
+                                
+                                tempPrevTileType = g[sx][sy][0].tileType
+                                tempPrevPiece = copy.deepcopy(g[sx][sy][1])
+
+                                
+                                startBoard = g[sx][sy]
+                                endBoard = g[ex][ey]
+
+                                startBoard[0].occupied = False
+                                startBoard[0].tileType = lastTurnTileType
+
+                                
+                                lastTurnTileType = endBoard[0].tileType
+                                endBoard[0].occupied = True
+                                endBoard[1] = copy.deepcopy(tempPrevPiece)
+                                
+                                #check to see if dead
+                                death = deathCheck(window, gameBoard, move=True)
                                 if death != "death":
                                     death2 = tripMineCheck(
                                         window, gameBoard, s1 - 1, s2
@@ -1552,11 +1595,10 @@ def useItems(gameBoard, x, y, window):
                                 if death == "death" or death2 == "death":
                                     return
 
-                                s1 = s1 - 1
                                 displayBoard(window, gameBoard)
                                 window.refresh()
-                                # sleep(.75)
-                                tempCopyTileType = gameBoard[s1 - 1][s2][0].tileType
+                                s1 -= 1
+
 
                         elif gameBoard[s1 - 1][s2][0].occupied == True:
 
@@ -1569,7 +1611,7 @@ def useItems(gameBoard, x, y, window):
 
                     #######TRIPMINE FORCEFIELD CHECK NEEDED#####
 
-                    # copy the original piece
+                    # copy the piece that you are punching
                     tempCopyVictim = copy.deepcopy(gameBoard[s1][s2][1])
                     tempCopyTileType = "default"
                     while True:
@@ -1627,7 +1669,7 @@ def useItems(gameBoard, x, y, window):
                                 displayBoard(window, gameBoard)
                                 window.refresh()
                                 # sleep(.75)
-                                tempCopyTileType = gameBoard[s1][s2 + 1][0].tileType
+                                tempCopyTileType = gameBoard[s1][s2 - 1][0].tileType
 
                         elif gameBoard[s1][s2 + 1][0].occupied == True:
 
@@ -2649,6 +2691,9 @@ def movePiece(playerTurn, window, gameBoard):
 
             #FIRST PIECE PICK HERE
             event = window.read()
+
+
+            
             if "cheetz" in event:
                 buffs = sg.popup_get_text("")
                 for i in gameBoard:
@@ -2657,36 +2702,88 @@ def movePiece(playerTurn, window, gameBoard):
                             j[1].storedItems.append(buffs)
                 continue
 
-            if event[0]== "exit":
+
+
+            if "exit" in event:
+                a = sg.popup_yes_no(
+                    "Seriously, you want to exit this awesome game?", keep_on_top=True
+                )
+                pm(window, "You're a fool if you're wanting to quit this game.")
+                if a == "Yes":
+                    sg.popup("Wow, your loss.", keep_on_top=True)
                     window.close()
                     raise SystemExit
-            
-            
-            if gameBoard[event[0][0]][event[0][1]][0].occupied == True and "bowling ball" in gameBoard[event[0][0]][event[0][1]][1].activeBuffs:
-                if gameBoard[event[0][0]][event[0][1]][1].ownedBy != playerTurn:
-                    pm(window,"That's not your piece!")
-                    continue
-                
-                xloc = event[0][0]
-                yloc = event[0][1]
-                location = (xloc,yloc)
-                bowlingLayout = [
-                    [sg.Button("Up",size = (55,4),image_filename = "images/bowlingUp.png",pad = (0,0))],
-                    [sg.Button("Left", image_filename = "images/bowlingLeft.png",size = (24,4),pad = (0,0)), sg.Button("Right",image_filename = "images/bowlingRight.png", size = (24,4),pad = (0,0))],
-                    [sg.Button("Down",image_filename = "images/bowlingDown.png", size = (55,4),pad = (0,0))],
-                    [sg.Button("Cancel", size = (19,1),pad = (0,0))]
-                    ]
-                bowlingMenu = sg.Window("Direction",bowlingLayout,keep_on_top=True)
-                event = bowlingMenu.read()
-                bowlingMenu.close()
-                print(f"Event is {event}")
-                if event[0] in ("Up", "Down", "Left", "Right"):
-                    
-                    bowlingBallFunction(window,gameBoard,location,event[0])
-                    #turn ends when bowling ball is moved
-                    return
                 else:
                     continue
+
+            if "examineItem" in event:
+                window["examineItem"].update(disabled=True)
+                window["information"].update(
+                    f"What do you want to examine?", text_color="red"
+                )
+                event = window.read()
+                window["information"].update(text_color="white")
+                # if no pieces exist here:
+                if gameBoard[event[0][0]][event[0][1]][0].occupied == False:
+                    pm(window, gameBoard[event[0][0]][event[0][1]][0].describeSelf())
+                # if there is a piece:
+                else:
+                    if playerTurn == gameBoard[event[0][0]][event[0][1]][1].ownedBy:
+                        owner = "you"
+                    else:
+                        owner = "your opponent"
+                    buffslist = ""
+                    debuffslist = ""
+                    for i in gameBoard[event[0][0]][event[0][1]][1].activeBuffs:
+                        buffslist += i + "\n"
+                    for i in gameBoard[event[0][0]][event[0][1]][1].activeDebuffs:
+                        debuffslist += i + "\n"
+                    if buffslist == "":
+                        buffslist = "NONE"
+                    if debuffslist == "":
+                        debuffslist = "NONE"
+                    sg.popup(f"The piece here belongs to {owner}.\nIt currently holds {len(gameBoard[event[0][0]][event[0][1]][1].storedItems)} inactive items.\nIt has the following buffs:\n{buffslist}\nIt has the current debuffs:\n{debuffslist}",)
+                    pm(
+                        window,
+                        f"The piece here belongs to {owner}.\nIt currently holds {len(gameBoard[event[0][0]][event[0][1]][1].storedItems)} inactive items.\nIt has the following buffs:\n{buffslist}\nIt has the current debuffs:\n{debuffslist}",
+                    )
+                window["examineItem"].update(disabled=False)
+                continue
+
+
+
+            
+        window["exit"].update(disabled=True)
+            
+            
+        if gameBoard[event[0][0]][event[0][1]][0].occupied == True and "bowling ball" in gameBoard[event[0][0]][event[0][1]][1].activeBuffs:
+            if gameBoard[event[0][0]][event[0][1]][1].ownedBy != playerTurn:
+                pm(window,"That's not your piece!")
+                continue
+            
+            xloc = event[0][0]
+            yloc = event[0][1]
+            location = (xloc,yloc)
+            bowlingLayout = [
+                [sg.Button("Up",size = (55,4),image_filename = "images/bowlingUp.png",pad = (0,0))],
+                [sg.Button("Left", image_filename = "images/bowlingLeft.png",size = (24,4),pad = (0,0)), sg.Button("Right",image_filename = "images/bowlingRight.png", size = (24,4),pad = (0,0))],
+                [sg.Button("Down",image_filename = "images/bowlingDown.png", size = (55,4),pad = (0,0))],
+                [sg.Button("Cancel", size = (19,1),pad = (0,0))]
+                ]
+
+            window.disable()
+            bowlingMenu = sg.Window("Direction",bowlingLayout,keep_on_top=True)
+            event = bowlingMenu.read()
+            window.enable()
+            bowlingMenu.close()
+            print(f"Event is {event}")
+            if event[0] in ("Up", "Down", "Left", "Right"):
+                
+                bowlingBallFunction(window,gameBoard,location,event[0])
+                #turn ends when bowling ball is moved
+                return
+            else:
+                continue
                 
 
             
@@ -2701,52 +2798,9 @@ def movePiece(playerTurn, window, gameBoard):
                 )
                 repeatRestrictor = False
                 return
-        if "exit" in event:
-            a = sg.popup_yes_no(
-                "Seriously, you want to exit this awesome game?", keep_on_top=True
-            )
-            pm(window, "You're a fool if you're wanting to quit this game.")
-            if a == "Yes":
-                sg.popup("Wow, your loss.", keep_on_top=True)
-                window.close()
-                raise SystemExit
-            else:
-                continue
-        window["exit"].update(disabled=True)
+        
 
-        if "examineItem" in event:
-            window["examineItem"].update(disabled=True)
-            window["information"].update(
-                f"What do you want to examine?", text_color="red"
-            )
-            event = window.read()
-            window["information"].update(text_color="white")
-            # if no pieces exist here:
-            if gameBoard[event[0][0]][event[0][1]][0].occupied == False:
-                pm(window, gameBoard[event[0][0]][event[0][1]][0].describeSelf())
-            # if there is a piece:
-            else:
-                if playerTurn == gameBoard[event[0][0]][event[0][1]][1].ownedBy:
-                    owner = "you"
-                else:
-                    owner = "your opponent"
-                buffslist = ""
-                debuffslist = ""
-                for i in gameBoard[event[0][0]][event[0][1]][1].activeBuffs:
-                    buffslist += i + "\n"
-                for i in gameBoard[event[0][0]][event[0][1]][1].activeDebuffs:
-                    debuffslist += i + "\n"
-                if buffslist == "":
-                    buffslist = "NONE"
-                if debuffslist == "":
-                    debuffslist = "NONE"
-                sg.popup(f"The piece here belongs to {owner}.\nIt currently holds {len(gameBoard[event[0][0]][event[0][1]][1].storedItems)} inactive items.\nIt has the following buffs:\n{buffslist}\nIt has the current debuffs:\n{debuffslist}",)
-                pm(
-                    window,
-                    f"The piece here belongs to {owner}.\nIt currently holds {len(gameBoard[event[0][0]][event[0][1]][1].storedItems)} inactive items.\nIt has the following buffs:\n{buffslist}\nIt has the current debuffs:\n{debuffslist}",
-                )
-            window["examineItem"].update(disabled=False)
-            continue
+        
 
         window["itemButton"].update(disabled=False)
         window["examineItem"].update(disabled=True)

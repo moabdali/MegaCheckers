@@ -1,5 +1,11 @@
 ChangeLog
 
+v.0.9.36.1 July 6, 2020
+	Fixed a few up/down errors in haymaker (crashed when hitting the walls; turns out the code wasn't properly tested; rewrote all the logic for that section).  Committing this and then working on left/right.
+
+v.0.9.36 July 6, 2020
+	Disable the main window when showing menus to avoid stray clicks that may cause crashes.  This is a lot simpler than putting in error checks for it while still doing the job (it does it better this way, too). 
+
 v.0.9.35.1 July 6, 2020
 	Implemented a message for when a piece falls into a void, and also a specific one for the bowling ball function.
 
