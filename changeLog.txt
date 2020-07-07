@@ -1,5 +1,7 @@
 ChangeLog
 
+v.0.9.37 July 6, 2020
+	Added a lot of "preloading" for PNGs.  Should speed up the game. Glitchy row laser put in place.  Properly attacks to the left; gets confused about the right.  Partial commit to avoid code loss.
 
 v.0.9.36.2 July 6, 2020
 	Finished the left and right checks in haymaker.  Fixed a few errors with the bowling ball as well.  Bowling ball and haymaker should be finished for all intents and purposes (aside for dealing with lasers as they haven't been implemented yet).

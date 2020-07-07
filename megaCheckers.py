@@ -8,8 +8,15 @@ from io import BytesIO
 import base64
 from playsound import playsound
 
+PublicPNGList = []
+
+
+
+
+        
 
 def initializeField(columns, rows, window, gameBoard):
+    publicPNGloader()
     for i in range(2):
         for j in range(columns):
             gameBoard[i][j][0] = Tile(occupied=True)
@@ -45,6 +52,7 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[i][j][1].storedItems.append("spooky hand")
             #gameBoard[i][j][1].storedItems.append("move again")
             #gameBoard[i][j][1].storedItems.append("shuffle radial")
+            gameBoard[i][j][1].storedItems.append("row laser")
             gameBoard[i][j][1].storedItems.append("place mine")
             gameBoard[i][j][1].storedItems.append("haymaker")
             gameBoard[i][j][1].storedItems.append("Haphazard Airstrike")
@@ -69,6 +77,8 @@ class PublicStats:
         cycle = PublicStats.turnCount % 9
         return PublicStats.orbCycleList[cycle]
 
+
+    
 
 class Piece:
     def __init__(self, row=None, column=None, playerTurn=None):
@@ -97,6 +107,9 @@ class Tile:
         self.tileHeight = 0
         self.tileType = "default"
         self.occupied = occupied
+        self.horiLaser = False
+        self.vertLaser = False
+        self.crossLaser = False
 
     def describeSelf(self):
 
@@ -282,8 +295,8 @@ def getDistance(a, b, c, d):
 
 # generate item orbs
 def createOrbs(window, gameBoard):
-    #dangerTurn = 15
-    dangerTurn = 1
+    dangerTurn = 15
+    #dangerTurn = 1
     emptySpots = 0
     if PublicStats.turnCount == dangerTurn:
         sg.popup(
@@ -418,13 +431,152 @@ def deathCheck(window, gameBoard, move=False):
                     return "death"
             # do something for holes
 
+def laserCheck(window, gameBoard):
+    
+    rows = len(gameBoard)
+    columns = len(gameBoard[0])
+    #turn off all lasers
+    for i in gameBoard:
+        for j in i:
+            j[0].horiLaser = False
+            j[0].vertLaser = False
+            j[0].crossLaser = False
+    
+    
+    #find a laser emitter
+    while True:
+        
+        left = 0
+        right = 0
+        forceFieldLeft = False
+        forceFieldRight = False
+        for indexI, i in enumerate(gameBoard):
+            for indexJ,j in enumerate(i):
+                if j[0].tileType == "horiLaserTripod":
+                    print("Function found a horizontal laser")
+                    #as long as you have space left to the right
+                    print(indexI,indexJ)
+                    left = indexJ
+                    right = indexJ
+                    
+                    while left > 0:
+                        left-=1
+                        print(f"Left is {left}")
+                        if gameBoard[indexI][left][0].occupied == True:
+                            print("doing stuff in here")
+                            if "Energy Forcefield" in gameBoard[indexI][left][1].activeBuffs:
+                                forceFieldLeftStop = True
+                                break
+                            else:
+                                
+                                gameBoard[indexI][left][0].occupied = False
+                                gameBoard[indexI][left][1] = 0
+                                gameBoard[indexI][left][0].horiLaser = False
+                                tileBackup = gameBoard[indexI][left][0].tileType
+                                if tileBackup in ("player1default", "player2default"):
+                                    tileBackup = "default"
+                                gameBoard[indexI][left][0].tileType = "exploding"
+                                displayBoard(window, gameBoard)
+                                window.refresh()
 
+                                gameBoard[indexI][left][0].tileType = tileBackup
+                                sg.popup("Killed a piece")
+
+                                if gameBoard[indexI][left][0].tileType == "horiLaserTripod":
+                                    gameBoard[indexI][left][0].horiLaser = False
+                                else:
+                                    gameBoard[indexI][left][0].horiLaser = True
+                                window.refresh()
+                        else:
+                            if gameBoard[indexI][left][0].tileType == "horiLaserTripod":
+                                gameBoard[indexI][left][0].horiLaser = False
+                            else:
+                                gameBoard[indexI][left][0].horiLaser = True
+                    
+                    while right < columns-2:
+                        
+                        right += 1
+                        print(right)
+                        print(columns-1)
+                        
+                        if gameBoard[indexI][right][0].occupied == True:
+                            print("TESTING RIGHT LOL")
+                            if "Energy Forcefield" in gameBoard[indexI][right][1].activeBuffs:
+                                forceFieldLeftStop = True
+                                break
+                            else:
+                                
+                                gameBoard[indexI][right][0].occupied = False
+                                gameBoard[indexI][right][1] = 0
+                                gameBoard[indexI][right][0].horiLaser = False
+                                tileBackup = gameBoard[indexI][right][0].tileType
+                                if tileBackup in ("player1default", "player2default"):
+                                    tileBackup = "default"
+                                gameBoard[indexI][right][0].tileType = "exploding"
+                                displayBoard(window, gameBoard)
+                                window.refresh()
+
+                                gameBoard[indexI][right][0].tileType = tileBackup
+                                sg.popup("Killed a piece")
+                                if gameBoard[indexI][right][0].tileType == "horiLaserTripod":
+                                    gameBoard[indexI][right][0].horiLaser = False
+                                else:
+                                    gameBoard[indexI][right][0].horiLaser = True
+                                displayBoard(window, gameBoard)
+                                window.refresh()
+                        else:
+                            if gameBoard[indexI][left][0].tileType == "horiLaserTripod":
+                                gameBoard[indexI][left][0].horiLaser = False
+                            else:
+                                gameBoard[indexI][left][0].horiLaser = True
+                    left = indexJ
+                    right = indexJ   
+                        
+        return
+def publicPNGloader():
+    #PublicPNGList
+    for indexI, i in enumerate( [
+        "default", #0
+        "destroyed", #1
+        "mine", #2
+        "horiLaserTripod", #3
+        "p1", #4
+        "p2", #5
+        "items",#6
+        "itemOrb",#7
+        "trapOrb",#8
+        ]):
+        if i == "p1":
+            myImage = Image.open("images/p1.png").convert("RGBA")
+            PublicPNGList.append(myImage)
+            continue
+        elif i == "p2":
+            myImage = Image.open("images/p2.png").convert("RGBA")
+            PublicPNGList.append(myImage)
+            continue
+        if i == "items":
+            myImage = Image.open("images/items.png").convert("RGBA")
+            PublicPNGList.append(myImage)
+            continue
+        myImage = Image.open(f"images/{i}.png").convert("RGBA")
+        im_file = BytesIO()
+        myImage.save(im_file, format="png")
+        im_bytes = im_file.getvalue()
+        PublicPNGList.append(base64.b64encode(im_bytes))        
+                        
+
+    
 #display the board (update what the tiles/pieces should look like)
 def displayBoard(window, gameBoard):
 
     for i in range(len(gameBoard)):
         for j in range(len(gameBoard[0])):
             # unoccupied spaces
+
+            if gameBoard[i][j][0].horiLaser == True:
+                window[i, j].update(image_filename="images/horiLaserBeam.png")
+                continue
+                
             if gameBoard[i][j][0].tileType == "exploding":
                 window[i, j].update(image_filename="images/exploding.png")
                 continue
@@ -456,27 +608,37 @@ def displayBoard(window, gameBoard):
         
             if gameBoard[i][j][0].occupied == False:
 
+                #0 default
                 if gameBoard[i][j][0].tileType == "default":
-                    window[i, j].update(image_filename="images/blank.png")
+                    window[i, j].update(image_data=PublicPNGList[0])
                     continue
+                #7 itemOrb
                 elif gameBoard[i][j][0].tileType == "itemOrb":
-                    window[i, j].update(image_filename="images/itemOrb.gif")
+                    window[i, j].update(image_data=PublicPNGList[7])
                     continue
+                #1 destroyed
                 elif gameBoard[i][j][0].tileType == "destroyed":
-                    window[i, j].update(image_filename="images/destroyed.png")
+                    window[i, j].update(image_data=PublicPNGList[1])
                     continue
+                #2 mine
                 elif gameBoard[i][j][0].tileType == "mine":
-                    window[i, j].update(image_filename="images/mine.png")
+                    window[i, j].update(image_data=PublicPNGList[2])
                     continue
+                #8 trapOrb
                 elif gameBoard[i][j][0].tileType in [
                     "trap orb 0",
                     "trap orb 1",
                     "trap orb 2",
                 ]:
-                    window[i, j].update(image_filename="images/trapOrb.gif")
+                    window[i, j].update(image_data=PublicPNGList[8])
                     continue
                 elif gameBoard[i][j][0].tileType in ["hand1","hand2","hand3"]:
                     pass
+                
+                #3 horiLaserTripod
+                elif gameBoard[i][j][0].tileType == "horiLaserTripod":
+                    window[i, j].update(image_data= PublicPNGList[3])
+                    continue
                 else:
                     sg.popup(
                         f"A tile error has occurred, with type {gameBoard[i][j][0].tileType}",
@@ -500,15 +662,19 @@ def displayBoard(window, gameBoard):
                     
                     # set the center color
                     if g.ownedBy == 1:
-                        avatar = Image.open("images/p1.png").convert("RGBA")
+                        #4 p1
+                        avatar = (PublicPNGList[4]).convert("RGBA")
                     elif g.ownedBy == 2:
-                        avatar = Image.open("images/p2.png").convert("RGBA")
+                        #5 p2
+                        avatar = (PublicPNGList[5]).convert("RGBA")
                     
 
                     # set the meat of the piece
+                    #6 items
                     if len(g.storedItems) > 0:
-                        item = Image.open("images/items.png").convert("RGBA")
-                        avatar.paste(item, (0, 0), item)
+                        
+                        items = (PublicPNGList[6]).convert("RGBA")
+                        avatar.paste(items, (0, 0), items)
                     else:
                         donut = Image.open("images/donut.png").convert("RGBA")
                         avatar.paste(donut, (0, 0), donut)
@@ -584,14 +750,15 @@ def displayBoard(window, gameBoard):
             im_file = BytesIO()
             avatar.save(im_file, format="png")
             im_bytes = im_file.getvalue()
-            im_b64 = base64.b64encode(im_bytes)
+            avatar = base64.b64encode(im_bytes)
 
-            window[i, j].update(image_data=im_b64)
+            window[i, j].update(image_data=avatar)
 
 # the item list
 def pickUpItemOrb(gameBoard, x, y):
     # items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
     items = [
+        "row laser",
         "magnet",
         "trap orb",
         "place mine",
@@ -710,7 +877,7 @@ def useItems(gameBoard, x, y, window):
             z = "images/bowling ball.png"
             zz = "Your piece loses all of its effects and items... but turns into a crazy bowling ball."
         else:
-            z = "images/blank.png"
+            z = "images/default.png"
             zz = "no explanation supplied... yet"
 
         listData += [
@@ -771,6 +938,35 @@ def useItems(gameBoard, x, y, window):
                         j[0].occupied = False
                         j[1] = 0
                         j[0].tileType = "default"
+
+        elif str.find(i, "row laser") >= 0:
+            itemsMenu.close()
+            validTargets = getCross((x, y), gameBoard)
+            pm(window, "Where do you want to deploy the laser emitter?  Pick an empty spot that is either one space up/down/left/right")
+            event = window.read()
+
+            # if the target is within range
+            if event[0] in validTargets:
+
+                #attempted laser location
+                lx= event[0][0]
+                ly = event[0][1]
+                g = gameBoard[lx][ly]
+                if g[0].occupied == True or g[0].tileType not in ("default","player1default","player2default"):
+                    sg.popup("You must put the laser mine in an empty spot!")
+                    continue
+                if g[0].tileType == "default":
+                    pm(window,"horizontal laser tripod placed")
+                    g[0].tileType = "horiLaserTripod"
+                    
+                
+                
+                
+            else:
+                sg.popup("Pick something in range (default range is one up/down/left/right)!", keep_on_top=True)    
+
+
+                
         elif str.find(i, "spooky hand") >= 0:
             itemsMenu.close()
             gameBoard[x][y][1].storedItems.remove("spooky hand")
@@ -1141,7 +1337,7 @@ def useItems(gameBoard, x, y, window):
             # for rows called i, in gameboard
             x = 0
             for i in g:
-                # copy the column's tiles to cg
+                # copy the column's tiles to cg    
                 cg.append(copy.deepcopy(i[y]))
                 locations.append((x, y))
                 g[x][y][0].tileType = "default"
@@ -1157,19 +1353,20 @@ def useItems(gameBoard, x, y, window):
 
             displayBoard(window, gameBoard)
             window.refresh()
-            # i=0
+            
             while len(locations) > 0:
+                
                 randCoord = random.choice(locations)
                 randTileInfo = random.choice(cg)
                 g[randCoord[0]][randCoord[1]] = randTileInfo
-                #if g[randCoord[0]][randCoord[1]][0].occupied == True and g[randCoord[0]][randCoord[1]][1].currentTurnPiece == True:
-                #    g[randCoord[0]][randCoord[1]][1].grey = True
                 locations.remove(randCoord)
                 cg.remove(randTileInfo)
-                # i+=1
+                #laserChecks
+                g[randCoord[0]][randCoord[1]][0].horiLaser = False
                 displayBoard(window, g)
                 window.refresh()
                 sleep(0.1)
+            laserCheck(window, gameBoard)
             displayBoard(window, g)
 
         # shuffle radial
@@ -1206,9 +1403,11 @@ def useItems(gameBoard, x, y, window):
                 #    g[randCoord[0]][randCoord[1]][1].grey = True
                 locations.remove(randCoord)
                 cg.remove(randTileInfo)
+                g[randCoord[0]][randCoord[1]][0].horiLaser = False
                 displayBoard(window, g)
                 window.refresh()
                 sleep(0.1)
+            laserCheck(window, gameBoard)    
             displayBoard(window, g)
 
         # purify radial
@@ -1515,7 +1714,8 @@ def useItems(gameBoard, x, y, window):
                             gameBoard[s1 + 1][s2][1].activeDebuffs.append("stunned")
                             pm(window, "Both of the collided pieces are stunned.")
                             break
-
+                    
+                
                 elif direction == "push up":
                     #######TRIPMINE FORCEFIELD CHECK NEEDED#####
 
@@ -1781,7 +1981,8 @@ def useItems(gameBoard, x, y, window):
                             gameBoard[s1][s2 - 1][1].activeDebuffs.append("stunned")
                             pm(window, "Both of the collided pieces are stunned.")
                             break
-
+            else:
+                sg.popup("Pick something in range!", keep_on_top=True)
         # jump proof
         elif str.find(i, "jumpProof") >= 0:
             gameBoard[x][y][1].storedItems.remove("jumpProof")
@@ -3390,7 +3591,7 @@ def begin():
     frame_main = [
         [
             sg.Button(
-                image_filename="images/blank.png",
+                image_filename="images/default.png",
                 key=(i, j),
                 size=(75, 75),
                 button_color=("white", "grey"),
@@ -3521,7 +3722,7 @@ def begin():
 
                 
             resetMoveAgain(gameBoard)
-        
+            laserCheck(window, gameBoard)
         # end player two's turn, begin player one's turn
         else:
             window["turn"].update(filename="images/up.png")
@@ -3547,9 +3748,9 @@ def begin():
             if PublicStats.spookyHand == True:
                 spookyHand(window,gameBoard)
 
-                
+            laserCheck(window, gameBoard)    
             resetMoveAgain(gameBoard)
-
+            
             
 
 
@@ -3572,7 +3773,7 @@ def tutorial():
     frame_2 = [
         [
             sg.Button(
-                image_filename=".\\blank.png",
+                image_filename=".\\default.png",
                 key=(i, j),
                 size=(20, 20),
                 tooltip="tooltip",
@@ -3886,7 +4087,7 @@ def tutorial():
                                             for i in range(2):
                                                 for j in range(columns):
                                                     window[rows - i - 1, j].update(
-                                                        image_filename="images/blank.png"
+                                                        image_filename="images/default.png"
                                                     )
                                             window.refresh()
                                             sleep(5)
