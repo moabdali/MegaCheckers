@@ -1,5 +1,8 @@
 ChangeLog
 
+v.0.9.42 July 7, 2020
+	Round earth theory has received a picture.  Worm hole implemented.  Better checks for making sure spots are "truly empty" (hotspots/orbeater).  Better default tile info. 
+
 v.0.9.41 July 7, 2020
 	Round earth completed (wrap around the field).  Needs a picture though. 
 

@@ -36,41 +36,59 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[rows - i - 1][j][0].tileType = "player2default"
             gameBoard[rows - i - 1][j][1].avatar = "default"
 
-###### DELETE ME ##########
+ ###### DELETE ME ##########
     for i in range(2):
         for j in range(columns):
+            #middle row generator
             rows = 6
             gameBoard[rows - i - 1][j][0] = Tile(occupied=True)
             piece = Piece(playerTurn=2)
+
+
+
+            #give items to main row
+            gameBoard[i][j][1].storedItems.append("shuffle radial")
+            gameBoard[i][j][1].storedItems.append("worm hole")
+            gameBoard[i][j][1].storedItems.append("orbEater")
+            gameBoard[i][j][1].storedItems.append("shuffle item orbs")
+            gameBoard[i][j][1].storedItems.append("row laser")
+            gameBoard[i][j][1].storedItems.append("column laser")
+            gameBoard[i][j][1].storedItems.append("round earth theory")
+            gameBoard[i][j][1].storedItems.append("place mine")
+            gameBoard[i][j][1].storedItems.append("haymaker")
+            gameBoard[i][j][1].storedItems.append("Haphazard Airstrike")
+            gameBoard[i][j][1].storedItems.append("row laser")
+            gameBoard[i][j][1].storedItems.append("bowling ball")
+            
+            gameBoard[i][j][1].activeBuffs.append("move diagonal")
+            gameBoard[i][j][1].activeBuffs.append("jumpProof")
+            
+
+            #the middle row
             gameBoard[rows - i - 1][j][1] = piece
             gameBoard[rows - i - 1][j][1].location = (rows - i - 1, j)
             gameBoard[rows - i - 1][j][0].tileType = "player2default"
             gameBoard[rows - i - 1][j][1].avatar = "default"
-            gameBoard[rows - i - 1][j][1].storedItems.append("haphazard airstrike")
-            gameBoard[i][j][1].storedItems.append("shuffle radial")
-            #gameBoard[rows - i - 1][j][1].activeBuffs.append("move again")
-            #gameBoard[rows - i - 1][j][1].activeBuffs.append("move again")
+            gameBoard[rows - i - 1][j][1].storedItems.append("Haphazard Airstrike")
             gameBoard[rows - i - 1][j][1].activeBuffs.append("haymaker")
-            gameBoard[i][j][1].storedItems.append("spooky hand")
-            #gameBoard[i][j][1].storedItems.append("move again")
-            #gameBoard[i][j][1].storedItems.append("shuffle radial")
-            gameBoard[i][j][1].storedItems.append("round earth theory")
-            gameBoard[i][j][1].storedItems.append("shuffle item orbs")
-            gameBoard[i][j][1].storedItems.append("row laser")
-            gameBoard[i][j][1].storedItems.append("column laser")
-            gameBoard[i][j][1].storedItems.append("column laser")
-            gameBoard[i][j][1].storedItems.append("place mine")
-            gameBoard[i][j][1].storedItems.append("haymaker")
-            gameBoard[i][j][1].storedItems.append("haphazard airstrike")
-            gameBoard[i][j][1].storedItems.append("row laser")
-            
-            #gameBoard[i][j][1].storedItems.append("trip mine radial")
-            gameBoard[i][j][1].activeBuffs.append("move diagonal")
-            gameBoard[i][j][1].activeBuffs.append("jumpProof")
-            #gameBoard[i][j][1].activeBuffs.append("move again")
-            #gameBoard[i][j][1].activeBuffs.append("move again")
-            #gameBoard[i][j][1].storedItems.append("abolish foe powers radial")
-            gameBoard[i][j][1].storedItems.append("bowling ball")
+
+
+
+            #give items to middle row
+            gameBoard[rows - i - 1][j][1].storedItems.append("shuffle radial")
+            gameBoard[rows - i - 1][j][1].storedItems.append("worm hole")
+            gameBoard[rows - i - 1][j][1].storedItems.append("orbEater")
+            gameBoard[rows - i - 1][j][1].storedItems.append("shuffle item orbs")
+            gameBoard[rows - i - 1][j][1].storedItems.append("row laser")
+            gameBoard[rows - i - 1][j][1].storedItems.append("column laser")
+            gameBoard[rows - i - 1][j][1].storedItems.append("column laser")
+            gameBoard[rows - i - 1][j][1].storedItems.append("place mine")
+            gameBoard[rows - i - 1][j][1].storedItems.append("haymaker")
+            gameBoard[rows - i - 1][j][1].storedItems.append("Haphazard Airstrike")
+            gameBoard[rows - i - 1][j][1].storedItems.append("row laser")
+            gameBoard[rows - i - 1][j][1].activeBuffs.append("move diagonal")
+            gameBoard[rows - i - 1][j][1].storedItems.append("bowling ball")
+
 
 ####### END DELETE ME###########
 
@@ -82,9 +100,11 @@ class PublicStats:
     #orbCycleList = [5, 20, 30, 0, 3, 1, 0, 2, 1]
     spookyHand = False
     spookyHandTurnCount = 5
+    hotSpot = []
     def getOrbCount(self):
         cycle = PublicStats.turnCount % 9
         return PublicStats.orbCycleList[cycle]
+    
 
 class Piece:
     def __init__(self, row=None, column=None, playerTurn=None):
@@ -117,13 +137,20 @@ class Tile:
         self.vertLaser = False
         self.crossLaser = False
         self.orbEater = False
+        self.wormHole1 = False
+        self.wormHole2 = False
 
     def describeSelf(self):
 
         if self.tileType == "default":
             sg.popup(
                 #f"This is a regular tile with an elevation of {self.tileHeight}",
-                f"This is a regular tile with an elevation of {self.tileHeight} with H {self.horiLaser}, V {self.vertLaser}, C {self.crossLaser}",
+                f"""This is a regular tile with an elevation of {self.tileHeight}.
+Horizontal Laser Beam: {self.horiLaser}, Vertical Laser Beam: {self.vertLaser}, Cross Laser Beam: {self.crossLaser}
+Orb Eater on tile? {self.orbEater}
+Player one's worm hole? {self.wormHole1}
+Player two's worm hole? {self.wormHole2}
+""",
                 keep_on_top=True,
             )
             return f"This is a regular tile with an elevation of {self.tileHeight}"
@@ -242,26 +269,43 @@ def getRadial(location, gameBoard, grow=False):
     return validLocations
 
 
-def getCross(location, gameBoard, grow=False, includeSelf=False):
+def getCross(location, gameBoard, grow=False, includeSelf=False, trueEmpty = False):
     validLocations = []
     rows = len(gameBoard)
     columns = len(gameBoard[0])
+    g = gameBoard[location[0]][location[1]]
     # check if you can go up one
     if location[0] - 1 != -1:
         # one row up (guaranteed already)
-        validLocations.append((location[0] - 1, location[1] + 0))
+        if trueEmpty == False:
+            validLocations.append((location[0] - 1, location[1] + 0))
+        elif trueEmpty == True and g[0].orbEater == False and g[0].wormHole1 == False and g[0].wormHole2 == False:
+            validLocations.append((location[0] - 1, location[1] + 0))
     # check if you can go left
     if location[1] - 1 != -1:
-        validLocations.append((location[0], location[1] - 1))
+        if trueEmpty == False:
+            validLocations.append((location[0], location[1] - 1))
+        elif trueEmpty == True and g[0].orbEater == False and g[0].wormHole1 == False and g[0].wormHole2 == False:
+            validLocations.append((location[0] + 1, location[1]))
+        
     if includeSelf == True:
-        validLocations.append((location[0], location[1]))
+        if trueEmpty == False:
+            validLocations.append((location[0], location[1]))
+        elif trueEmpty == True and g[0].orbEater == False and g[0].wormHole1 == False and g[0].wormHole2 == False:
+            validLocations.append((location[0] + 1, location[1]))
     # check if you can go right
     if location[1] + 1 != columns:
-        validLocations.append((location[0], location[1] + 1))
+        if trueEmpty == False:
+            validLocations.append((location[0], location[1] + 1))
+        elif trueEmpty == True and g[0].orbEater == False and g[0].wormHole1 == False and g[0].wormHole2 == False:
+            validLocations.append((location[0] + 1, location[1]))
     # check if you can go down
     if location[0] + 1 != rows:
         # bottom guaranteed
-        validLocations.append((location[0] + 1, location[1]))
+        if trueEmpty == False:
+            validLocations.append((location[0] + 1, location[1]))
+        elif trueEmpty == True and g[0].orbEater == False and g[0].wormHole1 == False and g[0].wormHole2 == False:
+            validLocations.append((location[0] + 1, location[1]))
     return validLocations
 
 
@@ -319,7 +363,7 @@ def createOrbs(window, gameBoard):
         )
     for i in gameBoard:
         for j in i:
-            if j[0].tileType == "default" and j[0].orbEater == False:
+            if j[0].tileType == "default" and j[0].occupied != True and j[0].orbEater == False and j[0].wormHole1 == False and j[0].wormHole2 == False:
                 emptySpots += 1
     publicStats = PublicStats()
     orbsToPlace = publicStats.getOrbCount()
@@ -334,7 +378,7 @@ def createOrbs(window, gameBoard):
         
         i = random.randint(0, len(gameBoard) - 1)
         j = random.randint(0, len(gameBoard[0]) - 1)
-        if gameBoard[i][j][0].tileType == "default" and gameBoard[i][j][0].occupied != True and gameBoard[i][j][0].orbEater == False:
+        if gameBoard[i][j][0].tileType == "default" and gameBoard[i][j][0].occupied != True and gameBoard[i][j][0].orbEater == False and gameBoard[i][j][0].wormHole1 == False and gameBoard[i][j][0].wormHole2 == False:
             orbsToPlace -= 1
             if PublicStats.turnCount > dangerTurn:
                 chanceCheck = random.randint(0, 10)
@@ -721,7 +765,10 @@ def publicPNGloader():
         im_bytes = im_file.getvalue()
         PublicPNGList.append(base64.b64encode(im_bytes))        
                         
-
+def cleanTile(tile):
+    tile.wormHole1 = False
+    tile.wormHole2 = False
+    tile.orbEater = False
     
 #display the board (update what the tiles/pieces should look like)
 def displayBoard(window, gameBoard):
@@ -733,9 +780,7 @@ def displayBoard(window, gameBoard):
             if gameBoard[i][j][0].horiLaser == True and gameBoard[i][j][0].vertLaser == False:
                 window[i, j].update(image_filename="images/horiLaserBeam.png")
                 continue
-            elif gameBoard[i][j][0].horiLaser == False and gameBoard[i][j][0].vertLaser == True:
-            #elif gameBoard[i][j][0].vertLaser == True:
-                
+            elif gameBoard[i][j][0].horiLaser == False and gameBoard[i][j][0].vertLaser == True:    
                 window[i, j].update(image_filename="images/vertLaserBeam.png")
                 continue
             elif gameBoard[i][j][0].horiLaser == True and gameBoard[i][j][0].vertLaser == True:
@@ -744,22 +789,27 @@ def displayBoard(window, gameBoard):
 
             
             if gameBoard[i][j][0].tileType == "exploding":
+                cleanTile(gameBoard[i][j][0])
                 window[i, j].update(image_filename="images/exploding.png")
                 continue
 
             elif gameBoard[i][j][0].tileType == "damaged4":
+                cleanTile(gameBoard[i][j][0])
                 window[i, j].update(image_filename="images/damaged4.png")
                 continue
 
             elif gameBoard[i][j][0].tileType == "damaged3":
+                cleanTile(gameBoard[i][j][0])
                 window[i, j].update(image_filename="images/damaged3.png")
                 continue
 
             elif gameBoard[i][j][0].tileType == "damaged2":
+                cleanTile(gameBoard[i][j][0])
                 window[i, j].update(image_filename="images/damaged2.png")
                 continue
 
             elif gameBoard[i][j][0].tileType == "damaged":
+                cleanTile(gameBoard[i][j][0])
                 window[i, j].update(image_filename="images/damaged.png")
                 continue
 
@@ -770,6 +820,14 @@ def displayBoard(window, gameBoard):
             elif gameBoard[i][j][0].tileType == "abolished":
                 window[i, j].update(image_filename="images/abolished.png")
                 continue
+            elif gameBoard[i][j][0].wormHole1 == True:
+                window[i, j].update(image_filename="images/wormHole1.png")
+                if gameBoard[i][j][0].occupied == False:
+                    continue
+            elif gameBoard[i][j][0].wormHole2 == True:
+                window[i, j].update(image_filename="images/wormHole2.png")
+                if gameBoard[i][j][0].occupied == False:
+                    continue
             
         
             if gameBoard[i][j][0].occupied == False:
@@ -790,6 +848,7 @@ def displayBoard(window, gameBoard):
                     continue
                 #1 destroyed
                 elif gameBoard[i][j][0].tileType == "destroyed":
+                    cleanTile(gameBoard[i][j][0])
                     window[i, j].update(image_data=PublicPNGList[1])
                     continue
                 #2 mine
@@ -805,6 +864,7 @@ def displayBoard(window, gameBoard):
                     window[i, j].update(image_data=PublicPNGList[8])
                     #if the mouse is here
                     if gameBoard[i][j][0].orbEater == True:
+                        cleanTile(gameBoard[i][j][0])
                         window[i, j].update(image_data=PublicPNGList[10])
                     continue
                 elif gameBoard[i][j][0].tileType in ["hand1","hand2","hand3"]:
@@ -924,7 +984,10 @@ def displayBoard(window, gameBoard):
                     if gameBoard[i][j][0].tileType == "hand3":
                         hand3 = Image.open("images/hand3.png").convert("RGBA")
                         avatar.paste(hand3, (0, 0), hand3)
-                        
+
+                    if "round earth theory" in g.activeBuffs:
+                        roundEarthTheory = Image.open("images/roundEarthTheory.png").convert("RGBA")
+                        avatar.paste(roundEarthTheory, (0, 0), roundEarthTheory)   
 
             im_file = BytesIO()
             avatar.save(im_file, format="png")
@@ -980,12 +1043,18 @@ def mapping(element):
     elif orientation in ("brr", "bmr", "mrb"):
         return (x - 1, y - 1)
 
-def emptySpots(gameBoard):
+def emptySpots(gameBoard,trueEmpty = False):
     emptySpots = []
     for iIndex, i in enumerate(gameBoard):
         for jIndex,j in enumerate(i):
             if j[0].tileType == "default":
-                emptySpots.append( (iIndex, jIndex) )
+                if trueEmpty == False:
+                    emptySpots.append( (iIndex, jIndex) )
+
+                #truly empty spots
+                elif trueEmpty == True and j[0].orbEater == False and j[0].occupied == False:
+                    emptySpots.append( (iIndex, jIndex) )
+            
     return emptySpots
 # the item list
 def pickUpItemOrb(gameBoard, x, y):
@@ -1008,7 +1077,7 @@ def pickUpItemOrb(gameBoard, x, y):
         "trip mine radial",
         "purify radial",
         "napalm radial",
-        "abolish foe powers radial",
+        "vile radial",
         "haymaker",
         "bowling ball",
         "column laser",
@@ -1041,8 +1110,8 @@ def useItems(gameBoard, x, y, window):
         elif z == "images/place mine.png":
             z = "images/mine.png"
             zz = "place a mine"
-        elif z == "images/abolish foe powers radial.png":
-            z = "images/abolished.png"
+        elif z == "images/vile radial.png":
+            z = "images/vile.png"
             zz = "removes all buffs (beneficial effects) from surrounding enemies."
         elif z == "images/purify radial.png":
             z = "images/purified1.png"
@@ -1191,7 +1260,44 @@ def useItems(gameBoard, x, y, window):
                     laserCheck(window,gameBoard)
             else:
                 sg.popup("Pick something in range (default range is one up/down/left/right)!", keep_on_top=True)
-                
+
+        elif str.find(i, "worm hole") >= 0:
+            g = gameBoard
+            itemsMenu.close()
+            emptyList = getCross((x,y),gameBoard, trueEmpty = True)
+            pm(window, "Choose an empty cross spot to deploy the wormhole")
+            event = window.read()
+            #try:
+            print(event[0])
+            if event[0] in emptyList:
+                x1 = event[0][0]
+                y1 = event[0][1]
+                print(x1,y1)
+                if playerTurn == 1:
+                    g[x1][y1][0].wormHole1 = True
+                    pm(window, "worm hole placed")
+                    
+                elif playerTurn == 2:
+                    g[x1][y1][0].wormHole2 = True
+                    pm(window, "worm hole placed")
+                    
+                else:
+                    sg.popup("An error occurred trying to place the worm hole")
+                    break
+                displayBoard(window, gameBoard)
+                gameBoard[x][y][1].storedItems.remove("worm hole")
+                window.refresh()
+                break
+            else:
+                pm(window, "You must pick an empty adjacent location (up/down/left/right)")
+                sleep(1)
+##            except:
+##                sg.popup("An error occurred trying to place the worm hole")
+##                break
+                    
+                    
+                    
+            
         elif str.find(i, "orbEater") >= 0:
             itemsMenu.close()
             emptyList = emptySpots(gameBoard)
@@ -1850,9 +1956,9 @@ def useItems(gameBoard, x, y, window):
                 pm(window, "Can't place that there.  Only in an ampty space in range.")
                 continue
 
-        # abolish foe powers radial
-        elif str.find(i, "abolish foe powers radial") >= 0:
-            gameBoard[x][y][1].storedItems.remove("abolish foe powers radial")
+        # vile radial
+        elif str.find(i, "vile radial") >= 0:
+            gameBoard[x][y][1].storedItems.remove("vile radial")
             validSpots = getRadial((x, y), gameBoard)
             abolishCheck = False
             itemsMenu.close()
@@ -3545,6 +3651,24 @@ def movePiece(playerTurn, window, gameBoard):
         if gameBoard[startLocation[0]][startLocation[1]][0].occupied:
             # if the piece is yours
             if gameBoard[startLocation[0]][startLocation[1]][1].ownedBy == playerTurn:
+
+
+
+
+                #BEGIN REAL MOVE ATTEMPT
+
+
+                #worm hole override
+
+                #test for tripmine trip mine
+
+                #if player 1's turn and there's a worm hole there
+                if gameBoard[endLocation[0]][endLocation[1]][0].occupied == False and gameBoard[endLocation[0]][endLocation[1]][0].wormHole1 == True and playerTurn == 1:
+                    roundEarthTheory = True
+                elif gameBoard[endLocation[0]][endLocation[1]][0].occupied == False and gameBoard[endLocation[0]][endLocation[1]][0].wormHole2 == True and playerTurn == 2:
+                    roundEarthTheory = True
+
+                
                 # assume the player isn't trying to move diagonally at first
                 diagonalCheck = False
                 if "round earth theory" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
@@ -4109,7 +4233,7 @@ def begin():
         "MegaCheckers",
         layout,
         
-        disable_close=True,
+        disable_close=False,
         grab_anywhere=True,
         location=(0, 0),
     ).finalize()
