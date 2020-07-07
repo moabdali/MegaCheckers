@@ -1,5 +1,7 @@
 ChangeLog
 
+v.0.9.41 July 7, 2020
+	Round earth completed (wrap around the field).  Needs a picture though. 
 
 v.0.9.41 July 7, 2020
 	Added mouse sound effects.  Made capititalization consistent in items list. 

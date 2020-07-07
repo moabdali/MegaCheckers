@@ -12,6 +12,13 @@ PublicPNGList = []
 
 def initializeField(columns, rows, window, gameBoard):
     publicPNGloader()
+
+
+
+
+
+
+    
     for i in range(2):
         for j in range(columns):
             gameBoard[i][j][0] = Tile(occupied=True)
@@ -274,6 +281,12 @@ def countPieces(gameBoard, window):
                     player1count += 1
                 elif j[1].ownedBy == 2:
                     player2count += 1
+    if player1count == 0:
+        sg.popup("Player one loses")
+        raise SystemExit
+    elif player2count == 0:
+        sg.popup("player two loses")
+        raise SystemExit
     window["player1piececount"].update(f"Player 1 controls: {player1count}\n")
     window["player2piececount"].update(f"Player 2 controls: {player2count}\n")
     window.refresh()
@@ -3245,6 +3258,8 @@ def movePiece(playerTurn, window, gameBoard):
     pieceTeleported = False
     startLocation = [0,0]
     roundEarthTheory = False
+    rows = len(gameBoard)
+    columns = len(gameBoard[0])
     while True:
         #flag for keeping track of pieces that were teleported
         if pieceTeleported == True:
@@ -3530,59 +3545,122 @@ def movePiece(playerTurn, window, gameBoard):
         if gameBoard[startLocation[0]][startLocation[1]][0].occupied:
             # if the piece is yours
             if gameBoard[startLocation[0]][startLocation[1]][1].ownedBy == playerTurn:
-
+                # assume the player isn't trying to move diagonally at first
+                diagonalCheck = False
                 if "round earth theory" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
 
-                    sg.popup("round earth theory time")
-                    break
+                    
+                    
+                #trying to go from right side to left side
+
+                    #try to go straight right to straight left
+                    if startLocation[0] == endLocation[0]:
+                        if startLocation[1] == columns-1 and endLocation[1] == 0:
+                            sg.popup("Teleport to left")
+                            roundEarthTheory = True
+                    #trying to go down right
+                    elif startLocation[0] == endLocation[0]-1 and startLocation[1] == columns -1 and endLocation[1] == 0 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+                        sg.popup("Teleport down right")
+                        roundEarthTheory = True
+                    #trying to go up right
+                    elif startLocation[0] == endLocation[0]+1 and startLocation[1] == columns -1 and endLocation[1] == 0 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+                        sg.popup("Teleport up right")
+                        roundEarthTheory = True
                     
 
+                #trying to go from left to right side
+                    #try to go straight left to straight right
+                    if startLocation[0] == endLocation[0]:
+                        if startLocation[1] == 0 and endLocation[1] == columns -1:
+                            sg.popup("Teleport to right")
+                            roundEarthTheory = True
+                    #trying to go down right
+                    elif startLocation[0] == endLocation[0]-1 and startLocation[1] == 0  and endLocation[1] == columns -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+                        sg.popup("Teleport down left")
+                        roundEarthTheory = True
+                    #trying to go up right
+                    elif startLocation[0] == endLocation[0]+1 and startLocation[1] == 0 and endLocation[1] == columns -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+                        sg.popup("Teleport up left")
+                        roundEarthTheory = True
 
+                        
+                #trying to go from up to down
+                    #try to go straight up to straight down
+                    if startLocation[1] == endLocation[1]:
+                        if startLocation[0] == 0 and endLocation[0] == rows -1:
+                            sg.popup("Teleport to bottom")
+                            roundEarthTheory = True
+                    #trying to go up right
+                    elif startLocation[0] == 0 and startLocation[1] == (endLocation[1] +1) and endLocation[0] == rows -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+                        sg.popup("Teleport up left")
+                        roundEarthTheory = True
+                    #trying to go up right
+                    elif startLocation[1] == endLocation[1]-1 and startLocation[0] == 0 and endLocation[0] == rows -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+                        sg.popup("Teleport up right")
+                        roundEarthTheory = True
+                
+                #diagonals (only works with diagonal enabled
+                    if "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+                        #upleft
+                        if startLocation[0] == 0 and startLocation[1] == 0 and endLocation[0] == rows-1 and endLocation[1] == columns-1:
+                            sg.popup("teleport to bottom right")
+                            roundEarthTheory = True
+                        #upright
+                        if startLocation[0] == 0 and startLocation[1] == columns-1 and endLocation[0] == rows-1 and endLocation[1] == 0:
+                            sg.popup("teleport to bottom left")
+                            roundEarthTheory = True
+                        #downleft
+                        if startLocation[0] == rows-1 and startLocation[1] == 0 and endLocation[0] == 0 and endLocation[1] == columns-1:
+                            sg.popup("teleport top right")
+                            roundEarthTheory = True
+                        #downright
+                        if startLocation[0] == rows-1 and startLocation[1] == columns-1 and endLocation[0] == 0 and endLocation[1] == 0:
+                            sg.popup("teleport top left")
+                            roundEarthTheory = True
 
 
                 
-                # assume the player isn't trying to move diagonally at first
-                diagonalCheck = False
                 # if it's too far...
                 # ...but you have a move diagonal and it turns out you're actually within range:
-                if (
-                    getDistance(
-                        startLocation[0],
-                        startLocation[1],
-                        endLocation[0],
-                        endLocation[1],
-                    )
-                    > 1
-                ):
+                if roundEarthTheory == False:
                     if (
-                        "move diagonal"
-                        in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs
-                    ):
-                        validRange = getRadial(
-                            (startLocation[0], startLocation[1]), gameBoard
+                        getDistance(
+                            startLocation[0],
+                            startLocation[1],
+                            endLocation[0],
+                            endLocation[1],
                         )
-                        # if they're trying to move diagonally
-                        if (endLocation[0], endLocation[1]) in validRange:
-                            diagonalCheck = True
+                        > 1
+                    ):
+                        if (
+                            "move diagonal"
+                            in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs
+                        ):
+                            validRange = getRadial(
+                                (startLocation[0], startLocation[1]), gameBoard
+                            )
+                            # if they're trying to move diagonally
+                            if (endLocation[0], endLocation[1]) in validRange:
+                                diagonalCheck = True
 
-                # ....and it's not because you want to move diagonally with a move diagonal
-                if (
-                    getDistance(
-                        startLocation[0],
-                        startLocation[1],
-                        endLocation[0],
-                        endLocation[1],
-                    )
-                    > gameBoard[startLocation[0]][startLocation[1]][1].distanceMax
-                ) and diagonalCheck == False:
-                    window["information"].update(
-                        f"That location is too far for you to move to!"
-                    )
-                    pm(window, f"That location is too far for you to move to!")
-                    window.refresh
+                    # ....and it's not because you want to move diagonally with a move diagonal
+                    if (
+                        getDistance(
+                            startLocation[0],
+                            startLocation[1],
+                            endLocation[0],
+                            endLocation[1],
+                        )
+                        > gameBoard[startLocation[0]][startLocation[1]][1].distanceMax
+                    ) and diagonalCheck == False:
+                        window["information"].update(
+                            f"That location is too far for you to move to!"
+                        )
+                        pm(window, f"That location is too far for you to move to!")
+                        window.refresh
 
-                    continue
-
+                        continue
+                
                 #
                 # if it's close enough:
                 #
@@ -4052,12 +4130,14 @@ def begin():
     resetMoveAgain(gameBoard)
 
 
+    
 
 
+    
     #Between turns
     playerTurn = 1
     while True:
-
+        
         gamePlay(playerTurn, window, gameBoard)
         x = -1
         y = -1
