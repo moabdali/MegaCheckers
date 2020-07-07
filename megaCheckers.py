@@ -13,12 +13,6 @@ PublicPNGList = []
 def initializeField(columns, rows, window, gameBoard):
     publicPNGloader()
 
-
-
-
-
-
-    
     for i in range(2):
         for j in range(columns):
             gameBoard[i][j][0] = Tile(occupied=True)
@@ -54,7 +48,7 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[i][j][1].storedItems.append("row laser")
             gameBoard[i][j][1].storedItems.append("column laser")
             gameBoard[i][j][1].storedItems.append("round earth theory")
-            gameBoard[i][j][1].storedItems.append("place mine")
+            gameBoard[i][j][1].storedItems.append("reproduce")
             gameBoard[i][j][1].storedItems.append("haymaker")
             gameBoard[i][j][1].storedItems.append("Haphazard Airstrike")
             gameBoard[i][j][1].storedItems.append("row laser")
@@ -1085,6 +1079,7 @@ def pickUpItemOrb(gameBoard, x, y):
         "shuffle column",
         "shuffle radial",
         "spooky hand",
+        "reproduce"
     ]
     # items = ["magnet"]
 
@@ -1233,7 +1228,36 @@ def useItems(gameBoard, x, y, window):
                         j[0].occupied = False
                         j[1] = 0
                         j[0].tileType = "default"
-
+                        
+        elif str.find(i,"reproduce") >= 0:
+            itemsMenu.close()
+            validTargets = getCross((x, y), gameBoard)
+            pm(window, "Pick an adjacent location for your baby to be spawned. You can only spawn on empty spots.")
+            event = window.read()
+            if event[0] in validTargets:
+                x1 = event[0][0]
+                y1 = event[0][1]
+                g = gameBoard[x1][y1]
+                if g[0].occupied == True:
+                    sg.popup("Must pick an empty spot")
+                    pm(window, "Must pick an empty spot")
+                    break
+                elif g[0].tileType != "default":
+                    sg.popup("Must be a valid tile")
+                    pm(window, "Must be a valid tile")
+                    break
+                else:
+                    g[1] = Piece(playerTurn = playerTurn)
+                    g[0].occupied = True
+                    g[0].tileType = f"player{playerTurn}default"
+                    g[1].avatar = "default"
+                    
+                    sg.popup("Congrats on your newborn piece.")
+                    gameBoard[x][y][1].storedItems.remove("reproduce")
+                    return
+            else:
+                sg.popup("Invalid location")
+                break
         elif str.find(i, "row laser") >= 0:
             itemsMenu.close()
             validTargets = getCross((x, y), gameBoard)

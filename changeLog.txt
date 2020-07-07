@@ -1,5 +1,9 @@
 ChangeLog
 
+
+v.0.9.43 July 7, 2020
+	Added reproduce; piece makes a newborn piece with no powers/items/buffs/debuffs in an adjacent location.
+
 v.0.9.42 July 7, 2020
 	Round earth theory has received a picture.  Worm hole implemented.  Better checks for making sure spots are "truly empty" (hotspots/orbeater).  Better default tile info. 
 
