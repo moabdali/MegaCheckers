@@ -1,5 +1,8 @@
 ChangeLog
 
+v.0.9.39 July 7, 2020
+	Trimmed down code by removing a lot of debug messages and inert commented code
+
 v.0.9.38 July 7, 2020
 	Dynamically resized item menus - no longer have to worry about losing the cancel button once you have over 10 items.  However, it still looks bad after 15 items or so, so I need to program a feature that stops you from picking up over 15 items.
 

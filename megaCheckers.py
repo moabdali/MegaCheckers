@@ -47,7 +47,7 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[i][j][1].storedItems.append("spooky hand")
             #gameBoard[i][j][1].storedItems.append("move again")
             #gameBoard[i][j][1].storedItems.append("shuffle radial")
-            gameBoard[i][j][1].storedItems.append("row laser")
+            gameBoard[i][j][1].storedItems.append("shuffle item orbs")
             gameBoard[i][j][1].storedItems.append("row laser")
             gameBoard[i][j][1].storedItems.append("column laser")
             gameBoard[i][j][1].storedItems.append("column laser")
@@ -487,7 +487,7 @@ def laserCheck(window, gameBoard, resetOnly = False):
                                 window.refresh()
 
                                 gameBoard[indexI][left][0].tileType = tileBackup
-                                sg.popup("The laser killed a piece")
+                                sg.popup("The laser killed a piece",keep_on_top=True)
 
                                 if gameBoard[indexI][left][0].tileType == "horiLaserTripod":
                                     gameBoard[indexI][left][0].horiLaser = False
@@ -538,7 +538,7 @@ def laserCheck(window, gameBoard, resetOnly = False):
                                 window.refresh()
 
                                 gameBoard[indexI][right][0].tileType = tileBackup
-                                sg.popup("The laser killed a piece")
+                                sg.popup("The laser killed a piece",keep_on_top=True)
                                 if gameBoard[indexI][right][0].tileType == "horiLaserTripod":
                                     gameBoard[indexI][right][0].horiLaser = False
                                 else:
@@ -1134,7 +1134,7 @@ def useItems(gameBoard, x, y, window):
                 ly = event[0][1]
                 g = gameBoard[lx][ly]
                 if g[0].occupied == True or g[0].tileType not in ("default","player1default","player2default"):
-                    sg.popup("You must put the laser tripod in an empty spot!")
+                    sg.popup("You must put the laser tripod in an empty spot!",keep_on_top=True)
                     continue
                 if g[0].tileType == "default":
                     pm(window,"horizontal laser tripod placed")
@@ -1160,7 +1160,7 @@ def useItems(gameBoard, x, y, window):
                 ly = event[0][1]
                 g = gameBoard[lx][ly]
                 if g[0].occupied == True or g[0].tileType not in ("default","player1default","player2default"):
-                    sg.popup("You must put the laser tripod in an empty spot!")
+                    sg.popup("You must put the laser tripod in an empty spot!",keep_on_top=True)
                     continue
                 if g[0].tileType == "default":
                     pm(window,"vertical laser tripod placed")
@@ -1194,7 +1194,56 @@ def useItems(gameBoard, x, y, window):
             if yesno == "No":
                 break
             
+        elif str.find(i, "shuffle item orbs") >= 0:
+            itemsMenu.close()
+            gameBoard[x][y][1].storedItems.remove("shuffle item orbs")
+            
+            orbList = []
+            for i in gameBoard:
+                for j in i:
+                    if j[0].tileType == "itemOrb":
+                        orbList.append("itemOrb")
+                        j[0].tileType = "default"
+                        displayBoard(window, gameBoard)
+                        window.refresh()
+                    elif j[0].tileType == "trap Orb 0":
+                        orbList.append("trap Orb 0")
+                        j[0].tileType = "default"
+                        displayBoard(window, gameBoard)
+                        window.refresh()
+                    elif j[0].tileType == "trap Orb 1":
+                        orbList.append("trap Orb 1")
+                        j[0].tileType = "default"
+                        displayBoard(window, gameBoard)
+                        window.refresh()
+                    elif j[0].tileType == "trap Orb 2":
+                        orbList.append("trap Orb 2")
+                        j[0].tileType = "default"
+                        displayBoard(window, gameBoard)
+                        window.refresh()
+                    else:
+                        continue
+            emptySpots = []
+            for iIndex, i in enumerate(gameBoard):
+                for jIndex,j in enumerate(i):
+                    if j[0].tileType == "default":
+                        emptySpots.append( (iIndex, jIndex) )
+            random.shuffle(emptySpots)
+            random.shuffle(orbList)
 
+            for iIndex,i in enumerate(orbList):
+                emptyX = emptySpots[iIndex][0]
+                emptyY = emptySpots[iIndex][1]
+                gameBoard[emptyX][emptyY][0].tileType = i
+                displayBoard(window, gameBoard)
+                window.refresh()
+            window["information"].update(text_color = "Blue")
+            
+            pm(window,"All orbs (including any potential trap orbs) have been shuffled.")
+            window.refresh()
+            sleep(2)
+            window["information"].update(text_color = "white")
+            
             
         elif str.find(i, "magnet") >= 0:
             gameBoard[x][y][1].storedItems.remove("magnet")
@@ -1744,7 +1793,7 @@ def useItems(gameBoard, x, y, window):
                     if g[1].ownedBy != playerTurn:
                         if len(g[1].activeBuffs) > 0:
                             pm(window, "abolishing")
-                            # print(g[1].activeBuffs)
+                            
                             for i in g[1].activeBuffs:
                                 abolishCheck = True
                                 previousTile = g[0].tileType
@@ -1752,7 +1801,7 @@ def useItems(gameBoard, x, y, window):
                                 displayBoard(window, gameBoard)
                                 window.refresh()
                                 g[1].activeDebuffs.remove("abolished")
-                                # sleep(.5)
+                                
                                 listOfBuffs = ""
                                 for j in g[1].activeBuffs:
                                     listOfBuffs += j + "\n"
@@ -1760,12 +1809,12 @@ def useItems(gameBoard, x, y, window):
                                 g[1].activeBuffs.clear()
                                 window["information"].update(text_color="blue")
                                 window.refresh()
-                                # sleep(.5)
+                                
                                 window["information"].update(text_color="white")
                                 g[0].tileType = previousTile
                                 displayBoard(window, gameBoard)
                                 window.refresh()
-                                # sleep(.5)
+                                
 
             if abolishCheck == False:
                 pm(
@@ -1804,7 +1853,7 @@ def useItems(gameBoard, x, y, window):
 
             # if the target is within range
             if event[0] in validTargets:
-                # print("It is in the events")
+                
 
                 # s1 is the victim's start row, compare to x
                 s1 = event[0][0]
@@ -1830,7 +1879,7 @@ def useItems(gameBoard, x, y, window):
                 elif y == s2:
                     # if the target is below:
                     if x < s1:
-                        # print("pushing down")
+                        
                         direction = "push down"
                     # if the target is above
                     else:
@@ -1842,7 +1891,7 @@ def useItems(gameBoard, x, y, window):
                     )
 
                 if direction == "push down":
-                    # print("enter pushing down")
+                    
                     #######TRIPMINE FORCEFIELD CHECK NEEDED#####
 
                     # copy the original piece
@@ -2432,7 +2481,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j = gameBoard[curRow][curCol]
                                 #copy the existing piece
                                 tempCopy = copy.deepcopy(j)
-                                print(tempCopy[1].activeBuffs)
+                                
 
                                 #delete the spot where you were
                                 j[0].occupied = False
@@ -2457,7 +2506,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j[0].occupied = True
                                 j[1] = copy.deepcopy(tempCopy[1])
 
-                                print(f"Test for buffs: {j[1].activeDebuffs}")
+                                
                                 #sleep(1)
                                 displayBoard(window, gameBoard)
                                 window.refresh()
@@ -2471,8 +2520,8 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j = gameBoard[curRow][curCol]
                                 #copy the existing piece
                                 tempCopy = copy.deepcopy(j)
-                                #print(f"tempCopy regular: {tempCopy}")
-                                #print(tempCopy[1].activeBuffs)
+                                
+                                
 
                                 #delete the spot where you were
                                 j[0].occupied = False
@@ -2535,7 +2584,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             
                             #copy the existing piece
                             tempCopy = copy.deepcopy(j)
-                            print(tempCopy[1].activeBuffs)
+                            
 
                             #delete the spot where you were
                             j[0].occupied = False
@@ -2560,7 +2609,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             j[0].occupied = True
                             j[1] = copy.deepcopy(tempCopy[1])
 
-                            print(f"Test for buffs: {j[1].activeDebuffs}")
+                            
                             #sleep(1)
                             displayBoard(window, gameBoard)
                             window.refresh()
@@ -2570,10 +2619,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                 #else if out of bounds
                 else:
                     
-##                    gameBoard[curRow][curCol][1].activeDebuffs.append("stunned")
-##                    displayBoard(window, gameBoard)
-##                    window.refresh()
-##                    sleep(1)
+
                     sg.popup("You slammed into the outer wall.",keep_on_top = True)
                     
                     return
@@ -2601,7 +2647,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j = gameBoard[curRow][curCol]
                                 #copy the existing piece
                                 tempCopy = copy.deepcopy(j)
-                                print(tempCopy[1].activeBuffs)
+                               
 
                                 #delete the spot where you were
                                 j[0].occupied = False
@@ -2626,7 +2672,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j[0].occupied = True
                                 j[1] = copy.deepcopy(tempCopy[1])
 
-                                print(f"Test for buffs: {j[1].activeDebuffs}")
+                                
                                 #sleep(1)
                                 displayBoard(window, gameBoard)
                                 window.refresh()
@@ -2640,8 +2686,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j = gameBoard[curRow][curCol]
                                 #copy the existing piece
                                 tempCopy = copy.deepcopy(j)
-                                #print(f"tempCopy regular: {tempCopy}")
-                                #print(tempCopy[1].activeBuffs)
+                                
 
                                 #delete the spot where you were
                                 j[0].occupied = False
@@ -2703,7 +2748,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             
                             #copy the existing piece
                             tempCopy = copy.deepcopy(j)
-                            print(tempCopy[1].activeBuffs)
+                           
 
                             #delete the spot where you were
                             j[0].occupied = False
@@ -2728,7 +2773,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             j[0].occupied = True
                             j[1] = copy.deepcopy(tempCopy[1])
 
-                            print(f"Test for buffs: {j[1].activeDebuffs}")
+                       
                             #sleep(1)
                             displayBoard(window, gameBoard)
                             window.refresh()
@@ -2765,7 +2810,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j = gameBoard[curRow][curCol]
                                 #copy the existing piece
                                 tempCopy = copy.deepcopy(j)
-                                print(tempCopy[1].activeBuffs)
+                            
 
                                 #delete the spot where you were
                                 j[0].occupied = False
@@ -2790,7 +2835,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j[0].occupied = True
                                 j[1] = copy.deepcopy(tempCopy[1])
 
-                                print(f"Test for buffs: {j[1].activeDebuffs}")
+                           
                                 #sleep(1)
                                 displayBoard(window, gameBoard)
                                 window.refresh()
@@ -2804,9 +2849,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j = gameBoard[curRow][curCol]
                                 #copy the existing piece
                                 tempCopy = copy.deepcopy(j)
-                                #print(f"tempCopy regular: {tempCopy}")
-                                #print(tempCopy[1].activeBuffs)
-
+                            
                                 #delete the spot where you were
                                 j[0].occupied = False
                                 j[1] = 0
@@ -2868,7 +2911,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             
                             #copy the existing piece
                             tempCopy = copy.deepcopy(j)
-                            print(tempCopy[1].activeBuffs)
+                   
 
                             #delete the spot where you were
                             j[0].occupied = False
@@ -2893,7 +2936,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             j[0].occupied = True
                             j[1] = copy.deepcopy(tempCopy[1])
 
-                            print(f"Test for buffs: {j[1].activeDebuffs}")
+                       
                             #sleep(1)
                             displayBoard(window, gameBoard)
                             window.refresh()
@@ -2903,12 +2946,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                 #else if out of bounds
                 else:
                     
-##                    gameBoard[curRow][curCol][1].activeDebuffs.append("stunned")
-##                    print(curRow, curCol)
-##                    displayBoard(window, gameBoard)
-##                    window.refresh()
-##                    sleep(1)
-                    #sg.popup("You slammed into the outer wall.")
+                    sg.popup("Slammed into wall?",keep_on_top=True)
                     return
     if direction == "Right":
         while True:
@@ -2930,7 +2968,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j = gameBoard[curRow][curCol]
                                 #copy the existing piece
                                 tempCopy = copy.deepcopy(j)
-                                print(tempCopy[1].activeBuffs)
+                                
 
                                 #delete the spot where you were
                                 j[0].occupied = False
@@ -2955,7 +2993,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j[0].occupied = True
                                 j[1] = copy.deepcopy(tempCopy[1])
 
-                                print(f"Test for buffs: {j[1].activeDebuffs}")
+                              
                                 #sleep(1)
                                 displayBoard(window, gameBoard)
                                 window.refresh()
@@ -2969,8 +3007,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j = gameBoard[curRow][curCol]
                                 #copy the existing piece
                                 tempCopy = copy.deepcopy(j)
-                                #print(f"tempCopy regular: {tempCopy}")
-                                #print(tempCopy[1].activeBuffs)
+                            
 
                                 #delete the spot where you were
                                 j[0].occupied = False
@@ -2989,7 +3026,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j[0].tileType = "default"
                                 j[0].occupied = True
                                 j[1] = copy.deepcopy(tempCopy[1])
-                                #sleep(1)
+                               
                                 displayBoard(window, gameBoard)
                                 window.refresh()
                             else:
@@ -3032,7 +3069,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             
                             #copy the existing piece
                             tempCopy = copy.deepcopy(j)
-                            print(tempCopy[1].activeBuffs)
+                          
 
                             #delete the spot where you were
                             j[0].occupied = False
@@ -3057,7 +3094,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             j[0].occupied = True
                             j[1] = copy.deepcopy(tempCopy[1])
 
-                            print(f"Test for buffs: {j[1].activeDebuffs}")
+                          
                             #sleep(1)
                             displayBoard(window, gameBoard)
                             window.refresh()
@@ -3066,12 +3103,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                         
                 #else if out of bounds
                 else:
-                    
-##                    gameBoard[curRow][curCol][1].activeDebuffs.append("stunned")
-##                    print(curRow, curCol)
-##                    displayBoard(window, gameBoard)
-##                    window.refresh()
-##                    sleep(1)
+
                     sg.popup("You slammed into the outer wall.",keep_on_top = True)
                     return
                         
@@ -3220,7 +3252,7 @@ def movePiece(playerTurn, window, gameBoard):
             event = bowlingMenu.read()
             window.enable()
             bowlingMenu.close()
-            print(f"Event is {event}")
+            
             if event[0] in ("Up", "Down", "Left", "Right"):
                 
                 bowlingBallFunction(window,gameBoard,location,event[0])
