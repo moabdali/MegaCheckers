@@ -1,5 +1,7 @@
 ChangeLog
 
+v.0.9.38 July 7, 2020
+	Dynamically resized item menus - no longer have to worry about losing the cancel button once you have over 10 items.  However, it still looks bad after 15 items or so, so I need to program a feature that stops you from picking up over 15 items.
 
 v.0.9.37.1 July 7, 2020
 	Added vertical lasers.  Lasers properly interact with each other, including "cross beams".  Shuffling function has been made to act more pretty by adding a "turn lasers off only" keyword variable that shuts down the lasers when they're about to be shuffled (and then turned back on afterwards). !<Need to add checks for lasers touching haymakered pieces in a future commit>!

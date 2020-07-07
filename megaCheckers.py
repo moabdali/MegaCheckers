@@ -54,6 +54,8 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[i][j][1].storedItems.append("place mine")
             gameBoard[i][j][1].storedItems.append("haymaker")
             gameBoard[i][j][1].storedItems.append("Haphazard Airstrike")
+            gameBoard[i][j][1].storedItems.append("row laser")
+            
             #gameBoard[i][j][1].storedItems.append("trip mine radial")
             gameBoard[i][j][1].activeBuffs.append("move diagonal")
             gameBoard[i][j][1].activeBuffs.append("jumpProof")
@@ -982,7 +984,7 @@ def mapping(element):
 def useItems(gameBoard, x, y, window):
     layout = []
     listData = [[sg.T("Item Menu", justification="center", font="Calibri 30")]]
-
+    itemsLength = len(gameBoard[x][y][1].storedItems)
     for i in gameBoard[x][y][1].storedItems:
         z = f"images/{i}.png"
         if z == "images/move again.png":
@@ -1025,28 +1027,62 @@ def useItems(gameBoard, x, y, window):
             z = "images/default.png"
             zz = "no explanation supplied... yet"
 
-        listData += [
-            [
-                sg.Button(
-                    i,
-                    key=i,
-                    image_filename=z,
-                    tooltip=zz,
-                    font="Arial 20",
-                    size=(30, 1),
-                    button_color=("pink", "grey"),
-                    image_size=(400, 100),
-                )
+        if itemsLength < 5:
+            listData += [
+                [
+                    sg.Button(
+                        i,
+                        key=i,
+                        image_filename=z,
+                        tooltip=zz,
+                        font="Arial 20",
+                        size=(30, 1),
+                        button_color=("pink", "grey"),
+                        image_size=(400, 100),
+                    )
+                ]
             ]
-        ]
+        elif itemsLength <10:
+            listData += [
+                [
+                    sg.Button(
+                        i,
+                        key=i,
+                        image_filename=z,
+                        tooltip=zz,
+                        font="Arial 20",
+                        size=(30, 1),
+                        button_color=("pink", "grey"),
+                        image_size=(400, 75),
+                    )
+                ]
+            ]
+        else:
+            listData += [
+                [
+                    sg.Button(
+                        i,
+                        key=i,
+                        image_filename=z,
+                        tooltip=zz,
+                        font="Arial 20",
+                        size=(30, 1),
+                        button_color=("pink", "grey"),
+                        image_size=(400, 50),
+                    )
+                ]
+            ]
+            
         # image_size = (200,100)
-
+        
     listData += [[sg.Button("CANCEL")]]
 
     layout += [[sg.Column(listData, justification="center")]]
     #no_titlebar=True,
-    itemsMenu = sg.Window("Items Menu", layout, disable_close=True, keep_on_top=True)
 
+    
+    itemsMenu = sg.Window("Items Menu", layout, disable_close=True, grab_anywhere=True,keep_on_top=True).finalize()
+    
     # event = itemsMenu.read()
     enemyTurn = 0
     playerTurn = gameBoard[x][y][1].ownedBy
