@@ -47,6 +47,7 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[i][j][1].storedItems.append("spooky hand")
             #gameBoard[i][j][1].storedItems.append("move again")
             #gameBoard[i][j][1].storedItems.append("shuffle radial")
+            gameBoard[i][j][1].storedItems.append("orbEater")
             gameBoard[i][j][1].storedItems.append("shuffle item orbs")
             gameBoard[i][j][1].storedItems.append("row laser")
             gameBoard[i][j][1].storedItems.append("column laser")
@@ -71,6 +72,7 @@ class PublicStats:
     turnCount = 1
     cycle = 0
     orbCycleList = [5, 10, 0, 0, 3, 1, 0, 2, 1]
+    #orbCycleList = [5, 20, 30, 0, 3, 1, 0, 2, 1]
     spookyHand = False
     spookyHandTurnCount = 5
     def getOrbCount(self):
@@ -107,6 +109,7 @@ class Tile:
         self.horiLaser = False
         self.vertLaser = False
         self.crossLaser = False
+        self.orbEater = False
 
     def describeSelf(self):
 
@@ -303,16 +306,22 @@ def createOrbs(window, gameBoard):
         )
     for i in gameBoard:
         for j in i:
-            if j[0].tileType == "default":
+            if j[0].tileType == "default" and j[0].orbEater == False:
                 emptySpots += 1
     publicStats = PublicStats()
     orbsToPlace = publicStats.getOrbCount()
     if orbsToPlace > emptySpots:
         orbsToPlace = emptySpots
+    attempts = 0
     while orbsToPlace > 0:
+        attempts+=1
+        if attempts == 300:
+            sg.popup("Space is at a premium for orb generation.  Aborting.")
+            return
+        
         i = random.randint(0, len(gameBoard) - 1)
         j = random.randint(0, len(gameBoard[0]) - 1)
-        if gameBoard[i][j][0].tileType == "default":
+        if gameBoard[i][j][0].tileType == "default" and gameBoard[i][j][0].occupied != True and gameBoard[i][j][0].orbEater == False:
             orbsToPlace -= 1
             if PublicStats.turnCount > dangerTurn:
                 chanceCheck = random.randint(0, 10)
@@ -679,6 +688,7 @@ def publicPNGloader():
         "itemOrb",#7
         "trapOrb",#8
         "vertLaserTripod",#9
+        "orbEater", #10
         ]):
         if i == "p1":
             myImage = Image.open("images/p1.png").convert("RGBA")
@@ -754,10 +764,16 @@ def displayBoard(window, gameBoard):
                 #0 default
                 if gameBoard[i][j][0].tileType == "default":
                     window[i, j].update(image_data=PublicPNGList[0])
+                    #if the mouse is here
+                    if gameBoard[i][j][0].orbEater == True:
+                        window[i, j].update(image_data=PublicPNGList[10])
                     continue
                 #7 itemOrb
                 elif gameBoard[i][j][0].tileType == "itemOrb":
                     window[i, j].update(image_data=PublicPNGList[7])
+                    #if the mouse is here
+                    if gameBoard[i][j][0].orbEater == True:
+                        window[i, j].update(image_data=PublicPNGList[10])
                     continue
                 #1 destroyed
                 elif gameBoard[i][j][0].tileType == "destroyed":
@@ -774,6 +790,9 @@ def displayBoard(window, gameBoard):
                     "trap orb 2",
                 ]:
                     window[i, j].update(image_data=PublicPNGList[8])
+                    #if the mouse is here
+                    if gameBoard[i][j][0].orbEater == True:
+                        window[i, j].update(image_data=PublicPNGList[10])
                     continue
                 elif gameBoard[i][j][0].tileType in ["hand1","hand2","hand3"]:
                     pass
@@ -979,6 +998,13 @@ def mapping(element):
     elif orientation in ("brr", "bmr", "mrb"):
         return (x - 1, y - 1)
 
+def emptySpots(gameBoard):
+    emptySpots = []
+    for iIndex, i in enumerate(gameBoard):
+        for jIndex,j in enumerate(i):
+            if j[0].tileType == "default":
+                emptySpots.append( (iIndex, jIndex) )
+    return emptySpots
 
 # using an item
 def useItems(gameBoard, x, y, window):
@@ -1144,8 +1170,30 @@ def useItems(gameBoard, x, y, window):
                     g[0].crossLaser = False
                     laserCheck(window,gameBoard)
             else:
-                sg.popup("Pick something in range (default range is one up/down/left/right)!", keep_on_top=True)    
-
+                sg.popup("Pick something in range (default range is one up/down/left/right)!", keep_on_top=True)
+                
+        elif str.find(i, "orbEater") >= 0:
+            itemsMenu.close()
+            emptyList = emptySpots(gameBoard)
+            pm(window, "Where do you want to deliver the orb eater to?")
+            event = window.read()
+            try:
+                if event[0] in emptyList and gameBoard[event[0][0]][event[0][1]][0].orbEater == False:
+                    gameBoard[x][y][1].storedItems.remove("orbEater")
+                    gameBoard[event[0][0]][event[0][1]][0].orbEater = True
+                    sg.popup("Squeak.")
+                elif gameBoard[event[0][0]][event[0][1]][0].orbEater == True:
+                    sg.popup("There's already an orb eater here... get your mind out of the gutter, that's not going to happen.")
+                    pm(window, "There's already an orb eater here... get your mind out of the gutter, that's not going to happen.")
+                else:
+                    sg.popup("You need to select an emty space.  The orb eater will find nearby orbs to eat on his own.")
+                    continue
+            except:
+                sg.popup(f"Error. {event[0]} {emptyList}")
+                continue
+                
+            
+            
         elif str.find(i, "column laser") >= 0:
             itemsMenu.close()
             validTargets = getCross((x, y), gameBoard)
@@ -1223,17 +1271,14 @@ def useItems(gameBoard, x, y, window):
                         window.refresh()
                     else:
                         continue
-            emptySpots = []
-            for iIndex, i in enumerate(gameBoard):
-                for jIndex,j in enumerate(i):
-                    if j[0].tileType == "default":
-                        emptySpots.append( (iIndex, jIndex) )
-            random.shuffle(emptySpots)
+                    
+            emptyList = emptySpots(gameBoard)
+            random.shuffle(emptyList)
             random.shuffle(orbList)
 
             for iIndex,i in enumerate(orbList):
-                emptyX = emptySpots[iIndex][0]
-                emptyY = emptySpots[iIndex][1]
+                emptyX = emptyList[iIndex][0]
+                emptyY = emptyList[iIndex][1]
                 gameBoard[emptyX][emptyY][0].tileType = i
                 displayBoard(window, gameBoard)
                 window.refresh()
@@ -2445,6 +2490,48 @@ def useItems(gameBoard, x, y, window):
         if event[0] == "CANCEL":
             itemsMenu.close()
             return
+        
+def orbEater(gameBoard):
+    listOfMice = []
+    legalLocations = []
+    orbsEaten = 0
+    for iIndex,i in enumerate(gameBoard):
+        for jIndex, j in enumerate(i):
+            if j[0].orbEater == True:
+                listOfMice.append( (iIndex,jIndex) )
+    for i in listOfMice:
+        ateOrb = False
+        legalLocations.clear()
+        legalLocations = getCross(i,gameBoard) #dang it, TJ!
+        #print(legalLocations)
+        random.shuffle(legalLocations)
+        if gameBoard[i[0]][i[1]][0].tileType in ( "itemOrb", "trap Orb 1", "trap Orb 2", "trap Orb 0"):
+            #sg.popup("Orbeater was blessed with an orb!")
+            gameBoard[i[0]][i[1]][0].tileType = "default"
+            #make orbeater fat
+            continue
+        for j in legalLocations:
+            if gameBoard[j[0]][j[1]][0].tileType in ( "itemOrb", "trap Orb 1", "trap Orb 2", "trap Orb 0"):
+                gameBoard[i[0]][i[1]][0].orbEater = False
+                gameBoard[j[0]][j[1]][0].tileType = "default"
+                gameBoard[j[0]][j[1]][0].orbEater = True
+                #change the picture to a fat mouse if he eats an orb; explode the mouse if it's a trap orb.  If he eats too many orbs, maybe make him crazy?
+                #sg.popup("Orb eater ate an orb!")
+                orbsEaten+=1
+                ateOrb = True
+                break
+        if ateOrb == False:
+            for j in legalLocations:
+                if gameBoard[j[0]][j[1]][0].tileType == "default" and gameBoard[j[0]][j[1]][0].occupied == False:
+                    gameBoard[i[0]][i[1]][0].orbEater = False
+                    gameBoard[j[0]][j[1]][0].tileType = "default"
+                    gameBoard[j[0]][j[1]][0].orbEater = True
+                    #sg.popup(f"Mouse went to {j}")
+                    break
+                else:
+                    continue
+        
+    return orbsEaten
 
 def bowlingBallFunction(window,gameBoard,location,direction):
     sLocRow = location[0]
@@ -3586,7 +3673,9 @@ def movePiece(playerTurn, window, gameBoard):
                                 0
                             ].tileType = "default"
                             break
-
+                    if gameBoard[endLocation[0]][endLocation[1]][0].orbEater == True:
+                        sg.popup("You monster!  You killed an orb eater!")
+                        gameBoard[endLocation[0]][endLocation[1]][0].orbEater = False
                     pm(window, "Moved successfully")
                     window.refresh
 
@@ -3936,6 +4025,10 @@ def begin():
     initializeField(columns, rows, window, gameBoard)
     resetMoveAgain(gameBoard)
 
+
+
+
+    #Between turns
     playerTurn = 1
     while True:
 
@@ -3962,12 +4055,25 @@ def begin():
                 y = -1
             playerTurn = 2
 
+
+
+
+
+            #End player 1's turn
+            
             if PublicStats.spookyHand == True:
                 spookyHand(window,gameBoard)
 
-                
+            orbsEaten = orbEater(gameBoard)    
             resetMoveAgain(gameBoard)
             laserCheck(window, gameBoard)
+            if orbsEaten > 0:
+                pm(window, f"Orbs eaten by the orb eaters: {orbsEaten}")
+
+
+
+
+            
         # end player two's turn, begin player one's turn
         else:
             window["turn"].update(filename="images/up.png")
@@ -3992,10 +4098,11 @@ def begin():
             
             if PublicStats.spookyHand == True:
                 spookyHand(window,gameBoard)
-
+            orbsEaten = orbEater(gameBoard)
             laserCheck(window, gameBoard)    
             resetMoveAgain(gameBoard)
-            
+            if orbsEaten > 0:
+                pm(window, f"Orbs eaten by the orb eaters: {orbsEaten}")
             
 
 
