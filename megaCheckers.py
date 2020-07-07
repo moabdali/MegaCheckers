@@ -39,7 +39,7 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[rows - i - 1][j][1].location = (rows - i - 1, j)
             gameBoard[rows - i - 1][j][0].tileType = "player2default"
             gameBoard[rows - i - 1][j][1].avatar = "default"
-            gameBoard[rows - i - 1][j][1].storedItems.append("Haphazard Airstrike")
+            gameBoard[rows - i - 1][j][1].storedItems.append("haphazard airstrike")
             gameBoard[i][j][1].storedItems.append("shuffle radial")
             #gameBoard[rows - i - 1][j][1].activeBuffs.append("move again")
             #gameBoard[rows - i - 1][j][1].activeBuffs.append("move again")
@@ -47,14 +47,14 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[i][j][1].storedItems.append("spooky hand")
             #gameBoard[i][j][1].storedItems.append("move again")
             #gameBoard[i][j][1].storedItems.append("shuffle radial")
-            gameBoard[i][j][1].storedItems.append("orbEater")
+            gameBoard[i][j][1].storedItems.append("round earth theory")
             gameBoard[i][j][1].storedItems.append("shuffle item orbs")
             gameBoard[i][j][1].storedItems.append("row laser")
             gameBoard[i][j][1].storedItems.append("column laser")
             gameBoard[i][j][1].storedItems.append("column laser")
             gameBoard[i][j][1].storedItems.append("place mine")
             gameBoard[i][j][1].storedItems.append("haymaker")
-            gameBoard[i][j][1].storedItems.append("Haphazard Airstrike")
+            gameBoard[i][j][1].storedItems.append("haphazard airstrike")
             gameBoard[i][j][1].storedItems.append("row laser")
             
             #gameBoard[i][j][1].storedItems.append("trip mine radial")
@@ -920,38 +920,7 @@ def displayBoard(window, gameBoard):
 
             window[i, j].update(image_data=avatar)
 
-# the item list
-def pickUpItemOrb(gameBoard, x, y):
-    # items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
-    items = [
-        "row laser",
-        "magnet",
-        "trap orb",
-        "place mine",
-        "move again",
-        "suicideBomb Row",
-        "Energy Forcefield",
-        "suicideBomb Column",
-        "Haphazard Airstrike",
-        "suicideBomb Radial",
-        "jumpProof",
-        "smartBombs",
-        "move diagonal",
-        "trip mine radial",
-        "purify radial",
-        "napalm radial",
-        "abolish foe powers radial",
-        "haymaker",
-        "bowling ball"
-    ]
-    # items = ["magnet"]
 
-    #pick an item at random; should eventually have biases on the items by separating them into different lists that have different odds of being chosen
-    randItem = random.choice(items)
-    gameBoard[x][y][1].storedItems.append(randItem)
-    playerOwned = gameBoard[x][y][1].ownedBy
-    #modifies your avatar to signify the player is holding an item(s)
-    gameBoard[x][y][1].avatar = f"player{playerOwned}stored"
 
 # for finding the outer ring that surrounds the immediate surrounding pieces
 def getOuterRadialOnly(location, gameBoard):
@@ -1005,7 +974,44 @@ def emptySpots(gameBoard):
             if j[0].tileType == "default":
                 emptySpots.append( (iIndex, jIndex) )
     return emptySpots
+# the item list
+def pickUpItemOrb(gameBoard, x, y):
+    # items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
+    items = [
+        "orb eater",
+        "row laser",
+        "magnet",
+        "trap orb",
+        "place mine",
+        "move again",
+        "suicide bomb row",
+        "Energy Forcefield",
+        "suicide bomb column",
+        "haphazard airstrike",
+        "suicide bomb radial",
+        "jump proof",
+        "smart bombs",
+        "move diagonal",
+        "trip mine radial",
+        "purify radial",
+        "napalm radial",
+        "abolish foe powers radial",
+        "haymaker",
+        "bowling ball",
+        "column laser",
+        "row laser",
+        "shuffle column",
+        "shuffle radial",
+        "spooky hand",
+    ]
+    # items = ["magnet"]
 
+    #pick an item at random; should eventually have biases on the items by separating them into different lists that have different odds of being chosen
+    randItem = random.choice(items)
+    gameBoard[x][y][1].storedItems.append(randItem)
+    playerOwned = gameBoard[x][y][1].ownedBy
+    #modifies your avatar to signify the player is holding an item(s)
+    gameBoard[x][y][1].avatar = f"player{playerOwned}stored"
 # using an item
 def useItems(gameBoard, x, y, window):
     layout = []
@@ -1131,8 +1137,8 @@ def useItems(gameBoard, x, y, window):
             break
 
         # suicidebomb row
-        if str.find(i, "suicideBomb Row") >= 0:
-            gameBoard[x][y][1].storedItems.remove("suicideBomb Row")
+        if str.find(i, "suicide bomb row") >= 0:
+            gameBoard[x][y][1].storedItems.remove("suicide bomb row")
             # for each item inside the specific gameBoard row
             for j in gameBoard[x]:
                 if isinstance(j[1], Piece):
@@ -1163,6 +1169,7 @@ def useItems(gameBoard, x, y, window):
                     sg.popup("You must put the laser tripod in an empty spot!",keep_on_top=True)
                     continue
                 if g[0].tileType == "default":
+                    gameBoard[x][y][1].storedItems.remove("row laser")
                     pm(window,"horizontal laser tripod placed")
                     g[0].tileType = "horiLaserTripod"
                     g[0].horiLaser = False
@@ -1181,7 +1188,8 @@ def useItems(gameBoard, x, y, window):
                 if event[0] in emptyList and gameBoard[event[0][0]][event[0][1]][0].orbEater == False:
                     gameBoard[x][y][1].storedItems.remove("orbEater")
                     gameBoard[event[0][0]][event[0][1]][0].orbEater = True
-                    sg.popup("Squeak.")
+                    fileNum = random.randint(1,4)
+                    playsound(f"sounds/squeak{fileNum}.mp3", block = False)
                 elif gameBoard[event[0][0]][event[0][1]][0].orbEater == True:
                     sg.popup("There's already an orb eater here... get your mind out of the gutter, that's not going to happen.")
                     pm(window, "There's already an orb eater here... get your mind out of the gutter, that's not going to happen.")
@@ -1191,7 +1199,13 @@ def useItems(gameBoard, x, y, window):
             except:
                 sg.popup(f"Error. {event[0]} {emptyList}")
                 continue
-                
+
+        elif str.find(i, "round earth theory") >= 0:
+            itemsMenu.close()
+            pm(window,"This piece can now 'wrap' around the edges of the map to appear on the opposite side.")
+            gameBoard[x][y][1].storedItems.remove("round earth theory")
+            gameBoard[x][y][1].activeBuffs.append("round earth theory")
+            
             
             
         elif str.find(i, "column laser") >= 0:
@@ -1211,6 +1225,7 @@ def useItems(gameBoard, x, y, window):
                     sg.popup("You must put the laser tripod in an empty spot!",keep_on_top=True)
                     continue
                 if g[0].tileType == "default":
+                    gameBoard[x][y][1].storedItems.remove("column laser")
                     pm(window,"vertical laser tripod placed")
                     g[0].tileType = "vertLaserTripod"
                     g[0].horiLaser = False
@@ -1452,9 +1467,9 @@ def useItems(gameBoard, x, y, window):
                         sleep(0.5)
                         # add code for graphics
 
-        # suicidebomb column
-        elif str.find(i, "suicideBomb Column") >= 0:
-            gameBoard[x][y][1].storedItems.remove("suicideBomb Column")
+        # suicide bomb column
+        elif str.find(i, "suicide bomb column") >= 0:
+            gameBoard[x][y][1].storedItems.remove("suicide bomb column")
             # for each item inside the specific gameBoard row
             for j in gameBoard:
                 if isinstance(j[y][1], Piece):
@@ -1468,9 +1483,9 @@ def useItems(gameBoard, x, y, window):
                         j[y][1] = 0
                         j[y][0].tileType = "default"
 
-        # suicidebomb radial
-        elif str.find(i, "suicideBomb Radial") >= 0:
-            gameBoard[x][y][1].storedItems.remove("suicideBomb Radial")
+        # suicide bomb radial
+        elif str.find(i, "suicide bomb radial") >= 0:
+            gameBoard[x][y][1].storedItems.remove("suicide bomb radial")
             validTargets = getRadial((x, y), gameBoard)
 
             for i in validTargets:
@@ -2287,9 +2302,9 @@ def useItems(gameBoard, x, y, window):
             else:
                 sg.popup("Pick something in range!", keep_on_top=True)
         # jump proof
-        elif str.find(i, "jumpProof") >= 0:
-            gameBoard[x][y][1].storedItems.remove("jumpProof")
-            gameBoard[x][y][1].activeBuffs.append("jumpProof")
+        elif str.find(i, "jump proof") >= 0:
+            gameBoard[x][y][1].storedItems.remove("jump proof")
+            gameBoard[x][y][1].activeBuffs.append("jump proof")
             displayBoard(window, gameBoard)
             pm(window, "Congrats; your piece can't be jumped on.")
 
@@ -2317,9 +2332,9 @@ def useItems(gameBoard, x, y, window):
             window.refresh()
 
         # haphazard airstrike
-        elif str.find(i, "Haphazard Airstrike") >= 0:
+        elif str.find(i, "haphazard airstrike") >= 0:
 
-            gameBoard[x][y][1].storedItems.remove("Haphazard Airstrike")
+            gameBoard[x][y][1].storedItems.remove("haphazard airstrike")
             i = 5
             itemsMenu.close()
             while i > 0:
@@ -2360,9 +2375,9 @@ def useItems(gameBoard, x, y, window):
                     gameBoard[x][y][0].tileType = "destroyed"
 
         # smartBombs
-        elif str.find(i, "smartBombs") >= 0:
+        elif str.find(i, "smart bombs") >= 0:
             attempts = 0
-            gameBoard[x][y][1].storedItems.remove("smartBombs")
+            gameBoard[x][y][1].storedItems.remove("smart bombs")
             i = 3
             itemsMenu.close()
             while i > 0:
@@ -3229,6 +3244,7 @@ def movePiece(playerTurn, window, gameBoard):
     repeatRestrictor = [False, (-1, -1)]
     pieceTeleported = False
     startLocation = [0,0]
+    roundEarthTheory = False
     while True:
         #flag for keeping track of pieces that were teleported
         if pieceTeleported == True:
@@ -3515,6 +3531,16 @@ def movePiece(playerTurn, window, gameBoard):
             # if the piece is yours
             if gameBoard[startLocation[0]][startLocation[1]][1].ownedBy == playerTurn:
 
+                if "round earth theory" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+
+                    sg.popup("round earth theory time")
+                    break
+                    
+
+
+
+
+                
                 # assume the player isn't trying to move diagonally at first
                 diagonalCheck = False
                 # if it's too far...
@@ -4069,6 +4095,8 @@ def begin():
             laserCheck(window, gameBoard)
             if orbsEaten > 0:
                 pm(window, f"Orbs eaten by the orb eaters: {orbsEaten}")
+                fileNum = random.randint(1,4)
+                playsound(f"sounds/squeak{fileNum}.mp3", block = False)
 
 
 
@@ -4103,6 +4131,8 @@ def begin():
             resetMoveAgain(gameBoard)
             if orbsEaten > 0:
                 pm(window, f"Orbs eaten by the orb eaters: {orbsEaten}")
+                fileNum = random.randint(1,4)
+                playsound(f"sounds/squeak{fileNum}.mp3", block = False)
             
 
 

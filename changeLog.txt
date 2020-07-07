@@ -1,6 +1,9 @@
 ChangeLog
 
 
+v.0.9.41 July 7, 2020
+	Added mouse sound effects.  Made capititalization consistent in items list. 
+
 v.0.9.40 July 7, 2020
 	Implemented the orb eater.  Eats orbs.  Corrected some glitches such as where it gets overwritten if an item orb spawns on its location.  Needs to have some more checks implemented, such as not allowing items to be put on them.  Perhaps change to occupied tiles if mouse is on them?  Alternatively, this may cause issues with haymaker/bowling ball type pieces.  Mouse is intentionally immune to lasers and bombs.  
 
