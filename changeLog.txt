@@ -1,5 +1,9 @@
 ChangeLog
 
+
+v.0.9.44 July 7, 2020
+	Temporarily disabled debug mode.  Enabled normal mode so that people can test it out.  Fixed a glitch in the "find current turn" function (used j[i] instead of j[1]).
+
 v.0.9.44 July 7, 2020
 	Item explanation button added; explains how the items work.
 v.0.9.43 July 7, 2020

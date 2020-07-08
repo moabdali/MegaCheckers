@@ -30,58 +30,58 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[rows - i - 1][j][0].tileType = "player2default"
             gameBoard[rows - i - 1][j][1].avatar = "default"
 
- ###### DELETE ME ##########
-    for i in range(2):
-        for j in range(columns):
-            #middle row generator
-            rows = 6
-            gameBoard[rows - i - 1][j][0] = Tile(occupied=True)
-            piece = Piece(playerTurn=2)
-
-
-
-            #give items to main row
-            gameBoard[i][j][1].storedItems.append("shuffle radial")
-            gameBoard[i][j][1].storedItems.append("worm hole")
-            gameBoard[i][j][1].storedItems.append("orbEater")
-            gameBoard[i][j][1].storedItems.append("shuffle item orbs")
-            gameBoard[i][j][1].storedItems.append("row laser")
-            gameBoard[i][j][1].storedItems.append("column laser")
-            gameBoard[i][j][1].storedItems.append("round earth theory")
-            gameBoard[i][j][1].storedItems.append("reproduce")
-            gameBoard[i][j][1].storedItems.append("haymaker")
-            gameBoard[i][j][1].storedItems.append("haphazard airstrike")
-            gameBoard[i][j][1].storedItems.append("row laser")
-            gameBoard[i][j][1].storedItems.append("warp")
-            
-            gameBoard[i][j][1].activeBuffs.append("move diagonal")
-            gameBoard[i][j][1].activeBuffs.append("jump proof")
-            
-
-            #the middle row
-            gameBoard[rows - i - 1][j][1] = piece
-            gameBoard[rows - i - 1][j][1].location = (rows - i - 1, j)
-            gameBoard[rows - i - 1][j][0].tileType = "player2default"
-            gameBoard[rows - i - 1][j][1].avatar = "default"
-            gameBoard[rows - i - 1][j][1].storedItems.append("haphazard airstrike")
-            gameBoard[rows - i - 1][j][1].activeBuffs.append("haymaker")
-
-
-
-            #give items to middle row
-            gameBoard[rows - i - 1][j][1].storedItems.append("shuffle radial")
-            gameBoard[rows - i - 1][j][1].storedItems.append("worm hole")
-            gameBoard[rows - i - 1][j][1].storedItems.append("orbEater")
-            gameBoard[rows - i - 1][j][1].storedItems.append("shuffle item orbs")
-            gameBoard[rows - i - 1][j][1].storedItems.append("row laser")
-            gameBoard[rows - i - 1][j][1].storedItems.append("warp")
-            gameBoard[rows - i - 1][j][1].storedItems.append("column laser")
-            gameBoard[rows - i - 1][j][1].storedItems.append("place mine")
-            gameBoard[rows - i - 1][j][1].storedItems.append("haymaker")
-            gameBoard[rows - i - 1][j][1].storedItems.append("haphazard airstrike")
-            gameBoard[rows - i - 1][j][1].storedItems.append("row laser")
-            gameBoard[rows - i - 1][j][1].activeBuffs.append("move diagonal")
-            gameBoard[rows - i - 1][j][1].storedItems.append("bowling ball")
+## ###### DELETE ME ##########
+##    for i in range(2):
+##        for j in range(columns):
+##            #middle row generator
+##            rows = 6
+##            gameBoard[rows - i - 1][j][0] = Tile(occupied=True)
+##            piece = Piece(playerTurn=2)
+##
+##
+##
+##            #give items to main row
+##            gameBoard[i][j][1].storedItems.append("shuffle radial")
+##            gameBoard[i][j][1].storedItems.append("worm hole")
+##            gameBoard[i][j][1].storedItems.append("orbEater")
+##            gameBoard[i][j][1].storedItems.append("shuffle item orbs")
+##            gameBoard[i][j][1].storedItems.append("row laser")
+##            gameBoard[i][j][1].storedItems.append("column laser")
+##            gameBoard[i][j][1].storedItems.append("round earth theory")
+##            gameBoard[i][j][1].storedItems.append("reproduce")
+##            gameBoard[i][j][1].storedItems.append("haymaker")
+##            gameBoard[i][j][1].storedItems.append("haphazard airstrike")
+##            gameBoard[i][j][1].storedItems.append("row laser")
+##            gameBoard[i][j][1].storedItems.append("warp")
+##            
+##            gameBoard[i][j][1].activeBuffs.append("move diagonal")
+##            gameBoard[i][j][1].activeBuffs.append("jump proof")
+##            
+##
+##            #the middle row
+##            gameBoard[rows - i - 1][j][1] = piece
+##            gameBoard[rows - i - 1][j][1].location = (rows - i - 1, j)
+##            gameBoard[rows - i - 1][j][0].tileType = "player2default"
+##            gameBoard[rows - i - 1][j][1].avatar = "default"
+##            gameBoard[rows - i - 1][j][1].storedItems.append("haphazard airstrike")
+##            gameBoard[rows - i - 1][j][1].activeBuffs.append("haymaker")
+##
+##
+##
+##            #give items to middle row
+##            gameBoard[rows - i - 1][j][1].storedItems.append("shuffle radial")
+##            gameBoard[rows - i - 1][j][1].storedItems.append("worm hole")
+##            gameBoard[rows - i - 1][j][1].storedItems.append("orbEater")
+##            gameBoard[rows - i - 1][j][1].storedItems.append("shuffle item orbs")
+##            gameBoard[rows - i - 1][j][1].storedItems.append("row laser")
+##            gameBoard[rows - i - 1][j][1].storedItems.append("warp")
+##            gameBoard[rows - i - 1][j][1].storedItems.append("column laser")
+##            gameBoard[rows - i - 1][j][1].storedItems.append("place mine")
+##            gameBoard[rows - i - 1][j][1].storedItems.append("haymaker")
+##            gameBoard[rows - i - 1][j][1].storedItems.append("haphazard airstrike")
+##            gameBoard[rows - i - 1][j][1].storedItems.append("row laser")
+##            gameBoard[rows - i - 1][j][1].activeBuffs.append("move diagonal")
+##            gameBoard[rows - i - 1][j][1].storedItems.append("bowling ball")
 
 
 ####### END DELETE ME###########
@@ -90,8 +90,8 @@ def initializeField(columns, rows, window, gameBoard):
 class PublicStats:
     turnCount = 1
     cycle = 0
-    orbCycleList = [5, 10, 0, 0, 3, 1, 0, 2, 1]
-    #orbCycleList = [5, 20, 30, 0, 3, 1, 0, 2, 1]
+    #orbCycleList = [5, 10, 0, 0, 3, 1, 0, 2, 1]
+    orbCycleList = [5, 0, 0, 1, 3, 3, 2, 2, 1]
     spookyHand = False
     spookyHandTurnCount = 5
     hotSpot = []
@@ -347,7 +347,7 @@ def getDistance(a, b, c, d):
 
 # generate item orbs
 def createOrbs(window, gameBoard):
-    dangerTurn = 15
+    dangerTurn = 30
     #dangerTurn = 1
     emptySpots = 0
     if PublicStats.turnCount == dangerTurn:
@@ -3414,7 +3414,7 @@ def findCurrentTurnPiece(window, gameBoard, reset = False):
             
             if j[0].occupied == True:
                 
-                if j[i].currentTurnPiece == True:
+                if j[0].currentTurnPiece == True:
                     return (rowIndex,columnIndex)
             columnIndex +=1
             
@@ -4305,9 +4305,9 @@ def spookyHand(window, gameBoard):
                 gameBoard[xrand][yrand][1] = 0
                 gameBoard[xrand][yrand][0].occupied = False
 
-                sg.popup("The spooky hand claimed a victim; he will return...",keep_on_top = True)
+                sg.popup("The spooky hand claimed a victim; and he will return for more...",keep_on_top = True)
 
-                pm(window, "The spooky hand claimed a victim; he will return...")
+                pm(window, "The spooky hand claimed a victim; and he will return for more...")
 
                 PublicStats.spookyHandTurnCount = random.randint(10,15)
 
@@ -4885,7 +4885,7 @@ def main():
 
 
 # delete me after debug
-begin()
+#begin()
 # delete me
 
 
