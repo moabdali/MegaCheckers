@@ -50,12 +50,12 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[i][j][1].storedItems.append("round earth theory")
             gameBoard[i][j][1].storedItems.append("reproduce")
             gameBoard[i][j][1].storedItems.append("haymaker")
-            gameBoard[i][j][1].storedItems.append("Haphazard Airstrike")
+            gameBoard[i][j][1].storedItems.append("haphazard airstrike")
             gameBoard[i][j][1].storedItems.append("row laser")
-            gameBoard[i][j][1].storedItems.append("bowling ball")
+            gameBoard[i][j][1].storedItems.append("warp")
             
             gameBoard[i][j][1].activeBuffs.append("move diagonal")
-            gameBoard[i][j][1].activeBuffs.append("jumpProof")
+            gameBoard[i][j][1].activeBuffs.append("jump proof")
             
 
             #the middle row
@@ -63,7 +63,7 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[rows - i - 1][j][1].location = (rows - i - 1, j)
             gameBoard[rows - i - 1][j][0].tileType = "player2default"
             gameBoard[rows - i - 1][j][1].avatar = "default"
-            gameBoard[rows - i - 1][j][1].storedItems.append("Haphazard Airstrike")
+            gameBoard[rows - i - 1][j][1].storedItems.append("haphazard airstrike")
             gameBoard[rows - i - 1][j][1].activeBuffs.append("haymaker")
 
 
@@ -74,11 +74,11 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[rows - i - 1][j][1].storedItems.append("orbEater")
             gameBoard[rows - i - 1][j][1].storedItems.append("shuffle item orbs")
             gameBoard[rows - i - 1][j][1].storedItems.append("row laser")
-            gameBoard[rows - i - 1][j][1].storedItems.append("column laser")
+            gameBoard[rows - i - 1][j][1].storedItems.append("warp")
             gameBoard[rows - i - 1][j][1].storedItems.append("column laser")
             gameBoard[rows - i - 1][j][1].storedItems.append("place mine")
             gameBoard[rows - i - 1][j][1].storedItems.append("haymaker")
-            gameBoard[rows - i - 1][j][1].storedItems.append("Haphazard Airstrike")
+            gameBoard[rows - i - 1][j][1].storedItems.append("haphazard airstrike")
             gameBoard[rows - i - 1][j][1].storedItems.append("row laser")
             gameBoard[rows - i - 1][j][1].activeBuffs.append("move diagonal")
             gameBoard[rows - i - 1][j][1].storedItems.append("bowling ball")
@@ -872,6 +872,10 @@ def displayBoard(window, gameBoard):
                 elif gameBoard[i][j][0].tileType == "vertLaserTripod":
                     window[i, j].update(image_data= PublicPNGList[9])
                     continue
+                elif gameBoard[i][j][0].tileType in ("player1default","player2default"):
+                    gameBoard[i][j][0].tileType = "default"
+                    window[i, j].update(image_data= PublicPNGList[0])
+                    continue
                 else:
                     sg.popup(
                         f"A tile error has occurred, with type {gameBoard[i][j][0].tileType}",
@@ -1079,7 +1083,9 @@ def pickUpItemOrb(gameBoard, x, y):
         "shuffle column",
         "shuffle radial",
         "spooky hand",
-        "reproduce"
+        "reproduce",
+        "worm hole",
+        "warp"
     ]
     # items = ["magnet"]
 
@@ -1182,7 +1188,6 @@ def useItems(gameBoard, x, y, window):
                 ]
             ]
             
-        # image_size = (200,100)
         
     listData += [[sg.Button("CANCEL")]]
 
@@ -1291,33 +1296,33 @@ def useItems(gameBoard, x, y, window):
             emptyList = getCross((x,y),gameBoard, trueEmpty = True)
             pm(window, "Choose an empty cross spot to deploy the wormhole")
             event = window.read()
-            #try:
-            print(event[0])
-            if event[0] in emptyList:
-                x1 = event[0][0]
-                y1 = event[0][1]
-                print(x1,y1)
-                if playerTurn == 1:
-                    g[x1][y1][0].wormHole1 = True
-                    pm(window, "worm hole placed")
-                    
-                elif playerTurn == 2:
-                    g[x1][y1][0].wormHole2 = True
-                    pm(window, "worm hole placed")
-                    
-                else:
-                    sg.popup("An error occurred trying to place the worm hole")
+            try:
+                print(event[0])
+                if event[0] in emptyList:
+                    x1 = event[0][0]
+                    y1 = event[0][1]
+                    print(x1,y1)
+                    if playerTurn == 1:
+                        g[x1][y1][0].wormHole1 = True
+                        pm(window, "worm hole placed")
+                        
+                    elif playerTurn == 2:
+                        g[x1][y1][0].wormHole2 = True
+                        pm(window, "worm hole placed")
+                        
+                    else:
+                        sg.popup("An error occurred trying to place the worm hole")
+                        break
+                    displayBoard(window, gameBoard)
+                    gameBoard[x][y][1].storedItems.remove("worm hole")
+                    window.refresh()
                     break
-                displayBoard(window, gameBoard)
-                gameBoard[x][y][1].storedItems.remove("worm hole")
-                window.refresh()
+                else:
+                    pm(window, "You must pick an empty adjacent location (up/down/left/right)")
+                    sleep(1)
+            except:
+                sg.popup("An error occurred trying to place the worm hole")
                 break
-            else:
-                pm(window, "You must pick an empty adjacent location (up/down/left/right)")
-                sleep(1)
-##            except:
-##                sg.popup("An error occurred trying to place the worm hole")
-##                break
                     
                     
                     
@@ -1342,7 +1347,40 @@ def useItems(gameBoard, x, y, window):
             except:
                 sg.popup(f"Error. {event[0]} {emptyList}")
                 continue
+            
+        elif str.find(i, "warp") >= 0:
+            itemsMenu.close()
+            emptyList = emptySpots(gameBoard)
+            g = gameBoard[x][y]
+            if len(emptyList)>0:
+                g[1].storedItems.remove("warp")
+                window.disable()
+                copyPiece = copy.deepcopy(g)
+                g[0].occupied = False
+                g[0].tileType = "default"
+                g[1] = 0
+                choice = random.choice(emptyList)
+                x1 = choice[0]
+                y1 = choice[1]
 
+                #test this
+                gameBoard[x1][y1] = copy.deepcopy(copyPiece)
+                displayBoard(window, gameBoard)
+                window.refresh()
+                sleep(.5)
+                gameBoard[x1][y1][0].occupied = False
+                displayBoard(window, gameBoard)
+                window.refresh()
+                sleep(.5)
+                gameBoard[x1][y1][0].occupied = True
+                gameBoard[x1][y1][1].grey = False
+                window.enable()
+                pm(window,"Piece was teleported")
+                break
+            else:
+                sg.popup("Nowhere to teleport to")
+                break
+        
         elif str.find(i, "round earth theory") >= 0:
             itemsMenu.close()
             pm(window,"This piece can now 'wrap' around the edges of the map to appear on the opposite side.")
@@ -3382,6 +3420,64 @@ def findCurrentTurnPiece(window, gameBoard, reset = False):
             
         rowIndex +=1
 
+def itemExplanation(itemName): 
+     
+    if itemName == "orb eater":
+        sg.popup("A mouse spawns.  After each player's turn, the mouse will eat a close by item orb or trap orb that he finds.  If he doesn't find one, he will walk in a random direction.", keep_on_top = True)
+    elif itemName == "row laser":
+        sg.popup("Set up a laser emitter.  The laser will shoot all the way left and right, destroying any pieces it finds.  It does not affect item orbs or other non-player entities. It will not affect any other laser emitters.", keep_on_top = True)
+    elif itemName == "magnet":
+        sg.popup("Suck in any adjacent item orbs or bombs.  Afterwards, it'll suck in anything in the 4x4 square that is surrounding the adjacent 3x3 into the 3x3 if there is space.", keep_on_top = True)
+    elif itemName == "trap orb":
+        sg.popup("An explosive trap designed to look like an item orb.  They are indistinguishable.  Luckily, your traps will not affect you.", keep_on_top = True)
+    elif itemName == "place mine":
+        sg.popup("Place a mine next to you.  If either player steps on it, BOOM.", keep_on_top = True)
+    elif itemName ==  "move again":
+        sg.popup("After you activate this permanent buff, your piece will get to move again after moving.", keep_on_top = True)
+    elif itemName ==  "suicide bomb row":
+        sg.popup("Blow yourself up, killing everyone in the same row as you - including your allies.", keep_on_top = True)
+    elif itemName == "Energy Forcefield":
+        sg.popup("After activating it, you'll be surrounded by a forcefield. Protects you one time from most energy/explosive type attacks. It has no effect against modifiers, or against blunt attacks such as being jumped on or crushed, and will not protect you if the floor disappears.", keep_on_top = True)
+    elif itemName == "suicide bomb column":
+        sg.popup("Blow yourself up, killing everyone in the column.", keep_on_top = True)
+    elif itemName == "haphazard airstrike":
+        sg.popup("Call in an airstrike from a poorly funded army.  The plane cannot aim and will blow holes into the ground randomly, killing anything that was on the tile, including the floor itself", keep_on_top = True)
+    elif itemName == "suicide bomb radial":
+        sg.popup("Blow yourself up, killing you and anyone or anything next to you.", keep_on_top = True)
+    elif itemName == "jump proof":
+        sg.popup("Enemies cannot jump on you.  You may still be affected by anything else.", keep_on_top = True)
+    elif itemName == "smart bombs":
+        sg.popup("Call in an airstrike conducted by a sophisticated bomber. It will not hurt any of your pieces.  Leaves holes in the ground, destroying its targets.", keep_on_top = True)
+    elif itemName == "move diagonal":
+        sg.popup("After activating this buff, in addition to your usual spots, your piece can move to diagonal locations.", keep_on_top = True)
+    elif itemName == "trip mine radial":
+        sg.popup("Set mines on all surrounding enemies.  If they move, they blow up.  They can still safely use items that don't require them to move.  Teleporting is not considered moving.", keep_on_top = True)
+    elif itemName == "purify radial":
+        sg.popup("Remove all negative effects from surrounding allies.", keep_on_top = True)
+    elif itemName == "napalm radial":
+        sg.popup("Set all enemies in the surrounding area on fire.  This kills them and burns a hole in the ground.", keep_on_top = True)
+    elif itemName == "vile radial":
+        sg.popup("Remove all beneficial powers that your surrounding enemies possess.", keep_on_top = True)
+    elif itemName == "haymaker":
+        sg.popup("Punch an adjacent piece really hard.  The flying piece will keep going until it either slams into a piece/wall and stuns itself and the piece it collided into, or if it dies by moving into a danger location (laser beam/hole/mine/etc).  The piece will not be able to pick up any items as it passes over. ", keep_on_top = True)
+    elif itemName == "bowling ball":
+        sg.popup("Turn your piece into a feral bowling ball.  The bowling ball loses all effects that it has (positive and negative).  It can no longer pick up any items.  It no longer has access to normal movement.  Instead, if you select it, it will only allow you to choose a direction.  The bowling bar will fly toward that direction with sheer rage and be unaffeced by most negative effects, including bombs or mines.  It can still die by falling into holes.  It will continue going in a given direction until it slams into a wall or a piece.  If it hits a piece, it stuns allies and kills the enemy.", keep_on_top = True)
+    elif itemName == "column laser":
+        sg.popup("Set up a laser emitter.  The laser will shoot all the way up and down, destroying any pieces it finds.  It does not affect item orbs or other non-player entities and will not affect any other laser emitters.", keep_on_top = True)
+    elif itemName == "shuffle column":
+        sg.popup("Shuffle everything in the column randomly.  This does not set off tripmines as the pieces themselves are not actually moving - the tiles are, along with their tripmines.", keep_on_top = True)
+    elif itemName == "shuffle radial":
+        sg.popup("Shuffle everything in the surrounding randomly.  This does not set off tripmines as the pieces themselves are not actually moving - the tiles are, along with their tripmines.", keep_on_top = True)
+    elif itemName == "spooky hand":
+        sg.popup("After using this, a creepy hand will lurk under the playing field for the rest of the game.  Once every handful (see what I did there?) of turns, it'll pop up and abduct one piece from either player, taking the floor with it.", keep_on_top = True)
+    elif itemName == "reproduce":
+        sg.popup("Your piece spawns a cute baby.  The baby is a generic piece that has no powerups and is just like any other normal piece.", keep_on_top = True)
+    elif itemName == "worm hole":
+        sg.popup("Choose an empty location.  A worm hole replaces the tile.  As long as no on is on that tile, any of your pieces can teleport to there from anywhere.", keep_on_top = True)
+    elif itemName == "warp":
+        sg.popup("Your piece is randomly whisked away to an empty location.  Careful, it can make you end up in enemy territory... or just move you one space away... or anything in between.", keep_on_top = True)
+
+    
 def movePiece(playerTurn, window, gameBoard):
     # a small list that is used to make sure a player that gets a second turn for a piece can only use that specific piece twice
     repeatRestrictor = [False, (-1, -1)]
@@ -3401,6 +3497,7 @@ def movePiece(playerTurn, window, gameBoard):
         usedItem = False
         window["itemButton"].update(disabled=True)
         window["examineItem"].update(disabled=False)
+        window["readItems"].update(disabled=False)
         window.refresh()
         
         window["playerTurn"].update(f"{playerTurn}")
@@ -3472,7 +3569,59 @@ def movePiece(playerTurn, window, gameBoard):
                         f"The piece here belongs to {owner}.\nIt currently holds {len(gameBoard[event[0][0]][event[0][1]][1].storedItems)} inactive items.\nIt has the following buffs:\n{buffslist}\nIt has the current debuffs:\n{debuffslist}",
                     )
                 window["examineItem"].update(disabled=False)
+                window["readItems"].update(disabled=False)
                 continue
+
+            
+            if "readItems" in event:
+                    learnItemsLayout = []
+                    itemList = [
+                            "<QUIT>",
+                            "orb eater",
+                            "row laser",
+                            "magnet",
+                            "trap orb",
+                            "place mine",
+                            "move again",
+                            "suicide bomb row",
+                            "Energy Forcefield",
+                            "suicide bomb column",
+                            "haphazard airstrike",
+                            "suicide bomb radial",
+                            "jump proof",
+                            "smart bombs",
+                            "move diagonal",
+                            "trip mine radial",
+                            "purify radial",
+                            "napalm radial",
+                            "vile radial",
+                            "haymaker",
+                            "bowling ball",
+                            "column laser",
+                            "row laser",
+                            "shuffle column",
+                            "shuffle radial",
+                            "spooky hand",
+                            "reproduce",
+                            "worm hole",
+                            "warp"
+                        ]
+                    for i in itemList:
+                        learnItemsLayout+= [ [sg.Button(f"{i}",key = i)] ]
+                    learnItems = sg.Window("Title",learnItemsLayout,keep_on_top = True)
+                    window.disable()
+                    
+                    event = learnItems.read()
+                    
+                
+                    while event[0]!="<QUIT>" and event[0]!=None :
+                        itemExplanation(event[0])
+                        event = learnItems.read()
+                        if event[0] == None:
+                            break
+                    learnItems.close()
+                    window.enable()
+                    continue
 
 
 
@@ -3578,6 +3727,8 @@ def movePiece(playerTurn, window, gameBoard):
                     window,
                     f"Selection made, pick a destination or click the same piece again to access items.",
                 )
+
+                window["readItems"].update(disabled=True)
             # if the piece doesn't belong to you
             elif playerTurn != gameBoard[event[0][0]][event[0][1]][1].ownedBy:
                 window["information"].update(f"That's not your piece...")
@@ -4240,6 +4391,7 @@ def begin():
                 key="examineItem",
                 image_filename="images/examine.png",
             ),
+            sg.Button("Learn about items",key="readItems",size=(40,4)),
             sg.Button("Exit", size=(20,4), key="exit"),
             sg.Button("cheetz")
         ]

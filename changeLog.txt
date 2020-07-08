@@ -1,6 +1,7 @@
 ChangeLog
 
-
+v.0.9.44 July 7, 2020
+	Item explanation button added; explains how the items work.
 v.0.9.43 July 7, 2020
 	Added reproduce; piece makes a newborn piece with no powers/items/buffs/debuffs in an adjacent location.
 
