@@ -30,58 +30,58 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[rows - i - 1][j][0].tileType = "player2default"
             gameBoard[rows - i - 1][j][1].avatar = "default"
 
-## ###### DELETE ME ##########
-##    for i in range(2):
-##        for j in range(columns):
-##            #middle row generator
-##            rows = 6
-##            gameBoard[rows - i - 1][j][0] = Tile(occupied=True)
-##            piece = Piece(playerTurn=2)
-##
-##
-##
-##            #give items to main row
-##            gameBoard[i][j][1].storedItems.append("shuffle radial")
-##            gameBoard[i][j][1].storedItems.append("worm hole")
-##            gameBoard[i][j][1].storedItems.append("orbEater")
-##            gameBoard[i][j][1].storedItems.append("shuffle item orbs")
-##            gameBoard[i][j][1].storedItems.append("row laser")
-##            gameBoard[i][j][1].storedItems.append("column laser")
-##            gameBoard[i][j][1].storedItems.append("round earth theory")
-##            gameBoard[i][j][1].storedItems.append("reproduce")
-##            gameBoard[i][j][1].storedItems.append("haymaker")
-##            gameBoard[i][j][1].storedItems.append("haphazard airstrike")
-##            gameBoard[i][j][1].storedItems.append("row laser")
-##            gameBoard[i][j][1].storedItems.append("warp")
-##            
-##            gameBoard[i][j][1].activeBuffs.append("move diagonal")
-##            gameBoard[i][j][1].activeBuffs.append("jump proof")
-##            
-##
-##            #the middle row
-##            gameBoard[rows - i - 1][j][1] = piece
-##            gameBoard[rows - i - 1][j][1].location = (rows - i - 1, j)
-##            gameBoard[rows - i - 1][j][0].tileType = "player2default"
-##            gameBoard[rows - i - 1][j][1].avatar = "default"
-##            gameBoard[rows - i - 1][j][1].storedItems.append("haphazard airstrike")
-##            gameBoard[rows - i - 1][j][1].activeBuffs.append("haymaker")
-##
-##
-##
-##            #give items to middle row
-##            gameBoard[rows - i - 1][j][1].storedItems.append("shuffle radial")
-##            gameBoard[rows - i - 1][j][1].storedItems.append("worm hole")
-##            gameBoard[rows - i - 1][j][1].storedItems.append("orbEater")
-##            gameBoard[rows - i - 1][j][1].storedItems.append("shuffle item orbs")
-##            gameBoard[rows - i - 1][j][1].storedItems.append("row laser")
-##            gameBoard[rows - i - 1][j][1].storedItems.append("warp")
-##            gameBoard[rows - i - 1][j][1].storedItems.append("column laser")
-##            gameBoard[rows - i - 1][j][1].storedItems.append("place mine")
-##            gameBoard[rows - i - 1][j][1].storedItems.append("haymaker")
-##            gameBoard[rows - i - 1][j][1].storedItems.append("haphazard airstrike")
-##            gameBoard[rows - i - 1][j][1].storedItems.append("row laser")
-##            gameBoard[rows - i - 1][j][1].activeBuffs.append("move diagonal")
-##            gameBoard[rows - i - 1][j][1].storedItems.append("bowling ball")
+ ###### DELETE ME ##########
+    for i in range(2):
+        for j in range(columns):
+            #middle row generator
+            rows = 6
+            gameBoard[rows - i - 1][j][0] = Tile(occupied=True)
+            piece = Piece(playerTurn=2)
+
+
+
+            #give items to main row
+            gameBoard[i][j][1].storedItems.append("shuffle radial")
+            gameBoard[i][j][1].storedItems.append("worm hole")
+            gameBoard[i][j][1].storedItems.append("recall")
+            gameBoard[i][j][1].storedItems.append("shuffle item orbs")
+            gameBoard[i][j][1].storedItems.append("row laser")
+            gameBoard[i][j][1].storedItems.append("column laser")
+            gameBoard[i][j][1].storedItems.append("round earth theory")
+            gameBoard[i][j][1].storedItems.append("reproduce")
+            gameBoard[i][j][1].storedItems.append("haymaker")
+            gameBoard[i][j][1].storedItems.append("haphazard airstrike")
+            gameBoard[i][j][1].storedItems.append("row laser")
+            gameBoard[i][j][1].storedItems.append("warp")
+            
+            gameBoard[i][j][1].activeBuffs.append("move diagonal")
+            gameBoard[i][j][1].activeBuffs.append("jump proof")
+            
+
+            #the middle row
+            gameBoard[rows - i - 1][j][1] = piece
+            gameBoard[rows - i - 1][j][1].location = (rows - i - 1, j)
+            gameBoard[rows - i - 1][j][0].tileType = "player2default"
+            gameBoard[rows - i - 1][j][1].avatar = "default"
+            gameBoard[rows - i - 1][j][1].storedItems.append("haphazard airstrike")
+            gameBoard[rows - i - 1][j][1].activeBuffs.append("haymaker")
+
+
+
+            #give items to middle row
+            gameBoard[rows - i - 1][j][1].storedItems.append("shuffle radial")
+            gameBoard[rows - i - 1][j][1].storedItems.append("worm hole")
+            gameBoard[rows - i - 1][j][1].storedItems.append("orbEater")
+            gameBoard[rows - i - 1][j][1].storedItems.append("shuffle item orbs")
+            gameBoard[rows - i - 1][j][1].storedItems.append("row laser")
+            gameBoard[rows - i - 1][j][1].storedItems.append("warp")
+            gameBoard[rows - i - 1][j][1].storedItems.append("column laser")
+            gameBoard[rows - i - 1][j][1].storedItems.append("place mine")
+            gameBoard[rows - i - 1][j][1].storedItems.append("haymaker")
+            gameBoard[rows - i - 1][j][1].storedItems.append("haphazard airstrike")
+            gameBoard[rows - i - 1][j][1].storedItems.append("row laser")
+            gameBoard[rows - i - 1][j][1].activeBuffs.append("move diagonal")
+            gameBoard[rows - i - 1][j][1].storedItems.append("bowling ball")
 
 
 ####### END DELETE ME###########
@@ -95,6 +95,7 @@ class PublicStats:
     spookyHand = False
     spookyHandTurnCount = 5
     hotSpot = []
+    recallCount = 0
     def getOrbCount(self):
         cycle = PublicStats.turnCount % 9
         return PublicStats.orbCycleList[cycle]
@@ -118,6 +119,7 @@ class Piece:
         self.currentTurnPiece = False
         self.moveAgain = 0
         self.standingOnSelfOrb = False
+        self.recallTurn = False
     def determineAvatar(self):
         pass
 
@@ -133,6 +135,8 @@ class Tile:
         self.orbEater = False
         self.wormHole1 = False
         self.wormHole2 = False
+        self.recallTurn = False
+        self.recallBackup = False
 
     def describeSelf(self):
 
@@ -770,7 +774,8 @@ def displayBoard(window, gameBoard):
     for i in range(len(gameBoard)):
         for j in range(len(gameBoard[0])):
             # unoccupied spaces
-
+            
+                
             if gameBoard[i][j][0].horiLaser == True and gameBoard[i][j][0].vertLaser == False:
                 window[i, j].update(image_filename="images/horiLaserBeam.png")
                 continue
@@ -830,6 +835,9 @@ def displayBoard(window, gameBoard):
                 if gameBoard[i][j][0].tileType == "default":
                     window[i, j].update(image_data=PublicPNGList[0])
                     #if the mouse is here
+                    if gameBoard[i][j][0].recallTurn != False:
+                
+                        window[i, j].update(image_filename="images/recall.png")
                     if gameBoard[i][j][0].orbEater == True:
                         window[i, j].update(image_data=PublicPNGList[10])
                     continue
@@ -875,6 +883,9 @@ def displayBoard(window, gameBoard):
                 elif gameBoard[i][j][0].tileType in ("player1default","player2default"):
                     gameBoard[i][j][0].tileType = "default"
                     window[i, j].update(image_data= PublicPNGList[0])
+                    if gameBoard[i][j][0].recallTurn != False:
+                
+                        window[i, j].update(image_filename="images/recall1.png")
                     continue
                 else:
                     sg.popup(
@@ -985,8 +996,20 @@ def displayBoard(window, gameBoard):
 
                     if "round earth theory" in g.activeBuffs:
                         roundEarthTheory = Image.open("images/roundEarthTheory.png").convert("RGBA")
-                        avatar.paste(roundEarthTheory, (0, 0), roundEarthTheory)   
-
+                        avatar.paste(roundEarthTheory, (0, 0), roundEarthTheory)
+                        
+                    if gameBoard[i][j][1].recallTurn != False:
+                            recall1 = Image.open("images/recall1.png").convert("RGBA")
+                            avatar.paste(recall1, (0, 0), recall1)
+                            window[i, j].update(image_filename="images/recall1.png")
+                            
+                    #if gameBoard[i][j][0].recallTurn != False or gameBoard[i][j][1].recallTurn != False:
+                    if gameBoard[i][j][0].recallTurn != False:
+                        
+                        recall = Image.open("images/recall.png").convert("RGBA")
+                        avatar.paste(recall, (0, 0), recall)
+                        window[i, j].update(image_filename="images/recall.png")
+                    
             im_file = BytesIO()
             avatar.save(im_file, format="png")
             im_bytes = im_file.getvalue()
@@ -1085,7 +1108,8 @@ def pickUpItemOrb(gameBoard, x, y):
         "spooky hand",
         "reproduce",
         "worm hole",
-        "warp"
+        "warp",
+        "recall"
     ]
     # items = ["magnet"]
 
@@ -1263,6 +1287,30 @@ def useItems(gameBoard, x, y, window):
             else:
                 sg.popup("Invalid location")
                 break
+            
+        elif str.find(i, "recall") >= 0:
+            
+            turnCountRecall = 4
+            g = gameBoard[x][y]
+            if g[0].recallBackup != False:
+                sg.popup("This tile is awaiting the arrival of another recall piece.  It cannot be used until the recall is complete.")
+                break
+            gameBoard[x][y][1].storedItems.remove("recall")
+            gameBoard[x][y][1].grey = False
+            #backup the gameTile and gamePiece as one blob into the tile itself
+            g[0].recallBackup = copy.deepcopy(g)
+            g[1].recallTurn = PublicStats.turnCount + turnCountRecall
+
+            #make note of the turn that the tile will be reverted, into the tile itself
+            g[0].recallTurn = PublicStats.turnCount + turnCountRecall
+            #increase the number of pieces awaiting recall by one
+            PublicStats.recallCount +=1
+            
+            
+            sg.popup(f"This piece will be returned to its current location and in its current state in {turnCountRecall} turns.",keep_on_top = True)
+            
+            
+            
         elif str.find(i, "row laser") >= 0:
             itemsMenu.close()
             validTargets = getCross((x, y), gameBoard)
@@ -1297,11 +1345,11 @@ def useItems(gameBoard, x, y, window):
             pm(window, "Choose an empty cross spot to deploy the wormhole")
             event = window.read()
             try:
-                print(event[0])
+                
                 if event[0] in emptyList:
                     x1 = event[0][0]
                     y1 = event[0][1]
-                    print(x1,y1)
+                    
                     if playerTurn == 1:
                         g[x1][y1][0].wormHole1 = True
                         pm(window, "worm hole placed")
@@ -1364,7 +1412,8 @@ def useItems(gameBoard, x, y, window):
                 y1 = choice[1]
 
                 #test this
-                gameBoard[x1][y1] = copy.deepcopy(copyPiece)
+                gameBoard[x1][y1][1] = copy.deepcopy(copyPiece[1])
+                
                 displayBoard(window, gameBoard)
                 window.refresh()
                 sleep(.5)
@@ -1874,6 +1923,7 @@ def useItems(gameBoard, x, y, window):
             if g[x][y][1].grey == True:
                 g[x][y][1].currentTurnPiece = True
                 g[x][y][1].grey = False
+            #cg is copiedGameBoard
             cg = []
             locations = getRadial((x, y), gameBoard)
 
@@ -1882,12 +1932,15 @@ def useItems(gameBoard, x, y, window):
             # shuffle the locations to look cooler?
 
             g[x][y][1].storedItems.remove("shuffle radial")
-
+            storedWarpLocations = []
+            storedWarpTurns = []
             laserCheck(window, gameBoard, resetOnly = True)
             for i in locations:
                 x = i[0]
                 y = i[1]
+                #if g[x][y][0].recallTurn == True:
                 cg.append(copy.deepcopy(g[x][y]))
+                #might cause crashes; disabled to make recall work with shuffle
                 g[x][y][0].tileType = "default"
                 g[x][y][0].occupied = False
                 displayBoard(window, g)
@@ -1898,11 +1951,14 @@ def useItems(gameBoard, x, y, window):
                 randCoord = random.choice(locations)
                 randTileInfo = random.choice(cg)
                 g[randCoord[0]][randCoord[1]] = randTileInfo
-                #if g[randCoord[0]][randCoord[1]][0].occupied == True and g[randCoord[0]][randCoord[1]][1].currentTurnPiece == True:
-                #    g[randCoord[0]][randCoord[1]][1].grey = True
+                #if locations[0] in storedWarpLocations:
+                #    g[randCoord[0]][randCoord[1]][0].recallTurn = storedWarp
                 locations.remove(randCoord)
                 cg.remove(randTileInfo)
                 g[randCoord[0]][randCoord[1]][0].horiLaser = False
+                g[randCoord[0]][randCoord[1]][0].vertLaser = False
+                g[randCoord[0]][randCoord[1]][0].crossLaser = False
+                
                 displayBoard(window, g)
                 window.refresh()
                 sleep(0.1)
@@ -2699,7 +2755,7 @@ def orbEater(gameBoard):
         ateOrb = False
         legalLocations.clear()
         legalLocations = getCross(i,gameBoard) #dang it, TJ!
-        #print(legalLocations)
+        
         random.shuffle(legalLocations)
         if gameBoard[i[0]][i[1]][0].tileType in ( "itemOrb", "trap Orb 1", "trap Orb 2", "trap Orb 0"):
             #sg.popup("Orbeater was blessed with an orb!")
@@ -2707,22 +2763,26 @@ def orbEater(gameBoard):
             #make orbeater fat
             continue
         for j in legalLocations:
+
+            #eat an orb
             if gameBoard[j[0]][j[1]][0].tileType in ( "itemOrb", "trap Orb 1", "trap Orb 2", "trap Orb 0"):
                 gameBoard[i[0]][i[1]][0].orbEater = False
                 gameBoard[j[0]][j[1]][0].tileType = "default"
                 gameBoard[j[0]][j[1]][0].orbEater = True
                 #change the picture to a fat mouse if he eats an orb; explode the mouse if it's a trap orb.  If he eats too many orbs, maybe make him crazy?
-                #sg.popup("Orb eater ate an orb!")
+                
                 orbsEaten+=1
                 ateOrb = True
                 break
+            
+        #if there wasn't a nearby orb, go somewhere else, if possible
         if ateOrb == False:
+            random.shuffle(legalLocations)
             for j in legalLocations:
                 if gameBoard[j[0]][j[1]][0].tileType == "default" and gameBoard[j[0]][j[1]][0].occupied == False:
                     gameBoard[i[0]][i[1]][0].orbEater = False
                     gameBoard[j[0]][j[1]][0].tileType = "default"
                     gameBoard[j[0]][j[1]][0].orbEater = True
-                    #sg.popup(f"Mouse went to {j}")
                     break
                 else:
                     continue
@@ -3064,11 +3124,6 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             return
                 #else if out of bounds
                 else:
-                    
-##                    gameBoard[curRow][curCol][1].activeDebuffs.append("stunned")
-##                    displayBoard(window, gameBoard)
-##                    window.refresh()
-##                    sleep(1)
                     sg.popup("You slammed into the outer wall.",keep_on_top = True)
                     
                     return
@@ -4314,7 +4369,67 @@ def spookyHand(window, gameBoard):
                 break
 
                 
+def recallFunction(window,gameBoard):
+    for iIndex,i in enumerate(gameBoard):
+        for jIndex,j in enumerate(i):
+            
+
+            #if there's a piece at the spot we're on, see if the piece is supposed to disappear this turn
+            if j[0].occupied == True:
+                #if the recall turn count equals the current turn count, remove it
+                if j[1].recallTurn == PublicStats.turnCount:
+                    #sg.popup(f"Recall turn equals a piece match, deleting at {iIndex}{jIndex}")
+                    gameBoard[iIndex][jIndex][1] = 0
+                    gameBoard[iIndex][jIndex][0].tileType = "default"
+                    gameBoard[iIndex][jIndex][0].occupied = False
+
+            #if the recall turn count equals this turn, revert the tile to what it was (including the tile piece)        
+            if j[0].recallTurn == PublicStats.turnCount:
+                #sg.popup("Recall turn equals a tile")
                 
+                PublicStats.recallCount -=1
+                gameBoard[iIndex][jIndex] = copy.deepcopy(j[0].recallBackup)
+                
+                displayBoard(window, gameBoard)
+                sleep(.5)
+                window.refresh()
+
+                ## The following chunks of code are an animation showing the returning piece flashing so that the players know where the piece returned
+                backupRecallTileTurn = gameBoard[iIndex][jIndex][0].recallTurn
+                gameBoard[iIndex][jIndex][0].occupied = False
+                gameBoard[iIndex][jIndex][0].tileType = "default"
+                gameBoard[iIndex][jIndex][0].recallTurn = 1
+                displayBoard(window, gameBoard)
+                sleep(.5)
+                window.refresh()
+
+                ## flash the piece
+                gameBoard[iIndex][jIndex] = copy.deepcopy(j[0].recallBackup)
+                gameBoard[iIndex][jIndex][0].recallTurn = backupRecallTileTurn
+                displayBoard(window, gameBoard)
+                sleep(.5)
+                window.refresh()
+
+                #flash an empty tile with a clock
+                backupRecallTileTurn = gameBoard[iIndex][jIndex][0].recallTurn
+                gameBoard[iIndex][jIndex][0].occupied = False
+                gameBoard[iIndex][jIndex][0].tileType = "default"
+                gameBoard[iIndex][jIndex][0].recallTurn = 1
+                displayBoard(window, gameBoard)
+                sleep(.5)
+                window.refresh()
+
+                #show the piece again (and leave it this time)
+                gameBoard[iIndex][jIndex] = copy.deepcopy(j[0].recallBackup)
+                gameBoard[iIndex][jIndex][0].recallTurn = backupRecallTileTurn
+                displayBoard(window, gameBoard)
+                sleep(.5)
+                window.refresh()
+                
+                sg.popup("A piece has recalled")
+                
+            
+
                                 
 
 def begin():
@@ -4436,14 +4551,92 @@ def begin():
     
     #Between turns
     playerTurn = 1
+
+
+        
+
+
+        
+        
     while True:
+
+        
+        ##copy a deepcopy of the entry in gameBoard[x][y], the currentLocation of the spot, and the number of turns 
+        
+##        #if there's any entries in the recall list
+##        if len(PublicStats.recallPieces)>0:
+##            
+##            #recall is the entire list in recall
+##            recallData = PublicStats.recallPieces
+##            
+##            for iIndex, i in enumerate(PublicStats.recallPieces):
+##                changed = False
+##                #i[0] is the tilepiece combo, i[1] is the location with i[1][0] being the x and i[1][1] being the y, i[2] is turns left
+##                #if the current entry of the recall list isn't 0 (0 means it's been taken care of)
+##                if i!=0:
+##                    if changed == True:
+##                        continue
+##                    sg.popup(f"i2 is {i[2]}")
+##                    recX = i[1][0]
+##                    recY = i[1][1]
+##                    #if the turns left isn't zero
+##                    if i[2] > 0:
+##                        #reduce the number of turns left
+##                        recallData[iIndex][2]-=1
+##                        sg.popup(f"i2 is {i[2]}")
+##                        #check the next entry if a recall piece was changed
+##                        changed = True
+##                        continue
+##                    
+##                    #if it is zero turns now
+##                    elif i[2] == 0:
+##                        #for each row in gameBoard
+##                        for sx, j in enumerate(gameBoard):
+##                            #for each column in j
+##                            if changed == True:
+##                                break
+##                            for sy,k in enumerate(j):
+##                                if changed == True:
+##                                    break
+##                                #if there is a piece inside of that column
+##                                #k is the gameBoard tilePiece (k0 is tile k1 is piece) where the piece is right now
+##                                if k[0].occupied == True:
+##                                    print(f"I is {i} and i[0] is {i[0]}")
+##                                    print(f"k[1].recall is {k[1].recall}")
+##                                    #if the .recall data variable integer is equal to the current iIndex of recallPieces
+##                                    if k[1] != 0 and k[1].recall == iIndex:
+##                                        sg.popup("teleport back")
+##                                        sg.popup(f"k1 is {k[1]}")
+##                                        gameBoard [recX] [recY] [0]= copy.deepcopy(i[0][0])
+##                                        gameBoard [recX] [recY] [1]= copy.deepcopy(i[0][1])
+##                                        k[0].occupied = False
+##                                        k[0].tileType = "default"
+##                                        k[1] = 0
+##                                        #set the array value to 0
+##                                        recallData[iIndex] = 0
+##                                        sg.popup(f"The array is {recallData}")
+##                                        displayBoard(window, gameBoard)
+##                                        changed = True
+##                                        continue
+                                        
+                        
+                    
+
+        
         
         gamePlay(playerTurn, window, gameBoard)
         x = -1
         y = -1
-        # end player one's turn, begin player two's turn
+        # end player one's turn, begin player two's turn, switch players
         if playerTurn == 1:
+            
             window["turn"].update(filename="images/down.png")
+
+            #check for recalled pieces
+            if PublicStats.recallCount > 0:
+                recallFunction(window,gameBoard)
+
+                
             for i in gameBoard:
                 x += 1
                 for j in i:
@@ -4485,6 +4678,11 @@ def begin():
         # end player two's turn, begin player one's turn
         else:
             window["turn"].update(filename="images/up.png")
+
+            #check for recalled pieces
+            if PublicStats.recallCount > 0:
+                recallFunction(window,gameBoard)
+                
             for i in gameBoard:
                 x += 1
                 for j in i:

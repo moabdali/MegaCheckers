@@ -1,5 +1,7 @@
 ChangeLog
 
+v.0.9.44 July 9, 2020
+	Went back to debug mode.  Added recall, which makes a piece return in x turns (currently 10) to the tile that it cast it on, no matter what (even if the piece died or the tile moved or was removed), in the exact state it was in when using the item (item still gets used up first). Added some notes to how the orb eater works and added an extra shuffle feature to when it's looking for a new place to go to.  I should probably add some better AI that lets it "smell" an orb nearby. Also (in a recent change) forgot to note a "cleanTile" function was added to remove wormholes and orbEaters and other "non tangibles" from a tile (recall nodes are not affected).
 
 v.0.9.44 July 7, 2020
 	Temporarily disabled debug mode.  Enabled normal mode so that people can test it out.  Fixed a glitch in the "find current turn" function (used j[i] instead of j[1]).
