@@ -47,7 +47,7 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[i][j][1].storedItems.append("shuffle item orbs")
             gameBoard[i][j][1].storedItems.append("row laser")
             gameBoard[i][j][1].storedItems.append("column laser")
-            gameBoard[i][j][1].storedItems.append("round earth theory")
+            gameBoard[i][j][1].storedItems.append("shuffle column")
             gameBoard[i][j][1].storedItems.append("reproduce")
             gameBoard[i][j][1].storedItems.append("haymaker")
             gameBoard[i][j][1].storedItems.append("haphazard airstrike")
@@ -1951,8 +1951,7 @@ def useItems(gameBoard, x, y, window):
                 randCoord = random.choice(locations)
                 randTileInfo = random.choice(cg)
                 g[randCoord[0]][randCoord[1]] = randTileInfo
-                #if locations[0] in storedWarpLocations:
-                #    g[randCoord[0]][randCoord[1]][0].recallTurn = storedWarp
+                
                 locations.remove(randCoord)
                 cg.remove(randTileInfo)
                 g[randCoord[0]][randCoord[1]][0].horiLaser = False
@@ -3531,6 +3530,8 @@ def itemExplanation(itemName):
         sg.popup("Choose an empty location.  A worm hole replaces the tile.  As long as no on is on that tile, any of your pieces can teleport to there from anywhere.", keep_on_top = True)
     elif itemName == "warp":
         sg.popup("Your piece is randomly whisked away to an empty location.  Careful, it can make you end up in enemy territory... or just move you one space away... or anything in between.", keep_on_top = True)
+    elif itemName == "recall":
+        sg.popup("After a piece uses recall, it creates an unbreakable bond with the tile it cast it on and gets a snapshot of how it is in that exact moment.  In 10 turns, the piece will, no matter what, return to that tile in the state that it was at, even if it died.  If the tile is moved by any items before the recall occurs, the piece will appear in the location the tile was moved to.", keep_on_top = True)
 
     
 def movePiece(playerTurn, window, gameBoard):
