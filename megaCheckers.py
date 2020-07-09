@@ -42,8 +42,8 @@ def initializeField(columns, rows, window, gameBoard):
 
             #give items to main row
             gameBoard[i][j][1].storedItems.append("shuffle radial")
-            gameBoard[i][j][1].storedItems.append("worm hole")
-            gameBoard[i][j][1].storedItems.append("recall")
+            gameBoard[i][j][1].storedItems.append("jumpoline")
+            gameBoard[i][j][1].storedItems.append("mugger")
             gameBoard[i][j][1].storedItems.append("shuffle item orbs")
             gameBoard[i][j][1].storedItems.append("row laser")
             gameBoard[i][j][1].storedItems.append("column laser")
@@ -137,6 +137,8 @@ class Tile:
         self.wormHole2 = False
         self.recallTurn = False
         self.recallBackup = False
+        self.mugger = False
+        self.muggerList = []
 
     def describeSelf(self):
 
@@ -417,7 +419,7 @@ def deathCheck(window, gameBoard, move=False):
     for i in gameBoard:
         for j in i:
             # if a regular mine or laser was stepped on
-            if j[0].occupied == True and j[0].tileType in ["mine", "laser"]:
+            if (j[0].occupied == True) and (j[0].tileType == "mine" or (j[0].vertLaser == True or j[0].horiLaser == True or j[0].crossLaser == True) ):
 
                 if "forceField" in j[1].activeBuffs:
                     j[1].activeBuffs.remove("forcefield")
@@ -785,7 +787,13 @@ def displayBoard(window, gameBoard):
             elif gameBoard[i][j][0].horiLaser == True and gameBoard[i][j][0].vertLaser == True:
                 window[i, j].update(image_filename="images/crossLaserBeam.png")
                 continue
+            if gameBoard[i][j][0].tileType == "jumpoline":
+                window[i, j].update(image_filename="images/jumpoline.png")
+                continue
 
+            if gameBoard[i][j][0].tileType == "mugger":
+                window[i, j].update(image_filename="images/mugger.png")
+                continue
             
             if gameBoard[i][j][0].tileType == "exploding":
                 cleanTile(gameBoard[i][j][0])
@@ -1071,10 +1079,12 @@ def emptySpots(gameBoard,trueEmpty = False):
             if j[0].tileType == "default":
                 if trueEmpty == False:
                     emptySpots.append( (iIndex, jIndex) )
+                    
 
                 #truly empty spots
-                elif trueEmpty == True and j[0].orbEater == False and j[0].occupied == False:
+                elif trueEmpty == True and True not in (j[0].orbEater, j[0].occupied, j[0].wormHole1, j[0].wormHole2) and j[0].recallTurn == False:
                     emptySpots.append( (iIndex, jIndex) )
+                    
             
     return emptySpots
 # the item list
@@ -1109,7 +1119,8 @@ def pickUpItemOrb(gameBoard, x, y):
         "reproduce",
         "worm hole",
         "warp",
-        "recall"
+        "recall",
+        "jumpoline"
     ]
     # items = ["magnet"]
 
@@ -1119,6 +1130,19 @@ def pickUpItemOrb(gameBoard, x, y):
     playerOwned = gameBoard[x][y][1].ownedBy
     #modifies your avatar to signify the player is holding an item(s)
     gameBoard[x][y][1].avatar = f"player{playerOwned}stored"
+
+
+def jumpoline(window, gameBoard, location, playerTurn):
+    validLocations = emptySpots(gameBoard, trueEmpty = True)
+    if len(validLocations) == 0:
+        sg.popup("Nowhere valid for you to jumpoline to. :(")
+        return
+    choice = random.choice(validLocations)
+    x=choice[0]
+    y=choice[1]
+    return x,y
+
+
 # using an item
 def useItems(gameBoard, x, y, window):
     layout = []
@@ -1257,7 +1281,59 @@ def useItems(gameBoard, x, y, window):
                         j[0].occupied = False
                         j[1] = 0
                         j[0].tileType = "default"
-                        
+
+        elif str.find(i,"jumpoline") >= 0:
+            itemsMenu.close()
+            validTargets = getCross((x, y), gameBoard, trueEmpty = True)
+            pm(window, "Pick an adjacent location to place the jumpoline.")
+            event = window.read()
+            if event[0] in validTargets:
+                x1 = event[0][0]
+                y1 = event[0][1]
+                g = gameBoard[x1][y1]
+                if g[0].occupied == True:
+                    sg.popup("Must pick an empty spot")
+                    pm(window, "Must pick an empty spot")
+                    break
+                elif g[0].tileType != "default":
+                    sg.popup("Must be a valid tile")
+                    pm(window, "Must be a valid tile")
+                    break
+                else:
+                    gameBoard[x][y][1].storedItems.remove("jumpoline")
+                    g[0].tileType = "jumpoline"
+            else:
+                sg.popup("Invalid location")
+                break
+
+
+        elif str.find(i,"mugger") >= 0:
+            itemsMenu.close()
+            validTargets = getCross((x, y), gameBoard, trueEmpty = True)
+            pm(window, "Pick an adjacent location to place the .")
+            event = window.read()
+            if event[0] in validTargets:
+                x1 = event[0][0]
+                y1 = event[0][1]
+                g = gameBoard[x1][y1]
+                if g[0].occupied == True:
+                    sg.popup("Must pick an empty spot")
+                    pm(window, "Must pick an empty spot")
+                    break
+                elif g[0].tileType != "default":
+                    sg.popup("Must be a valid tile")
+                    pm(window, "Must be a valid tile")
+                    break
+                else:
+                    gameBoard[x][y][1].storedItems.remove("mugger")
+                    g[0].mugger = playerTurn
+                    g[0].tileType = "mugger"
+
+            else:
+                sg.popup("Invalid location")
+                break
+            
+            
         elif str.find(i,"reproduce") >= 0:
             itemsMenu.close()
             validTargets = getCross((x, y), gameBoard)
@@ -1290,7 +1366,7 @@ def useItems(gameBoard, x, y, window):
             
         elif str.find(i, "recall") >= 0:
             
-            turnCountRecall = 4
+            turnCountRecall = 10
             g = gameBoard[x][y]
             if g[0].recallBackup != False:
                 sg.popup("This tile is awaiting the arrival of another recall piece.  It cannot be used until the recall is complete.")
@@ -1665,8 +1741,8 @@ def useItems(gameBoard, x, y, window):
                         "trap orb 1",
                         "trap orb 0",
                         "trap orb 2",
-                        "laser",
-                    ]:
+                        
+                    ] or True in (g[outx][outy][0].horiLaser,g[outx][outy][0].vertLaser,g[outx][outy][0].crossLaser) :
 
                         g[ix][iy][0].tileType = g[outx][outy][0].tileType
                         death = deathCheck(window, gameBoard)
@@ -3900,6 +3976,8 @@ def movePiece(playerTurn, window, gameBoard):
                     roundEarthTheory = True
 
                 
+
+                
                 # assume the player isn't trying to move diagonally at first
                 diagonalCheck = False
                 if "round earth theory" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
@@ -4017,7 +4095,7 @@ def movePiece(playerTurn, window, gameBoard):
                         continue
                 
                 #
-                # if it's close enough:
+                # if it's close enough:  (DESTINATION/LEGAL MOVE)
                 #
 
                 # if the landing spot is an item Orb:
@@ -4037,9 +4115,79 @@ def movePiece(playerTurn, window, gameBoard):
                     window["information"].update(f"Can't move here!")
                     pm(window, "Can't move here!")
                     continue
+                
                 # if the landing spot is not occupied by a piece
                 if gameBoard[endLocation[0]][endLocation[1]][0].occupied == False:
+                    g = gameBoard[endLocation[0]][endLocation[1]][0]
+                    deathCheck(window, gameBoard)
 
+
+                    #jumpoline check
+                    if gameBoard[endLocation[0]][endLocation[1]][0].tileType == "jumpoline":
+                        if g.horiLaser == True or g.vertLaser == True or g.crossLaser == True:
+
+                            #forcefield check needs to be added
+                            
+                            gameBoard[endLocation[0]][endLocation[1]][
+                                0
+                            ].occupied = False
+                            gameBoard[startLocation[0]][startLocation[1]][0].occupied = False
+                            gameBoard[startLocation[0]][startLocation[1]][1] = 0
+                            gameBoard[endLocation[0]][endLocation[1]][1] = 0
+                            gameBoard[endLocation[0]][endLocation[1]][1] = 0
+                            gameBoard[endLocation[0]][endLocation[1]][
+                                0
+                            ].tileType = "exploding"
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            playsound("sounds/grenade.mp3", block = False)
+                            sg.popup("Burned to a crisp by the laser", keep_on_top=True)
+                            gameBoard[endLocation[0]][endLocation[1]][
+                                0
+                            ].tileType = "jumpoline"
+                            break
+                        endlocation = []
+                        endLocation = jumpoline(window, gameBoard, (endLocation[0],endLocation[1]), playerTurn)
+                        sg.popup("Bounced to a new spot!")
+                        pm(window,"Bounced to a new spot!")
+
+                    #mugger check
+                    if gameBoard[endLocation[0]][endLocation[1]][0].tileType == "mugger":
+                        if g.horiLaser == True or g.vertLaser == True or g.crossLaser == True:
+
+                            #forcefield check needs to be added
+                            
+                            gameBoard[endLocation[0]][endLocation[1]][
+                                0
+                            ].occupied = False
+                            gameBoard[startLocation[0]][startLocation[1]][0].occupied = False
+                            gameBoard[startLocation[0]][startLocation[1]][1] = 0
+                            gameBoard[endLocation[0]][endLocation[1]][1] = 0
+                            gameBoard[endLocation[0]][endLocation[1]][1] = 0
+                            gameBoard[endLocation[0]][endLocation[1]][
+                                0
+                            ].tileType = "exploding"
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            playsound("sounds/grenade.mp3", block = False)
+                            sg.popup("Burned to a crisp by the laser", keep_on_top=True)
+                            
+                            
+                        
+                        if gameBoard[endLocation[0]][endLocation[1]][0].mugger == playerTurn:
+                            sg.popup("The mugger has left.")
+                            gameBoard[endLocation[0]][endLocation[1]][0].mugger = False
+                        elif gameBoard[endLocation[0]][endLocation[1]][0].mugger != playerTurn:
+                                
+                                if gameBoard[startLocation[0]][startLocation[1]][0].occupied == True:
+                                    
+                                    if len(gameBoard[startLocation[0]][startLocation[1]][1].storedItems) > 0:
+                                        gameBoard[startLocation[0]][startLocation[1]][1].storedItems.clear()
+                                        sg.popup("The mugger stole all your held items")
+                                        gameBoard[endLocation[0]][endLocation[1]][0].mugger = False
+                                    
+
+                        
                     # copy the actual piece object over from the old address to the new one (deepcopy needed?)
                     gameBoard[endLocation[0]][endLocation[1]][1] = gameBoard[
                         startLocation[0]
@@ -4057,9 +4205,10 @@ def movePiece(playerTurn, window, gameBoard):
                             0
                         ].tileType = f"trap orb {playerTurn}"
                     else:
-                        gameBoard[startLocation[0]][startLocation[1]][
-                            0
-                        ].tileType = "default"
+                        if gameBoard[startLocation[0]][startLocation[1]][0].tileType == "mugger":
+                            pass
+                        else:
+                            gameBoard[startLocation[0]][startLocation[1]][0].tileType = "default"
 
                     # set the new location as occupied; set the tile as the type of the tile that moved (needs to be updated in future revisions)
                     gameBoard[endLocation[0]][endLocation[1]][0].occupied = True
@@ -4186,6 +4335,7 @@ def movePiece(playerTurn, window, gameBoard):
                         endLocation[0],
                         endLocation[1],
                     )
+                    
                     # move the piece object
                     gameBoard[endLocation[0]][endLocation[1]][1] = gameBoard[
                         startLocation[0]
@@ -4204,18 +4354,17 @@ def movePiece(playerTurn, window, gameBoard):
                         )
                         # pickUpItemOrb(gameBoard,x,y)
 
-                    # set the original tile as either a trap orb or default, depending on what was there
+                    # set the original tile as either a trap orb or default, depending on what was there  (ending spot default)
                     if (
-                        gameBoard[endLocation[0]][endLocation[1]][1].standingOnSelfOrb
-                        == True
-                    ):
+                        gameBoard[endLocation[0]][endLocation[1]][1].standingOnSelfOrb== True):
                         gameBoard[startLocation[0]][startLocation[1]][
                             0
                         ].tileType = f"trap orb {playerTurn}"
                     else:
-                        gameBoard[startLocation[0]][startLocation[1]][
-                            0
-                        ].tileType = "default"
+                        if gameBoard[startLocation[0]][startLocation[1]][0].tileType == "mugger":
+                            gameBoard[startLocation[0]][startLocation[1]][0].tileType = "mugger"
+                        else:
+                            gameBoard[startLocation[0]][startLocation[1]][0].tileType = "default"
                     if (
                         "trip mine"
                         in gameBoard[endLocation[0]][endLocation[1]][1].activeDebuffs
@@ -4285,7 +4434,7 @@ def movePiece(playerTurn, window, gameBoard):
                         else:
                             return
                     return 2
-
+            
             else:
                 window["information"].update(f"That's not your piece!")
                 pm(window, "That's not your piece!")
