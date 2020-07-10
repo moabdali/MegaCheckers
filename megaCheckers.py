@@ -41,6 +41,8 @@ def initializeField(columns, rows, window, gameBoard):
 
 
             #give items to main row
+            gameBoard[i][j][1].storedItems.append("Energy Forcefield")
+            gameBoard[i][j][1].storedItems.append("place mine")
             gameBoard[i][j][1].storedItems.append("dead man's trigger")
             gameBoard[i][j][1].storedItems.append("recall")
             gameBoard[i][j][1].storedItems.append("mystery box")
@@ -126,6 +128,7 @@ class Piece:
         self.moveAgain = 0
         self.standingOnSelfOrb = False
         self.recallTurn = False
+        self.shieldTurn = 0
     def determineAvatar(self):
         pass
 
@@ -752,6 +755,7 @@ def publicPNGloader():
         "trapOrb",#8
         "vertLaserTripod",#9
         "orbEater", #10
+        "mugger", #11
         ]):
         if i == "p1":
             myImage = Image.open("images/p1.png").convert("RGBA")
@@ -783,7 +787,7 @@ def displayBoard(window, gameBoard):
         for j in range(len(gameBoard[0])):
             # unoccupied spaces
             
-                
+            
             if gameBoard[i][j][0].horiLaser == True and gameBoard[i][j][0].vertLaser == False:
                 window[i, j].update(image_filename="images/horiLaserBeam.png")
                 continue
@@ -801,9 +805,7 @@ def displayBoard(window, gameBoard):
                 window[i, j].update(image_filename="images/mystery box.png")
                 continue
 
-            if gameBoard[i][j][0].tileType == "mugger":
-                window[i, j].update(image_filename="images/mugger.png")
-                continue
+                
             
             if gameBoard[i][j][0].tileType == "exploding":
                 cleanTile(gameBoard[i][j][0])
@@ -854,10 +856,11 @@ def displayBoard(window, gameBoard):
                     window[i, j].update(image_data=PublicPNGList[0])
                     #if the mouse is here
                     if gameBoard[i][j][0].recallTurn != False:
-                
                         window[i, j].update(image_filename="images/recall.png")
                     if gameBoard[i][j][0].orbEater == True:
                         window[i, j].update(image_data=PublicPNGList[10])
+                    if gameBoard[i][j][0].mugger != False:
+                        window[i, j].update(image_data=PublicPNGList[11])
                     continue
                 #7 itemOrb
                 elif gameBoard[i][j][0].tileType == "itemOrb":
@@ -1019,6 +1022,11 @@ def displayBoard(window, gameBoard):
                     if "round earth theory" in g.activeBuffs:
                         roundEarthTheory = Image.open("images/roundEarthTheory.png").convert("RGBA")
                         avatar.paste(roundEarthTheory, (0, 0), roundEarthTheory)
+                        
+                    if gameBoard[i][j][0].mugger != False:
+                        mugger = Image.open("images/mugger.png").convert("RGBA")
+                        avatar.paste(mugger, (0, 0), mugger)
+                        window[i, j].update(image_filename="images/mugger.png")
                         
                     if gameBoard[i][j][1].recallTurn != False:
                             recall1 = Image.open("images/recall1.png").convert("RGBA")
@@ -1202,7 +1210,7 @@ def useItems(gameBoard, x, y, window):
             zz = "A strong punch that will send a piece flying until it smashes into something."
         elif z == "images/Energy Forcefield.png":
             z = "images/Forcefield.png"
-            zz = "removes all buffs (beneficial effects) from surrounding enemies."
+            zz = "Protects you from energy attacks for one turn."
         elif z == "images/bowling ball.png":
             z = "images/bowling ball.png"
             zz = "Your piece loses all of its effects and items... but turns into a crazy bowling ball."
@@ -1251,7 +1259,7 @@ def useItems(gameBoard, x, y, window):
                         font="Arial 20",
                         size=(30, 1),
                         button_color=("pink", "grey"),
-                        image_size=(400, 50),
+                        image_size=(400, 30),
                     )
                 ]
             ]
@@ -1403,7 +1411,7 @@ def useItems(gameBoard, x, y, window):
                 else:
                     gameBoard[x][y][1].storedItems.remove("mugger")
                     g[0].mugger = playerTurn
-                    g[0].tileType = "mugger"
+                    
 
             else:
                 sg.popup("Invalid location")
@@ -3595,8 +3603,59 @@ def bowlingBallFunction(window,gameBoard,location,direction):
 
                     sg.popup("You slammed into the outer wall.",keep_on_top = True)
                     return
-                        
-                       
+
+
+def forcefieldCheck(window, gameBoard,  playerTurn, startLocation = 0, endLocation = 0):
+    g = gameBoard[endLocation[0]][endLocation[1]]
+    gs = gameBoard[startLocation[0]][startLocation[1]]
+    if g[0].horiLaser or g[0].vertLaser or g[0].crossLaser or g[0].tileType == "mine" or (g[0].occupied == True and g[1].ownedBy != playerTurn and "dead man's trigger" in g[0].activeBuffsList):
+        if g[1].shieldTurn == PublicStats.turnCount:
+            sg.popup("A forcefield is still active until the end of this turn.")
+            return True
+        elif "Energy Forcefield" in g[1].activeBuffs:
+            g[1].shieldTurn = PublicStats.turnCount
+            g[1].activeBuffs.remove("Energy Forcefield")
+            sg.popup("The forcefield activated and will protect you from energy until the end of this turn")
+            return True
+        else:
+            sg.popup("DEATH.")
+            return False
+
+    else:
+        return False
+    
+def muggerCheck(window, gameBoard, startLocation, endLocation, playerTurn):
+    
+    #if there's no mugger
+    if gameBoard[endLocation[0]][endLocation[1]][0].mugger == False:
+        return
+    
+    #if the mugger is yours
+    if gameBoard[endLocation[0]][endLocation[1]][0].mugger == playerTurn:
+        
+        if "burdened" not in gameBoard[endLocation[0]][endLocation[1]][1].activeDebuffs and len(gameBoard[endLocation[0]][endLocation[1]][0].muggerList)>0 and "bowling ball" not in gameBoard[endLocation[0]][endLocation[1]][1].activeBuffs:
+            for i in gameBoard[endLocation[0]][endLocation[1]][0].muggerList:
+                gameBoard[endLocation[0]][endLocation[1]][1].storedItems.append(i)
+            gameBoard[endLocation[0]][endLocation[1]][0].muggerList.clear()
+        elif len(gameBoard[endLocation[0]][endLocation[1]][0].muggerList) == 0:
+            sg.popup("This mugger is on your side, but isn't interested in small talk.  He nods, but otherwise ignores you.  You should visit him after he steals something from your enemy.")        
+
+    #if the mugger is your enemy's
+    elif gameBoard[endLocation[0]][endLocation[1]][0].mugger != playerTurn:
+            
+            if gameBoard[endLocation[0]][endLocation[1]][0].occupied == True:
+                if len(gameBoard[endLocation[0]][endLocation[1]][1].storedItems) > 0:
+                    #iterate through the player's list
+                    for i in gameBoard[endLocation[0]][endLocation[1]][1].storedItems:
+                        #add them to the spy's inventory
+                        gameBoard[endLocation[0]][endLocation[1]][0].muggerList.append(i)
+                    #wipe out the victim's items
+                    gameBoard[endLocation[0]][endLocation[1]][1].storedItems.clear()
+                    sg.popup("The mugger stole all your held items")
+            else:
+                sg.popup("The mugger sees you don't have any items, so he gives you a dirty look, but doesn't do anything else.")
+    
+    
 def repairFloor(window, gameBoard):
     for i in gameBoard:
         for j in i:
@@ -3685,7 +3744,76 @@ def itemExplanation(itemName):
     elif itemName == "recall":
         sg.popup("After a piece uses recall, it creates an unbreakable bond with the tile it cast it on and gets a snapshot of how it is in that exact moment.  In 10 turns, the piece will, no matter what, return to that tile in the state that it was at, even if it died.  If the tile is moved by any items before the recall occurs, the piece will appear in the location the tile was moved to.", keep_on_top = True)
 
+
+def roundEarthTheoryFunction(gameBoard,startLocation,endLocation,columns,rows):
+#trying to go from right side to left side
+    #try to go straight right to straight left
+    if startLocation[0] == endLocation[0]:
+        if startLocation[1] == columns-1 and endLocation[1] == 0:
+            sg.popup("Your piece rolled around to the other side!")
+            return True
+    #trying to go down right
+    elif startLocation[0] == endLocation[0]-1 and startLocation[1] == columns -1 and endLocation[1] == 0 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        sg.popup("Your piece rolled around to the other side!")
+        return True
+    #trying to go up right
+    elif startLocation[0] == endLocation[0]+1 and startLocation[1] == columns -1 and endLocation[1] == 0 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        sg.popup("Your piece rolled around to the other side!")
+        return True
     
+
+#trying to go from left to right side
+    #try to go straight left to straight right
+    if startLocation[0] == endLocation[0]:
+        if startLocation[1] == 0 and endLocation[1] == columns -1:
+            sg.popup("Your piece rolled around to the other side!")
+            return True
+    #trying to go down right
+    elif startLocation[0] == endLocation[0]-1 and startLocation[1] == 0  and endLocation[1] == columns -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        sg.popup("Your piece rolled around to the other side!")
+        return True
+    #trying to go up right
+    elif startLocation[0] == endLocation[0]+1 and startLocation[1] == 0 and endLocation[1] == columns -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        sg.popup("Your piece rolled around to the other side!")
+        return True
+
+        
+#trying to go from up to down
+    #try to go straight up to straight down
+    if startLocation[1] == endLocation[1]:
+        if startLocation[0] == 0 and endLocation[0] == rows -1:
+            sg.popup("Your piece rolled around to the other side!")
+            return True
+    #trying to go up right
+    elif startLocation[0] == 0 and startLocation[1] == (endLocation[1] +1) and endLocation[0] == rows -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        sg.popup("Your piece rolled around to the other side!")
+        return True
+    #trying to go up right
+    elif startLocation[1] == endLocation[1]-1 and startLocation[0] == 0 and endLocation[0] == rows -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        sg.popup("Your piece rolled around to the other side!")
+        return True
+
+#diagonals (only works with diagonal enabled
+    if "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        #upleft
+        if startLocation[0] == 0 and startLocation[1] == 0 and endLocation[0] == rows-1 and endLocation[1] == columns-1:
+            sg.popup("Your piece rolled around to the other side!")
+            return True
+        #upright
+        if startLocation[0] == 0 and startLocation[1] == columns-1 and endLocation[0] == rows-1 and endLocation[1] == 0:
+            sg.popup("Your piece rolled around to the other side!")
+            return True
+        #downleft
+        if startLocation[0] == rows-1 and startLocation[1] == 0 and endLocation[0] == 0 and endLocation[1] == columns-1:
+            sg.popup("Your piece rolled around to the other side!")
+            return True
+        #downright
+        if startLocation[0] == rows-1 and startLocation[1] == columns-1 and endLocation[0] == 0 and endLocation[1] == 0:
+            sg.popup("Your piece rolled around to the other side!")
+            return True
+    else:
+        return False
+
 def movePiece(playerTurn, window, gameBoard):
     # a small list that is used to make sure a player that gets a second turn for a piece can only use that specific piece twice
     repeatRestrictor = [False, (-1, -1)]
@@ -3696,11 +3824,13 @@ def movePiece(playerTurn, window, gameBoard):
     rows = len(gameBoard)
     columns = len(gameBoard[0])
     while True:
+        
         #flag for keeping track of pieces that were teleported
         if pieceTeleported == True:
             startLocation[0],startLocation[1] = findCurrentTurnPiece(window, gameBoard)
             gameBoard[startLocation[0]][startLocation[1]][1].currentTurnPiece = True
         displayBoard(window, gameBoard)
+        #Picked up item is used to show a message if a piece is picked up automatically at the end of the turn
         pickedUpItem = False
         window["exit"].update(disabled=False)
         usedItem = False
@@ -3714,12 +3844,22 @@ def movePiece(playerTurn, window, gameBoard):
 
         # message for pick your piece to move
         pm(window, f"Pick a piece to move.")
+
+
+
+        ##########################################
+        #   IF FIRST TURN                        #
+        ##########################################
+
         
-        # check to see if this is your second (or higher) turn (you don't get to choose a new piece).  False means this isn't your second move
+        # check to see if this is your second+ turn (you don't get to choose a new piece).  False means this isn't your second move (so if False, it's your first turn)
         if repeatRestrictor[0] == False:
 
-
-            #FIRST PIECE PICK HERE - this is your initial selection option for choosing a piece
+            ###########################
+            #FIRST PIECE PICKED HERE  #
+            ###########################
+            
+            # This is your initial selection option for choosing a piece
             event = window.read()
 
 
@@ -3784,6 +3924,7 @@ def movePiece(playerTurn, window, gameBoard):
 
             #if the player wants to read about items
             if "readItems" in event:
+                #readItems()
                     learnItemsLayout = []
                     itemList = [
                             "<QUIT>",
@@ -3832,18 +3973,35 @@ def movePiece(playerTurn, window, gameBoard):
                     learnItems.close()
                     window.enable()
                     continue
+                
         #disable the exit button to avoid issues
         window["exit"].update(disabled=True)
 
+        ##############################################################
+        #  Assuming a window tile was clicked for the start location #
+        ##############################################################
+
+        try:
+            if event[0][0] >= 0 and event[0][0] < rows and event[0][1] >= 0 and event[0][1] < columns:
+                location = ( event[0][0] , event[0][1] )
+            else:
+                sg.popup("An error occurred during piece selection.  Please try again.")
+                continue
+        except:
+            sg.popup("An exception error has occurred during piece selection.  Attempting to recover.  Please try again.")
+            continue
+
             
-        #if the piece is a bowling ball    
+       
+        
+        #IS THE PIECE A BOWLING BALL?  
         if gameBoard[event[0][0]][event[0][1]][0].occupied == True and "bowling ball" in gameBoard[event[0][0]][event[0][1]][1].activeBuffs:
             #if it's your enemy's bowling ball
             if gameBoard[event[0][0]][event[0][1]][1].ownedBy != playerTurn:
                 pm(window,"That's not your piece!")
                 continue
 
-            #x/y values of the bowling ball
+            #row/column values of the bowling ball
             xloc = event[0][0]
             yloc = event[0][1]
             location = (xloc,yloc)
@@ -3872,31 +4030,37 @@ def movePiece(playerTurn, window, gameBoard):
             #reenable the exit button
             window["exit"].update(disabled=False)
 
-        #if it's the person's second (or more) turn
+
+        ######################################
+        #  IF SECOND TURN (OR HIGHER)        #
+        ######################################
+
+        #force the piece to be last moved piece
         elif repeatRestrictor[0] == True:
             event = []
-            #repeat restrictor keeps track of where the player was last
+            #repeat restrictor keeps track of where the player was last and forces the event to equal that location
             event.append(repeatRestrictor[1])
-            if event[0] == (-1.0 - 1):
-                sg.popup(
-                    "An error has occurred in repeat Restrictor's (-1,-1)",
-                    keep_on_top=True,
-                )
+
+            #if an error occurs, try from the beginning
+            if event[0] == (-1,- 1):
+                sg.popup("An error has occurred while determining last known location of a move again piece.  Please try again.", keep_on_top=True)
                 repeatRestrictor = False
-                return
+                continue
+            
         #allow player to read about items, but not view tiles; helps avoid glitches
         window["itemButton"].update(disabled=False)
         window["examineItem"].update(disabled=True)
 
 
-        #this is where the player started; keep track of this for calculations
+        #sL = startLocation; this is where the player started; keep track of this for calculations
+        
         startLocation = event[0]
+        
 
-
-        #if the person is trying to move a piiece that isn't the same piece they just moved
-        if (repeatRestrictor[0] == True) and (startLocation != repeatRestrictor[1]):
+        #if the person is trying to move a piece that isn't the same piece they just moved
+        if (repeatRestrictor[0] == True) and (event[0] != repeatRestrictor[1]):
             getChoice = sg.popup_yes_no(
-                "You can only move the same piece twice.  Click yes to force that piece to be selected.  Otherwise choose no to end your turn.",
+                "You can only move the same piece twice.  Move again? Click yes to force that piece to be selected.  Otherwise choose no to end your turn.",
                 keep_on_top=True,
             )
             if getChoice == "Yes":
@@ -3913,10 +4077,31 @@ def movePiece(playerTurn, window, gameBoard):
                 startLocation[0],startLocation[1] = findCurrentTurnPiece(window, gameBoard)
             displayBoard(window, gameBoard)
 
-        # if a square is picked and a piece exists on it
-        if gameBoard[event[0][0]][event[0][1]][0].occupied == True:
 
-            # if that piece is stunned
+
+##########################################################
+# NO PIECES EXISTS ON THE STARTING TILE THAT WAS CLICKED #                          
+##########################################################
+
+        # if there's no piece on that square
+        if gameBoard[event[0][0]][event[0][1]][0].occupied == False:
+            window["information"].update(text_color="red")
+            window["information"].update(
+                f"You can't interact directly with unoccupied spaces."
+            )
+            pm(window, f"You can't interact directly with unoccupied spaces.")
+            window.refresh()
+            sleep(0.25)
+            continue
+        
+###########################################
+#  PIECE EXISTS ON STARTING TILE          #
+###########################################
+
+        # Totherwise, if a tile is picked and a piece exists on it
+        elif gameBoard[event[0][0]][event[0][1]][0].occupied == True:
+
+            # if that piece is stunned and it's your piece
             if (
                 playerTurn == gameBoard[event[0][0]][event[0][1]][1].ownedBy
                 and "stunned" in gameBoard[event[0][0]][event[0][1]][1].activeDebuffs
@@ -3935,7 +4120,7 @@ def movePiece(playerTurn, window, gameBoard):
                 and len(gameBoard[event[0][0]][event[0][1]][1].storedItems) > 0
             ):
                 window["information"].update(
-                    f"Selection made, pick a destination or click the same piece again to access items."
+                    f"Selection made. Pick a destination.\nOR CLICK THE PIECE AGAIN TO SEE AVAILABLE ITEMS."
                 )
                 pm(
                     window,
@@ -3943,6 +4128,7 @@ def movePiece(playerTurn, window, gameBoard):
                 )
 
                 window["readItems"].update(disabled=True)
+            
             # if the piece doesn't belong to you
             elif playerTurn != gameBoard[event[0][0]][event[0][1]][1].ownedBy:
                 window["information"].update(f"That's not your piece...")
@@ -3950,39 +4136,39 @@ def movePiece(playerTurn, window, gameBoard):
                 window["information"].update(text_color="red")
                 window.refresh()
                 continue
+            
             # if the piece belongs to you but doesn't have items
             else:
                 window["information"].update(f"Selection made, pick a destination.")
                 pm(window, f"Selection made, pick a destination.")
 
-        # if there's no piece on that square
-        else:
-            window["information"].update(text_color="red")
-            window["information"].update(
-                f"You can't interact directly with unoccupied spaces."
-            )
-            pm(window, f"You can't interact directly with unoccupied spaces.")
-            window.refresh()
-
-            sleep(0.25)
-            continue
 
         # if there is a piece there and it belongs to you, highlight it to show you selected it
         if gameBoard[startLocation[0]][startLocation[1]][1] != 0:
             gameBoard[startLocation[0]][startLocation[1]][1].grey = True
             gameBoard[startLocation[0]][startLocation[1]][1].currentTurnPiece = True
+            
         # update the board (to show highlighting)
         displayBoard(window, gameBoard)
 
+
+
+#########################################
+#  ASK DESTINATION                      #
+#########################################
+
         # get the next location
         event = window.read()
-
         window["examineItem"].update(disabled=True)
+        
+########################################
+#   DESTINATION OFFICIALLY SAVED HERE  #
+########################################
 
-        # this is where we're attempting to move
+        # this is where we're attempting to move 
         endLocation = event[0]
-
-        # trying to use item
+        
+        # trying to use item (if the player clicked a piece and then the item button, or clicked the same icon twice)
         if (
             "itemButton" in event
             and gameBoard[startLocation[0]][startLocation[1]][0].occupied == True
@@ -4007,6 +4193,7 @@ def movePiece(playerTurn, window, gameBoard):
                 countPieces(gameBoard, window)
                 displayBoard(window, gameBoard)
                 continue
+            
             # if the piece isn't yours
             elif gameBoard[startLocation[0]][startLocation[1]][1].ownedBy != playerTurn:
                 gameBoard[startLocation[0]][startLocation[1]][1].grey = False
@@ -4024,6 +4211,7 @@ def movePiece(playerTurn, window, gameBoard):
             else:
                 pm(window, "An error occurred in item lookups")
 
+                
         # if there isn't any piece on the square
         if gameBoard[startLocation[0]][startLocation[1]][0].occupied == False:
             gameBoard[startLocation[0]][startLocation[1]][1].currentTurnPiece = False
@@ -4037,108 +4225,49 @@ def movePiece(playerTurn, window, gameBoard):
             gameBoard[startLocation[0]][startLocation[1]][1].currentTurnPiece = False
         displayBoard(window, gameBoard)
 
+
+
+        
+        #if your start location contains no pieces
+        if gameBoard[startLocation[0]][startLocation[1]][0].occupied == False:
+            window["information"].update(f"Nothing here to move!")
+            pm(window, "Nothing here to move!")
+            window.refresh
+            continue
+        
         # if the spot you're moving from contains a piece (which it should)
-        if gameBoard[startLocation[0]][startLocation[1]][0].occupied:
+        elif gameBoard[startLocation[0]][startLocation[1]][0].occupied == True:
+
             # if the piece is yours
             if gameBoard[startLocation[0]][startLocation[1]][1].ownedBy == playerTurn:
 
-
-
-
-                #BEGIN REAL MOVE ATTEMPT
-
+#########################################
+#   BEGIN MOVE TESTS                    #
+#########################################
 
                 #worm hole override
 
                 #test for tripmine trip mine
-
+                wormHole = False
                 #if player 1's turn and there's a worm hole there
                 if gameBoard[endLocation[0]][endLocation[1]][0].occupied == False and gameBoard[endLocation[0]][endLocation[1]][0].wormHole1 == True and playerTurn == 1:
-                    roundEarthTheory = True
+                    wormHole = True
                 elif gameBoard[endLocation[0]][endLocation[1]][0].occupied == False and gameBoard[endLocation[0]][endLocation[1]][0].wormHole2 == True and playerTurn == 2:
-                    roundEarthTheory = True
+                    wormHole = True
 
-                
-
-                
                 # assume the player isn't trying to move diagonally at first
                 diagonalCheck = False
+
+
+
+
+                # if you have a round earth theory item equipped (to "pac man" around the edge of the screen to the opposite side)
                 if "round earth theory" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-
+                    roundEarthTheory = roundEarthTheoryFunction(gameBoard,startLocation[0],endLocation[0],startLocation[1],endLocation[1],columns,rows)
                     
-                    
-                #trying to go from right side to left side
-
-                    #try to go straight right to straight left
-                    if startLocation[0] == endLocation[0]:
-                        if startLocation[1] == columns-1 and endLocation[1] == 0:
-                            sg.popup("Teleport to left")
-                            roundEarthTheory = True
-                    #trying to go down right
-                    elif startLocation[0] == endLocation[0]-1 and startLocation[1] == columns -1 and endLocation[1] == 0 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-                        sg.popup("Teleport down right")
-                        roundEarthTheory = True
-                    #trying to go up right
-                    elif startLocation[0] == endLocation[0]+1 and startLocation[1] == columns -1 and endLocation[1] == 0 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-                        sg.popup("Teleport up right")
-                        roundEarthTheory = True
-                    
-
-                #trying to go from left to right side
-                    #try to go straight left to straight right
-                    if startLocation[0] == endLocation[0]:
-                        if startLocation[1] == 0 and endLocation[1] == columns -1:
-                            sg.popup("Teleport to right")
-                            roundEarthTheory = True
-                    #trying to go down right
-                    elif startLocation[0] == endLocation[0]-1 and startLocation[1] == 0  and endLocation[1] == columns -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-                        sg.popup("Teleport down left")
-                        roundEarthTheory = True
-                    #trying to go up right
-                    elif startLocation[0] == endLocation[0]+1 and startLocation[1] == 0 and endLocation[1] == columns -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-                        sg.popup("Teleport up left")
-                        roundEarthTheory = True
-
-                        
-                #trying to go from up to down
-                    #try to go straight up to straight down
-                    if startLocation[1] == endLocation[1]:
-                        if startLocation[0] == 0 and endLocation[0] == rows -1:
-                            sg.popup("Teleport to bottom")
-                            roundEarthTheory = True
-                    #trying to go up right
-                    elif startLocation[0] == 0 and startLocation[1] == (endLocation[1] +1) and endLocation[0] == rows -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-                        sg.popup("Teleport up left")
-                        roundEarthTheory = True
-                    #trying to go up right
-                    elif startLocation[1] == endLocation[1]-1 and startLocation[0] == 0 and endLocation[0] == rows -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-                        sg.popup("Teleport up right")
-                        roundEarthTheory = True
-                
-                #diagonals (only works with diagonal enabled
-                    if "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-                        #upleft
-                        if startLocation[0] == 0 and startLocation[1] == 0 and endLocation[0] == rows-1 and endLocation[1] == columns-1:
-                            sg.popup("teleport to bottom right")
-                            roundEarthTheory = True
-                        #upright
-                        if startLocation[0] == 0 and startLocation[1] == columns-1 and endLocation[0] == rows-1 and endLocation[1] == 0:
-                            sg.popup("teleport to bottom left")
-                            roundEarthTheory = True
-                        #downleft
-                        if startLocation[0] == rows-1 and startLocation[1] == 0 and endLocation[0] == 0 and endLocation[1] == columns-1:
-                            sg.popup("teleport top right")
-                            roundEarthTheory = True
-                        #downright
-                        if startLocation[0] == rows-1 and startLocation[1] == columns-1 and endLocation[0] == 0 and endLocation[1] == 0:
-                            sg.popup("teleport top left")
-                            roundEarthTheory = True
-
-
-                
-                # if it's too far...
+                # if you're attemmpting to go somewhere that is too far...
                 # ...but you have a move diagonal and it turns out you're actually within range:
-                if roundEarthTheory == False:
+                if roundEarthTheory == False and wormHole == False:
                     if (
                         getDistance(
                             startLocation[0],
@@ -4174,20 +4303,19 @@ def movePiece(playerTurn, window, gameBoard):
                         )
                         pm(window, f"That location is too far for you to move to!")
                         window.refresh
-
                         continue
                 
-                #
-                # if it's close enough:  (DESTINATION/LEGAL MOVE)
-                #
+                ##################################################
+                # if it's close enough:  (DESTINATION/LEGAL MOVE)#
+                ##################################################
 
                 # if the landing spot is an item Orb:
                 if gameBoard[endLocation[0]][endLocation[1]][0].tileType == "itemOrb":
-
                     pickUpItemOrb(gameBoard, startLocation[0], startLocation[1])
                     pm(window, "Picked up an item")
                     pickedUpItem = True
-
+                    
+                # if the landing spot is missing or still damaged
                 if gameBoard[endLocation[0]][endLocation[1]][0].tileType in [
                     "destroyed",
                     "damaged4",
@@ -4198,12 +4326,15 @@ def movePiece(playerTurn, window, gameBoard):
                     window["information"].update(f"Can't move here!")
                     pm(window, "Can't move here!")
                     continue
+
                 
+##########################################################
+#  Start location = occupied, destination != occupied    #
+##########################################################
                 # if the landing spot is not occupied by a piece
                 if gameBoard[endLocation[0]][endLocation[1]][0].occupied == False:
                     g = gameBoard[endLocation[0]][endLocation[1]][0]
                     deathCheck(window, gameBoard)
-
 
                     #jumpoline check
                     if gameBoard[endLocation[0]][endLocation[1]][0].tileType == "jumpoline":
@@ -4233,69 +4364,55 @@ def movePiece(playerTurn, window, gameBoard):
                         endLocation = jumpoline(window, gameBoard, (endLocation[0],endLocation[1]), playerTurn)
                         sg.popup("Bounced to a new spot!")
                         pm(window,"Bounced to a new spot!")
-
-
-                   
-
-                                    
-
-                        
+  
                     # copy the actual piece object over from the old address to the new one (deepcopy needed?)
                     gameBoard[endLocation[0]][endLocation[1]][1] = gameBoard[startLocation[0]][startLocation[1]][1]
-
 
                     #might be glitchy
                     gameBoard[endLocation[0]][endLocation[1]][0].occupied = True
                     #might be glitchy
                     
-
                     # set the original location as being empty; delete the class; set a default tile
                     gameBoard[startLocation[0]][startLocation[1]][0].occupied = False
                     gameBoard[startLocation[0]][startLocation[1]][1] = 0
 
 
-
+                    
                     
                     #mugger check
-                    if gameBoard[endLocation[0]][endLocation[1]][0].tileType == "mugger":
-                        
-                        if g.horiLaser == True or g.vertLaser == True or g.crossLaser == True:
-
-                            #forcefield check needs to be added
+                    
+                    usedShield = forcefieldCheck(window, gameBoard,  playerTurn, startLocation, endLocation)
+                    if usedShield == True:
+                        sg.popup("A shield was used")
+                    muggerCheck(window, gameBoard, startLocation, endLocation, playerTurn)
+                    
+##                    if gameBoard[endLocation[0]][endLocation[1]][0].mugger != False:
+##                        
+##                        if g.horiLaser == True or g.vertLaser == True or g.crossLaser == True:
+##
+##                            #forcefield check needs to be added
+##                            
+##                            gameBoard[endLocation[0]][endLocation[1]][
+##                                0
+##                            ].occupied = False
+##                            gameBoard[startLocation[0]][startLocation[1]][0].occupied = False
+##                            gameBoard[startLocation[0]][startLocation[1]][1] = 0
+##                            gameBoard[endLocation[0]][endLocation[1]][1] = 0
+##                            gameBoard[endLocation[0]][endLocation[1]][1] = 0
+##                            gameBoard[endLocation[0]][endLocation[1]][
+##                                0
+##                            ].tileType = "exploding"
+##                            displayBoard(window, gameBoard)
+##                            window.refresh()
+##                            playsound("sounds/grenade.mp3", block = False)
+##                            sg.popup("Burned to a crisp by the laser", keep_on_top=True)
+##                            return
                             
-                            gameBoard[endLocation[0]][endLocation[1]][
-                                0
-                            ].occupied = False
-                            gameBoard[startLocation[0]][startLocation[1]][0].occupied = False
-                            gameBoard[startLocation[0]][startLocation[1]][1] = 0
-                            gameBoard[endLocation[0]][endLocation[1]][1] = 0
-                            gameBoard[endLocation[0]][endLocation[1]][1] = 0
-                            gameBoard[endLocation[0]][endLocation[1]][
-                                0
-                            ].tileType = "exploding"
-                            displayBoard(window, gameBoard)
-                            window.refresh()
-                            playsound("sounds/grenade.mp3", block = False)
-                            sg.popup("Burned to a crisp by the laser", keep_on_top=True)
-                            return
-                            
                         
-                        if gameBoard[endLocation[0]][endLocation[1]][0].mugger == playerTurn:
-                            sg.popup("The mugger isn't interested in mugging you, so he leaves stealthily.")
-                            gameBoard[endLocation[0]][endLocation[1]][0].mugger = False
-                        elif gameBoard[endLocation[0]][endLocation[1]][0].mugger != playerTurn:
-                                
-                                if gameBoard[endLocation[0]][endLocation[1]][0].occupied == True:
-                                    
-                                    if len(gameBoard[endLocation[0]][endLocation[1]][1].storedItems) > 0:
-                                        gameBoard[endLocation[0]][endLocation[1]][1].storedItems.clear()
-                                        sg.popup("The mugger stole all your held items")
-                                        gameBoard[endLocation[0]][endLocation[1]][0].mugger = False
-                                
-                                else:
-                                    sg.popup("The mugger sees you don't have any items, so he stealthily leaves.")
+                        
 
                     #mystery box
+                    
                     
                     if gameBoard[endLocation[0]][endLocation[1]][0].tileType == "mystery box":
                         sg.popup("Mystery box")
@@ -4357,6 +4474,8 @@ def movePiece(playerTurn, window, gameBoard):
                         else:
                             gameBoard[startLocation[0]][startLocation[1]][0].tileType = "default"
 
+                    
+                    
                     # set the new location as occupied; set the tile as the type of the tile that moved (needs to be updated in future revisions)
                     gameBoard[endLocation[0]][endLocation[1]][0].occupied = True
                     gameBoard[endLocation[0]][endLocation[1]][1].location = (
@@ -4365,7 +4484,7 @@ def movePiece(playerTurn, window, gameBoard):
                     )
                     # check for mine death
                     deathCheck(window, gameBoard)
-
+                    
                     if (
                         gameBoard[endLocation[0]][endLocation[1]][1] != 0
                         and gameBoard[endLocation[0]][endLocation[1]][0].tileType
@@ -4577,6 +4696,7 @@ def movePiece(playerTurn, window, gameBoard):
                     window["information"].update(f"Jumpkilled an enemy piece!")
                     pm(window, "Jumpkilled an enemy piece!")
 
+                    muggerCheck(window, gameBoard, startLocation, endLocation, playerTurn)
                     
 
                     # go again if you have moveAgain equipped
@@ -4610,11 +4730,7 @@ def movePiece(playerTurn, window, gameBoard):
                 window.refresh
                 continue
 
-        else:
-            window["information"].update(f"Nothing here to move!")
-            pm(window, "Nothing here to move!")
-            window.refresh
-            continue
+
 
 # after your ends, get back your max "move again" turns
 def resetMoveAgain(gameBoard):

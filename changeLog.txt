@@ -1,5 +1,7 @@
 ChangeLog
 
+v.0.9.60 July 10, 2020
+	Created the mugger, he steals items from enemies and passes them to allies that visit him.  He's permanent.  Redid some of the moving code to make it nicer.  Created a shield function to faciliate usage of it (need to rewrite all the references to it).  
 
 
 v.0.9.51 July 10, 2020
