@@ -41,6 +41,7 @@ def initializeField(columns, rows, window, gameBoard):
 
 
             #give items to main row
+            gameBoard[i][j][1].storedItems.append("dead man's trigger")
             gameBoard[i][j][1].storedItems.append("mystery box")
             gameBoard[i][j][1].storedItems.append("shuffle radial")
             gameBoard[i][j][1].storedItems.append("jumpoline")
@@ -944,6 +945,10 @@ def displayBoard(window, gameBoard):
                     if "jumpProof" in g.activeBuffs:
                         jumpProof = Image.open("images/jumpProof.png").convert("RGBA")
                         avatar.paste(jumpProof, (0, 0), jumpProof)
+                    
+                    if "dead man's trigger" in g.activeBuffs:
+                        deadmanstrigger = Image.open("images/deadmanstrigger.png").convert("RGBA")
+                        avatar.paste(deadmanstrigger, (0, 0), deadmanstrigger)
 
                     # set a forcefield if it exists
                     if "Energy Forcefield" in g.activeBuffs:
@@ -1127,7 +1132,8 @@ def pickUpItemOrb(gameBoard, x, y):
         "warp",
         "recall",
         "jumpoline",
-        "mystery box"
+        "mystery box",
+        "dead man's trigger",
     ]
     # items = ["magnet"]
 
@@ -1289,6 +1295,14 @@ def useItems(gameBoard, x, y, window):
                         j[0].occupied = False
                         j[1] = 0
                         j[0].tileType = "default"
+
+                        
+        elif str.find(i,"dead man's trigger") >= 0:
+            itemsMenu.close()
+            gameBoard[x][y][1].storedItems.remove("dead man's trigger")
+            gameBoard[x][y][1].activeBuffs.append("dead man's trigger")
+            sg.popup("This piece has applied a dead man's trigger to itself.  If he is jumped by an enemy, they will die as well.")
+            
 
         elif str.find(i,"jumpoline") >= 0:
             itemsMenu.close()
@@ -4439,6 +4453,22 @@ def movePiece(playerTurn, window, gameBoard):
                         sleep(1)
                         continue
 
+                    #Program dead man's trigger
+                    elif ("dead man's trigger" in gameBoard[endLocation[0]][endLocation[1]][1].activeBuffs):
+                        sg.popup("The piece had a dead man's trigger.  Your piece died as well.")
+                        deadMansTrigger = True
+
+                        #delete the original location
+                        gameBoard[startLocation[0]][startLocation[1]][1] = 0
+                        gameBoard[startLocation[0]][startLocation[1]][0].occupied = False
+
+                        #delete where the bomb is
+                        gameBoard[endLocation[0]][endLocation[1]][1] = 0
+                        gameBoard[endLocation[0]][endLocation[1]][0].occupied = False
+                        
+                        return
+
+                        
                     # set the internal location of the piece to where you want to end up
                     gameBoard[startLocation[0]][startLocation[1]][1].location = (
                         endLocation[0],
@@ -4518,6 +4548,8 @@ def movePiece(playerTurn, window, gameBoard):
                             break
                     window["information"].update(f"Jumpkilled an enemy piece!")
                     pm(window, "Jumpkilled an enemy piece!")
+
+                    
 
                     # go again if you have moveAgain equipped
                     if (

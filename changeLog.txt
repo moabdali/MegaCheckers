@@ -1,5 +1,9 @@
 ChangeLog
 
+
+v.0.9.50 July 10, 2020
+	Basic deadman trigger's functionality.  Needs forcefield checks.
+
 v.0.9.49 July 10, 2020
 	Sorted movePiece code a little to make mystery box work easier.
 
