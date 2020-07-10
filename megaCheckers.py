@@ -1343,7 +1343,7 @@ def useItems(gameBoard, x, y, window):
         elif str.find(i,"mugger") >= 0:
             itemsMenu.close()
             validTargets = getCross((x, y), gameBoard, trueEmpty = True)
-            sg.popup(validTargets)
+            
             pm(window, "Pick an adjacent location to place the .")
             event = window.read()
             if event[0] in validTargets:
@@ -4195,8 +4195,28 @@ def movePiece(playerTurn, window, gameBoard):
 
                    
 
+                                    
+
+                        
+                    # copy the actual piece object over from the old address to the new one (deepcopy needed?)
+                    gameBoard[endLocation[0]][endLocation[1]][1] = gameBoard[startLocation[0]][startLocation[1]][1]
+
+
+                    #might be glitchy
+                    gameBoard[endLocation[0]][endLocation[1]][0].occupied = True
+                    #might be glitchy
+                    
+
+                    # set the original location as being empty; delete the class; set a default tile
+                    gameBoard[startLocation[0]][startLocation[1]][0].occupied = False
+                    gameBoard[startLocation[0]][startLocation[1]][1] = 0
+
+
+
+                    
                     #mugger check
                     if gameBoard[endLocation[0]][endLocation[1]][0].tileType == "mugger":
+                        
                         if g.horiLaser == True or g.vertLaser == True or g.crossLaser == True:
 
                             #forcefield check needs to be added
@@ -4219,29 +4239,19 @@ def movePiece(playerTurn, window, gameBoard):
                             
                         
                         if gameBoard[endLocation[0]][endLocation[1]][0].mugger == playerTurn:
-                            sg.popup("The mugger has left.")
+                            sg.popup("The mugger isn't interested in mugging you, so he leaves stealthily.")
                             gameBoard[endLocation[0]][endLocation[1]][0].mugger = False
                         elif gameBoard[endLocation[0]][endLocation[1]][0].mugger != playerTurn:
                                 
-                                if gameBoard[startLocation[0]][startLocation[1]][0].occupied == True:
+                                if gameBoard[endLocation[0]][endLocation[1]][0].occupied == True:
                                     
-                                    if len(gameBoard[startLocation[0]][startLocation[1]][1].storedItems) > 0:
-                                        gameBoard[startLocation[0]][startLocation[1]][1].storedItems.clear()
+                                    if len(gameBoard[endLocation[0]][endLocation[1]][1].storedItems) > 0:
+                                        gameBoard[endLocation[0]][endLocation[1]][1].storedItems.clear()
                                         sg.popup("The mugger stole all your held items")
                                         gameBoard[endLocation[0]][endLocation[1]][0].mugger = False
-                                    
-
-                        
-                    # copy the actual piece object over from the old address to the new one (deepcopy needed?)
-                    gameBoard[endLocation[0]][endLocation[1]][1] = gameBoard[
-                        startLocation[0]
-                    ][startLocation[1]][1]
-
-                    # set the original location as being empty; delete the class; set a default tile
-                    gameBoard[startLocation[0]][startLocation[1]][0].occupied = False
-                    gameBoard[startLocation[0]][startLocation[1]][1] = 0
-
-
+                                
+                                else:
+                                    sg.popup("The mugger sees you don't have any items, so he stealthily leaves.")
 
                     #mystery box
                     
