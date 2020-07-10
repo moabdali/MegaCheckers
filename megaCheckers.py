@@ -42,13 +42,16 @@ def initializeField(columns, rows, window, gameBoard):
 
             #give items to main row
             gameBoard[i][j][1].storedItems.append("dead man's trigger")
+            gameBoard[i][j][1].storedItems.append("recall")
             gameBoard[i][j][1].storedItems.append("mystery box")
             gameBoard[i][j][1].storedItems.append("shuffle radial")
             gameBoard[i][j][1].storedItems.append("jumpoline")
             gameBoard[i][j][1].storedItems.append("mugger")
             gameBoard[i][j][1].storedItems.append("shuffle item orbs")
             gameBoard[i][j][1].storedItems.append("row laser")
-            gameBoard[i][j][1].storedItems.append("column laser")
+            gameBoard[i][j][1].storedItems.append("mutual treason row")
+            gameBoard[i][j][1].storedItems.append("mutual treason radial")
+            gameBoard[i][j][1].storedItems.append("mutual treason column")
             gameBoard[i][j][1].storedItems.append("shuffle column")
             gameBoard[i][j][1].storedItems.append("reproduce")
             gameBoard[i][j][1].storedItems.append("haymaker")
@@ -213,7 +216,7 @@ def getColumn(location, gameBoard, grow=False, emptyOnly=False):
     validLocations = []
     if grow == False:
         for i in range(len(gameBoard)):
-            validLocations.append(i, location[1])
+            validLocations.append( (i, location[1]) )
     return validLocations
 
 
@@ -231,7 +234,7 @@ def getRow(location, gameBoard,grow=False):
     validLocations = []
     if grow == False:
         for i in range(len(gameBoard[0])):
-            validLocations.append(location[0], i)
+            validLocations.append( (location[0], i))
     return validLocations
 
 
@@ -1102,7 +1105,7 @@ def emptySpots(gameBoard,trueEmpty = False):
 def pickUpItemOrb(gameBoard, x, y):
     # items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
     items = [
-        "orb eater",
+        "orb eater", 
         "row laser",
         "magnet",
         "trap orb",
@@ -1134,6 +1137,9 @@ def pickUpItemOrb(gameBoard, x, y):
         "jumpoline",
         "mystery box",
         "dead man's trigger",
+        "mutual treason row",
+        "mutual treason column",
+        "mutual treason radial"
     ]
     # items = ["magnet"]
 
@@ -1303,7 +1309,29 @@ def useItems(gameBoard, x, y, window):
             gameBoard[x][y][1].activeBuffs.append("dead man's trigger")
             sg.popup("This piece has applied a dead man's trigger to itself.  If he is jumped by an enemy, they will die as well.")
             
+        elif str.find(i,"mutual treason row") >=0 or str.find(i,"mutual treason column")>=0 or str.find(i,"mutual treason radial")>=0:
+            itemsMenu.close()
+            validList = []
+            if i == "mutual treason row":
+                validList = getRow(location, gameBoard)
+                gameBoard[x][y][1].storedItems.remove("mutual treason row")
+            elif i == "mutual treason radial":
+                validList = getRadial(location, gameBoard)
+                gameBoard[x][y][1].storedItems.remove("mutual treason radial")
+            elif i == "mutual treason column":
+                validList = getColumn(location, gameBoard)
+                gameBoard[x][y][1].storedItems.remove("mutual treason column")
 
+            for i in validList:
+                x1 = i[0]
+                y1 = i[1]
+                if gameBoard[x1][y1][0].occupied == True:
+                    if gameBoard[x1][y1][1].ownedBy == 1:
+                        gameBoard[x1][y1][1].ownedBy = 2
+                    elif gameBoard[x1][y1][1].ownedBy == 2:
+                        gameBoard[x1][y1][1].ownedBy = 1
+            sg.popup("All affected pieces have changed their allegiances")
+                
         elif str.find(i,"jumpoline") >= 0:
             itemsMenu.close()
             validTargets = getCross((x, y), gameBoard, trueEmpty = True)

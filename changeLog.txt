@@ -1,6 +1,10 @@
 ChangeLog
 
 
+
+v.0.9.51 July 10, 2020
+	Corrected an uncaught error in getRow/getColumn (used the format append(x,y) instead of append( (x,y) ).  Implemented mutual treason (row/column/radial), which forces all affected pieces to switch their owners.  This may cause glitches, so it'll be interesting to keep an eye out on this feature.  (Fortunately, the recall item and the treason items interact properly - with the piece retaining whatever allegiance it originally had).
+
 v.0.9.50 July 10, 2020
 	Basic deadman trigger's functionality.  Needs forcefield checks.
 
