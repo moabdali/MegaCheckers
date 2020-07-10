@@ -1,5 +1,10 @@
 ChangeLog
 
+
+v.0.9.45 July 10, 2020
+	Added a mystery box.  It can do a random effect for either player. Currently gives 3 items, or takes away your items, or kills you.  Also caught an error in the cross check for "trueEmpty = True" (had wrong placement of + - 1 for columns).
+
+
 v.0.9.45 July 9, 2020
 	Put in the groundwork for a mugger; currently steals items and leaves.  May program him to give the owner the items.  Requires a huge rework of the move function
 
