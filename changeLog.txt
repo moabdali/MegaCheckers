@@ -1,5 +1,10 @@
 ChangeLog
 
+v.0.9.69 July 11, 2020
+	Added an item dump item (needs a better name).  It takes all your unused items and drops them anywhere on the field as a large pickup that anyone can pick up.  
+
+v.0.9.68 July 11, 2020
+	Added the charity item.  It spawns a basic piece for your opponent.  Seems like a mainly useless joke item, but it can be used to mess with an opponent's plans, or be used together with steal type items, or to give yourself an easy target to kill if you need one.  
 
 v.0.9.67 July 11, 2020
 	Added teach column/radial/row.  Allows a piece to teach all of its buffs to affected allies.

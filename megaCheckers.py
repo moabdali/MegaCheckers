@@ -41,10 +41,10 @@ def initializeField(columns, rows, window, gameBoard):
 
 
             #give items to main row
-            gameBoard[i][j][1].storedItems.append("teach column")
+            gameBoard[i][j][1].storedItems.append("dump items")
             gameBoard[i][j][1].storedItems.append("teach row")
             gameBoard[i][j][1].storedItems.append("teach radial")
-            gameBoard[i][j][1].storedItems.append("recall")
+            gameBoard[i][j][1].storedItems.append("charity")
             gameBoard[i][j][1].storedItems.append("mystery box")
             gameBoard[i][j][1].storedItems.append("shuffle radial")
             gameBoard[i][j][1].storedItems.append("jumpoline")
@@ -149,6 +149,7 @@ class Tile:
         self.mugger = False
         self.muggerList = []
         self.purityTile = False
+        self.dumpList = []
 
     def describeSelf(self):
 
@@ -805,7 +806,10 @@ def displayBoard(window, gameBoard):
             if gameBoard[i][j][0].tileType == "mystery box":
                 window[i, j].update(image_filename="images/mystery box.png")
                 continue
-
+            
+            if gameBoard[i][j][0].tileType == "itemDump":
+                window[i, j].update(image_filename="images/itemDump.png")
+                continue
                 
             
             if gameBoard[i][j][0].tileType == "exploding":
@@ -1130,63 +1134,65 @@ def emptySpots(gameBoard,trueEmpty = False):
                     
 
                 #truly empty spots
-                elif trueEmpty == True and True not in (j[0].orbEater, j[0].occupied, j[0].wormHole1, j[0].wormHole2) and j[0].recallTurn == False:
+                elif trueEmpty == True and True not in (j[0].orbEater, j[0].dumpList, j[0].occupied, j[0].wormHole1, j[0].wormHole2) and j[0].recallTurn == False:
                     emptySpots.append( (iIndex, jIndex) )
-                    
-            
     return emptySpots
+
+
 # the item list
 def pickUpItemOrb(gameBoard, x, y):
     # items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
     items = [
         "bowling ball",
+        "charity",
         "dead man's trigger",
         "Energy Forcefield",
-        "floor restore",
-        "haphazard airstrike",#5
+        "floor restore",#5
+        "haphazard airstrike",
         "haymaker",
         "jump proof",
         "jumpoline",
-        "laser column",
-        "laser row",#10
+        "laser column",#10
+        "laser row",
         "magnet",
         "move again",
         "move diagonal",
-        "mugger",
-        "mutual treason column",#15
+        "mugger",#15
+        "mutual treason column",
         "mutual treason radial",
         "mutual treason row",
         "mystery box",
-        "napalm column",
-        "napalm row",#20
+        "napalm column",#20
+        "napalm row",
         "napalm radial",
         "orb eater",
         "place mine",
-        "purify radial",
-        "purity tile",#25
+        "purify radial",#25
+        "purity tile",
         "recall",
         "reproduce",
         "round earth theory",
-        "shuffle column",
-        "shuffle item orbs",#30
+        "shuffle column",#30
+        "shuffle item orbs",
         "shuffle radial",
         "shuffle row",
         "smart bombs",
-        "snake tunneling", 
-        "spooky hand",#35
+        "snake tunneling", #35
+        "spooky hand",
         "sticky time bomb",
         "suicide bomb column",
         "suicide bomb radial",
-        "suicide bomb row",
-        "teach column", #40
+        "suicide bomb row",#40
+        "teach column", 
         "teach radial",
         "teach row",
         "trap orb",
-        "trip mine radial",
-        "vile radial", #45
+        "trip mine radial",#45
+        "vile radial", 
         "warp",
         "wololo",
         "worm hole",
+        "dump powers"
     ]
     
 
@@ -1209,6 +1215,17 @@ def jumpoline(window, gameBoard, location, playerTurn):
     y=choice[1]
     return x,y
 
+def disableEverything(window, turnOn = False):
+    if turnOn == False:
+        window["exit"].update(disabled = True)
+        window["itemButton"].update(disabled=True)
+        window["examineItem"].update(disabled=True)
+        window["readItems"].update(disabled=True)
+    else:
+        window["exit"].update(disabled = False)
+        window["itemButton"].update(disabled=False)
+        window["examineItem"].update(disabled=False)
+        window["readItems"].update(disabled=False)
 
 # using an item
 def useItems(gameBoard, x, y, window):
@@ -1217,6 +1234,8 @@ def useItems(gameBoard, x, y, window):
     itemsLength = len(gameBoard[x][y][1].storedItems)
     for i in gameBoard[x][y][1].storedItems:
         z = f"images/{i}.png"
+        zz = "no explanation supplied... yet"
+        
         if z == "images/move again.png":
             z = "images/moveAgainMax.png"
             zz = "Move an extra space"
@@ -1307,12 +1326,10 @@ def useItems(gameBoard, x, y, window):
     listData += [[sg.Button("CANCEL")]]
 
     layout += [[sg.Column(listData, justification="center")]]
-    #no_titlebar=True,
+
 
     
     itemsMenu = sg.Window("Items Menu", layout, disable_close=True, grab_anywhere=True,keep_on_top=True).finalize()
-    
-    # event = itemsMenu.read()
     enemyTurn = 0
     playerTurn = gameBoard[x][y][1].ownedBy
     if playerTurn == 1:
@@ -1386,6 +1403,77 @@ def useItems(gameBoard, x, y, window):
             sg.popup(f"Taught buffs to {taughtPieces} piece(s).")
             pm(window,f"Taught buffs to {taughtPieces} piece(s).")
 
+# dump items
+        elif str.find(i, "dump items") >= 0:
+            itemsMenu.close()
+            if len(gameBoard[x][y][1].storedItems) < 2:
+                sg.popup("There won't be any items to dump.  Canceling.")
+                continue
+            validLocations = emptySpots(gameBoard, trueEmpty = True)
+            sg.popup("Pick any empty spot to drop all of your items into.  Anyone can pick it up.  Click yourself if you don't wish to use this.")
+            disableEverything(window)
+            event = window.read()
+            if event[0] == (location):
+                sg.popup("Canceled the dump")
+                disableEverything(window,turnOn = True)
+                continue
+            elif event[0] in validLocations:
+                x1 = event[0][0]
+                y1 = event[0][1]
+                dumpCount = 0
+                gameBoard[x][y][1].storedItems.remove("dump items")
+                for i in gameBoard[x][y][1].storedItems:
+                    gameBoard[x1][y1][0].dumpList.append(i)
+                    dumpCount +=1
+                gameBoard[x][y][1].storedItems.clear()
+                sg.popup(f"Dumped {dumpCount} item(s)")
+                disableEverything(window,turnOn = True)
+                gameBoard[x1][y1][0].tileType = "itemDump"
+            
+# charity            
+        elif str.find(i, "charity") >= 0:
+            itemsMenu.close()
+            validLocations = emptySpots(gameBoard)
+            if len(validLocations) < 1:
+                sg.popup("There's no space to gift an extra piece to your opponent.")
+            else:
+                sg.popup("Pick any unoccupied space on the board to spawn a free basic piece for your opponent.  How charitable!")
+                pm(window, "Pick any unoccupied space on the board to spawn a free basic piece for your opponent.  How charitable!")
+                window["exit"].update(disabled = False)
+                window["itemButton"].update(disabled=True)
+                window["examineItem"].update(disabled=True)
+                window["readItems"].update(disabled=True)
+                event = window.read()
+                x1 = event[0][0]
+                y1 = event[0][1]
+                if "exit" in event[0]:
+                    
+                    quityesno = sg.popup_yes_no("You seriously want to quit?!")
+                    
+                    if quityesno == "Yes":
+                        sg.popup("Whatever.  Get lost.")
+                        window.close()
+                        raise SystemExit
+                    else:
+                        continue
+                else:
+                    if not event[0] in validLocations:
+                        sg.popup("That's not a valid spot.  Canceling")
+                    else:
+                        
+                        gameBoard[x][y][1].storedItems.remove("charity")
+                        #set the location as active
+                        gameBoard[x1][y1][0].occupied = True
+                        #we need to find the enemy's number to provide it to the piece class below
+                        if playerTurn == 1:
+                            enemy = 2
+                        elif playerTurn ==2:
+                            enemy = 1
+                        #create a new basic piece at the location given, and under the control of the enemy
+                        gameBoard[x1][y1][1] = Piece(x1,y1,enemy)
+            
+           
+                
 
 # teach radial
         elif str.find(i, "teach radial") >= 0:
@@ -4708,7 +4796,43 @@ def movePiece(playerTurn, window, gameBoard):
                         sg.popup("Any negative effects on this piece have been cleared.")
                         gameBoard[endLocation[0]][endLocation[1]][1].activeDebuffs.clear()
                         
-                    
+                    if gameBoard[endLocation[0]][endLocation[1]][0].tileType == "itemDump":
+                        if g.horiLaser == True or g.vertLaser == True or g.crossLaser == True:
+
+                            #forcefield check needs to be added
+                            
+                            gameBoard[endLocation[0]][endLocation[1]][
+                                0
+                            ].occupied = False
+                            gameBoard[startLocation[0]][startLocation[1]][0].occupied = False
+                            gameBoard[startLocation[0]][startLocation[1]][1] = 0
+                            
+                            gameBoard[endLocation[0]][endLocation[1]][1] = 0
+                            gameBoard[endLocation[0]][endLocation[1]][
+                                0
+                            ].tileType = "exploding"
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            playsound("sounds/grenade.mp3", block = False)
+                            sg.popup("Burned to a crisp by the laser", keep_on_top=True)
+                            gameBoard[endLocation[0]][endLocation[1]][
+                                0
+                            ].tileType = "itemDump"
+                            break
+                        
+                        elif "inhibited" not in gameBoard[endLocation[0]][endLocation[1]][1].activeDebuffs:
+                            itemsGained = 0
+                            for i in gameBoard[endLocation[0]][endLocation[1]][0].dumpList:
+                                gameBoard[endLocation[0]][endLocation[1]][1].storedItems.append(i)
+                                itemsGained += 1
+                            sg.popup(f"Gained {itemsGained} items from the item dump!")
+                            gameBoard[endLocation[0]][endLocation[1]][0].tileType = "default"
+
+
+
+
+
+                        
 ##                    if gameBoard[endLocation[0]][endLocation[1]][0].mugger != False:
 ##                        
 ##                        if g.horiLaser == True or g.vertLaser == True or g.crossLaser == True:
@@ -4738,7 +4862,7 @@ def movePiece(playerTurn, window, gameBoard):
                     
                     
                     if gameBoard[endLocation[0]][endLocation[1]][0].tileType == "mystery box":
-                        sg.popup("Mystery box")
+                        
                         if g.horiLaser == True or g.vertLaser == True or g.crossLaser == True:
 
                             #forcefield check needs to be added
