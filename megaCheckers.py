@@ -31,64 +31,64 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[rows - i - 1][j][1].avatar = "default"
 
  ###### DELETE ME ##########
-    for i in range(2):
-        for j in range(columns):
-            #middle row generator
-            rows = 6
-            gameBoard[rows - i - 1][j][0] = Tile(occupied=True)
-            piece = Piece(playerTurn=2)
-
-
-
-            #give items to main row
-            gameBoard[i][j][1].storedItems.append("dump items")
-            gameBoard[i][j][1].storedItems.append("teach row")
-            gameBoard[i][j][1].storedItems.append("teach radial")
-            gameBoard[i][j][1].storedItems.append("charity")
-            gameBoard[i][j][1].storedItems.append("mystery box")
-            gameBoard[i][j][1].storedItems.append("shuffle radial")
-            gameBoard[i][j][1].storedItems.append("jumpoline")
-            gameBoard[i][j][1].storedItems.append("mugger")
-            gameBoard[i][j][1].storedItems.append("shuffle item orbs")
-            gameBoard[i][j][1].storedItems.append("laser row")
-            gameBoard[i][j][1].storedItems.append("mutual treason row")
-            gameBoard[i][j][1].storedItems.append("mutual treason radial")
-            gameBoard[i][j][1].storedItems.append("mutual treason column")
-            gameBoard[i][j][1].storedItems.append("shuffle column")
-            gameBoard[i][j][1].storedItems.append("reproduce")
-            gameBoard[i][j][1].storedItems.append("haymaker")
-            gameBoard[i][j][1].storedItems.append("haphazard airstrike")
-            gameBoard[i][j][1].storedItems.append("warp")
-            gameBoard[i][j][1].storedItems.append("purity tile")
-            
-            gameBoard[i][j][1].activeBuffs.append("move diagonal")
-            gameBoard[i][j][1].activeBuffs.append("jump proof")
-            
-
-            #the middle row
-            gameBoard[rows - i - 1][j][1] = piece
-            gameBoard[rows - i - 1][j][1].location = (rows - i - 1, j)
-            gameBoard[rows - i - 1][j][0].tileType = "player2default"
-            gameBoard[rows - i - 1][j][1].avatar = "default"
-            gameBoard[rows - i - 1][j][1].storedItems.append("haphazard airstrike")
-            gameBoard[rows - i - 1][j][1].activeBuffs.append("haymaker")
-
-
-
-            #give items to middle row
-            gameBoard[rows - i - 1][j][1].storedItems.append("shuffle radial")
-            gameBoard[rows - i - 1][j][1].storedItems.append("worm hole")
-            gameBoard[rows - i - 1][j][1].storedItems.append("orbEater")
-            gameBoard[rows - i - 1][j][1].storedItems.append("shuffle item orbs")
-            gameBoard[rows - i - 1][j][1].storedItems.append("laser row")
-            gameBoard[rows - i - 1][j][1].storedItems.append("warp")
-            gameBoard[rows - i - 1][j][1].storedItems.append("laser column")
-            gameBoard[rows - i - 1][j][1].storedItems.append("place mine")
-            gameBoard[rows - i - 1][j][1].storedItems.append("haymaker")
-            gameBoard[rows - i - 1][j][1].storedItems.append("haphazard airstrike")
-            gameBoard[rows - i - 1][j][1].storedItems.append("laser row")
-            gameBoard[rows - i - 1][j][1].activeBuffs.append("move diagonal")
-            gameBoard[rows - i - 1][j][1].storedItems.append("bowling ball")
+##    for i in range(2):
+##        for j in range(columns):
+##            #middle row generator
+##            rows = 6
+##            gameBoard[rows - i - 1][j][0] = Tile(occupied=True)
+##            piece = Piece(playerTurn=2)
+##
+##
+##
+##            #give items to main row
+##            gameBoard[i][j][1].storedItems.append("dump items")
+##            gameBoard[i][j][1].storedItems.append("teach row")
+##            gameBoard[i][j][1].storedItems.append("teach radial")
+##            gameBoard[i][j][1].storedItems.append("charity")
+##            gameBoard[i][j][1].storedItems.append("mystery box")
+##            gameBoard[i][j][1].storedItems.append("shuffle radial")
+##            gameBoard[i][j][1].storedItems.append("jumpoline")
+##            gameBoard[i][j][1].storedItems.append("mugger")
+##            gameBoard[i][j][1].storedItems.append("shuffle item orbs")
+##            gameBoard[i][j][1].storedItems.append("laser row")
+##            gameBoard[i][j][1].storedItems.append("mutual treason row")
+##            gameBoard[i][j][1].storedItems.append("mutual treason radial")
+##            gameBoard[i][j][1].storedItems.append("mutual treason column")
+##            gameBoard[i][j][1].storedItems.append("shuffle column")
+##            gameBoard[i][j][1].storedItems.append("reproduce")
+##            gameBoard[i][j][1].storedItems.append("haymaker")
+##            gameBoard[i][j][1].storedItems.append("haphazard airstrike")
+##            gameBoard[i][j][1].storedItems.append("warp")
+##            gameBoard[i][j][1].storedItems.append("purity tile")
+##            
+##            gameBoard[i][j][1].activeBuffs.append("move diagonal")
+##            gameBoard[i][j][1].activeBuffs.append("jump proof")
+##            
+##
+##            #the middle row
+##            gameBoard[rows - i - 1][j][1] = piece
+##            gameBoard[rows - i - 1][j][1].location = (rows - i - 1, j)
+##            gameBoard[rows - i - 1][j][0].tileType = "player2default"
+##            gameBoard[rows - i - 1][j][1].avatar = "default"
+##            gameBoard[rows - i - 1][j][1].storedItems.append("haphazard airstrike")
+##            gameBoard[rows - i - 1][j][1].activeBuffs.append("haymaker")
+##
+##
+##
+##            #give items to middle row
+##            gameBoard[rows - i - 1][j][1].storedItems.append("shuffle radial")
+##            gameBoard[rows - i - 1][j][1].storedItems.append("worm hole")
+##            gameBoard[rows - i - 1][j][1].storedItems.append("orbEater")
+##            gameBoard[rows - i - 1][j][1].storedItems.append("shuffle item orbs")
+##            gameBoard[rows - i - 1][j][1].storedItems.append("laser row")
+##            gameBoard[rows - i - 1][j][1].storedItems.append("warp")
+##            gameBoard[rows - i - 1][j][1].storedItems.append("laser column")
+##            gameBoard[rows - i - 1][j][1].storedItems.append("place mine")
+##            gameBoard[rows - i - 1][j][1].storedItems.append("haymaker")
+##            gameBoard[rows - i - 1][j][1].storedItems.append("haphazard airstrike")
+##            gameBoard[rows - i - 1][j][1].storedItems.append("laser row")
+##            gameBoard[rows - i - 1][j][1].activeBuffs.append("move diagonal")
+##            gameBoard[rows - i - 1][j][1].storedItems.append("bowling ball")
 
 
 ####### END DELETE ME###########
@@ -1329,7 +1329,8 @@ def useItems(gameBoard, x, y, window):
 
 
     
-    itemsMenu = sg.Window("Items Menu", layout, disable_close=True, grab_anywhere=True,keep_on_top=True).finalize()
+    itemsMenu = sg.Window("Items Menu", layout, disable_close=True,keep_on_top=True).finalize()
+    #grab_anywhere=True
     enemyTurn = 0
     playerTurn = gameBoard[x][y][1].ownedBy
     if playerTurn == 1:
@@ -4372,7 +4373,8 @@ def movePiece(playerTurn, window, gameBoard):
                 
         #disable the exit button to avoid issues
         window["exit"].update(disabled=True)
-
+        window["cheetz"].update(disabled=True)
+        window["readItems"].update(disabled=True)
         ##############################################################
         #  Assuming a window tile was clicked for the start location #
         ##############################################################
@@ -4395,6 +4397,7 @@ def movePiece(playerTurn, window, gameBoard):
             #if it's your enemy's bowling ball
             if gameBoard[event[0][0]][event[0][1]][1].ownedBy != playerTurn:
                 pm(window,"That's not your piece!")
+                sleep(.4)
                 continue
 
             #row/column values of the bowling ball
@@ -4444,7 +4447,8 @@ def movePiece(playerTurn, window, gameBoard):
                 continue
             
         #allow player to read about items, but not view tiles; helps avoid glitches
-        window["itemButton"].update(disabled=False)
+        #window["itemButton"].update(disabled=False)
+        window["itemButton"].update(disabled=True)
         window["examineItem"].update(disabled=True)
 
 
@@ -4531,6 +4535,7 @@ def movePiece(playerTurn, window, gameBoard):
                 pm(window, f"That's not your piece...")
                 window["information"].update(text_color="red")
                 window.refresh()
+                sleep(.3)
                 continue
             
             # if the piece belongs to you but doesn't have items
@@ -4595,6 +4600,7 @@ def movePiece(playerTurn, window, gameBoard):
                 gameBoard[startLocation[0]][startLocation[1]][1].grey = False
                 gameBoard[startLocation[0]][startLocation[1]][1].currentTurnPiece = False
                 pm(window, "That's not your piece")
+                sleep(.4)
                 continue
 
             # if the piece has no items
@@ -4602,6 +4608,7 @@ def movePiece(playerTurn, window, gameBoard):
                 gameBoard[startLocation[0]][startLocation[1]][1].grey = False
                 gameBoard[startLocation[0]][startLocation[1]][1].currentTurnPiece = False
                 pm(window, "There are no items on this piece.")
+                sleep(.4)
                 continue
             # shouldn't get to here
             else:
@@ -5427,10 +5434,10 @@ def begin():
         layout,
         
         disable_close=False,
-        grab_anywhere=True,
+        
         location=(0, 0),
     ).finalize()
-
+    #grab_anywhere=True,
     # window.maximize()
 
     # gameBoard for logic

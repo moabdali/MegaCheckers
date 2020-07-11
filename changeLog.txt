@@ -1,4 +1,6 @@
 ChangeLog
+v.0.9.69 July 11, 2020
+	Minor change to disabling buttons to avoid errors easily (without dealing with a ton of catches). 
 
 v.0.9.69 July 11, 2020
 	Added an item dump item (needs a better name).  It takes all your unused items and drops them anywhere on the field as a large pickup that anyone can pick up.  
