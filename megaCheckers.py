@@ -41,9 +41,9 @@ def initializeField(columns, rows, window, gameBoard):
 
 
             #give items to main row
-            gameBoard[i][j][1].storedItems.append("shuffle row")
-            gameBoard[i][j][1].storedItems.append("floor restore")
-            gameBoard[i][j][1].storedItems.append("dead man's trigger")
+            gameBoard[i][j][1].storedItems.append("teach column")
+            gameBoard[i][j][1].storedItems.append("teach row")
+            gameBoard[i][j][1].storedItems.append("teach radial")
             gameBoard[i][j][1].storedItems.append("recall")
             gameBoard[i][j][1].storedItems.append("mystery box")
             gameBoard[i][j][1].storedItems.append("shuffle radial")
@@ -1178,12 +1178,15 @@ def pickUpItemOrb(gameBoard, x, y):
         "suicide bomb column",
         "suicide bomb radial",
         "suicide bomb row",
-        "trap orb",#40
+        "teach column", #40
+        "teach radial",
+        "teach row",
+        "trap orb",
         "trip mine radial",
-        "vile radial",
+        "vile radial", #45
         "warp",
         "wololo",
-        "worm hole",#45
+        "worm hole",
     ]
     
 
@@ -1326,7 +1329,6 @@ def useItems(gameBoard, x, y, window):
         event = itemsMenu.read()
         window.enable()
         i = event[0]
-
         if i == None:
             break
 
@@ -1346,6 +1348,127 @@ def useItems(gameBoard, x, y, window):
                         j[1] = 0
                         j[0].tileType = "default"
 
+# teach column
+        elif str.find(i, "teach column") >= 0:
+            itemsMenu.close()
+            gameBoard[x][y][1].grey = False
+            #if there is fewer than one item in the list
+            if len(gameBoard[x][y][1].activeBuffs) < 1:
+                sg.popup("You won't have any buffs to teach.  Aborted.")
+                continue
+            gameBoard[x][y][1].storedItems.remove("teach column")
+            taughtPieces = 0
+            taughtString = ""
+            for k in gameBoard[x][y][1].activeBuffs:
+                    
+                    taughtString += k + "\n"
+            sg.popup("Teaching:\n"+taughtString)
+            # for every row in gameBoard
+            for iIndex, i in enumerate(gameBoard):
+                #if the x'th item belongs to you, and it's not the same item that's sharing the items
+                
+                if i[y][0].occupied == True and i[y][1].ownedBy == playerTurn and iIndex != x and "burdened" not in i[y][1].activeDebuffs:
+                    #for every item in the active buffs list
+                    i[y][1].grey = True
+                    
+                    displayBoard(window,gameBoard)
+                    window.refresh()
+                    taughtPieces += 1
+                    for k in gameBoard[x][y][1].activeBuffs:
+                        
+                        i[y][1].activeBuffs.append(k)
+                        
+                        
+                    i[y][1].grey = False
+                    
+                else:
+                    continue
+            sg.popup(f"Taught buffs to {taughtPieces} piece(s).")
+            pm(window,f"Taught buffs to {taughtPieces} piece(s).")
+
+
+# teach radial
+        elif str.find(i, "teach radial") >= 0:
+            itemsMenu.close()
+            gameBoard[x][y][1].grey = False
+            #if there is fewer than one item in the list
+            if len(gameBoard[x][y][1].activeBuffs) < 1:
+                sg.popup("You won't have any buffs to teach.  Aborted.")
+                continue
+            gameBoard[x][y][1].storedItems.remove("teach radial")
+            taughtPieces = 0
+            taughtString = ""
+            for k in gameBoard[x][y][1].activeBuffs:
+                    
+                    taughtString += k + "\n"
+            sg.popup("Teaching:\n"+taughtString)
+            # for every row in gameBoard
+            location = (x,y)
+            validLocations = getRadial(location,gameBoard)
+            for i in validLocations:
+                ix = i[0]
+                iy = i[1]
+                #if the x'th item belongs to you, and it's not the same item that's sharing the items
+                
+                if gameBoard[ix][iy][0].occupied == True and gameBoard[ix][iy][1].ownedBy == playerTurn and (ix,iy) != (x,y) and "burdened" not in gameBoard[ix][iy][1].activeDebuffs:
+                    #for every item in the active buffs list
+                    gameBoard[ix][iy][1].grey = True
+                    
+                    displayBoard(window,gameBoard)
+                    window.refresh()
+                    taughtPieces += 1
+                    for k in gameBoard[x][y][1].activeBuffs:
+                        
+                        gameBoard[ix][iy][1].activeBuffs.append(k)
+                        
+                        
+                    gameBoard[ix][iy][1].grey = False
+                    
+                else:
+                    continue
+            sg.popup(f"Taught buffs to {taughtPieces} piece(s).")
+            pm(window,f"Taught buffs to {taughtPieces} piece(s).")
+            
+
+# teach row
+        elif str.find(i, "teach row") >= 0:
+            itemsMenu.close()
+            gameBoard[x][y][1].grey = False
+            #if there is fewer than one item in the list
+            if len(gameBoard[x][y][1].activeBuffs) < 1:
+                sg.popup("You won't have any buffs to teach.  Aborted.")
+                continue
+            gameBoard[x][y][1].storedItems.remove("teach row")
+            taughtPieces = 0
+            taughtString = ""
+            for k in gameBoard[x][y][1].activeBuffs:
+                    
+                    taughtString += k + "\n"
+            sg.popup("Teaching:\n"+taughtString)
+            # for every row in gameBoard
+            for iIndex, i in enumerate(gameBoard[x]):
+                #if the x'th item belongs to you, and it's not the same item that's sharing the items
+                
+                if i[0].occupied == True and i[1].ownedBy == playerTurn and iIndex != y and "burdened" not in i[1].activeDebuffs:
+                    #for every item in the active buffs list
+                    i[1].grey = True
+                    
+                    displayBoard(window,gameBoard)
+                    window.refresh()
+                    taughtPieces += 1
+                    for k in gameBoard[x][y][1].activeBuffs:
+                        
+                        i[1].activeBuffs.append(k)
+                        
+                        
+                    i[1].grey = False
+                    
+                else:
+                    continue
+            sg.popup(f"Taught buffs to {taughtPieces} piece(s).")
+            pm(window,f"Taught buffs to {taughtPieces} piece(s).")
+            
+            
 # deadman's trigger                        
         elif str.find(i,"dead man's trigger") >= 0:
             itemsMenu.close()
@@ -4081,6 +4204,10 @@ def movePiece(playerTurn, window, gameBoard):
                     pm(window, gameBoard[event[0][0]][event[0][1]][0].describeSelf())
                 # if there is a piece:
                 else:
+                    gameBoard[event[0][0]][event[0][1]][1].activeBuffs.sort()
+                    gameBoard[event[0][0]][event[0][1]][1].activeDebuffs.sort()
+                    gameBoard[event[0][0]][event[0][1]][1].storedItems.sort()
+                    
                     if playerTurn == gameBoard[event[0][0]][event[0][1]][1].ownedBy:
                         owner = "you"
                     else:

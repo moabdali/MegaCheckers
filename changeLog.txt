@@ -1,5 +1,9 @@
 ChangeLog
 
+
+v.0.9.67 July 11, 2020
+	Added teach column/radial/row.  Allows a piece to teach all of its buffs to affected allies.
+
 v.0.9.66.1 July 11, 2020
 	Alphabetized the items list for easier searching.  Added all items to the item orb pickup list (some were implemented, but unavailable for pickup due to this).  Moved item comments to the far left to make sure they are easier to find.  TODO: add descriptions for every item in the item description function.  Add pictures for every item for the itemMenu page.  Have the title page pull in information about all items using the pictures and description things just mentioned.
 
