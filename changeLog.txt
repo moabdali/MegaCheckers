@@ -1,5 +1,8 @@
 ChangeLog
 
+v.0.9.61 July 11, 2020
+	A much better forcefield check has been created.  However, it requires work on surviving lasers that were used on pieces that aren't moving (that is, if you have a piece sitting a few rows directly above you, and you use the row laser, it'll die due to tricky programming requiring the laser to technically kill the piece first before the laser can apply).  This will be corrected in a future version.
+
 v.0.9.60 July 10, 2020
 	Created the mugger, he steals items from enemies and passes them to allies that visit him.  He's permanent.  Redid some of the moving code to make it nicer.  Created a shield function to faciliate usage of it (need to rewrite all the references to it).  
 

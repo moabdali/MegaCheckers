@@ -430,13 +430,9 @@ def deathCheck(window, gameBoard, move=False):
             # if a regular mine or laser was stepped on
             if (j[0].occupied == True) and (j[0].tileType == "mine" or (j[0].vertLaser == True or j[0].horiLaser == True or j[0].crossLaser == True) ):
 
-                if "forceField" in j[1].activeBuffs:
-                    j[1].activeBuffs.remove("forcefield")
-                    sg.popup(
-                        "You were protected from certain death by your forcefield",
-                        keep_on_top=True,
-                    )
+                if j[1].shieldTurn == PublicStats.turnCount:
                     j[0].tileType = "default"
+                    sg.popup("Forcefield saved you")
                 else:
 
                     j[0].tileType = "exploding"
@@ -543,11 +539,12 @@ def laserCheck(window, gameBoard, resetOnly = False):
 
 
                             #forcefield check
-                            if "Energy Forcefield" in gameBoard[indexI][left][1].activeBuffs:
-                                forceFieldLeftStop = True
-                                forceFieldDeletedList = True #turn into a list
+                            location = (indexI,left)
+                            forceFieldCheck = forcefieldCheck(window, gameBoard, location, location)
+                            sg.popup(f"Force field check is {forceFieldCheck}")
+                            if forceFieldCheck == True:
+                                sg.popup("Survived a laser")
                                 break
-                            
                             #if it doesn't have a forcefield
                             else:
                                 
@@ -596,7 +593,7 @@ def laserCheck(window, gameBoard, resetOnly = False):
 
                             #if there's a forcefield on the piece
                             if "Energy Forcefield" in gameBoard[indexI][right][1].activeBuffs:
-                                forceFieldLeftStop = True
+                                forceFieldRightStop = True
                                 break
 
                             #if there isn't a forcefield on the piece
@@ -3605,20 +3602,22 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                     return
 
 
-def forcefieldCheck(window, gameBoard,  playerTurn, startLocation = 0, endLocation = 0):
+def forcefieldCheck(window, gameBoard, startLocation = 0, endLocation = 0):
     g = gameBoard[endLocation[0]][endLocation[1]]
     gs = gameBoard[startLocation[0]][startLocation[1]]
-    if g[0].horiLaser or g[0].vertLaser or g[0].crossLaser or g[0].tileType == "mine" or (g[0].occupied == True and g[1].ownedBy != playerTurn and "dead man's trigger" in g[0].activeBuffsList):
-        if g[1].shieldTurn == PublicStats.turnCount:
-            sg.popup("A forcefield is still active until the end of this turn.")
-            return True
-        elif "Energy Forcefield" in g[1].activeBuffs:
+    if g[0].horiLaser or g[0].vertLaser or g[0].crossLaser or g[0].tileType == "mine":
+    #if g[0].horiLaser or g[0].vertLaser or g[0].crossLaser or g[0].tileType == "mine" or (g[0].occupied == True and g[1].ownedBy != playerTurn and "dead man's trigger" in g[0].activeBuffsList):
+        
+        if "Energy Forcefield" in g[1].activeBuffs:
             g[1].shieldTurn = PublicStats.turnCount
             g[1].activeBuffs.remove("Energy Forcefield")
             sg.popup("The forcefield activated and will protect you from energy until the end of this turn")
             return True
+        elif g[1].shieldTurn == PublicStats.turnCount:
+            sg.popup("A forcefield is still active until the end of this turn.  It has saved you again.")
+            return True
         else:
-            sg.popup("DEATH.")
+            #DEATH
             return False
 
     else:
@@ -4381,7 +4380,7 @@ def movePiece(playerTurn, window, gameBoard):
                     
                     #mugger check
                     
-                    usedShield = forcefieldCheck(window, gameBoard,  playerTurn, startLocation, endLocation)
+                    usedShield = forcefieldCheck(window, gameBoard, startLocation, endLocation)
                     if usedShield == True:
                         sg.popup("A shield was used")
                     muggerCheck(window, gameBoard, startLocation, endLocation, playerTurn)
