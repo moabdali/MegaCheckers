@@ -1,5 +1,20 @@
 ChangeLog
 
+v.0.9.66.1 July 11, 2020
+	Alphabetized the items list for easier searching.  Added all items to the item orb pickup list (some were implemented, but unavailable for pickup due to this).  Moved item comments to the far left to make sure they are easier to find.  TODO: add descriptions for every item in the item description function.  Add pictures for every item for the itemMenu page.  Have the title page pull in information about all items using the pictures and description things just mentioned.
+
+v.0.9.66 July 11, 2020
+	Added shuffle row (why did I wait so long to do that?)
+
+v.0.9.65 July 11, 2020
+	Added a floor restore item. Restores damaged/missing floors.  Added a sticky bomb. Attach to any legal piece (illegal pieces are ones that can't be negatively affected, will be implemented in the future).  After five turns, explodes and destroys all surrounding tiles. 
+
+v.0.9.63 July 11, 2020
+	Improved title screen - bigger buttons, made the title two lines, added a base for showing a random item on each start up (needs programming to show the correct icon and whatnot.
+
+v.0.9.62 July 11, 2020
+	Added more animations to the floor repair, doubling the number of turns it takes for the floor to respawn. Also changed the colors to make it match the default grey so that it's more clear what's going on (black and white was a bit confusing; originally it made sense back when the floor was white). 
+
 v.0.9.61 July 11, 2020
 	A much better forcefield check has been created.  However, it requires work on surviving lasers that were used on pieces that aren't moving (that is, if you have a piece sitting a few rows directly above you, and you use the row laser, it'll die due to tricky programming requiring the laser to technically kill the piece first before the laser can apply).  This will be corrected in a future version.
 
