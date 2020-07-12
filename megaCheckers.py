@@ -31,64 +31,64 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[rows - i - 1][j][1].avatar = "default"
 
  ###### DELETE ME ##########
-##    for i in range(2):
-##        for j in range(columns):
-##            #middle row generator
-##            rows = 6
-##            gameBoard[rows - i - 1][j][0] = Tile(occupied=True)
-##            piece = Piece(playerTurn=2)
-##
-##
-##
-##            #give items to main row
-##            gameBoard[i][j][1].storedItems.append("dump items")
-##            gameBoard[i][j][1].storedItems.append("teach row")
-##            gameBoard[i][j][1].storedItems.append("teach radial")
-##            gameBoard[i][j][1].storedItems.append("charity")
-##            gameBoard[i][j][1].storedItems.append("mystery box")
-##            gameBoard[i][j][1].storedItems.append("shuffle radial")
-##            gameBoard[i][j][1].storedItems.append("jumpoline")
-##            gameBoard[i][j][1].storedItems.append("mugger")
-##            gameBoard[i][j][1].storedItems.append("shuffle item orbs")
-##            gameBoard[i][j][1].storedItems.append("laser row")
-##            gameBoard[i][j][1].storedItems.append("mutual treason row")
-##            gameBoard[i][j][1].storedItems.append("mutual treason radial")
-##            gameBoard[i][j][1].storedItems.append("mutual treason column")
-##            gameBoard[i][j][1].storedItems.append("shuffle column")
-##            gameBoard[i][j][1].storedItems.append("reproduce")
-##            gameBoard[i][j][1].storedItems.append("haymaker")
-##            gameBoard[i][j][1].storedItems.append("haphazard airstrike")
-##            gameBoard[i][j][1].storedItems.append("warp")
-##            gameBoard[i][j][1].storedItems.append("purity tile")
-##            
-##            gameBoard[i][j][1].activeBuffs.append("move diagonal")
-##            gameBoard[i][j][1].activeBuffs.append("jump proof")
-##            
-##
-##            #the middle row
-##            gameBoard[rows - i - 1][j][1] = piece
-##            gameBoard[rows - i - 1][j][1].location = (rows - i - 1, j)
-##            gameBoard[rows - i - 1][j][0].tileType = "player2default"
-##            gameBoard[rows - i - 1][j][1].avatar = "default"
-##            gameBoard[rows - i - 1][j][1].storedItems.append("haphazard airstrike")
-##            gameBoard[rows - i - 1][j][1].activeBuffs.append("haymaker")
-##
-##
-##
-##            #give items to middle row
-##            gameBoard[rows - i - 1][j][1].storedItems.append("shuffle radial")
-##            gameBoard[rows - i - 1][j][1].storedItems.append("worm hole")
-##            gameBoard[rows - i - 1][j][1].storedItems.append("orbEater")
-##            gameBoard[rows - i - 1][j][1].storedItems.append("shuffle item orbs")
-##            gameBoard[rows - i - 1][j][1].storedItems.append("laser row")
-##            gameBoard[rows - i - 1][j][1].storedItems.append("warp")
-##            gameBoard[rows - i - 1][j][1].storedItems.append("laser column")
-##            gameBoard[rows - i - 1][j][1].storedItems.append("place mine")
-##            gameBoard[rows - i - 1][j][1].storedItems.append("haymaker")
-##            gameBoard[rows - i - 1][j][1].storedItems.append("haphazard airstrike")
-##            gameBoard[rows - i - 1][j][1].storedItems.append("laser row")
-##            gameBoard[rows - i - 1][j][1].activeBuffs.append("move diagonal")
-##            gameBoard[rows - i - 1][j][1].storedItems.append("bowling ball")
+    for i in range(2):
+       for j in range(columns):
+           #middle row generator
+           rows = 6
+           gameBoard[rows - i - 1][j][0] = Tile(occupied=True)
+           piece = Piece(playerTurn=2)
+
+
+
+           #give items to main row
+           gameBoard[i][j][1].storedItems.append("dump items")
+           gameBoard[i][j][1].storedItems.append("teach row")
+           gameBoard[i][j][1].storedItems.append("teach radial")
+           gameBoard[i][j][1].storedItems.append("charity")
+           gameBoard[i][j][1].storedItems.append("mystery box")
+           gameBoard[i][j][1].storedItems.append("shuffle radial")
+           gameBoard[i][j][1].storedItems.append("jumpoline")
+           gameBoard[i][j][1].storedItems.append("mugger")
+           gameBoard[i][j][1].storedItems.append("shuffle item orbs")
+           gameBoard[i][j][1].storedItems.append("laser row")
+           gameBoard[i][j][1].storedItems.append("mutual treason row")
+           gameBoard[i][j][1].storedItems.append("mutual treason radial")
+           gameBoard[i][j][1].storedItems.append("mutual treason column")
+           gameBoard[i][j][1].storedItems.append("shuffle column")
+           gameBoard[i][j][1].storedItems.append("reproduce")
+           gameBoard[i][j][1].storedItems.append("haymaker")
+           gameBoard[i][j][1].storedItems.append("haphazard airstrike")
+           gameBoard[i][j][1].storedItems.append("warp")
+           gameBoard[i][j][1].storedItems.append("purity tile")
+           
+           gameBoard[i][j][1].activeBuffs.append("move diagonal")
+           gameBoard[i][j][1].activeBuffs.append("jump proof")
+           
+
+           #the middle row
+           gameBoard[rows - i - 1][j][1] = piece
+           gameBoard[rows - i - 1][j][1].location = (rows - i - 1, j)
+           gameBoard[rows - i - 1][j][0].tileType = "player2default"
+           gameBoard[rows - i - 1][j][1].avatar = "default"
+           gameBoard[rows - i - 1][j][1].storedItems.append("haphazard airstrike")
+           gameBoard[rows - i - 1][j][1].activeBuffs.append("haymaker")
+
+
+
+           #give items to middle row
+           gameBoard[rows - i - 1][j][1].storedItems.append("shuffle radial")
+           gameBoard[rows - i - 1][j][1].storedItems.append("worm hole")
+           gameBoard[rows - i - 1][j][1].storedItems.append("orbEater")
+           gameBoard[rows - i - 1][j][1].storedItems.append("shuffle item orbs")
+           gameBoard[rows - i - 1][j][1].storedItems.append("laser row")
+           gameBoard[rows - i - 1][j][1].storedItems.append("warp")
+           gameBoard[rows - i - 1][j][1].storedItems.append("laser column")
+           gameBoard[rows - i - 1][j][1].storedItems.append("place mine")
+           gameBoard[rows - i - 1][j][1].storedItems.append("haymaker")
+           gameBoard[rows - i - 1][j][1].storedItems.append("haphazard airstrike")
+           gameBoard[rows - i - 1][j][1].storedItems.append("laser row")
+           gameBoard[rows - i - 1][j][1].activeBuffs.append("move diagonal")
+           gameBoard[rows - i - 1][j][1].storedItems.append("bowling ball")
 
 
 ####### END DELETE ME###########
@@ -519,8 +519,7 @@ def laserCheck(window, gameBoard, resetOnly = False):
         
         left = 0
         right = 0
-        forceFieldLeft = False
-        forceFieldRight = False
+        
 
         
         for indexI, i in enumerate(gameBoard):
@@ -595,7 +594,7 @@ def laserCheck(window, gameBoard, resetOnly = False):
 
                             #if there's a forcefield on the piece
                             if "Energy Forcefield" in gameBoard[indexI][right][1].activeBuffs:
-                                forceFieldRightStop = True
+                                #forceFieldRightStop = True
                                 break
 
                             #if there isn't a forcefield on the piece
@@ -649,7 +648,7 @@ def laserCheck(window, gameBoard, resetOnly = False):
                         if gameBoard[up][indexJ][0].occupied == True:
                             
                             if "Energy Forcefield" in gameBoard[up][indexJ][1].activeBuffs:
-                                forceFieldLeftStop = True
+                                #forceFieldLeftStop = True
                                 break
                             
                             else:
@@ -4666,8 +4665,7 @@ def movePiece(playerTurn, window, gameBoard):
 
                 # if you have a round earth theory item equipped (to "pac man" around the edge of the screen to the opposite side)
                 if "round earth theory" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-                    roundEarthTheory = roundEarthTheoryFunction(gameBoard,startLocation[0],endLocation[0],startLocation[1],endLocation[1],columns,rows)
-                    
+                    roundEarthTheory = roundEarthTheoryFunction(gameBoard,startLocation,endLocation,columns,rows)
                 # if you're attemmpting to go somewhere that is too far...
                 # ...but you have a move diagonal and it turns out you're actually within range:
                 if roundEarthTheory == False and wormHole == False:
@@ -5198,6 +5196,31 @@ def resetMoveAgain(gameBoard):
             if j[0].occupied == True:
                 j[1].moveAgain = moveAgainCount
 
+
+def updateToolTips(window, gameBoard,playerTurn):
+    
+    for i in range(0,len(gameBoard)):
+        for j in range(0,len(gameBoard[0])):
+            
+            if gameBoard[i][j][0].occupied == True:
+                buffs = f"[BUFFS] x{len(gameBoard[i][j][1].activeBuffs)}"+"\n"
+                debuffs = "\n"+f"[DEBUFFS] x{len(gameBoard[i][j][1].activeDebuffs)} "+"\n"
+                storedItems = "\n"+f"[ITEMS] x{len(gameBoard[i][j][1].storedItems)}"+"\n"
+                for b in gameBoard[i][j][1].activeBuffs:
+                    buffs+=b+"\n"
+                for d in gameBoard[i][j][1].activeDebuffs:
+                    debuffs+=d+"\n"
+                if gameBoard[i][j][1].ownedBy == playerTurn:
+                    for s in  gameBoard[i][j][1].storedItems:
+                        storedItems += s+"\n"
+                else:
+
+                    for s in  gameBoard[i][j][1].storedItems:
+                        storedItems += "???"+"\n"
+            toolTipData = buffs+debuffs+storedItems
+            window[(i,j)].SetTooltip(toolTipData)
+            
+
 def spookyHand(window, gameBoard):
     PublicStats.spookyHandTurnCount -= 1
     attempts = 50
@@ -5531,7 +5554,7 @@ def begin():
                         
                     
 
-        
+        updateToolTips(window, gameBoard,playerTurn)
         
         gamePlay(playerTurn, window, gameBoard)
         x = -1
@@ -5547,7 +5570,7 @@ def begin():
 
             #check for sticky bombs
             stickyTimeBomb(window,gameBoard)
-
+            
                 
             for i in gameBoard:
                 x += 1
@@ -5568,7 +5591,7 @@ def begin():
 
 
 
-
+            updateToolTips(window, gameBoard,playerTurn)
 
             #End player 1's turn
             
@@ -5597,7 +5620,7 @@ def begin():
 
             #check for sticky time bomb
             stickyTimeBomb(window,gameBoard)
-
+            
             
             for i in gameBoard:
                 x += 1
