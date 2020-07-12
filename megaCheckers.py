@@ -46,7 +46,7 @@ def initializeField(columns, rows, window, gameBoard):
            gameBoard[i][j][1].storedItems.append("teach radial")
            gameBoard[i][j][1].storedItems.append("charity")
            gameBoard[i][j][1].storedItems.append("mystery box")
-           gameBoard[i][j][1].storedItems.append("shuffle radial")
+           gameBoard[i][j][1].storedItems.append("study row")
            gameBoard[i][j][1].storedItems.append("jumpoline")
            gameBoard[i][j][1].storedItems.append("mugger")
            gameBoard[i][j][1].storedItems.append("shuffle item orbs")
@@ -71,7 +71,7 @@ def initializeField(columns, rows, window, gameBoard):
            gameBoard[rows - i - 1][j][0].tileType = "player2default"
            gameBoard[rows - i - 1][j][1].avatar = "default"
            gameBoard[rows - i - 1][j][1].storedItems.append("haphazard airstrike")
-           gameBoard[rows - i - 1][j][1].activeBuffs.append("haymaker")
+           gameBoard[rows - i - 1][j][1].storedItems.append("haymaker")
 
 
 
@@ -1180,6 +1180,9 @@ def pickUpItemOrb(gameBoard, x, y):
         "snake tunneling", #35
         "spooky hand",
         "sticky time bomb",
+        #"study column",
+        #"study radial",
+        "study row",
         "suicide bomb column",
         "suicide bomb radial",
         "suicide bomb row",#40
@@ -1386,7 +1389,7 @@ def useItems(gameBoard, x, y, window):
             for iIndex, i in enumerate(gameBoard):
                 #if the x'th item belongs to you, and it's not the same item that's sharing the items
                 
-                if i[y][0].occupied == True and i[y][1].ownedBy == playerTurn and iIndex != x and "burdened" not in i[y][1].activeDebuffs:
+                if i[y][0].occupied == True and "bowling ball" not in i[y][1].activeBuffs and i[y][1].ownedBy == playerTurn and iIndex != x and "burdened" not in i[y][1].activeDebuffs:
                     #for every item in the active buffs list
                     i[y][1].grey = True
                     
@@ -1441,7 +1444,10 @@ def useItems(gameBoard, x, y, window):
                         gameBoard[dropX][dropY][0].occupied = True
                     window.refresh()
                     sleep(.3)
-                    
+
+
+
+    
 # dump items
         elif str.find(i, "dump items") >= 0:
             itemsMenu.close()
@@ -1537,7 +1543,7 @@ def useItems(gameBoard, x, y, window):
                 iy = i[1]
                 #if the x'th item belongs to you, and it's not the same item that's sharing the items
                 
-                if gameBoard[ix][iy][0].occupied == True and gameBoard[ix][iy][1].ownedBy == playerTurn and (ix,iy) != (x,y) and "burdened" not in gameBoard[ix][iy][1].activeDebuffs:
+                if gameBoard[ix][iy][0].occupied == True and "bowling ball" not in gameBoard[ix][iy][1].activeBuffs and gameBoard[ix][iy][1].ownedBy == playerTurn and (ix,iy) != (x,y) and "burdened" not in gameBoard[ix][iy][1].activeDebuffs:
                     #for every item in the active buffs list
                     gameBoard[ix][iy][1].grey = True
                     
@@ -1555,8 +1561,42 @@ def useItems(gameBoard, x, y, window):
                     continue
             sg.popup(f"Taught buffs to {taughtPieces} piece(s).")
             pm(window,f"Taught buffs to {taughtPieces} piece(s).")
-            
 
+#study row            
+        elif str.find(i, "study row") >= 0:            
+            itemsMenu.close()
+            gameBoard[x][y][1].grey = False
+            if "inert" in gameBoard[x][y][1].activeDebuffs:
+                sg.popup("This piece is inert and can't learn anything")
+                continue
+            learnedFromPieces = 0
+            learnedString = ""
+            bowlingBallRejected = False
+            # for every column in gameBoard
+            for iIndex, i in enumerate(gameBoard[x]):
+                #if the x'th item belongs to you, and it's not the same item that's sharing the items
+                
+                if i[0].occupied == True and i[1].ownedBy == playerTurn and iIndex != y and len(i[1].activeBuffs)>0:
+                    #for every item in the active buffs list
+                    i[1].grey = True
+                    pm(window,"Learning")
+                    displayBoard(window,gameBoard)
+                    window.refresh()
+                    learnedFromPieces += 1
+                    for k in gameBoard[x][iIndex][1].activeBuffs:
+                        if k != "bowling ball":
+                            gameBoard[x][y][1].activeBuffs.append(k)
+                        else:
+                            bowlingBallRejected = True
+                    i[1].grey = False
+                else:
+                    continue
+            if bowlingBallRejected == True:
+                sg.popup("You attempted to learn bowling ball from at least one piece, but it proved to be too difficult.")
+            sg.popup(f"Learned buffs from {learnedFromPieces} piece(s).")
+            pm(window,f"Learned buffs from {learnedFromPieces} piece(s).")
+
+            
 # teach row
         elif str.find(i, "teach row") >= 0:
             itemsMenu.close()
@@ -1572,11 +1612,11 @@ def useItems(gameBoard, x, y, window):
                     
                     taughtString += k + "\n"
             sg.popup("Teaching:\n"+taughtString)
-            # for every row in gameBoard
+            # for every column in gameBoard
             for iIndex, i in enumerate(gameBoard[x]):
                 #if the x'th item belongs to you, and it's not the same item that's sharing the items
                 
-                if i[0].occupied == True and i[1].ownedBy == playerTurn and iIndex != y and "burdened" not in i[1].activeDebuffs:
+                if i[0].occupied == True and "bowling ball" not in i[1].activeBuffs and i[1].ownedBy == playerTurn and iIndex != y and "burdened" not in i[1].activeDebuffs:
                     #for every item in the active buffs list
                     i[1].grey = True
                     
@@ -3313,6 +3353,7 @@ def useItems(gameBoard, x, y, window):
                 window.refresh()
                 sleep(1)
 
+        updateToolTips(window, gameBoard, playerTurn)
         # after using the menu, close it
         if itemsMenu:
             itemsMenu.close()
@@ -4255,6 +4296,7 @@ def movePiece(playerTurn, window, gameBoard):
     roundEarthTheory = False
     rows = len(gameBoard)
     columns = len(gameBoard[0])
+
     while True:
         
         #flag for keeping track of pieces that were teleported
@@ -4269,6 +4311,7 @@ def movePiece(playerTurn, window, gameBoard):
         window["itemButton"].update(disabled=True)
         window["examineItem"].update(disabled=False)
         window["readItems"].update(disabled=False)
+        
         window.refresh()
         
         window["playerTurn"].update(f"{playerTurn}")
@@ -4293,7 +4336,7 @@ def movePiece(playerTurn, window, gameBoard):
             
             # This is your initial selection option for choosing a piece
             event = window.read()
-
+            
 
             #if you wanna cheat
             if "cheetz" in event:

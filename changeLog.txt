@@ -1,5 +1,10 @@
 ChangeLog
 
+v.0.9.74 July 12, 2020
+	Added an exclusion for bowling ball being learned by study or taught by teach (although technically it shouldn't be possible to teach), since it interferes with the rule that a piece can only know bowling ball.
+
+v.0.9.73 July 12, 2020
+	Added study row.  A piece can learn all the buffs your allies have in the row.  
 v.0.9.72 July 12, 2020
 	Correct some inconsistencies with jumpproof/jump proof in my code (forgot to update all references to using the two word version, causing it to be unactivable). Added tile tooltips so you can hover over a tile for information (last updates were only for the pieces themselves).  Does require testing since there's so many types of tiles. 
 
