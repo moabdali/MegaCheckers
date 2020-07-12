@@ -1,4 +1,8 @@
 ChangeLog
+
+v.0.9.72 July 12, 2020
+	Correct some inconsistencies with jumpproof/jump proof in my code (forgot to update all references to using the two word version, causing it to be unactivable). Added tile tooltips so you can hover over a tile for information (last updates were only for the pieces themselves).  Does require testing since there's so many types of tiles. 
+
 v.0.9.71 July 12, 2020
 	Added care package airdrop.  It's a weirdly balanced item that drops item orbs around an opponent.  It can be used to insult your enemy by helping him, or on a enemy you've surrounded with your own pieces to buff up the pieces that are around him, or can be combined with shuffle orbs to hopefully get the orbs closer to yourself.
 

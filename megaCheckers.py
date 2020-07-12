@@ -972,7 +972,7 @@ def displayBoard(window, gameBoard):
                         donut = Image.open("images/donut.png").convert("RGBA")
                         avatar.paste(donut, (0, 0), donut)
 
-                    if "jumpProof" in g.activeBuffs:
+                    if "jump proof" in g.activeBuffs:
                         jumpProof = Image.open("images/jumpProof.png").convert("RGBA")
                         avatar.paste(jumpProof, (0, 0), jumpProof)
                     
@@ -5080,7 +5080,7 @@ def movePiece(playerTurn, window, gameBoard):
                 elif gameBoard[endLocation[0]][endLocation[1]][1].ownedBy != playerTurn:
                     # test to see if the piece can be jumped
                     if (
-                        "jumpProof"
+                        "jump proof"
                         in gameBoard[endLocation[0]][endLocation[1]][1].activeBuffs
                     ):
                         pm(window, "No!  This opponent is jump proof!")
@@ -5256,7 +5256,33 @@ def updateToolTips(window, gameBoard,playerTurn):
 
                     for s in  gameBoard[i][j][1].storedItems:
                         storedItems += "???"+"\n"
-            toolTipData = buffs+debuffs+storedItems
+                toolTipData = buffs+debuffs+storedItems
+            else:
+                toolTipData = ""
+                specialConditions = "Special Conditions:\n"
+                
+                tileType = f"Tile Type: {gameBoard[i][j][0].tileType}"+"\n"
+                tileHeight = f"Tile Height: {gameBoard[i][j][0].tileHeight}"+"\n"
+                if gameBoard[i][j][0].horiLaser or gameBoard[i][j][0].vertLaser or gameBoard[i][j][0].crossLaser:
+                    specialConditions += "Being lasered\n"
+                if gameBoard[i][j][0].orbEater:
+                    specialConditions += "Has an orb eater\n"
+                if gameBoard[i][j][0].wormHole1:
+                    specialConditions += "Has a worm hole (player 1)\n"
+                if gameBoard[i][j][0].wormHole2:
+                    specialConditions += "Has a worm hole (player 2)\n"
+                if gameBoard[i][j][0].recallTurn != False:
+                    specialConditions += "Has a recall slated"
+                if gameBoard[i][j][0].mugger:
+                    specialConditions += "Has a mugger"
+                if gameBoard[i][j][0].purityTile:
+                    specialConditions += "Has a purity tile"
+                if len(gameBoard[i][j][0].dumpList)>0:
+                    specialConditions += "This item dump contains: \n"
+                    for i in gameBoard[i][j][0].dumpList:
+                        specialConditions += i+"\n"
+                toolTipData += tileType + tileHeight + specialConditions
+            
             window[(i,j)].SetTooltip(toolTipData)
             
 
