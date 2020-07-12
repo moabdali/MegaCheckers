@@ -1143,6 +1143,7 @@ def pickUpItemOrb(gameBoard, x, y):
     # items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
     items = [
         "bowling ball",
+        "care package drop",
         "charity",
         "dead man's trigger",
         "Energy Forcefield",
@@ -1328,7 +1329,8 @@ def useItems(gameBoard, x, y, window):
 
 
     
-    itemsMenu = sg.Window("Items Menu", layout, disable_close=True,keep_on_top=True).finalize()
+    itemsMenu = sg.Window("Items Menu", layout, keep_on_top=True).finalize()
+    #disable_close=True,
     #grab_anywhere=True
     enemyTurn = 0
     playerTurn = gameBoard[x][y][1].ownedBy
@@ -1403,6 +1405,43 @@ def useItems(gameBoard, x, y, window):
             sg.popup(f"Taught buffs to {taughtPieces} piece(s).")
             pm(window,f"Taught buffs to {taughtPieces} piece(s).")
 
+# care package drop
+        # care package drop
+        elif str.find(i, "care package drop") >= 0:
+            itemsMenu.close()
+            sg.popup("Choose an enemy to center the item airdrop on")
+
+            event = window.read()
+            location = event[0]
+            x1 = location[0]
+            y1 = location[1]
+
+            if gameBoard[x1][y1][0].occupied == False:
+                sg.popup("There's no one there; the package drop requires you choose an enemy")
+                continue
+            elif gameBoard[x1][y1][1].ownedBy == playerTurn:
+                sg.popup("You cannot center the airdrop on your own piece.")
+                continue
+            else:
+                validLocations = getRadial(location, gameBoard)
+                for i in validLocations:
+                    dropX = i[0]
+                    dropY = i[1]
+                    gameBoard[dropX][dropY][0].tileType = "itemOrb"
+                    gameBoard[dropX][dropY][0].grey = True
+                    isOccupied = False
+                    if gameBoard[dropX][dropY][0].occupied == True:
+                        isOccupied = True
+                    gameBoard[dropX][dropY][0].occupied = False
+                    displayBoard(window,gameBoard)
+                    window.refresh()
+                    sleep(.3)
+                    gameBoard[dropX][dropY][0].grey = False
+                    if isOccupied == True:
+                        gameBoard[dropX][dropY][0].occupied = True
+                    window.refresh()
+                    sleep(.3)
+                    
 # dump items
         elif str.find(i, "dump items") >= 0:
             itemsMenu.close()
