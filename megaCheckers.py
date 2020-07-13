@@ -11,7 +11,7 @@ from playsound import playsound
 PublicPNGList = []     
 
 def initializeField(columns, rows, window, gameBoard):
-    publicPNGloader()
+    
 
     for i in range(2):
         for j in range(columns):
@@ -48,7 +48,7 @@ def initializeField(columns, rows, window, gameBoard):
            gameBoard[i][j][1].storedItems.append("mystery box")
            gameBoard[i][j][1].storedItems.append("study row")
            gameBoard[i][j][1].storedItems.append("jumpoline")
-           gameBoard[i][j][1].storedItems.append("mugger")
+           gameBoard[i][j][1].storedItems.append("secretAgent")
            gameBoard[i][j][1].storedItems.append("shuffle item orbs")
            gameBoard[i][j][1].storedItems.append("laser row")
            gameBoard[i][j][1].storedItems.append("mutual treason row")
@@ -56,7 +56,7 @@ def initializeField(columns, rows, window, gameBoard):
            gameBoard[i][j][1].storedItems.append("mutual treason column")
            gameBoard[i][j][1].storedItems.append("shuffle column")
            gameBoard[i][j][1].storedItems.append("reproduce")
-           gameBoard[i][j][1].storedItems.append("haymaker")
+           gameBoard[i][j][1].storedItems.append("snake tunneling")
            gameBoard[i][j][1].storedItems.append("haphazard airstrike")
            gameBoard[i][j][1].storedItems.append("warp")
            gameBoard[i][j][1].storedItems.append("purity tile")
@@ -78,7 +78,7 @@ def initializeField(columns, rows, window, gameBoard):
            #give items to middle row
            gameBoard[rows - i - 1][j][1].storedItems.append("shuffle radial")
            gameBoard[rows - i - 1][j][1].storedItems.append("worm hole")
-           gameBoard[rows - i - 1][j][1].storedItems.append("orbEater")
+           gameBoard[rows - i - 1][j][1].storedItems.append("orb eater")
            gameBoard[rows - i - 1][j][1].storedItems.append("shuffle item orbs")
            gameBoard[rows - i - 1][j][1].storedItems.append("laser row")
            gameBoard[rows - i - 1][j][1].storedItems.append("warp")
@@ -89,8 +89,12 @@ def initializeField(columns, rows, window, gameBoard):
            gameBoard[rows - i - 1][j][1].storedItems.append("laser row")
            gameBoard[rows - i - 1][j][1].activeBuffs.append("move diagonal")
            gameBoard[rows - i - 1][j][1].storedItems.append("bowling ball")
-
-
+           #print(sg.list_of_look_and_feel_values())
+           #gameBoard[2][0][0].tileHeight = 2
+           #gameBoard[2][1][0].tileHeight = 1
+           #gameBoard[2][2][0].tileHeight = -1
+           #gameBoard[2][3][0].tileHeight = -2
+           
 ####### END DELETE ME###########
 
 
@@ -146,10 +150,11 @@ class Tile:
         self.wormHole2 = False
         self.recallTurn = False
         self.recallBackup = False
-        self.mugger = False
-        self.muggerList = []
+        self.secretAgent = False
+        self.secretAgentList = []
         self.purityTile = False
         self.dumpList = []
+        self.snake = False
 
     def describeSelf(self):
 
@@ -753,33 +758,75 @@ def publicPNGloader():
         "trapOrb",#8
         "vertLaserTripod",#9
         "orbEater", #10
-        "mugger", #11
+        "secretAgent", #11
         "purityTile",#12
+        "floor0",#13
+        "floor1",#14
+        "floor2",#15
+        "floor-1",#16
+        "floor-2",#17
+        "recall",#18
+        "snake",#19
         ]):
-        if i == "p1":
-            myImage = Image.open("images/p1.png").convert("RGBA")
-            PublicPNGList.append(myImage)
-            continue
-        elif i == "p2":
-            myImage = Image.open("images/p2.png").convert("RGBA")
-            PublicPNGList.append(myImage)
-            continue
-        if i == "items":
-            myImage = Image.open("images/items.png").convert("RGBA")
-            PublicPNGList.append(myImage)
-            continue
+##        if i == "p1":
+##            myImage = Image.open("images/p1.png").convert("RGBA")
+##            PublicPNGList.append(myImage)
+##            continue
+##        elif i == "p2":
+##            myImage = Image.open("images/p2.png").convert("RGBA")
+##            PublicPNGList.append(myImage)
+##            continue
+##        if i == "items":
+##            myImage = Image.open("images/items.png").convert("RGBA")
+##            PublicPNGList.append(myImage)
+##            continue
+##        if i == "floor0":
+##            myImage = Image.open("images/floor0.png").convert("RGBA")
+##            PublicPNGList.append(myImage)
+##            continue
+##        if i == "default":
+##            myImage = Image.open("images/default.png").convert("RGBA")
+##            PublicPNGList.append(myImage)
+##            continue
+
         myImage = Image.open(f"images/{i}.png").convert("RGBA")
-        im_file = BytesIO()
-        myImage.save(im_file, format="png")
-        im_bytes = im_file.getvalue()
-        PublicPNGList.append(base64.b64encode(im_bytes))        
+        PublicPNGList.append(myImage)
+            
+##        myImage = Image.open(f"images/{i}.png").convert("RGBA")
+##        im_file = BytesIO()
+##        myImage.save(im_file, format="png")
+##        im_bytes = im_file.getvalue()
+##        PublicPNGList.append(base64.b64encode(im_bytes))        
                         
 def cleanTile(tile):
     tile.wormHole1 = False
     tile.wormHole2 = False
     tile.orbEater = False
     tile.purityTile = False
-    tile.mugger = False
+    tile.secretAgent = False
+
+def avatarFunction(window, avatar, gameBoard, i,j):
+    g = gameBoard[i][j][0]
+    if g.tileHeight == 0:
+        #window[(i,j)].update(button_color = ("white","grey50"))
+        window[(i,j)].update(button_color = ("white","grey50"))
+    elif g.tileHeight == 1:
+        window[(i,j)].update(button_color = ("white","grey65"))
+    elif g.tileHeight == 2:
+        window[(i,j)].update(button_color = ("white","white"))
+    elif g.tileHeight == -1:
+        window[(i,j)].update(button_color = ("white","grey25"))
+    elif g.tileHeight == -2:
+        window[(i,j)].update(button_color = ("white","grey10"))
+    elif g.tileType == "destroyed":
+        window[(i,j)].update(button_color = ("white","black"))
+
+    im_file = BytesIO()
+    avatar.save(im_file, format="png")
+    im_bytes = im_file.getvalue()
+    avatar = base64.b64encode(im_bytes)
+
+    window[i, j].update(image_data=avatar)
     
 #display the board (update what the tiles/pieces should look like)
 def displayBoard(window, gameBoard):
@@ -787,85 +834,78 @@ def displayBoard(window, gameBoard):
     for i in range(len(gameBoard)):
         for j in range(len(gameBoard[0])):
             # unoccupied spaces
+
             
             
             if gameBoard[i][j][0].horiLaser == True and gameBoard[i][j][0].vertLaser == False:
                 window[i, j].update(image_filename="images/horiLaserBeam.png")
                 continue
-            elif gameBoard[i][j][0].horiLaser == False and gameBoard[i][j][0].vertLaser == True:    
+            if gameBoard[i][j][0].horiLaser == False and gameBoard[i][j][0].vertLaser == True:    
                 window[i, j].update(image_filename="images/vertLaserBeam.png")
                 continue
-            elif gameBoard[i][j][0].horiLaser == True and gameBoard[i][j][0].vertLaser == True:
+            if gameBoard[i][j][0].horiLaser == True and gameBoard[i][j][0].vertLaser == True:
                 window[i, j].update(image_filename="images/crossLaserBeam.png")
                 continue
             if gameBoard[i][j][0].tileType == "jumpoline":
                 window[i, j].update(image_filename="images/jumpoline.png")
                 continue
-            
             if gameBoard[i][j][0].tileType == "mystery box":
                 window[i, j].update(image_filename="images/mystery box.png")
                 continue
-            
             if gameBoard[i][j][0].tileType == "itemDump":
                 window[i, j].update(image_filename="images/itemDump.png")
                 continue
-                
-            
             if gameBoard[i][j][0].tileType == "exploding":
                 cleanTile(gameBoard[i][j][0])
                 window[i, j].update(image_filename="images/exploding.png")
                 continue
-            elif gameBoard[i][j][0].tileType == "damaged8":
+            if gameBoard[i][j][0].tileType == "damaged8":
+                gameBoard[i][j][0].tileHeight = 0
                 cleanTile(gameBoard[i][j][0])
                 window[i, j].update(image_filename="images/damaged8.png")
                 continue
-
-            elif gameBoard[i][j][0].tileType == "damaged7":
+            if gameBoard[i][j][0].tileType == "damaged7":
                 cleanTile(gameBoard[i][j][0])
                 window[i, j].update(image_filename="images/damaged7.png")
                 continue
-
-            elif gameBoard[i][j][0].tileType == "damaged6":
+            if gameBoard[i][j][0].tileType == "damaged6":
                 cleanTile(gameBoard[i][j][0])
                 window[i, j].update(image_filename="images/damaged6.png")
                 continue
-
-            elif gameBoard[i][j][0].tileType == "damaged5":
+            if gameBoard[i][j][0].tileType == "damaged5":
                 cleanTile(gameBoard[i][j][0])
                 window[i, j].update(image_filename="images/damaged5.png")
                 continue
-            elif gameBoard[i][j][0].tileType == "damaged4":
+            if gameBoard[i][j][0].tileType == "damaged4":
                 cleanTile(gameBoard[i][j][0])
                 window[i, j].update(image_filename="images/damaged4.png")
                 continue
-
-            elif gameBoard[i][j][0].tileType == "damaged3":
+            if gameBoard[i][j][0].tileType == "damaged3":
                 cleanTile(gameBoard[i][j][0])
                 window[i, j].update(image_filename="images/damaged3.png")
                 continue
-
-            elif gameBoard[i][j][0].tileType == "damaged2":
+            if gameBoard[i][j][0].tileType == "damaged2":
                 cleanTile(gameBoard[i][j][0])
                 window[i, j].update(image_filename="images/damaged2.png")
                 continue
-
-            elif gameBoard[i][j][0].tileType == "damaged":
+            if gameBoard[i][j][0].tileType == "damaged":
                 cleanTile(gameBoard[i][j][0])
                 window[i, j].update(image_filename="images/damaged.png")
                 continue
-
-            elif gameBoard[i][j][0].tileType == "snake":
-                window[i, j].update(image_filename="images/snake.png")
+            #snake
+            if gameBoard[i][j][0].snake == True:
+                print("HSS")
+                avatar = PublicPNGList[19].convert("RGBA")
+                avatarFunction(window, avatar, gameBoard, i, j)
                 continue
-
-            elif gameBoard[i][j][0].tileType == "abolished":
+            if gameBoard[i][j][0].tileType == "abolished":
                 window[i, j].update(image_filename="images/abolished.png")
                 continue
-            elif gameBoard[i][j][0].wormHole1 == True:
+            if gameBoard[i][j][0].wormHole1 == True:
                 window[i, j].update(image_filename="images/wormHole1.png")
                 if gameBoard[i][j][0].occupied == False:
                     continue
-            elif gameBoard[i][j][0].wormHole2 == True:
+            if gameBoard[i][j][0].wormHole2 == True:
                 window[i, j].update(image_filename="images/wormHole2.png")
                 if gameBoard[i][j][0].occupied == False:
                     continue
@@ -873,64 +913,81 @@ def displayBoard(window, gameBoard):
         
             if gameBoard[i][j][0].occupied == False:
 
-                #0 default
+                #0 default - start with the default floor
                 if gameBoard[i][j][0].tileType == "default":
-                    window[i, j].update(image_data=PublicPNGList[0])
-                    #if the mouse is here
+                    avatar = PublicPNGList[0].convert("RGBA")
+                    avatarFunction(window, avatar, gameBoard, i, j)
+                    
+                    #if there's a recall waiting
                     if gameBoard[i][j][0].recallTurn != False:
+                        #avatar = PublicPNGList[18].convert("RGBA")
                         window[i, j].update(image_filename="images/recall.png")
+                        
+                    #if the mouse is here
                     if gameBoard[i][j][0].orbEater == True:
                         window[i, j].update(image_data=PublicPNGList[10])
-                    if gameBoard[i][j][0].mugger != False:
-                        window[i, j].update(image_data=PublicPNGList[11])
+                    if gameBoard[i][j][0].secretAgent != False:
+                        avatarFunction(window, PublicPNGList[11], gameBoard, i, j)
+                        #window[i, j].update(image_data=PublicPNGList[11])
                     if gameBoard[i][j][0].purityTile != False:
-                        window[i, j].update(image_data=PublicPNGList[12])
+                        avatarFunction(window, PublicPNGList[12], gameBoard, i, j)
+                        #window[i, j].update(image_data=PublicPNGList[12])
                     continue
                 #7 itemOrb
-                elif gameBoard[i][j][0].tileType == "itemOrb":
-                    window[i, j].update(image_data=PublicPNGList[7])
+                if gameBoard[i][j][0].tileType == "itemOrb":
+                    avatarFunction(window, PublicPNGList[7], gameBoard, i, j)
+                    #window[i, j].update(image_data=PublicPNGList[7])
                     #if the mouse is here
                     if gameBoard[i][j][0].orbEater == True:
                         window[i, j].update(image_data=PublicPNGList[10])
                     continue
                 #1 destroyed
-                elif gameBoard[i][j][0].tileType == "destroyed":
+                if gameBoard[i][j][0].tileType == "destroyed":
+                    gameBoard[i][j][0].tileHeight = -2
                     cleanTile(gameBoard[i][j][0])
-                    window[i, j].update(image_data=PublicPNGList[1])
+                    avatarFunction(window, PublicPNGList[1], gameBoard, i, j)
+                    #window[i, j].update(image_data=PublicPNGList[1])
                     continue
                 #2 mine
-                elif gameBoard[i][j][0].tileType == "mine":
-                    window[i, j].update(image_data=PublicPNGList[2])
+                if gameBoard[i][j][0].tileType == "mine":
+                    avatarFunction(window, PublicPNGList[2], gameBoard, i, j)
+                    #window[i, j].update(image_data=PublicPNGList[2])
                     continue
                 #8 trapOrb
-                elif gameBoard[i][j][0].tileType in [
+                if gameBoard[i][j][0].tileType in [
                     "trap orb 0",
                     "trap orb 1",
                     "trap orb 2",
                 ]:
-                    window[i, j].update(image_data=PublicPNGList[8])
+                    avatarFunction(window, PublicPNGList[8], gameBoard, i, j)
+                    #window[i, j].update(image_data=PublicPNGList[8])
                     #if the mouse is here
                     if gameBoard[i][j][0].orbEater == True:
                         cleanTile(gameBoard[i][j][0])
-                        window[i, j].update(image_data=PublicPNGList[10])
+                        avatarFunction(window, PublicPNGList[10], gameBoard, i, j)
+                        #window[i, j].update(image_data=PublicPNGList[10])
                     continue
-                elif gameBoard[i][j][0].tileType in ["hand1","hand2","hand3"]:
+                if gameBoard[i][j][0].tileType in ["hand1","hand2","hand3"]:
                     pass
                 
                 #3 horiLaserTripod
-                elif gameBoard[i][j][0].tileType == "horiLaserTripod":
-                    window[i, j].update(image_data= PublicPNGList[3])
+                if gameBoard[i][j][0].tileType == "horiLaserTripod":
+                    #avatar = PublicPNGList[3].convert("RGBA")
+                    avatarFunction(window, PublicPNGList[3], gameBoard, i, j)
+                    #window[i, j].update(image_data= PublicPNGList[3])
                     continue
 
-                elif gameBoard[i][j][0].tileType == "vertLaserTripod":
-                    window[i, j].update(image_data= PublicPNGList[9])
+                if gameBoard[i][j][0].tileType == "vertLaserTripod":
+                    avatarFunction(window, PublicPNGList[9], gameBoard, i, j)
+                    #window[i, j].update(image_data= PublicPNGList[9])
                     continue
-                elif gameBoard[i][j][0].tileType in ("player1default","player2default"):
+                if gameBoard[i][j][0].tileType in ("player1default","player2default"):
                     gameBoard[i][j][0].tileType = "default"
-                    window[i, j].update(image_data= PublicPNGList[0])
+                    #window[i, j].update(image_data= PublicPNGList[0])
+                    avatarFunction(window, PublicPNGList[0], gameBoard, i, j)
                     if gameBoard[i][j][0].recallTurn != False:
-                
-                        window[i, j].update(image_filename="images/recall1.png")
+                        avatarFunction(window, PublicPNGList[7], gameBoard, i, j)
+                        #window[i, j].update(image_filename="images/recall1.png")
                     continue
                 else:
                     sg.popup(
@@ -957,7 +1014,7 @@ def displayBoard(window, gameBoard):
                     if g.ownedBy == 1:
                         #4 p1
                         avatar = (PublicPNGList[4]).convert("RGBA")
-                    elif g.ownedBy == 2:
+                    if g.ownedBy == 2:
                         #5 p2
                         avatar = (PublicPNGList[5]).convert("RGBA")
                     
@@ -996,10 +1053,10 @@ def displayBoard(window, gameBoard):
                     if "purified2" in g.activeBuffs:
                         purified2 = Image.open("images/purified2.png").convert("RGBA")
                         avatar.paste(purified2, (0, 0), purified2)
-                    elif "purified1" in g.activeBuffs:
+                    if "purified1" in g.activeBuffs:
                         purified1 = Image.open("images/purified1.png").convert("RGBA")
                         avatar.paste(purified1, (0, 0), purified1)
-                    elif "purified0" in g.activeBuffs:
+                    if "purified0" in g.activeBuffs:
                         purified0 = Image.open("images/purified0.png").convert("RGBA")
                         avatar.paste(purified0, (0, 0), purified0)
 
@@ -1012,13 +1069,13 @@ def displayBoard(window, gameBoard):
                     if g.moveAgain == 1:
                         step1 = Image.open("images/moveAgain1.png").convert("RGBA")
                         avatar.paste(step1, (0, 0), step1)
-                    elif g.moveAgain == 2:
+                    if g.moveAgain == 2:
                         step2 = Image.open("images/moveAgain2.png").convert("RGBA")
                         avatar.paste(step2, (0, 0), step2)
-                    elif g.moveAgain == 3:
+                    if g.moveAgain == 3:
                         step3 = Image.open("images/moveAgain3.png").convert("RGBA")
                         avatar.paste(step3, (0, 0), step3)
-                    elif g.moveAgain > 3:
+                    if g.moveAgain > 3:
                         stepMax = Image.open("images/moveAgainMax.png").convert("RGBA")
                         avatar.paste(stepMax, (0, 0), stepMax)
 
@@ -1042,39 +1099,38 @@ def displayBoard(window, gameBoard):
                     if gameBoard[i][j][0].tileType == "hand3":
                         hand3 = Image.open("images/hand3.png").convert("RGBA")
                         avatar.paste(hand3, (0, 0), hand3)
-
+                        
+                    #teleport to opposite edges
                     if "round earth theory" in g.activeBuffs:
                         roundEarthTheory = Image.open("images/roundEarthTheory.png").convert("RGBA")
                         avatar.paste(roundEarthTheory, (0, 0), roundEarthTheory)
-                        
-                    if gameBoard[i][j][0].mugger != False:
-                        mugger = Image.open("images/mugger.png").convert("RGBA")
-                        avatar.paste(mugger, (0, 0), mugger)
-                        window[i, j].update(image_filename="images/mugger.png")
 
+                    #robs your enemy    
+                    if gameBoard[i][j][0].secretAgent != False:
+                        secretAgent = Image.open("images/secretAgent.png").convert("RGBA")
+                        avatar.paste(secretAgent, (0, 0), secretAgent)
+                        window[i, j].update(image_filename="images/secretAgent.png")
+
+                    #pure tile to clean pieces
                     if gameBoard[i][j][0].purityTile != False:
                         purityTile = Image.open("images/purityTile.png").convert("RGBA")
                         avatar.paste(purityTile, (0, 0), purityTile)
                         window[i, j].update(image_filename="images/purityTile.png")
                         
+                    #recall logo on PIECE    
                     if gameBoard[i][j][1].recallTurn != False:
                             recall1 = Image.open("images/recall1.png").convert("RGBA")
                             avatar.paste(recall1, (0, 0), recall1)
                             window[i, j].update(image_filename="images/recall1.png")
                             
-                    #if gameBoard[i][j][0].recallTurn != False or gameBoard[i][j][1].recallTurn != False:
+                    #recall logo on TILE
                     if gameBoard[i][j][0].recallTurn != False:
                         
                         recall = Image.open("images/recall.png").convert("RGBA")
                         avatar.paste(recall, (0, 0), recall)
                         window[i, j].update(image_filename="images/recall.png")
                     
-            im_file = BytesIO()
-            avatar.save(im_file, format="png")
-            im_bytes = im_file.getvalue()
-            avatar = base64.b64encode(im_bytes)
-
-            window[i, j].update(image_data=avatar)
+            avatarFunction(window, avatar, gameBoard, i ,j)
 
 
 
@@ -1139,7 +1195,7 @@ def emptySpots(gameBoard,trueEmpty = False):
 
 
 # the item list
-def pickUpItemOrb(gameBoard, x, y):
+def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False):
     # items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
     items = [
         "bowling ball",
@@ -1157,7 +1213,7 @@ def pickUpItemOrb(gameBoard, x, y):
         "magnet",
         "move again",
         "move diagonal",
-        "mugger",#15
+        "secretAgent",#15
         "mutual treason column",
         "mutual treason radial",
         "mutual treason row",
@@ -1197,7 +1253,8 @@ def pickUpItemOrb(gameBoard, x, y):
         "worm hole",
         "dump powers"
     ]
-    
+    if introOnly == True:
+        return random.choice(items)
 
     #pick an item at random; should eventually have biases on the items by separating them into different lists that have different odds of being chosen
     randItem = random.choice(items)
@@ -1224,12 +1281,13 @@ def disableEverything(window, turnOn = False):
         window["itemButton"].update(disabled=True)
         window["examineItem"].update(disabled=True)
         window["readItems"].update(disabled=True)
+        window["cheetz"].update(disabled=True)
     else:
         window["exit"].update(disabled = False)
         window["itemButton"].update(disabled=False)
         window["examineItem"].update(disabled=False)
         window["readItems"].update(disabled=False)
-
+        window["cheetz"].update(disabled=True)
 # using an item
 def useItems(gameBoard, x, y, window):
     layout = []
@@ -1711,7 +1769,7 @@ def useItems(gameBoard, x, y, window):
                     break
                 else:
                     gameBoard[x][y][1].storedItems.remove("mystery box")
-                    #g[0].mugger = playerTurn
+                    #g[0].secretAgent = playerTurn
                     g[0].tileType = "mystery box"
 
             else:
@@ -1739,12 +1797,12 @@ def useItems(gameBoard, x, y, window):
                         j[0].tileType = "default"
             sg.popup("Any damaged floors are back to brand new condition")
 
-# mugger          
-        elif str.find(i,"mugger") >= 0:
+# secretAgent          
+        elif str.find(i,"secretAgent") >= 0:
             itemsMenu.close()
             validTargets = getCross((x, y), gameBoard, trueEmpty = True)
             
-            pm(window, "Pick an adjacent location to place the mugger.")
+            pm(window, "Pick an adjacent location to place the secretAgent.")
             event = window.read()
             if event[0] in validTargets:
                 x1 = event[0][0]
@@ -1759,8 +1817,8 @@ def useItems(gameBoard, x, y, window):
                     pm(window, "Must be a valid tile")
                     break
                 else:
-                    gameBoard[x][y][1].storedItems.remove("mugger")
-                    g[0].mugger = playerTurn
+                    gameBoard[x][y][1].storedItems.remove("secretAgent")
+                    g[0].secretAgent = playerTurn
                     
 
             else:
@@ -2826,11 +2884,16 @@ def useItems(gameBoard, x, y, window):
 
                             # if the next location is a hole
                             if gameBoard[s1 + 1][s2][0].tileType in [
-                                "destroyed",
-                                "damaged4",
-                                "damaged3",
-                                "damaged2",
                                 "damaged",
+                                "destroyed",
+                                "damaged1",
+                                "damaged2",
+                                "damaged3",
+                                "damaged4",
+                                "damaged5",
+                                "damaged6",
+                                "damaged7",
+                                "damaged8"
                             ]:
                                 # kill the piece
                                 gameBoard[s1][s2][1] = 0
@@ -2914,11 +2977,16 @@ def useItems(gameBoard, x, y, window):
 
                             # if the next location is a hole
                             if gameBoard[s1 - 1][s2][0].tileType in [
-                                "destroyed",
-                                "damaged4",
-                                "damaged3",
-                                "damaged2",
                                 "damaged",
+                                "destroyed",
+                                "damaged1",
+                                "damaged2",
+                                "damaged3",
+                                "damaged4",
+                                "damaged5",
+                                "damaged6",
+                                "damaged7",
+                                "damaged8"
                             ]:
                                 # kill the piece
                                 gameBoard[s1][s2][1] = 0
@@ -3007,11 +3075,16 @@ def useItems(gameBoard, x, y, window):
 
                             # if the next location is a hole
                             if gameBoard[s1][s2 + 1][0].tileType in [
-                                "destroyed",
-                                "damaged4",
-                                "damaged3",
-                                "damaged2",
                                 "damaged",
+                                "destroyed",
+                                "damaged1",
+                                "damaged2",
+                                "damaged3",
+                                "damaged4",
+                                "damaged5",
+                                "damaged6",
+                                "damaged7",
+                                "damaged8"
                             ]:
                                 # kill the piece
                                 gameBoard[s1][s2][1] = 0
@@ -3094,11 +3167,16 @@ def useItems(gameBoard, x, y, window):
 
                             # if the next location is a hole
                             if gameBoard[s1][s2 - 1][0].tileType in [
-                                "destroyed",
-                                "damaged4",
-                                "damaged3",
-                                "damaged2",
                                 "damaged",
+                                "destroyed",
+                                "damaged1",
+                                "damaged2",
+                                "damaged3",
+                                "damaged4",
+                                "damaged5",
+                                "damaged6",
+                                "damaged7",
+                                "damaged8"
                             ]:
                                 # kill the piece
                                 gameBoard[s1][s2][1] = 0
@@ -3302,10 +3380,10 @@ def useItems(gameBoard, x, y, window):
                     gameBoard[x][y][0].tileType = "destroyed"
 
 # snake tunneling
-        elif str.find(i, "Snake Tunneling") >= 0:
-            gameBoard[x][y][1].storedItems.remove("Snake Tunneling")
-
-            i = 5
+        elif str.find(i, "snake tunneling") >= 0:
+            gameBoard[x][y][1].storedItems.remove("snake tunneling")
+            itemsMenu.close()
+            i = 10
             lastSpace = (x, y)
             while i > 0:
                 i -= 1
@@ -3323,7 +3401,7 @@ def useItems(gameBoard, x, y, window):
                 tileVictim = copy.deepcopy(gameBoard[s1][s2][0])
                 # tileVictim = gameBoard[s1][s2][0]
 
-                gameBoard[s1][s2][0].tileType = "snake"
+                gameBoard[s1][s2][0].snake = True
                 displayBoard(window, gameBoard)
                 window.refresh()
                 sleep(1)
@@ -3335,23 +3413,23 @@ def useItems(gameBoard, x, y, window):
                         gameBoard[s1][s2][0].tileType = "exploding"
                         displayBoard(window, gameBoard)
                         window.refresh()
-                        sleep(1)
+                        sleep(.5)
                         gameBoard[s1][s2][0].tileType = "default"
                         displayBoard(window, gameBoard)
                         window.refresh()
-                        sleep(1)
+                        sleep(.5)
 
-                        gameBoard[s1][s2][0].tileHeight = 3
+                        gameBoard[s1][s2][0].tileHeight = 2
                     else:
                         gameBoard[s1][s2][0] = copy.deepcopy(tileVictim)
-                        gameBoard[s1][s2][0].tileHeight = 3
+                        gameBoard[s1][s2][0].tileHeight = 2
                 else:
                     gameBoard[s1][s2][0] = copy.deepcopy(tileVictim)
-                    gameBoard[s1][s2][0].tileHeight = 3
-
+                    gameBoard[s1][s2][0].tileHeight = 2
+                gameBoard[s1][s2][0].snake = False
                 displayBoard(window, gameBoard)
                 window.refresh()
-                sleep(1)
+                sleep(.5)
 
         updateToolTips(window, gameBoard, playerTurn)
         # after using the menu, close it
@@ -3434,7 +3512,17 @@ def bowlingBallFunction(window,gameBoard,location,direction):
 
                         
                         #if the floor exists in the next row
-                        if gameBoard[curRow+1][curCol][0].tileType not in ("destroyed", "damaged4", "damaged3", "damaged2", "damaged"):
+                        if gameBoard[curRow+1][curCol][0].tileType not in (
+                            "damaged",
+                            "destroyed",
+                            "damaged1",
+                            "damaged2",
+                            "damaged3",
+                            "damaged4",
+                            "damaged5",
+                            "damaged6",
+                            "damaged7",
+                            "damaged8"):
 
                             
                             #if the floor is a mine on the next row
@@ -3600,7 +3688,17 @@ def bowlingBallFunction(window,gameBoard,location,direction):
 
                         
                         #if the floor exists in the next row
-                        if gameBoard[curRow-1][curCol][0].tileType not in ("destroyed", "damaged4", "damaged3", "damaged2", "damaged"):
+                        if gameBoard[curRow-1][curCol][0].tileType not in (
+                            "damaged",
+                            "destroyed",
+                            "damaged1",
+                            "damaged2",
+                            "damaged3",
+                            "damaged4",
+                            "damaged5",
+                            "damaged6",
+                            "damaged7",
+                            "damaged8"):
 
                             
                             #if the floor is a mine on the next row
@@ -3758,7 +3856,17 @@ def bowlingBallFunction(window,gameBoard,location,direction):
 
                         
                         #if the floor exists in the next row
-                        if gameBoard[curRow][curCol-1][0].tileType not in ("destroyed", "damaged4", "damaged3", "damaged2", "damaged"):
+                        if gameBoard[curRow][curCol-1][0].tileType not in (
+                            "damaged",
+                            "destroyed",
+                            "damaged1",
+                            "damaged2",
+                            "damaged3",
+                            "damaged4",
+                            "damaged5",
+                            "damaged6",
+                            "damaged7",
+                            "damaged8"):
 
                             
                             #if the floor is a mine on the next row
@@ -3916,7 +4024,17 @@ def bowlingBallFunction(window,gameBoard,location,direction):
 
                         
                         #if the floor exists in the next row
-                        if gameBoard[curRow][curCol+1][0].tileType not in ("destroyed", "damaged4", "damaged3", "damaged2", "damaged"):
+                        if gameBoard[curRow][curCol+1][0].tileType not in (
+                            "damaged",
+                            "destroyed",
+                            "damaged1",
+                            "damaged2",
+                            "damaged3",
+                            "damaged4",
+                            "damaged5",
+                            "damaged6",
+                            "damaged7",
+                            "damaged8"):
 
                             
                             #if the floor is a mine on the next row
@@ -4086,39 +4204,43 @@ def forcefieldCheck(window, gameBoard, startLocation = 0, endLocation = 0):
     else:
         return False
     
-def muggerCheck(window, gameBoard, startLocation, endLocation, playerTurn):
+def secretAgentCheck(window, gameBoard, startLocation, endLocation, playerTurn):
     
-    #if there's no mugger
-    if gameBoard[endLocation[0]][endLocation[1]][0].mugger == False:
+    #if there's no secretAgent
+    if gameBoard[endLocation[0]][endLocation[1]][0].secretAgent == False:
         return
     
-    #if the mugger is yours
-    if gameBoard[endLocation[0]][endLocation[1]][0].mugger == playerTurn:
-        #if you are not burdened (debuff that stops you from picking up items) and you're not a bowling ball and your mugger has items
-        if "burdened" not in gameBoard[endLocation[0]][endLocation[1]][1].activeDebuffs and len(gameBoard[endLocation[0]][endLocation[1]][0].muggerList)>0 and "bowling ball" not in gameBoard[endLocation[0]][endLocation[1]][1].activeBuffs:
+    #if the secretAgent is yours
+    if gameBoard[endLocation[0]][endLocation[1]][0].secretAgent == playerTurn:
+        #if you are not burdened (debuff that stops you from picking up items) and you're not a bowling ball and your secretAgent has items
+        if "burdened" not in gameBoard[endLocation[0]][endLocation[1]][1].activeDebuffs and len(gameBoard[endLocation[0]][endLocation[1]][0].secretAgentList)>0 and "bowling ball" not in gameBoard[endLocation[0]][endLocation[1]][1].activeBuffs:
             #he gives you the items
-            for i in gameBoard[endLocation[0]][endLocation[1]][0].muggerList:
+            count = 0
+            for i in gameBoard[endLocation[0]][endLocation[1]][0].secretAgentList:
                 gameBoard[endLocation[0]][endLocation[1]][1].storedItems.append(i)
+                count+=1
+            sg.popup(f"The allied secret agent gave you all the items he's stolen on your behalf. ({count} total)")
+            pm(window, f"The allied secret agent gave you all the items he's stolen on your behalf. ({count} total)")
             #and then erases his collection
-            gameBoard[endLocation[0]][endLocation[1]][0].muggerList.clear()
+            gameBoard[endLocation[0]][endLocation[1]][0].secretAgentList.clear()
         #otherwise, if he doesn't have anything, show a little message
-        elif len(gameBoard[endLocation[0]][endLocation[1]][0].muggerList) == 0:
-            sg.popup("This mugger is on your side, but isn't interested in small talk.  He nods, but otherwise ignores you.  You should visit him after he steals something from your enemy.")        
+        elif len(gameBoard[endLocation[0]][endLocation[1]][0].secretAgentList) == 0:
+            sg.popup("This secret agent is on your side, but isn't interested in small talk.  He nods, but otherwise ignores you.  You should visit him after he steals something from your enemy.")        
 
-    #if the mugger is your enemy's
-    elif gameBoard[endLocation[0]][endLocation[1]][0].mugger != playerTurn:
+    #if the secretAgent is your enemy's
+    elif gameBoard[endLocation[0]][endLocation[1]][0].secretAgent != playerTurn:
             #if you're there
             if gameBoard[endLocation[0]][endLocation[1]][0].occupied == True:
                 if len(gameBoard[endLocation[0]][endLocation[1]][1].storedItems) > 0:
                     #iterate through the player's list
                     for i in gameBoard[endLocation[0]][endLocation[1]][1].storedItems:
                         #add them to the spy's inventory
-                        gameBoard[endLocation[0]][endLocation[1]][0].muggerList.append(i)
+                        gameBoard[endLocation[0]][endLocation[1]][0].secretAgentList.append(i)
                     #wipe out the victim's items
                     gameBoard[endLocation[0]][endLocation[1]][1].storedItems.clear()
-                    sg.popup("The mugger stole all your held items")
+                    sg.popup("The secret agent stole all your held items")
             else:
-                sg.popup("The mugger sees you don't have any items, so he gives you a dirty look, but doesn't do anything else.")
+                sg.popup("The secret agent sees you don't have any items, so he gives you a dirty look, but doesn't do anything else.")
     
 
 def repairFloor(window, gameBoard):
@@ -4158,63 +4280,120 @@ def findCurrentTurnPiece(window, gameBoard, reset = False):
             
         rowIndex +=1
 
-def itemExplanation(itemName): 
+def itemExplanation(itemName,introOnly = False): 
      
     if itemName == "orb eater":
+        if introOnly:
+            return "A mouse spawns.  After each player's turn, the mouse will eat a close by item orb or trap orb that he finds.  If he doesn't find one, he will walk in a random direction."
         sg.popup("A mouse spawns.  After each player's turn, the mouse will eat a close by item orb or trap orb that he finds.  If he doesn't find one, he will walk in a random direction.", keep_on_top = True)
     elif itemName == "laser row":
+        if introOnly:
+            return "Set up a laser emitter.  The laser will shoot all the way left and right, destroying any pieces it finds.  It does not affect item orbs or other non-player entities. It will not affect any other laser emitters."
         sg.popup("Set up a laser emitter.  The laser will shoot all the way left and right, destroying any pieces it finds.  It does not affect item orbs or other non-player entities. It will not affect any other laser emitters.", keep_on_top = True)
     elif itemName == "magnet":
+        if introOnly:
+            return"Suck in any adjacent item orbs or bombs.  Afterwards, it'll suck in anything in the 4x4 square that is surrounding the adjacent 3x3 into the 3x3 if there is space."
         sg.popup("Suck in any adjacent item orbs or bombs.  Afterwards, it'll suck in anything in the 4x4 square that is surrounding the adjacent 3x3 into the 3x3 if there is space.", keep_on_top = True)
     elif itemName == "trap orb":
+        if introOnly:
+            return "An explosive trap designed to look like an item orb.  They are indistinguishable.  Luckily, your traps will not affect you."
         sg.popup("An explosive trap designed to look like an item orb.  They are indistinguishable.  Luckily, your traps will not affect you.", keep_on_top = True)
     elif itemName == "place mine":
+        if introOnly:
+            return "Place a mine next to you.  If either player steps on it, BOOM."
         sg.popup("Place a mine next to you.  If either player steps on it, BOOM.", keep_on_top = True)
     elif itemName ==  "move again":
+        if introOnly:
+            return "After you activate this permanent buff, your piece will get to move again after moving."
         sg.popup("After you activate this permanent buff, your piece will get to move again after moving.", keep_on_top = True)
     elif itemName ==  "suicide bomb row":
+        if introOnly:
+            return "Blow yourself up, killing everyone in the same row as you - including your allies."
         sg.popup("Blow yourself up, killing everyone in the same row as you - including your allies.", keep_on_top = True)
     elif itemName == "Energy Forcefield":
+        if introOnly:
+            return "After activating it, you'll be surrounded by a forcefield. Protects you one time from most energy/explosive type attacks. It has no effect against modifiers, or against blunt attacks such as being jumped on or crushed, and will not protect you if the floor disappears."
         sg.popup("After activating it, you'll be surrounded by a forcefield. Protects you one time from most energy/explosive type attacks. It has no effect against modifiers, or against blunt attacks such as being jumped on or crushed, and will not protect you if the floor disappears.", keep_on_top = True)
     elif itemName == "suicide bomb column":
+        if introOnly:
+            return "Blow yourself up, killing everyone in the column."
         sg.popup("Blow yourself up, killing everyone in the column.", keep_on_top = True)
     elif itemName == "haphazard airstrike":
+        if introOnly:
+            return "Call in an airstrike from a poorly funded army.  The plane cannot aim and will blow holes into the ground randomly, killing anything that was on the tile, including the floor itself"
         sg.popup("Call in an airstrike from a poorly funded army.  The plane cannot aim and will blow holes into the ground randomly, killing anything that was on the tile, including the floor itself", keep_on_top = True)
     elif itemName == "suicide bomb radial":
+        if introOnly:
+            return "Blow yourself up, killing you and anyone or anything next to you."
         sg.popup("Blow yourself up, killing you and anyone or anything next to you.", keep_on_top = True)
     elif itemName == "jump proof":
+        if introOnly:
+            return "Enemies cannot jump on you.  You may still be affected by anything else."
         sg.popup("Enemies cannot jump on you.  You may still be affected by anything else.", keep_on_top = True)
     elif itemName == "smart bombs":
+        if introOnly:
+            return "Call in an airstrike conducted by a sophisticated bomber. It will not hurt any of your pieces.  Leaves holes in the ground, destroying its targets."
         sg.popup("Call in an airstrike conducted by a sophisticated bomber. It will not hurt any of your pieces.  Leaves holes in the ground, destroying its targets.", keep_on_top = True)
     elif itemName == "move diagonal":
+        if introOnly:
+            return "After activating this buff, in addition to your usual spots, your piece can move to diagonal locations."
         sg.popup("After activating this buff, in addition to your usual spots, your piece can move to diagonal locations.", keep_on_top = True)
     elif itemName == "trip mine radial":
+        if introOnly:
+            return "Set mines on all surrounding enemies.  If they move, they blow up.  They can still safely use items that don't require them to move.  Teleporting is not considered moving."
         sg.popup("Set mines on all surrounding enemies.  If they move, they blow up.  They can still safely use items that don't require them to move.  Teleporting is not considered moving.", keep_on_top = True)
     elif itemName == "purify radial":
+        if introOnly:
+            return "Remove all negative effects from surrounding allies."
         sg.popup("Remove all negative effects from surrounding allies.", keep_on_top = True)
     elif itemName == "napalm radial":
+        if introOnly:
+            return"Set all enemies in the surrounding area on fire.  This kills them and burns a hole in the ground."
         sg.popup("Set all enemies in the surrounding area on fire.  This kills them and burns a hole in the ground.", keep_on_top = True)
     elif itemName == "vile radial":
+        if introOnly:
+            return "Remove all beneficial powers that your surrounding enemies possess."
         sg.popup("Remove all beneficial powers that your surrounding enemies possess.", keep_on_top = True)
     elif itemName == "haymaker":
+        if introOnly:
+            return "Punch an adjacent piece really hard.  The flying piece will keep going until it either slams into a piece/wall and stuns itself and the piece it collided into, or if it dies by moving into a danger location (laser beam/hole/mine/etc).  The piece will not be able to pick up any items as it passes over. "
         sg.popup("Punch an adjacent piece really hard.  The flying piece will keep going until it either slams into a piece/wall and stuns itself and the piece it collided into, or if it dies by moving into a danger location (laser beam/hole/mine/etc).  The piece will not be able to pick up any items as it passes over. ", keep_on_top = True)
     elif itemName == "bowling ball":
-        sg.popup("Turn your piece into a feral bowling ball.  The bowling ball loses all effects that it has (positive and negative).  It can no longer pick up any items.  It no longer has access to normal movement.  Instead, if you select it, it will only allow you to choose a direction.  The bowling bar will fly toward that direction with sheer rage and be unaffeced by most negative effects, including bombs or mines.  It can still die by falling into holes.  It will continue going in a given direction until it slams into a wall or a piece.  If it hits a piece, it stuns allies and kills the enemy.", keep_on_top = True)
+        if introOnly:
+            return"Turn your piece into a feral bowling ball.  The bowling ball loses all effects that it has (positive and negative).  It can no longer pick up any items.  It no longer has access to normal movement.  Instead, if you select it, it will only allow you to choose a direction.  The bowling bar will fly toward that direction with sheer rage and be unaffected by most negative effects, including bombs or mines.  It can still die by falling into holes.  It will continue going in a given direction until it slams into a wall or a piece.  If it hits a piece, it stuns allies and kills the enemy."
+        sg.popup("Turn your piece into a feral bowling ball.  The bowling ball loses all effects that it has (positive and negative).  It can no longer pick up any items.  It no longer has access to normal movement.  Instead, if you select it, it will only allow you to choose a direction.  The bowling bar will fly toward that direction with sheer rage and be unaffected by most negative effects, including bombs or mines.  It can still die by falling into holes.  It will continue going in a given direction until it slams into a wall or a piece.  If it hits a piece, it stuns allies and kills the enemy.", keep_on_top = True)
     elif itemName == "laser column":
+        if introOnly:
+            return "Set up a laser emitter.  The laser will shoot all the way up and down, destroying any pieces it finds.  It does not affect item orbs or other non-player entities and will not affect any other laser emitters."
         sg.popup("Set up a laser emitter.  The laser will shoot all the way up and down, destroying any pieces it finds.  It does not affect item orbs or other non-player entities and will not affect any other laser emitters.", keep_on_top = True)
     elif itemName == "shuffle column":
+        if introOnly:
+            return "Shuffle everything in the column randomly.  This does not set off tripmines as the pieces themselves are not actually moving - the tiles are, along with their tripmines."
         sg.popup("Shuffle everything in the column randomly.  This does not set off tripmines as the pieces themselves are not actually moving - the tiles are, along with their tripmines.", keep_on_top = True)
     elif itemName == "shuffle radial":
+        if introOnly:
+            return "Shuffle everything in the surrounding randomly.  This does not set off tripmines as the pieces themselves are not actually moving - the tiles are, along with their tripmines."
         sg.popup("Shuffle everything in the surrounding randomly.  This does not set off tripmines as the pieces themselves are not actually moving - the tiles are, along with their tripmines.", keep_on_top = True)
     elif itemName == "spooky hand":
+        if introOnly:
+            return "After using this, a creepy hand will lurk under the playing field for the rest of the game.  Once every handful (see what I did there?) of turns, it'll pop up and abduct one piece from either player, taking the floor with it."
         sg.popup("After using this, a creepy hand will lurk under the playing field for the rest of the game.  Once every handful (see what I did there?) of turns, it'll pop up and abduct one piece from either player, taking the floor with it.", keep_on_top = True)
     elif itemName == "reproduce":
+        if introOnly:
+            return "Your piece spawns a cute baby.  The baby is a generic piece that has no powerups and is just like any other normal piece."
         sg.popup("Your piece spawns a cute baby.  The baby is a generic piece that has no powerups and is just like any other normal piece.", keep_on_top = True)
     elif itemName == "worm hole":
+        if introOnly:
+            return "Choose an empty location.  A worm hole replaces the tile.  As long as no on is on that tile, any of your pieces can teleport to there from anywhere."
         sg.popup("Choose an empty location.  A worm hole replaces the tile.  As long as no on is on that tile, any of your pieces can teleport to there from anywhere.", keep_on_top = True)
     elif itemName == "warp":
+        if introOnly:
+            return "Your piece is randomly whisked away to an empty location.  Careful, it can make you end up in enemy territory... or just move you one space away... or anything in between."
         sg.popup("Your piece is randomly whisked away to an empty location.  Careful, it can make you end up in enemy territory... or just move you one space away... or anything in between.", keep_on_top = True)
     elif itemName == "recall":
+        if introOnly:
+            return "After a piece uses recall, it creates an unbreakable bond with the tile it cast it on and gets a snapshot of how it is in that exact moment.  In 10 turns, the piece will, no matter what, return to that tile in the state that it was at, even if it died.  If the tile is moved by any items before the recall occurs, the piece will appear in the location the tile was moved to."
+
         sg.popup("After a piece uses recall, it creates an unbreakable bond with the tile it cast it on and gets a snapshot of how it is in that exact moment.  In 10 turns, the piece will, no matter what, return to that tile in the state that it was at, even if it died.  If the tile is moved by any items before the recall occurs, the piece will appear in the location the tile was moved to.", keep_on_top = True)
 
 
@@ -4311,6 +4490,7 @@ def movePiece(playerTurn, window, gameBoard):
         window["itemButton"].update(disabled=True)
         window["examineItem"].update(disabled=False)
         window["readItems"].update(disabled=False)
+        window["cheetz"].update(disabled=False)
         
         window.refresh()
         
@@ -4800,11 +4980,16 @@ def movePiece(playerTurn, window, gameBoard):
                     
                 # if the landing spot is missing or still damaged
                 if gameBoard[endLocation[0]][endLocation[1]][0].tileType in [
-                    "destroyed",
-                    "damaged4",
-                    "damaged3",
-                    "damaged2",
                     "damaged",
+                    "destroyed",
+                    "damaged1",
+                    "damaged2",
+                    "damaged3",
+                    "damaged4",
+                    "damaged5",
+                    "damaged6",
+                    "damaged7",
+                    "damaged8"
                 ]:
                     window["information"].update(f"Can't move here!")
                     pm(window, "Can't move here!")
@@ -4864,11 +5049,11 @@ def movePiece(playerTurn, window, gameBoard):
 
                     
                     
-                    #mugger check
+                    #secretAgent check
                     usedShield = forcefieldCheck(window, gameBoard, startLocation, endLocation)
                     if usedShield == True:
                         sg.popup("A shield was used")
-                    muggerCheck(window, gameBoard, startLocation, endLocation, playerTurn)
+                    secretAgentCheck(window, gameBoard, startLocation, endLocation, playerTurn)
 
 
 
@@ -4920,7 +5105,7 @@ def movePiece(playerTurn, window, gameBoard):
 
 
                         
-##                    if gameBoard[endLocation[0]][endLocation[1]][0].mugger != False:
+##                    if gameBoard[endLocation[0]][endLocation[1]][0].secretAgent != False:
 ##                        
 ##                        if g.horiLaser == True or g.vertLaser == True or g.crossLaser == True:
 ##
@@ -5178,8 +5363,8 @@ def movePiece(playerTurn, window, gameBoard):
                             0
                         ].tileType = f"trap orb {playerTurn}"
                     else:
-                        if gameBoard[startLocation[0]][startLocation[1]][0].tileType == "mugger":
-                            gameBoard[startLocation[0]][startLocation[1]][0].tileType = "mugger"
+                        if gameBoard[startLocation[0]][startLocation[1]][0].tileType == "secretAgent":
+                            gameBoard[startLocation[0]][startLocation[1]][0].tileType = "secretAgent"
                         else:
                             gameBoard[startLocation[0]][startLocation[1]][0].tileType = "default"
                     if (
@@ -5227,7 +5412,7 @@ def movePiece(playerTurn, window, gameBoard):
                     window["information"].update(f"Jumpkilled an enemy piece!")
                     pm(window, "Jumpkilled an enemy piece!")
 
-                    muggerCheck(window, gameBoard, startLocation, endLocation, playerTurn)
+                    secretAgentCheck(window, gameBoard, startLocation, endLocation, playerTurn)
                     
 
                     # go again if you have moveAgain equipped
@@ -5316,8 +5501,8 @@ def updateToolTips(window, gameBoard,playerTurn):
                     specialConditions += "Has a worm hole (player 2)\n"
                 if gameBoard[i][j][0].recallTurn != False:
                     specialConditions += "Has a recall slated"
-                if gameBoard[i][j][0].mugger:
-                    specialConditions += "Has a mugger"
+                if gameBoard[i][j][0].secretAgent:
+                    specialConditions += "Has a secret agent"
                 if gameBoard[i][j][0].purityTile:
                     specialConditions += "Has a purity tile"
                 if len(gameBoard[i][j][0].dumpList)>0:
@@ -5600,68 +5785,6 @@ def begin():
         
     while True:
 
-        
-        ##copy a deepcopy of the entry in gameBoard[x][y], the currentLocation of the spot, and the number of turns 
-        
-##        #if there's any entries in the recall list
-##        if len(PublicStats.recallPieces)>0:
-##            
-##            #recall is the entire list in recall
-##            recallData = PublicStats.recallPieces
-##            
-##            for iIndex, i in enumerate(PublicStats.recallPieces):
-##                changed = False
-##                #i[0] is the tilepiece combo, i[1] is the location with i[1][0] being the x and i[1][1] being the y, i[2] is turns left
-##                #if the current entry of the recall list isn't 0 (0 means it's been taken care of)
-##                if i!=0:
-##                    if changed == True:
-##                        continue
-##                    sg.popup(f"i2 is {i[2]}")
-##                    recX = i[1][0]
-##                    recY = i[1][1]
-##                    #if the turns left isn't zero
-##                    if i[2] > 0:
-##                        #reduce the number of turns left
-##                        recallData[iIndex][2]-=1
-##                        sg.popup(f"i2 is {i[2]}")
-##                        #check the next entry if a recall piece was changed
-##                        changed = True
-##                        continue
-##                    
-##                    #if it is zero turns now
-##                    elif i[2] == 0:
-##                        #for each row in gameBoard
-##                        for sx, j in enumerate(gameBoard):
-##                            #for each column in j
-##                            if changed == True:
-##                                break
-##                            for sy,k in enumerate(j):
-##                                if changed == True:
-##                                    break
-##                                #if there is a piece inside of that column
-##                                #k is the gameBoard tilePiece (k0 is tile k1 is piece) where the piece is right now
-##                                if k[0].occupied == True:
-##                                    print(f"I is {i} and i[0] is {i[0]}")
-##                                    print(f"k[1].recall is {k[1].recall}")
-##                                    #if the .recall data variable integer is equal to the current iIndex of recallPieces
-##                                    if k[1] != 0 and k[1].recall == iIndex:
-##                                        sg.popup("teleport back")
-##                                        sg.popup(f"k1 is {k[1]}")
-##                                        gameBoard [recX] [recY] [0]= copy.deepcopy(i[0][0])
-##                                        gameBoard [recX] [recY] [1]= copy.deepcopy(i[0][1])
-##                                        k[0].occupied = False
-##                                        k[0].tileType = "default"
-##                                        k[1] = 0
-##                                        #set the array value to 0
-##                                        recallData[iIndex] = 0
-##                                        sg.popup(f"The array is {recallData}")
-##                                        displayBoard(window, gameBoard)
-##                                        changed = True
-##                                        continue
-                                        
-                        
-                    
-
         updateToolTips(window, gameBoard,playerTurn)
         
         gamePlay(playerTurn, window, gameBoard)
@@ -5780,23 +5903,23 @@ def tutorial():
     frame_2 = [
         [
             sg.Button(
-                image_filename=".\\default.png",
+                image_filename="images/default.png",
                 key=(i, j),
                 size=(20, 20),
                 tooltip="tooltip",
-                pad=(10, 10),
+                #pad=(10, 10),
             )
             for j in range(columns)
         ]
         for i in range(0, rows)
     ]
-    frame_3 = [[sg.T(" " * 100, key="tutorialInfo", font="Cambria 20", size=(50, 5))]]
-    frame_4 = [[sg.T(" " * 100, key="information", font="Cambria 20", size=(88, 20))]]
+    frame_3 = [[sg.T(" " * 100, key="tutorialInfo", font="Cambria 10", size=(50, 5))]]
+    frame_4 = [[sg.T(" " * 100, key="information", font="Cambria 10", size=(88, 20))]]
 
     layout = [
         [
             sg.T("MegaCheckers", font="Cambria 50", key="title"),
-            sg.Button("use item", image_filename="./backpack.png", visible=False),
+            sg.Button("use item", image_filename="images/backpack.png", visible=False),
         ],
     ]
     layout += [
@@ -5818,6 +5941,7 @@ def tutorial():
         gameBoard[j] = copy.deepcopy(line)
 
     window = sg.Window("MegaCheckers", layout, location=(0, 0)).finalize()
+    window.maximize()
 
     initializeField(columns, rows, window, gameBoard)
 
@@ -6112,7 +6236,10 @@ def tutorial():
             window["tutorialInfo"].update(myText)
 
 
+    
+
 def main():
+    publicPNGloader()
     introLayout = [[sg.Text("Mega\nCheckers", font="Cambria 100", justification = "center")]]
     frame_1 = [
         [sg.Button("Begin game", key="begin", size = (20,5))],
@@ -6120,13 +6247,26 @@ def main():
     ]
     frame_2 = [
         #name of item
-        [sg.T(f"(Current Random Item)")],
+        [sg.T(f"(Current Random Item)",key="itemName",text_color = "blue",font = "Cambria, 40")],
         #address of item picture
-        [sg.Image("images/shuffleRadial.png",size=(400,400)),],
-        [sg.T(f"(Description of random item)")]
+        [sg.Image("images/shuffleRadial.png",size=(400,400),key="itemPic"),],
+        [sg.T(f"(No description)",key = "itemDescription",size = (75,7),font = "Cambria 20")]
         ]
-    introLayout += [[sg.Frame("Choose an option", frame_1, key="options"),sg.Frame("",frame_2,key="itemBlurb")]]
-    introWindow = sg.Window("MegaCheckers", introLayout)
+    introLayout += [[sg.Frame("Choose an option", frame_1, key="options"),sg.Frame("Items Spotlight:",frame_2,key="itemBlurb")]]
+    introWindow = sg.Window("MegaCheckers", introLayout).finalize()
+    while True:
+        try:
+            itemName = pickUpItemOrb(introOnly = True)
+            introWindow["itemPic"].update(filename = f"images/{itemName}.png")
+            introWindow["itemName"].update(itemName)
+            description = itemExplanation(itemName, introOnly = True)
+            introWindow["itemDescription"].update(description)
+            
+            break
+        except:
+           
+            continue
+    
     event = introWindow.read()
     if event[0] == "tutorial":
         introWindow.close()

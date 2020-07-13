@@ -1,5 +1,8 @@
 ChangeLog
 
+v.0.9.80 July 13, 2020
+	Begun working on the first steps towards having a dynamic field in terms of heights.  Tiles change color from very dark grey (-2 elevation) to white (+2 elevation) to show how high a tile is.  Also moved a lot of files to the PNGList for memory loading.  Also programmed the intro screen to have a random item of the day so to speak (it changes every load, randomly). Linked it to a description function; which needs to be updated by the way. DO MORE TESTING ON POTENTIAL ERRORS RESULTING FROM THE PNG FUNCTION CHANGE.  Fixed an error where I forgot to add new test cases for destroyed floors from damaged5 to damaged8.
+
 v.0.9.74 July 12, 2020
 	Added an exclusion for bowling ball being learned by study or taught by teach (although technically it shouldn't be possible to teach), since it interferes with the rule that a piece can only know bowling ball.
 
