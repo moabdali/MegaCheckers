@@ -155,6 +155,7 @@ class Tile:
         self.purityTile = False
         self.dumpList = []
         self.snake = False
+        self.highlight = False
 
     def describeSelf(self):
 
@@ -808,7 +809,6 @@ def cleanTile(tile):
 def avatarFunction(window, avatar, gameBoard, i,j):
     g = gameBoard[i][j][0]
     if g.tileHeight == 0:
-        #window[(i,j)].update(button_color = ("white","grey50"))
         window[(i,j)].update(button_color = ("white","grey50"))
     elif g.tileHeight == 1:
         window[(i,j)].update(button_color = ("white","grey65"))
@@ -820,11 +820,20 @@ def avatarFunction(window, avatar, gameBoard, i,j):
         window[(i,j)].update(button_color = ("white","grey10"))
     elif g.tileType == "destroyed":
         window[(i,j)].update(button_color = ("white","black"))
-
+    
+    if gameBoard[i][j][0].highlight == True:
+        grey = Image.open("images/highlight1.png").convert("RGBA")
+        avatar = Image.blend(grey, avatar, 0.50)
     im_file = BytesIO()
     avatar.save(im_file, format="png")
+
+    
+
+        
     im_bytes = im_file.getvalue()
     avatar = base64.b64encode(im_bytes)
+
+    
 
     window[i, j].update(image_data=avatar)
     
@@ -912,7 +921,7 @@ def displayBoard(window, gameBoard):
             
         
             if gameBoard[i][j][0].occupied == False:
-
+                
                 #0 default - start with the default floor
                 if gameBoard[i][j][0].tileType == "default":
                     avatar = PublicPNGList[0].convert("RGBA")
@@ -931,15 +940,19 @@ def displayBoard(window, gameBoard):
                         #window[i, j].update(image_data=PublicPNGList[11])
                     if gameBoard[i][j][0].purityTile != False:
                         avatarFunction(window, PublicPNGList[12], gameBoard, i, j)
-                        #window[i, j].update(image_data=PublicPNGList[12])
+                        #window[i, j].update(image_data=PublicPNGList[12])    
                     continue
                 #7 itemOrb
                 if gameBoard[i][j][0].tileType == "itemOrb":
                     avatarFunction(window, PublicPNGList[7], gameBoard, i, j)
+
+   
+                        
                     #window[i, j].update(image_data=PublicPNGList[7])
                     #if the mouse is here
                     if gameBoard[i][j][0].orbEater == True:
                         window[i, j].update(image_data=PublicPNGList[10])
+                    
                     continue
                 #1 destroyed
                 if gameBoard[i][j][0].tileType == "destroyed":
@@ -1000,6 +1013,8 @@ def displayBoard(window, gameBoard):
                 if gameBoard[i][j][0].occupied:
                     g = gameBoard[i][j][1]
                     
+                    
+                        
                     if "bowling ball" in g.activeBuffs:
                         avatar = Image.open(f"images/bowling ball {g.ownedBy}.png").convert("RGBA")
                         im_file = BytesIO()
@@ -1087,6 +1102,8 @@ def displayBoard(window, gameBoard):
                     if g.grey == True:
                         grey = Image.open("images/highlight.png").convert("RGBA")
                         avatar = Image.blend(grey, avatar, 0.50)
+                        
+                    
 
                     if gameBoard[i][j][0].tileType == "hand1":
                         hand1 = Image.open("images/hand1.png").convert("RGBA")
@@ -1129,7 +1146,11 @@ def displayBoard(window, gameBoard):
                         recall = Image.open("images/recall.png").convert("RGBA")
                         avatar.paste(recall, (0, 0), recall)
                         window[i, j].update(image_filename="images/recall.png")
-                    
+
+
+            if gameBoard[i][j][0].highlight == True:
+                grey = Image.open("images/highlight1.png").convert("RGBA")
+                avatar = Image.blend(grey, avatar, 0.50)
             avatarFunction(window, avatar, gameBoard, i ,j)
 
 
@@ -4466,6 +4487,91 @@ def roundEarthTheoryFunction(gameBoard,startLocation,endLocation,columns,rows):
     else:
         return False
 
+
+def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk", reachType = "cross", turnOff = False):
+    x = startLocation[0]
+    y = startLocation[1]
+    g = gameBoard
+    location = (x,y)
+    if turnOff == True:
+        for i in gameBoard:
+            for j in i:
+                if j[0].highlight == True:
+                    j[0].highlight = False
+        return
+    validLocations = []
+    if actionType == "walk":
+        if "move diagonal" in g[x][y][1].activeBuffs:
+            validLocations = getRadial(location, gameBoard)
+            for i in validLocations:
+                xi = i[0]
+                yi = i[1]
+
+                #if the floor isn't gone
+                if g[xi][yi][0].tileType not in [
+                    "damaged",
+                    "destroyed",
+                    "damaged1",
+                    "damaged2",
+                    "damaged3",
+                    "damaged4",
+                    "damaged5",
+                    "damaged6",
+                    "damaged7",
+                    "damaged8"
+                ]:
+                    #if nothing's there
+                    if g[xi][yi][0].occupied == False:
+                        print(f"True at {xi},{yi}")
+                        g[xi][yi][0].highlight = True
+                    #if someone is there
+                    elif g[xi][yi][0].occupied == True:
+                        if g[xi][yi][1].ownedBy != g[x][y][1].ownedBy:
+                            g[xi][yi][0].highlight = True
+                        if g[xi][yi][1].ownedBy == g[xi][yi][1].ownedBy:
+                            if "feral" in g[x][y][1].activeBuffs:
+                                g[xi][yi][0].highlight = True
+                            else:
+                                continue
+
+        #placeholder for around the world
+        #elif around the world
+        #normal
+        else:
+            validLocations = getCross(location, gameBoard)
+            for i in validLocations:
+                xi = i[0]
+                yi = i[1]
+
+                #if the floor isn't gone
+                if g[xi][yi][0].tileType not in [
+                    "damaged",
+                    "destroyed",
+                    "damaged1",
+                    "damaged2",
+                    "damaged3",
+                    "damaged4",
+                    "damaged5",
+                    "damaged6",
+                    "damaged7",
+                    "damaged8"
+                ]:
+                    #if nothing's there
+                    if g[xi][yi][0].occupied == False:
+                        g[xi][yi][0].highlight = True
+                    #if someone is there
+                    elif g[xi][yi][0].occupied == True:
+                        if g[xi][yi][1].ownedBy != g[xi][yi][1].ownedBy:
+                            g[xi][yi][0].highlight = True
+                        if g[xi][yi][1].ownedBy == g[xi][yi][1].ownedBy:
+                            if "feral" in g[x][y][1].activeBuffs:
+                                g[xi][yi][0].highlight = True
+                            else:
+                                continue
+                                
+                g[xi][yi][0].highlight = True
+                
+
 def movePiece(playerTurn, window, gameBoard):
     # a small list that is used to make sure a player that gets a second turn for a piece can only use that specific piece twice
     repeatRestrictor = [False, (-1, -1)]
@@ -4809,18 +4915,22 @@ def movePiece(playerTurn, window, gameBoard):
         if gameBoard[startLocation[0]][startLocation[1]][1] != 0:
             gameBoard[startLocation[0]][startLocation[1]][1].grey = True
             gameBoard[startLocation[0]][startLocation[1]][1].currentTurnPiece = True
+
+
+            highlightValidDistance(gameBoard, window, startLocation)
             
         # update the board (to show highlighting)
         displayBoard(window, gameBoard)
-
+        window.refresh()
 
 
 #########################################
 #  ASK DESTINATION                      #
 #########################################
-
+        highlightValidDistance(gameBoard, window, startLocation,turnOff = True)
         # get the next location
         event = window.read()
+        
         window["examineItem"].update(disabled=True)
         
 ########################################
@@ -4829,6 +4939,7 @@ def movePiece(playerTurn, window, gameBoard):
 
         # this is where we're attempting to move 
         endLocation = event[0]
+
         
         # trying to use item (if the player clicked a piece and then the item button, or clicked the same icon twice)
         if (
