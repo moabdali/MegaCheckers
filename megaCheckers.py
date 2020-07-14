@@ -768,6 +768,18 @@ def publicPNGloader():
         "floor-2",#17
         "recall",#18
         "snake",#19
+        "jumpoline",#20
+        "mystery box",#21
+        "itemDump",#22
+        "exploding",#23
+        "damaged8",#24
+        "damaged7",#25
+        "damaged6",#26
+        "damaged5",#27
+        "damaged4",#28
+        "damaged3",#29
+        "damaged2",#30
+        "damaged"#31
         ]):
 ##        if i == "p1":
 ##            myImage = Image.open("images/p1.png").convert("RGBA")
@@ -856,50 +868,62 @@ def displayBoard(window, gameBoard):
                 window[i, j].update(image_filename="images/crossLaserBeam.png")
                 continue
             if gameBoard[i][j][0].tileType == "jumpoline":
-                window[i, j].update(image_filename="images/jumpoline.png")
+                #window[i, j].update(image_filename="images/jumpoline.png")
+                avatarFunction(window, PublicPNGList[20], gameBoard, i, j)
                 continue
             if gameBoard[i][j][0].tileType == "mystery box":
-                window[i, j].update(image_filename="images/mystery box.png")
+                #window[i, j].update(image_filename="images/mystery box.png")
+                avatarFunction(window, PublicPNGList[21], gameBoard, i, j)
                 continue
             if gameBoard[i][j][0].tileType == "itemDump":
-                window[i, j].update(image_filename="images/itemDump.png")
+                #window[i, j].update(image_filename="images/itemDump.png")
+                avatarFunction(window, PublicPNGList[22], gameBoard, i, j)
                 continue
             if gameBoard[i][j][0].tileType == "exploding":
                 cleanTile(gameBoard[i][j][0])
-                window[i, j].update(image_filename="images/exploding.png")
+                #window[i, j].update(image_filename="images/exploding.png")
+                avatarFunction(window, PublicPNGList[23], gameBoard, i, j)
                 continue
             if gameBoard[i][j][0].tileType == "damaged8":
                 gameBoard[i][j][0].tileHeight = 0
                 cleanTile(gameBoard[i][j][0])
-                window[i, j].update(image_filename="images/damaged8.png")
+                #window[i, j].update(image_filename="images/damaged8.png")
+                avatarFunction(window, PublicPNGList[24], gameBoard, i, j)
                 continue
             if gameBoard[i][j][0].tileType == "damaged7":
                 cleanTile(gameBoard[i][j][0])
-                window[i, j].update(image_filename="images/damaged7.png")
+                #window[i, j].update(image_filename="images/damaged7.png")
+                avatarFunction(window, PublicPNGList[25], gameBoard, i, j)
                 continue
             if gameBoard[i][j][0].tileType == "damaged6":
                 cleanTile(gameBoard[i][j][0])
-                window[i, j].update(image_filename="images/damaged6.png")
+                #window[i, j].update(image_filename="images/damaged6.png")
+                avatarFunction(window, PublicPNGList[26], gameBoard, i, j)
                 continue
             if gameBoard[i][j][0].tileType == "damaged5":
                 cleanTile(gameBoard[i][j][0])
-                window[i, j].update(image_filename="images/damaged5.png")
+                #window[i, j].update(image_filename="images/damaged5.png")
+                avatarFunction(window, PublicPNGList[27], gameBoard, i, j)
                 continue
             if gameBoard[i][j][0].tileType == "damaged4":
                 cleanTile(gameBoard[i][j][0])
-                window[i, j].update(image_filename="images/damaged4.png")
+                #window[i, j].update(image_filename="images/damaged4.png")
+                avatarFunction(window, PublicPNGList[28], gameBoard, i, j)
                 continue
             if gameBoard[i][j][0].tileType == "damaged3":
                 cleanTile(gameBoard[i][j][0])
-                window[i, j].update(image_filename="images/damaged3.png")
+                #window[i, j].update(image_filename="images/damaged3.png")
+                avatarFunction(window, PublicPNGList[29], gameBoard, i, j)
                 continue
             if gameBoard[i][j][0].tileType == "damaged2":
                 cleanTile(gameBoard[i][j][0])
-                window[i, j].update(image_filename="images/damaged2.png")
+                #window[i, j].update(image_filename="images/damaged2.png")
+                avatarFunction(window, PublicPNGList[30], gameBoard, i, j)
                 continue
             if gameBoard[i][j][0].tileType == "damaged":
                 cleanTile(gameBoard[i][j][0])
-                window[i, j].update(image_filename="images/damaged.png")
+                #window[i, j].update(image_filename="images/damaged.png")
+                avatarFunction(window, PublicPNGList[31], gameBoard, i, j)
                 continue
             #snake
             if gameBoard[i][j][0].snake == True:
@@ -1314,6 +1338,8 @@ def useItems(gameBoard, x, y, window):
     layout = []
     listData = [[sg.T("Item Menu", justification="center", font="Calibri 30")]]
     itemsLength = len(gameBoard[x][y][1].storedItems)
+    playerTurn = gameBoard[x][y][1].ownedBy
+    updateToolTips(window, gameBoard, playerTurn)
     for i in gameBoard[x][y][1].storedItems:
         z = f"images/{i}.png"
         zz = "no explanation supplied... yet"
@@ -1537,6 +1563,7 @@ def useItems(gameBoard, x, y, window):
             sg.popup("Pick any empty spot to drop all of your items into.  Anyone can pick it up.  Click yourself if you don't wish to use this.")
             disableEverything(window)
             event = window.read()
+            
             if event[0] == (location):
                 sg.popup("Canceled the dump")
                 disableEverything(window,turnOn = True)
@@ -1547,13 +1574,16 @@ def useItems(gameBoard, x, y, window):
                 dumpCount = 0
                 gameBoard[x][y][1].storedItems.remove("dump items")
                 for i in gameBoard[x][y][1].storedItems:
+                    
                     gameBoard[x1][y1][0].dumpList.append(i)
                     dumpCount +=1
+                 
                 gameBoard[x][y][1].storedItems.clear()
                 sg.popup(f"Dumped {dumpCount} item(s)")
                 disableEverything(window,turnOn = True)
                 gameBoard[x1][y1][0].tileType = "itemDump"
-            
+                
+            #updateToolTips(window, gameBoard, playerTurn)
 # charity            
         elif str.find(i, "charity") >= 0:
             itemsMenu.close()
@@ -3452,7 +3482,7 @@ def useItems(gameBoard, x, y, window):
                 window.refresh()
                 sleep(.5)
 
-        updateToolTips(window, gameBoard, playerTurn)
+            updateToolTips(window, gameBoard, playerTurn)
         # after using the menu, close it
         if itemsMenu:
             itemsMenu.close()
@@ -4492,6 +4522,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
     x = startLocation[0]
     y = startLocation[1]
     g = gameBoard
+    playerTurn = g[x][y][1].ownedBy
     location = (x,y)
     if turnOff == True:
         for i in gameBoard:
@@ -4500,7 +4531,40 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                     j[0].highlight = False
         return
     validLocations = []
+    
     if actionType == "walk":
+        for iIndex,i in enumerate(g):
+            for jIndex,j in enumerate(i):
+                #if there's a worm hole and it's your turn
+                #print("Testing")
+                #print(f" {iIndex,jIndex} j0w1 {j[0].wormHole1}")
+                if j[0].wormHole1 == True and playerTurn == 1:
+                    
+                    #if the location of the warp is empty
+                    if j[0].occupied == False:
+                        print("is empty")
+                        #highlight it
+                        j[0].highlight = True
+                    #if you're there, don't allow movement there, unless feral
+                    elif j[1].ownedBy == playerTurn and "feral" not in j[1].activeBuffs:
+                        continue
+                    else:
+                        j[0].highlight = True
+                #print("Testing")
+                #print(f" j0w2 {j[0].wormHole2}")
+                if j[0].wormHole2 == True and playerTurn==2:
+                    #if it's empty
+                    
+                    if j[0].occupied == False:
+                        #highlight it
+                        
+                        j[0].highlight = True
+                    #if you're there, don't allow movement there, unless feral
+                    elif j[1].ownedBy == playerTurn and "feral" not in j[1].activeBuffs:
+                        continue
+                    else:
+                        j[0].highlight = True
+                        
         if "move diagonal" in g[x][y][1].activeBuffs:
             validLocations = getRadial(location, gameBoard)
             for i in validLocations:
@@ -4522,7 +4586,6 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                 ]:
                     #if nothing's there
                     if g[xi][yi][0].occupied == False:
-                        print(f"True at {xi},{yi}")
                         g[xi][yi][0].highlight = True
                     #if someone is there
                     elif g[xi][yi][0].occupied == True:
@@ -5575,55 +5638,114 @@ def resetMoveAgain(gameBoard):
                 j[1].moveAgain = moveAgainCount
 
 
+##def updateToolTips(window, gameBoard,playerTurn):
+##    
+##    for i in range(0,len(gameBoard)):
+##        for j in range(0,len(gameBoard[0])):
+##            print(f"i and j are {i} {j}")
+##            if gameBoard[i][j][0].occupied == True:
+##                buffs = f"[BUFFS] x{len(gameBoard[i][j][1].activeBuffs)}"+"\n"
+##                debuffs = "\n"+f"[DEBUFFS] x{len(gameBoard[i][j][1].activeDebuffs)} "+"\n"
+##                storedItems = "\n"+f"[ITEMS] x{len(gameBoard[i][j][1].storedItems)}"+"\n"
+##                for b in gameBoard[i][j][1].activeBuffs:
+##                    buffs+=b+"\n"
+##                for d in gameBoard[i][j][1].activeDebuffs:
+##                    debuffs+=d+"\n"
+##                if gameBoard[i][j][1].ownedBy == playerTurn:
+##                    for s in  gameBoard[i][j][1].storedItems:
+##                        storedItems += s+"\n"
+##                else:
+##
+##                    for s in  gameBoard[i][j][1].storedItems:
+##                        storedItems += "???"+"\n"
+##                toolTipData = buffs+debuffs+storedItems
+##            else:
+##                toolTipData = ""
+##                specialConditions = "Special Conditions:\n"
+##                
+##                tileType = f"Tile Type: {gameBoard[i][j][0].tileType}"+"\n"
+##                tileHeight = f"Tile Height: {gameBoard[i][j][0].tileHeight}"+"\n"
+##                if gameBoard[i][j][0].horiLaser or gameBoard[i][j][0].vertLaser or gameBoard[i][j][0].crossLaser:
+##                    specialConditions += "Being lasered\n"
+##                if gameBoard[i][j][0].orbEater:
+##                    specialConditions += "Has an orb eater\n"
+##                if gameBoard[i][j][0].wormHole1:
+##                    specialConditions += "Has a worm hole (player 1)\n"
+##                if gameBoard[i][j][0].wormHole2:
+##                    specialConditions += "Has a worm hole (player 2)\n"
+##                if gameBoard[i][j][0].recallTurn != False:
+##                    specialConditions += "Has a recall slated"
+##                if gameBoard[i][j][0].secretAgent:
+##                    specialConditions += "Has a secret agent"
+##                if gameBoard[i][j][0].purityTile:
+##                    specialConditions += "Has a purity tile"
+##                if len(gameBoard[i][j][0].dumpList)>0:
+##                    specialConditions += "This item dump contains: \n"
+##                    for i in gameBoard[i][j][0].dumpList:
+##                        specialConditions += i+"\n"
+##                toolTipData += tileType + tileHeight + specialConditions
+##            try:
+##                window[(i,j)].SetTooltip(toolTipData)
+##            except:
+##                pm(window, "oops, an error occurred with trying to set a new tooltip")
+
+
+
+
 def updateToolTips(window, gameBoard,playerTurn):
     
-    for i in range(0,len(gameBoard)):
-        for j in range(0,len(gameBoard[0])):
+    for iIndex, iData in enumerate(gameBoard):
+        for j, jData in enumerate(iData):
             
-            if gameBoard[i][j][0].occupied == True:
-                buffs = f"[BUFFS] x{len(gameBoard[i][j][1].activeBuffs)}"+"\n"
-                debuffs = "\n"+f"[DEBUFFS] x{len(gameBoard[i][j][1].activeDebuffs)} "+"\n"
-                storedItems = "\n"+f"[ITEMS] x{len(gameBoard[i][j][1].storedItems)}"+"\n"
-                for b in gameBoard[i][j][1].activeBuffs:
+            if gameBoard[iIndex][j][0].occupied == True:
+                buffs = f"[BUFFS] x{len(gameBoard[iIndex][j][1].activeBuffs)}"+"\n"
+                debuffs = "\n"+f"[DEBUFFS] x{len(gameBoard[iIndex][j][1].activeDebuffs)} "+"\n"
+                storedItems = "\n"+f"[ITEMS] x{len(gameBoard[iIndex][j][1].storedItems)}"+"\n"
+                for b in gameBoard[iIndex][j][1].activeBuffs:
                     buffs+=b+"\n"
-                for d in gameBoard[i][j][1].activeDebuffs:
+                for d in gameBoard[iIndex][j][1].activeDebuffs:
                     debuffs+=d+"\n"
-                if gameBoard[i][j][1].ownedBy == playerTurn:
-                    for s in  gameBoard[i][j][1].storedItems:
+                if gameBoard[iIndex][j][1].ownedBy == playerTurn:
+                    for s in  gameBoard[iIndex][j][1].storedItems:
                         storedItems += s+"\n"
                 else:
 
-                    for s in  gameBoard[i][j][1].storedItems:
+                    for s in  gameBoard[iIndex][j][1].storedItems:
                         storedItems += "???"+"\n"
                 toolTipData = buffs+debuffs+storedItems
             else:
                 toolTipData = ""
                 specialConditions = "Special Conditions:\n"
+
                 
-                tileType = f"Tile Type: {gameBoard[i][j][0].tileType}"+"\n"
-                tileHeight = f"Tile Height: {gameBoard[i][j][0].tileHeight}"+"\n"
-                if gameBoard[i][j][0].horiLaser or gameBoard[i][j][0].vertLaser or gameBoard[i][j][0].crossLaser:
+                tileType = f"Tile Type: {gameBoard[iIndex][j][0].tileType}"+"\n"
+                tileHeight = f"Tile Height: {gameBoard[iIndex][j][0].tileHeight}"+"\n"
+                if gameBoard[iIndex][j][0].horiLaser or gameBoard[iIndex][j][0].vertLaser or gameBoard[iIndex][j][0].crossLaser:
                     specialConditions += "Being lasered\n"
-                if gameBoard[i][j][0].orbEater:
+                if gameBoard[iIndex][j][0].orbEater:
                     specialConditions += "Has an orb eater\n"
-                if gameBoard[i][j][0].wormHole1:
+                if gameBoard[iIndex][j][0].wormHole1:
                     specialConditions += "Has a worm hole (player 1)\n"
-                if gameBoard[i][j][0].wormHole2:
+                if gameBoard[iIndex][j][0].wormHole2:
                     specialConditions += "Has a worm hole (player 2)\n"
-                if gameBoard[i][j][0].recallTurn != False:
+                if gameBoard[iIndex][j][0].recallTurn != False:
                     specialConditions += "Has a recall slated"
-                if gameBoard[i][j][0].secretAgent:
+                if gameBoard[iIndex][j][0].secretAgent:
                     specialConditions += "Has a secret agent"
-                if gameBoard[i][j][0].purityTile:
+                if gameBoard[iIndex][j][0].purityTile:
                     specialConditions += "Has a purity tile"
-                if len(gameBoard[i][j][0].dumpList)>0:
+                if len(gameBoard[iIndex][j][0].dumpList)>0:
                     specialConditions += "This item dump contains: \n"
-                    for i in gameBoard[i][j][0].dumpList:
+                    for i in gameBoard[iIndex][j][0].dumpList:
                         specialConditions += i+"\n"
                 toolTipData += tileType + tileHeight + specialConditions
-            
-            window[(i,j)].SetTooltip(toolTipData)
-            
+            try:
+                window[(iIndex,j)].SetTooltip(toolTipData)
+            except:
+                pm(window, "oops, an error occurred with trying to set a new tooltip")
+
+
+                
 
 def spookyHand(window, gameBoard):
     PublicStats.spookyHandTurnCount -= 1

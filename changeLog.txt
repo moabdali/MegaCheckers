@@ -1,9 +1,12 @@
 ChangeLog
 
+v.0.9.82 July 14, 2020
+	Fixed an error in getItems due to reuse of iterators (oops).  No longer crashes randomly.
+
 v.0.9.81 July 14, 2020
 	Added basic highlighting for movement - appears to properly show where a player can move to when either normal or equipped with move diagonal.  Properly avoids highlighting allies, and provides special highlighting for enemies.  Properly avoids highlighting broken floors.  Properly un-highlights after moving or deselecting. DOES NOT yet highlight properly for "around the world" pieces.  Will likely copy code from the around the world movement function.  
 
-Need to also test whether it highlights tile changers (such as the secret agent or orb eaters).  Also plan to eventually add a range effect for items.  Will require a large amount of dedicated time on each item, so will likely want to try to finalize all items before I do that so I don't have to keep switching between implementing new items and working on highlighting.   
+Need to also test whether it highlights tile changers (such as the secret agent or orb eaters).  Also plan to eventually add a range effect for items.  Will require a large amount of dedicated time on each item, so will likely want to try to finalize all items before I do that so I don't have to keep switching between implementing new items and working on highlighting. Also need to add wormhole detection for that feature.  
 
 
 v.0.9.80 July 13, 2020
