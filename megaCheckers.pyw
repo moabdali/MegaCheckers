@@ -1306,6 +1306,7 @@ def useItems(gameBoard, x, y, window):
     itemsLength = len(gameBoard[x][y][1].storedItems)
     playerTurn = gameBoard[x][y][1].ownedBy
     updateToolTips(window, gameBoard, playerTurn)
+    startLocation = (x,y)
     for i in gameBoard[x][y][1].storedItems:
         z = f"images/{i}.png"
         zz = "no explanation supplied... yet"
@@ -1413,7 +1414,7 @@ def useItems(gameBoard, x, y, window):
     elif playerTurn == 2:
         enemyTurn = 1
     else:
-        pm(window, "An error occurs in the turn assignment in items")
+        pm(window, "An error occured in the turn assignment in items")
     rows = len(gameBoard)
     columns = len(gameBoard[0])
     location = (x, y)
@@ -1424,9 +1425,20 @@ def useItems(gameBoard, x, y, window):
         i = event[0]
         if i == None:
             break
-
+        
+#def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk", reachType = "cross", turnOff = False):
+        
 # suicidebomb row
         if str.find(i, "suicide bomb row") >= 0:
+            itemsMenu.close()
+            gameBoard[x][y][1].grey = False
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "all", reachType = "row" )
+            displayBoard(window, gameBoard)
+            window.refresh()
+            yesno = sg.popup_yes_no("Use?")
+            if yesno == "No":
+                continue
+            
             gameBoard[x][y][1].storedItems.remove("suicide bomb row")
             # for each item inside the specific gameBoard row
             for j in gameBoard[x]:
@@ -1444,6 +1456,12 @@ def useItems(gameBoard, x, y, window):
 # teach column
         elif str.find(i, "teach column") >= 0:
             itemsMenu.close()
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "all", reachType = "column" )
+            displayBoard(window, gameBoard)
+            window.refresh()
+            yesno = sg.popup_yes_no("Use?")
+            if yesno == "No":
+                continue
             gameBoard[x][y][1].grey = False
             #if there is fewer than one item in the list
             if len(gameBoard[x][y][1].activeBuffs) < 1:
@@ -4600,6 +4618,45 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                                 
                 g[xi][yi][0].highlight = True
                 
+    if actionType == "all":
+        if reachType == "row":
+            validLocations = getRow(location, gameBoard)
+            for i in validLocations:
+                ix = i[0]
+                iy = i[1]
+                g[ix][iy][0].highlight = True
+            return
+        if reachType == "column":
+            validLocations = getColumn(location, gameBoard)
+            for i in validLocations:
+                ix = i[0]
+                iy = i[1]
+                g[ix][iy][0].highlight = True
+            return
+        if reachType == "radial":
+            validLocations = getRadial(location, gameBoard)
+            for i in validLocations:
+                ix = i[0]
+                iy = i[1]
+                g[ix][iy][0].highlight = True
+            return
+        if reachType == "allTrueEmpty":
+            validLocations = []
+            validLocations = emptySpots(gameBoard, trueEmpty = True)
+            for i in validLocations:
+                ix = i[0]
+                iy = i[1]
+                g[ix][iy][0].highlight = True
+            return
+        if reachType == "allUnoccupied":
+            validLocations = []
+            validLocations = emptySpots(gameBoard, trueEmpty = True)
+            for i in validLocations:
+                ix = i[0]
+                iy = i[1]
+                g[ix][iy][0].highlight = True
+            return
+        
 
 def movePiece(playerTurn, window, gameBoard):
     
