@@ -1,0 +1,307 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033{\fonttbl{\f0\fnil\fcharset0 Times New Roman;}{\f1\fswiss\fprq2\fcharset0 Calibri;}}
+{\colortbl ;\red0\green255\blue0;\red0\green255\blue255;\red255\green255\blue0;\red255\green0\blue0;\red255\green0\blue255;}
+{\*\generator Riched20 10.0.18362}\viewkind4\uc1 
+\pard\f0\fs28\par
+Template:\par
+\par
+\b ISSUE #\i Number\i0 )\b0\par
+\b Bug/Problem/Suggestion: \b0\i (pick one) small one sentence explanation\i0\par
+\b Reported by: \b0\i (name)\par
+\b\i0 Reported on: \b0\i (date)\par
+\par
+\b\i0 Details:\i  \b0 (recommend using expected results and actual results as shown below, but any format can be used)\par
+\b\i0 Expected Result: \b0\i (detailed explanation on what was expected to happen/more details on suggestion)\par
+\b\i0 Actual Result: \b0\i (what actually happens when the error happens)/skip for suggestions, or explain what behavior the suggestion aims to replace\line\line\i0 The rest of the template is for the programmer; leave blank\line ----------------------\par
+\b Severity: \b0 High/Med/Low/ n/a\par
+\b Cause: \b0\par
+\b Planned Fix: \par
+Status:\line\b0\par
+-----------------------------------------------------------------------------------\par
+\b ISSUE #1)\b0\par
+
+\pard\highlight1\b Bug: \b0 "How to play" doesn't work\highlight0\par
+\i\par
+\b\i0 Reported by: \b0 Ha V.\par
+\par
+\b Reported on: \b0 7/14/2020\par
+\par
+\b Expected Result: \b0 Clicking How to play should show the tutorial.\par
+Actual result: clicking How to play shows an error saying that "backpack.png doesn't exist", and then crashes the program.\par
+\i\par
+\b\i0 Actual Result: \b0 : clicking How to play shows an error saying that "backpack.png doesn't exist", and then crashes the program.\par
+\i\line\i0 -------------------------------------\par
+\b Severity: \b0 High\par
+\b Cause: \b0 reworked the main code to point to an "Images" folder instead of the root of the program folder.  Forgot to update the tutorial to reflect this.\par
+\b Planned Fix: \b0 pointing the program to the new location of the png file\b\par
+
+\pard Status: \b0 Corrected on 7/14/2020\par
+-----------------------------------------------------------------------------------\par
+\par
+\par
+\b ISSUE #2)\par
+\highlight2 Suggestion: \b0 Come up with a better name for the game\highlight0\par
+\b Reported by: \b0 Ha V.\par
+\b Reported on: 7/14/2020\par
+\line Details: \b0 the game looks more like minesweeper, and the pieces look more like donuts than checkers\par
+---------------------------------\par
+\b Severity: \b0 low\par
+\b Planned fix: \b0 will come up with a new name once the game is closer to finishing\par
+\b Status: \b0 backburner\par
+\par
+----------------------------------------------------------------------------------\b\line\par
+ISSUE #3)\par
+\highlight3 Problem: \b0 the item orbs are not intuitive\par
+\highlight0\b Reported by: \b0 Ha V.\par
+\b Reported on: 7/14/2020\par
+Details: \b0 It's not readily apparent what the item orbs are.  I couldn't tell what they were until I picked up one.\par
+---------------------------------------\par
+\b Severity: \b0 Medium\par
+\b Planned fix: \b0 Show a one time popup message letting players know that item orbs have spawned and to pick them up.  Alternatively, show a popup with a gif of someone grabbing an item orb to show what happens\par
+\b Status: \b0 queued\par
+\par
+------------------------------------------------------------------------------------\par
+
+\pard\b ISSUE #4)\par
+\highlight3 Suggestion: \b0 show a message letting the player know what item was picked up\par
+\highlight0\b Reported by: \b0 Ha V.\par
+\b Reported on: 7/14/2020\par
+Details: \b0 It would be a good idea to let the player know what item they just picked up so that they can plan what to do next turn, instead of making them wait to check until the beginning of their turn\par
+---------------------------------------\par
+\b Severity: \b0 Medium\par
+\b Planned fix: \b0 Show a popup telling them what item was picked up, perhaps with a picture of the item as well.  This message must be a popup (and not information for the information console) so that the opponent cannot see what was picked up. \par
+\b Status: \b0 queued\par
+---------------------------------------------------------------------------------------\par
+\b ISSUE #5)\par
+\highlight3 Suggestion: include images of all the items in the item list\b0\par
+\highlight0\b Reported by: \b0 Ha V.\par
+\b Reported on: 7/14/2020\par
+Details: \b0 It would be nice to see item pictures on all of the items instead of just a small handful\par
+---------------------------------------\par
+\b Severity: \b0 Medium\par
+\b Planned fix: \b0 Add images to all items\par
+\b Status: \b0 queued\par
+-----------------------------------------------------------------------------------------\par
+\b ISSUE #6)\par
+\highlight2 Problem: \b0 the item orbs are not intuitive\highlight3\par
+\highlight0\b Reported by: \b0 Ha V.\par
+\b Reported on: 7/14/2020\par
+Details: \b0 include images for all of the item explanations on the "learn about items" list\par
+---------------------------------------\par
+\b Severity: \b0 low\par
+\b Planned fix: \b0 Add pictures using the logic/pictures from Issue 5;  low priority as this option is not expected to be used frequently\par
+\b Status: \b0 backburner\par
+-------------------------------------------------------------------------------------------\par
+\b ISSUE #7)\line\highlight2 Suggestion: \b0 alphabetize the item menu\highlight3\par
+\highlight0\b Reported by: \b0 Ha V.\par
+\b Reported on: 7/14/2020\par
+Details: \b0 the list isn't alphabetized when I open the item menu\par
+---------------------------------------\par
+\b Severity: \b0 Low\par
+\b Planned fix: \b0 Currently the list is organized chronologically by order picked up.  Can add a simple .sort to organize it, since it doesn't really matter what order the items were picked up in due to \par
+\b Status: \b0 queued\par
+--------------------------------------------------------------------------------------------\par
+\b ISSUE #8)\par
+\highlight3 Bug: \b0 Clicking on the main window makes the "learn about items menu" hide in the back\par
+\highlight0\b Reported by: \b0 Ha V.\par
+\b Reported on: 7/14/2020\par
+Details: \b0 When I click away, the learn items menu hides in the background of the program.  Make it close when I click away without forcing me to click "x".\par
+---------------------------------------\par
+\b Severity: \b0\strike High\strike0  demoted to medium due to patch\par
+\b Planned fix: \b0 temporary fix: add "keep on top" focus along with deactivating the main window in the interim. Final fix: figure out how to detect loss of focus and force it to close when detected. \par
+\b Status: \b0 temporary fix applied for main issue of the window hiding in the background; need to learn how to detect focus to finish \par
+--------------------------------------------------------------------------------------------\par
+\b ISSUE #9)\par
+\highlight2 Suggestion: \b0 Have items have different levels.  Have players unlock weapons or perks as they level up.\highlight3\par
+\highlight0\b Reported by: \b0 Ha V.\par
+\b Reported on: 7/14/2020\par
+Details: \b0 At level 1, give them access to a few weak items.  As they beat the AI (if you implement it) or beat people, you can gain experience and as you level up, you get access to better weapons.  Perhaps start with a smaller board and then make bigger boards accessible as the player levels up.  Players with higher levels can only fight other high level players.\par
+---------------------------------------\par
+\b Severity: \b0 Low\par
+\b Planned fix: \b0 This will need to be considered far later in development as the game is still in its infancy.  The idea is expected to be implemented, but will require a lot of work, and that can only happen after the main game is correctly completely.\par
+\b Status: \b0 backburner\par
+------------------------------------------------------------------------------------------------\par
+\par
+\b ISSUE #10)\par
+\highlight4 Bug: \b0 Menus are going in the background and freeze the game unless OK is clicked on them\highlight3\par
+\highlight0\b Reported by: \b0 Ha V.\par
+\b Reported on: 7/14/2020\par
+Details: \b0 The game stopped working at a few points, but then I found some menus behind the window.  Keep them on top.\par
+---------------------------------------\par
+\b Severity: High\b0\par
+\b Planned fix: \b0 Add a "keep on top" setting to all popups\par
+\b Status: \b0 queued\par
+\par
+\par
+
+\pard ------------------------------------------------------------------------------------------------\par
+
+\pard\b ISSUE #11)\par
+\highlight2 Problem: \b0 Cannot see what items the opponent has even after clicking the Look button and Learn About Items buttons.\highlight3\par
+\highlight0\b Reported by: \b0 Ha V.\par
+\b Reported on: 7/14/2020\par
+Details: \b0 When it's my turn, I cannot see what items my opponent has.  It only says how many they have.\par
+---------------------------------------\par
+\b Severity: \b0 Low\par
+\b Planned fix: \b0 This is intended behavior.  Player is supposed to know how many items their opponent is holding, but not what they are.  Adding a tooltip feature that will show details about each piece/tile and show the appropriate number of items the opponent has, while showing the items as "???" to show it's intentionally obscured.  A quickstart guide would also help convey important information like that without forcing the player to go through the whole tutorial.\par
+\par
+\b Status: \b0 backburner\par
+
+\pard ----------------------------------------------------------------------------------------------\par
+
+\pard\b ISSUE #12)\par
+\highlight2 Problem: \b0 Cannot jump over opponents to capture them\highlight3\par
+\highlight0\b Reported by: \b0 Ha V.\par
+\b Reported on: 7/14/2020\par
+Details: \b0 I am unable to jump over pieces to kill them.  I'm given a message about trying to move too far.\par
+---------------------------------------\par
+\b Severity: \b0 Low\par
+\b Planned fix: \b0 This is intended behavior.  Need to make it more intuitive, as the player can't know without prior experience how to capture pieces, especially as the name of the game implies that you jump over pieces to kill them instead of ON the piece.  Will add to the quick start guide once it's implemented.  Adding a red tint to the new highlight effect for range will also help convey this\par
+\b Status: \b0 backburner\par
+---------------------------------------------------------------------------------------------\par
+\b ISSUE #13)\par
+\highlight2 Suggestion: \b0 Add a destruction effect (graphical or audio, or both) when jumping an enemy piece successfully\highlight3\par
+\highlight0\b Reported by: \b0 Mo M.\par
+\b Reported on: 7/14/2020\par
+Details: \b0 While there is a message telling you that you jump killed an opponent, there's not much "oomph" or confirmation behind a successful kill.\par
+---------------------------------------\par
+\b Severity: \b0 Low\par
+\b Planned fix: \b0 will add some kind of explosion sound effect or "crushed metal crunch" sound effect to show the enemy was killed.  Perhaps add the exploding effect before your piece replaces it.\par
+\b Status: \b0 backburner\par
+\par
+---------------------------------------------------------------------------------------------\par
+\b ISSUE #14)\par
+\highlight2 Problem: I didn't hear sound effects except on a couple of items\highlight3\b0\par
+\highlight0\b Reported by: \b0 Ha V.\par
+\b Reported on: 7/14/2020\par
+Details: \b0 Only the bombs and bowling ball make sounds effects.\par
+---------------------------------------\par
+\b Severity: \b0 Low\par
+\b Planned fix: \b0 Currently only a few items have sound effects.  Planning on eventually adding sound effects for when a piece is highlighted (a minor negative sound if you pick an opponents piece, a more aggressive negative sound effect if you try to move a piece somewhere illegal, or try to use an item out of legal range, a soft beep or click to confirm a valid piece was selected, a woosh to show the piece moved - followed by a tapping noise, scifi noises when teleporting, bouncing noise when using jumpoline, and so on).  Because the sounds aren't as important as gameplay and QOL changes, they are a backburner issue.\par
+\b Status: \b0 backburner\par
+--------------------------------------------------------------------------------------------\par
+\b ISSUE #15)\par
+\highlight3 Problem: \b0 after using some items, the floor turns black, and starts showing black and white lines over time.\par
+\highlight0\b Reported by: \b0 Ha V.\par
+\b Reported on: 7/14/2020\par
+Details: \b0 when I use smart bomsb and some other items, the floor turns black in some places, and then anytime someone moves, the floor gets some weird crisscross designs.  I cannot move to that spot when it's crisscrossed.  Not sure if this is an error or if it signifies something.\par
+---------------------------------------\par
+\b Severity: \b0 Medium\par
+\b Planned fix: \b0 This is an art design issue.  The criss cross effect is supposed to represent the floor repairing itself.  A tooltip has been designed to explain the floor is repairing, but the player must actively hover their cursor over it to see the message.  Better art work has been provided in hopes of making it more intuitive - the destroyed floor now matches the color of the tile instead of an outdated black and white design.\par
+\b Status: \b0 added tool tips, made the tiles match colors, but still not completely apparent.  Will keep in the queue until a satisfactory "damaged state" design is made.  Perhaps a giant crater that slowly becomes filled might work?\par
+------------------------------------------------------------------------------------------------\par
+\b ISSUE #16)\par
+\highlight1 Suggestion: \b0 The spooky hand message is funny, add more messages like that.\highlight3\par
+\highlight0\b Reported by: \b0 Ha V.\par
+\b Reported on: 7/14/2020\par
+Details: \b0 n/a\par
+---------------------------------------\par
+\b Severity: \b0 Low\par
+\b Planned fix: \b0 Will do, thanks!\par
+\b Status: \b0 will commit to adding more funny descriptions\par
+
+\pard ------------------------------------------------------------------------------------------------\par
+
+\pard\b ISSUE #17)\par
+\highlight2 Suggestion: \b0 remove the "learn about items" button and move the actual menu to the right and let players hover over the items to learn about the items without having to click on them.\highlight3\par
+\highlight0\b Reported by: \b0 Ha V.\par
+\b Reported on: 7/14/2020\par
+Details: \b0 move the menu to the side so that I don't have to click so much.\par
+---------------------------------------\par
+\b Severity: \b0 low\par
+\b Planned fix: \b0 since there is some space on the right side, I can make use of it as a item guide as requested.  However, some people might not like having the screen cluttered, so as a compromise, a toggle can be made to show/hide the menu.  It will take a lot of time to create the descriptions and set up the pictures for them, so it'll be a backburner issue.\par
+\b Status: \b0 backburner\par
+
+\pard\b ------------------------------------------------------------------------------------------------\par
+
+\pard ISSUE #18)\par
+
+\pard\widctlpar\sa200\sl276\slmult1\highlight5 Problem: \b0 Items that were played were sometimes eventually used on that player themselves instead of only attacking the other player.\highlight0\f1\fs22\par
+
+\pard\highlight3\f0\fs28\par
+\highlight0\b Reported by: \b0 Ha V.\par
+\b Reported on: 7/14/2020\par
+Details: \b0\par
+---------------------------------------\par
+\b Severity: \b0 unknown, will change pending more detail\par
+\b Planned fix: \b0 potentially referring to mines or haphazard airstrike or suicide items, which intentionally affect the player that used them.  Need more details, but if it does end up being one of these types of items, it needs to be made more apparent that it's possible to affect your pieces as well.\par
+\b Status: \b0 awaiting more info\par
+\par
+------------------------------------------------------------------------------------------------\par
+\b ISSUE #19)\par
+\highlight3 Problem: \b0 Some items didn't work right\par
+\highlight0\b Reported by: \b0 Ha V.\par
+\b Reported on: 7/14/2020\par
+Details: \b0 orb eater didn't work.  Trip mine did.\par
+---------------------------------------\par
+\b Severity: medium\par
+Planned fix: \b0 make items work; need to catalogue which ones don't work.  Orb eater has been fixed in a later version.\b\par
+Status: \b0 waiting on more details to do more testing/fixing as needed.  Specific issues should be opened for each item, along with descriptions of what it did wrong (crash/etc) so that each item can be independently documented.  Might make a specific document for all the items to get more thorough testing, especially with regard to interactions between different items\par
+
+\pard\widctlpar\sa200\sl276\slmult1\f1\fs22 ------------------------------------------------------------------------------------------------------------------\par
+
+\pard\b\f0\fs28 ISSUE #20)\par
+
+\pard\widctlpar\sa200\sl276\slmult1\highlight4 Problem: \b0 Magnet shows an error saying list index is out of range\f1\fs22\par
+
+\pard\highlight3\f0\fs28\par
+\highlight0\b Reported by: \b0 Ha V.\par
+\b Reported on: 7/14/2020\par
+Details: \b0 clicking magnet causes an indexError: list index out of range on line 1594\par
+---------------------------------------\par
+\b Severity: \b0 High\par
+\b Planned fix: \b0 test to see why the index is larger than the limit\par
+\b Status: \b0 queued\par
+----------------------------------------------------------------------------------------------\par
+\b ISSUE #21)\par
+
+\pard\widctlpar\sa200\sl276\slmult1\highlight2 Problem: \b0 Got a message about space being at a premium when I was about to move.\par
+
+\pard\highlight0\b Reported by: \b0 Ha V.\par
+\b Reported on: 7/14/2020\par
+Details: \b0 "space is at a premium for orb generation.  Aborting"\par
+---------------------------------------\par
+\b Severity: \b0 low\par
+\b Planned fix: \b0 This is an instance of badly wording a notification.  The message is intended to let the player know that there's no space left to create new item orbs.  Realistically, instead of a more simplified message ("Couldn't find space to make item orbs; skipping"), I'll just remove the message altogether.  It was initially intended more as a debugging message to make it easier to tell if an infinite loop was created by not finding anywhere to place orbs.  Will also reduce item orb generation to make sure this is not a common occurrence (running out of space)\par
+\b Status: \b0 todo\par
+------------------------------------------------------------------------------------------------\par
+\par
+\b ISSUE #22)\par
+
+\pard\widctlpar\sa200\sl276\slmult1\highlight3 Problem: \b0 No explantion for some items.  Didn't know what they do.\highlight2\par
+
+\pard\highlight0\b Reported by: \b0 Ha V.\par
+\b Reported on: 7/14/2020\par
+
+\pard\widctlpar\sa200\sl276\slmult1 Details: \b0 Tried to use Napalm,  column laser, Row laser, orb eater, magnet, worm hole, trap orb, suicide bomb row, worm hole, jump proof, haphazard airstrike\endash  had no explanation. \par
+
+\pard ---------------------------------------\par
+\b Severity: \b0 medium\par
+\b Planned fix: \b0 adding tooltips to all items via both the tooltips and the explanation menu\par
+\b Status: \b0 todo\par
+\par
+------------------------------------------------------------------------------------------------\par
+\b ISSUE #24)\par
+
+\pard\widctlpar\sa200\sl276\slmult1\highlight2 Problem: \b0 Game just exits when there's a winner/loser\par
+
+\pard\highlight0\b Reported by: \b0 Ha V.\par
+\b Reported on: 7/14/2020\par
+
+\pard\widctlpar\sa200\sl276\slmult1 Details: \b0 The game just said who won and then exited\f1\fs22\par
+\f0\fs28 ---------------------------------------\par
+
+\pard\b Severity: \b0 low\par
+\b Planned fix: \b0 This is expected.  At the moment, the focus is on getting the game running without crashing/without working incorrectly.  A better ending will be implemented when the game is closer to completion and out of "testing".\par
+\b Status: \b0 backburner\par
+\par
+
+\pard\widctlpar\sa200\sl276\slmult1\f1\fs22 ------------------------------------------------------------------------------------------------------------------\par
+\par
+\par
+
+\pard\f0\fs28\par
+
+\pard\b\par
+\b0\par
+}
+ 

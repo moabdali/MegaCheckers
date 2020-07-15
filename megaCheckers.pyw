@@ -343,10 +343,10 @@ def countPieces(gameBoard, window):
                 elif j[1].ownedBy == 2:
                     player2count += 1
     if player1count == 0:
-        sg.popup("Player one loses")
+        sg.popup("Player one loses",keep_on_top=True)
         raise SystemExit
     elif player2count == 0:
-        sg.popup("player two loses")
+        sg.popup("player two loses",keep_on_top=True)
         raise SystemExit
     window["player1piececount"].update(f"Player 1 controls: {player1count}\n")
     window["player2piececount"].update(f"Player 2 controls: {player2count}\n")
@@ -390,7 +390,7 @@ def createOrbs(window, gameBoard):
     while orbsToPlace > 0:
         attempts+=1
         if attempts == 300:
-            sg.popup("Space is at a premium for orb generation.  Aborting.")
+            #sg.popup("Space is at a premium for orb generation.  Aborting.",keep_on_top=True)
             return
         
         i = random.randint(0, len(gameBoard) - 1)
@@ -440,7 +440,7 @@ def deathCheck(window, gameBoard, move=False):
 
                 if j[1].shieldTurn == PublicStats.turnCount:
                     j[0].tileType = "default"
-                    sg.popup("Forcefield saved you")
+                    sg.popup("Forcefield saved you",keep_on_top=True)
                 else:
 
                     j[0].tileType = "exploding"
@@ -550,7 +550,7 @@ def laserCheck(window, gameBoard, resetOnly = False):
                             forceFieldCheck = forcefieldCheck(window, gameBoard, location, location)
                             sg.popup(f"Force field check is {forceFieldCheck}")
                             if forceFieldCheck == True:
-                                sg.popup("Survived a laser")
+                                sg.popup("Survived a laser",keep_on_top=True)
                                 break
                             #if it doesn't have a forcefield
                             else:
@@ -670,7 +670,7 @@ def laserCheck(window, gameBoard, resetOnly = False):
                                 window.refresh()
 
                                 gameBoard[up][indexJ][0].tileType = tileBackup
-                                sg.popup("The laser killed a piece")
+                                sg.popup("The laser killed a piece",keep_on_top=True)
 
                                 
                                 if gameBoard[up][indexJ][0].tileType in( "horiLaserTripod" , "vertLaserTripod"):
@@ -722,7 +722,7 @@ def laserCheck(window, gameBoard, resetOnly = False):
                                 window.refresh()
 
                                 gameBoard[down][indexJ][0].tileType = tileBackup
-                                sg.popup("The laser killed a piece")
+                                sg.popup("The laser killed a piece",keep_on_top=True)
                                 if gameBoard[down][indexJ][0].tileType in ( "horiLaserTripod" , "vertLaserTripod"):
                                     gameBoard[down][indexJ][0].vertLaser = False
                                     gameBoard[down][indexJ][0].horiLaser = False
@@ -1273,13 +1273,13 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False):
     playerOwned = gameBoard[x][y][1].ownedBy
     #modifies your avatar to signify the player is holding an item(s)
     gameBoard[x][y][1].avatar = f"player{playerOwned}stored"
-    sg.popup("Picked up an item!")
+    sg.popup("Picked up an item!",keep_on_top=True)
 
 
 def jumpoline(window, gameBoard, location, playerTurn):
     validLocations = emptySpots(gameBoard, trueEmpty = True)
     if len(validLocations) == 0:
-        sg.popup("Nowhere valid for you to jumpoline to. :(")
+        sg.popup("Nowhere valid for you to jumpoline to. :(",keep_on_top=True)
         return
     choice = random.choice(validLocations)
     x=choice[0]
@@ -1435,7 +1435,7 @@ def useItems(gameBoard, x, y, window):
             highlightValidDistance(gameBoard, window, startLocation, actionType = "all", reachType = "row" )
             displayBoard(window, gameBoard)
             window.refresh()
-            yesno = sg.popup_yes_no("Use?")
+            yesno = sg.popup_yes_no("Use?",keep_on_top=True)
             if yesno == "No":
                 continue
             
@@ -1459,13 +1459,13 @@ def useItems(gameBoard, x, y, window):
             highlightValidDistance(gameBoard, window, startLocation, actionType = "all", reachType = "column" )
             displayBoard(window, gameBoard)
             window.refresh()
-            yesno = sg.popup_yes_no("Use?")
+            yesno = sg.popup_yes_no("Use?",keep_on_top=True)
             if yesno == "No":
                 continue
             gameBoard[x][y][1].grey = False
             #if there is fewer than one item in the list
             if len(gameBoard[x][y][1].activeBuffs) < 1:
-                sg.popup("You won't have any buffs to teach.  Aborted.")
+                sg.popup("You won't have any buffs to teach.  Aborted.",keep_on_top=True)
                 continue
             gameBoard[x][y][1].storedItems.remove("teach column")
             taughtPieces = 0
@@ -1473,7 +1473,7 @@ def useItems(gameBoard, x, y, window):
             for k in gameBoard[x][y][1].activeBuffs:
                     
                     taughtString += k + "\n"
-            sg.popup("Teaching:\n"+taughtString)
+            sg.popup("Teaching:\n"+taughtString,keep_on_top=True)
             # for every row in gameBoard
             for iIndex, i in enumerate(gameBoard):
                 #if the x'th item belongs to you, and it's not the same item that's sharing the items
@@ -1494,14 +1494,14 @@ def useItems(gameBoard, x, y, window):
                     
                 else:
                     continue
-            sg.popup(f"Taught buffs to {taughtPieces} piece(s).")
+            sg.popup(f"Taught buffs to {taughtPieces} piece(s).",keep_on_top=True)
             pm(window,f"Taught buffs to {taughtPieces} piece(s).")
 
 # care package drop
         # care package drop
         elif str.find(i, "care package drop") >= 0:
             itemsMenu.close()
-            sg.popup("Choose an enemy to center the item airdrop on")
+            sg.popup("Choose an enemy to center the item airdrop on",keep_on_top=True)
 
             event = window.read()
             location = event[0]
@@ -1509,10 +1509,10 @@ def useItems(gameBoard, x, y, window):
             y1 = location[1]
 
             if gameBoard[x1][y1][0].occupied == False:
-                sg.popup("There's no one there; the package drop requires you choose an enemy")
+                sg.popup("There's no one there; the package drop requires you choose an enemy",keep_on_top=True)
                 continue
             elif gameBoard[x1][y1][1].ownedBy == playerTurn:
-                sg.popup("You cannot center the airdrop on your own piece.")
+                sg.popup("You cannot center the airdrop on your own piece.",keep_on_top=True)
                 continue
             else:
                 validLocations = getRadial(location, gameBoard)
@@ -1541,15 +1541,15 @@ def useItems(gameBoard, x, y, window):
         elif str.find(i, "dump items") >= 0:
             itemsMenu.close()
             if len(gameBoard[x][y][1].storedItems) < 2:
-                sg.popup("There won't be any items to dump.  Canceling.")
+                sg.popup("There won't be any items to dump.  Canceling.",keep_on_top=True)
                 continue
             validLocations = emptySpots(gameBoard, trueEmpty = True)
-            sg.popup("Pick any empty spot to drop all of your items into.  Anyone can pick it up.  Click yourself if you don't wish to use this.")
+            sg.popup("Pick any empty spot to drop all of your items into.  Anyone can pick it up.  Click yourself if you don't wish to use this.",keep_on_top=True)
             disableEverything(window)
             event = window.read()
             
             if event[0] == (location):
-                sg.popup("Canceled the dump")
+                sg.popup("Canceled the dump",keep_on_top=True)
                 disableEverything(window,turnOn = True)
                 continue
             elif event[0] in validLocations:
@@ -1563,7 +1563,7 @@ def useItems(gameBoard, x, y, window):
                     dumpCount +=1
                  
                 gameBoard[x][y][1].storedItems.clear()
-                sg.popup(f"Dumped {dumpCount} item(s)")
+                sg.popup(f"Dumped {dumpCount} item(s)",keep_on_top=True)
                 disableEverything(window,turnOn = True)
                 gameBoard[x1][y1][0].tileType = "itemDump"
                 
@@ -1573,9 +1573,9 @@ def useItems(gameBoard, x, y, window):
             itemsMenu.close()
             validLocations = emptySpots(gameBoard)
             if len(validLocations) < 1:
-                sg.popup("There's no space to gift an extra piece to your opponent.")
+                sg.popup("There's no space to gift an extra piece to your opponent.",keep_on_top=True)
             else:
-                sg.popup("Pick any unoccupied space on the board to spawn a free basic piece for your opponent.  How charitable!")
+                sg.popup("Pick any unoccupied space on the board to spawn a free basic piece for your opponent.  How charitable!",keep_on_top=True)
                 pm(window, "Pick any unoccupied space on the board to spawn a free basic piece for your opponent.  How charitable!")
                 window["exit"].update(disabled = False)
                 window["itemButton"].update(disabled=True)
@@ -1586,17 +1586,17 @@ def useItems(gameBoard, x, y, window):
                 y1 = event[0][1]
                 if "exit" in event[0]:
                     
-                    quityesno = sg.popup_yes_no("You seriously want to quit?!")
+                    quityesno = sg.popup_yes_no("You seriously want to quit?!",keep_on_top=True)
                     
                     if quityesno == "Yes":
-                        sg.popup("Whatever.  Get lost.")
+                        sg.popup("Whatever.  Get lost.",keep_on_top=True)
                         window.close()
                         raise SystemExit
                     else:
                         continue
                 else:
                     if not event[0] in validLocations:
-                        sg.popup("That's not a valid spot.  Canceling")
+                        sg.popup("That's not a valid spot.  Canceling",keep_on_top=True)
                     else:
                         
                         gameBoard[x][y][1].storedItems.remove("charity")
@@ -1619,7 +1619,7 @@ def useItems(gameBoard, x, y, window):
             gameBoard[x][y][1].grey = False
             #if there is fewer than one item in the list
             if len(gameBoard[x][y][1].activeBuffs) < 1:
-                sg.popup("You won't have any buffs to teach.  Aborted.")
+                sg.popup("You won't have any buffs to teach.  Aborted.",keep_on_top=True)
                 continue
             gameBoard[x][y][1].storedItems.remove("teach radial")
             taughtPieces = 0
@@ -1627,7 +1627,7 @@ def useItems(gameBoard, x, y, window):
             for k in gameBoard[x][y][1].activeBuffs:
                     
                     taughtString += k + "\n"
-            sg.popup("Teaching:\n"+taughtString)
+            sg.popup("Teaching:\n"+taughtString,keep_on_top=True)
             # for every row in gameBoard
             location = (x,y)
             validLocations = getRadial(location,gameBoard)
@@ -1652,7 +1652,7 @@ def useItems(gameBoard, x, y, window):
                     
                 else:
                     continue
-            sg.popup(f"Taught buffs to {taughtPieces} piece(s).")
+            sg.popup(f"Taught buffs to {taughtPieces} piece(s).",keep_on_top=True)
             pm(window,f"Taught buffs to {taughtPieces} piece(s).")
 
 #study row            
@@ -1660,7 +1660,7 @@ def useItems(gameBoard, x, y, window):
             itemsMenu.close()
             gameBoard[x][y][1].grey = False
             if "inert" in gameBoard[x][y][1].activeDebuffs:
-                sg.popup("This piece is inert and can't learn anything")
+                sg.popup("This piece is inert and can't learn anything",keep_on_top=True)
                 continue
             learnedFromPieces = 0
             learnedString = ""
@@ -1685,7 +1685,7 @@ def useItems(gameBoard, x, y, window):
                 else:
                     continue
             if bowlingBallRejected == True:
-                sg.popup("You attempted to learn bowling ball from at least one piece, but it proved to be too difficult.")
+                sg.popup("You attempted to learn bowling ball from at least one piece, but it proved to be too difficult.",keep_on_top=True)
             sg.popup(f"Learned buffs from {learnedFromPieces} piece(s).")
             pm(window,f"Learned buffs from {learnedFromPieces} piece(s).")
 
@@ -1696,7 +1696,7 @@ def useItems(gameBoard, x, y, window):
             gameBoard[x][y][1].grey = False
             #if there is fewer than one item in the list
             if len(gameBoard[x][y][1].activeBuffs) < 1:
-                sg.popup("You won't have any buffs to teach.  Aborted.")
+                sg.popup("You won't have any buffs to teach.  Aborted.",keep_on_top=True)
                 continue
             gameBoard[x][y][1].storedItems.remove("teach row")
             taughtPieces = 0
@@ -1704,7 +1704,7 @@ def useItems(gameBoard, x, y, window):
             for k in gameBoard[x][y][1].activeBuffs:
                     
                     taughtString += k + "\n"
-            sg.popup("Teaching:\n"+taughtString)
+            sg.popup("Teaching:\n"+taughtString,keep_on_top=True)
             # for every column in gameBoard
             for iIndex, i in enumerate(gameBoard[x]):
                 #if the x'th item belongs to you, and it's not the same item that's sharing the items
@@ -1725,7 +1725,7 @@ def useItems(gameBoard, x, y, window):
                     
                 else:
                     continue
-            sg.popup(f"Taught buffs to {taughtPieces} piece(s).")
+            sg.popup(f"Taught buffs to {taughtPieces} piece(s).",keep_on_top=True)
             pm(window,f"Taught buffs to {taughtPieces} piece(s).")
             
             
@@ -1734,7 +1734,7 @@ def useItems(gameBoard, x, y, window):
             itemsMenu.close()
             gameBoard[x][y][1].storedItems.remove("dead man's trigger")
             gameBoard[x][y][1].activeBuffs.append("dead man's trigger")
-            sg.popup("This piece has applied a dead man's trigger to itself.  If he is jumped by an enemy, they will die as well.")
+            sg.popup("This piece has applied a dead man's trigger to itself.  If he is jumped by an enemy, they will die as well.",keep_on_top=True)
 
 # mutual treation row  
         elif str.find(i,"mutual treason row") >=0 or str.find(i,"mutual treason column")>=0 or str.find(i,"mutual treason radial")>=0:
@@ -1758,7 +1758,7 @@ def useItems(gameBoard, x, y, window):
                         gameBoard[x1][y1][1].ownedBy = 2
                     elif gameBoard[x1][y1][1].ownedBy == 2:
                         gameBoard[x1][y1][1].ownedBy = 1
-            sg.popup("All affected pieces have changed their allegiances")
+            sg.popup("All affected pieces have changed their allegiances",keep_on_top=True)
 # jumpoline
         elif str.find(i,"jumpoline") >= 0:
             itemsMenu.close()
@@ -1770,18 +1770,18 @@ def useItems(gameBoard, x, y, window):
                 y1 = event[0][1]
                 g = gameBoard[x1][y1]
                 if g[0].occupied == True:
-                    sg.popup("Must pick an empty spot")
+                    sg.popup("Must pick an empty spot",keep_on_top=True)
                     pm(window, "Must pick an empty spot")
                     break
                 elif g[0].tileType != "default":
-                    sg.popup("Must be a valid tile")
+                    sg.popup("Must be a valid tile",keep_on_top=True)
                     pm(window, "Must be a valid tile")
                     break
                 else:
                     gameBoard[x][y][1].storedItems.remove("jumpoline")
                     g[0].tileType = "jumpoline"
             else:
-                sg.popup("Invalid location")
+                sg.popup("Invalid location",keep_on_top=True)
                 break
 
 # mystery box
@@ -1795,11 +1795,11 @@ def useItems(gameBoard, x, y, window):
                 y1 = event[0][1]
                 g = gameBoard[x1][y1]
                 if g[0].occupied == True:
-                    sg.popup("Must pick an empty spot")
+                    sg.popup("Must pick an empty spot",keep_on_top=True)
                     pm(window, "Must pick an empty spot")
                     break
                 elif g[0].tileType != "default":
-                    sg.popup("Must be a valid tile")
+                    sg.popup("Must be a valid tile",keep_on_top=True)
                     pm(window, "Must be a valid tile")
                     break
                 else:
@@ -1808,7 +1808,7 @@ def useItems(gameBoard, x, y, window):
                     g[0].tileType = "mystery box"
 
             else:
-                sg.popup("Invalid location")
+                sg.popup("Invalid location",keep_on_top=True)
                 break
             
 # floor restore            
@@ -1830,7 +1830,7 @@ def useItems(gameBoard, x, y, window):
                         "damaged8"
                         ):
                         j[0].tileType = "default"
-            sg.popup("Any damaged floors are back to brand new condition")
+            sg.popup("Any damaged floors are back to brand new condition",keep_on_top=True)
 
 # secretAgent          
         elif str.find(i,"secretAgent") >= 0:
@@ -1844,11 +1844,11 @@ def useItems(gameBoard, x, y, window):
                 y1 = event[0][1]
                 g = gameBoard[x1][y1]
                 if g[0].occupied == True:
-                    sg.popup("Must pick an empty spot")
+                    sg.popup("Must pick an empty spot",keep_on_top=True)
                     pm(window, "Must pick an empty spot")
                     break
                 elif g[0].tileType != "default":
-                    sg.popup("Must be a valid tile")
+                    sg.popup("Must be a valid tile",keep_on_top=True)
                     pm(window, "Must be a valid tile")
                     break
                 else:
@@ -1857,7 +1857,7 @@ def useItems(gameBoard, x, y, window):
                     
 
             else:
-                sg.popup("Invalid location")
+                sg.popup("Invalid location",keep_on_top=True)
                 break
 # purity tile
         elif str.find(i,"purity tile") >= 0:
@@ -1871,11 +1871,11 @@ def useItems(gameBoard, x, y, window):
                 y1 = event[0][1]
                 g = gameBoard[x1][y1]
                 if g[0].occupied == True:
-                    sg.popup("Must pick an empty spot")
+                    sg.popup("Must pick an empty spot",keep_on_top=True)
                     pm(window, "Must pick an empty spot")
                     break
                 elif g[0].tileType != "default":
-                    sg.popup("Must be a valid tile")
+                    sg.popup("Must be a valid tile",keep_on_top=True)
                     pm(window, "Must be a valid tile")
                     break
                 else:
@@ -1884,7 +1884,7 @@ def useItems(gameBoard, x, y, window):
                     
 
             else:
-                sg.popup("Invalid location")
+                sg.popup("Invalid location",keep_on_top=True)
                 break
             
 # reproduce            
@@ -1898,11 +1898,11 @@ def useItems(gameBoard, x, y, window):
                 y1 = event[0][1]
                 g = gameBoard[x1][y1]
                 if g[0].occupied == True:
-                    sg.popup("Must pick an empty spot")
+                    sg.popup("Must pick an empty spot",keep_on_top=True)
                     pm(window, "Must pick an empty spot")
                     break
                 elif g[0].tileType != "default":
-                    sg.popup("Must be a valid tile")
+                    sg.popup("Must be a valid tile",keep_on_top=True)
                     pm(window, "Must be a valid tile")
                     break
                 else:
@@ -1911,11 +1911,11 @@ def useItems(gameBoard, x, y, window):
                     g[0].tileType = f"player{playerTurn}default"
                     g[1].avatar = "default"
                     
-                    sg.popup("Congrats on your newborn piece.")
+                    sg.popup("Congrats on your newborn piece.",keep_on_top=True)
                     gameBoard[x][y][1].storedItems.remove("reproduce")
                     return
             else:
-                sg.popup("Invalid location")
+                sg.popup("Invalid location",keep_on_top=True)
                 break
 # recall            
         elif str.find(i, "recall") >= 0:
@@ -1923,7 +1923,7 @@ def useItems(gameBoard, x, y, window):
             turnCountRecall = 10
             g = gameBoard[x][y]
             if g[0].recallBackup != False:
-                sg.popup("This tile is awaiting the arrival of another recall piece.  It cannot be used until the recall is complete.")
+                sg.popup("This tile is awaiting the arrival of another recall piece.  It cannot be used until the recall is complete.",keep_on_top=True)
                 break
             gameBoard[x][y][1].storedItems.remove("recall")
             gameBoard[x][y][1].grey = False
@@ -1989,7 +1989,7 @@ def useItems(gameBoard, x, y, window):
                         pm(window, "worm hole placed")
                         
                     else:
-                        sg.popup("An error occurred trying to place the worm hole")
+                        sg.popup("An error occurred trying to place the worm hole",keep_on_top=True)
                         break
                     displayBoard(window, gameBoard)
                     gameBoard[x][y][1].storedItems.remove("worm hole")
@@ -1999,7 +1999,7 @@ def useItems(gameBoard, x, y, window):
                     pm(window, "You must pick an empty adjacent location (up/down/left/right)")
                     sleep(1)
             except:
-                sg.popup("An error occurred trying to place the worm hole")
+                sg.popup("An error occurred trying to place the worm hole",keep_on_top=True)
                 break
                     
                     
@@ -2017,13 +2017,13 @@ def useItems(gameBoard, x, y, window):
                     fileNum = random.randint(1,4)
                     playsound(f"sounds/squeak{fileNum}.mp3", block = False)
                 elif gameBoard[event[0][0]][event[0][1]][0].orbEater == True:
-                    sg.popup("There's already an orb eater here... get your mind out of the gutter, that's not going to happen.")
+                    sg.popup("There's already an orb eater here... get your mind out of the gutter, that's not going to happen.",keep_on_top=True)
                     pm(window, "There's already an orb eater here... get your mind out of the gutter, that's not going to happen.")
                 else:
-                    sg.popup("You need to select an emty space.  The orb eater will find nearby orbs to eat on his own.")
+                    sg.popup("You need to select an emty space.  The orb eater will find nearby orbs to eat on his own.",keep_on_top=True)
                     continue
             except:
-                sg.popup(f"Error. {event[0]} {emptyList}")
+                sg.popup(f"Error. {event[0]} {emptyList}",keep_on_top=True)
                 continue
 # warp            
         elif str.find(i, "warp") >= 0:
@@ -2057,7 +2057,7 @@ def useItems(gameBoard, x, y, window):
                 pm(window,"Piece was teleported")
                 break
             else:
-                sg.popup("Nowhere to teleport to")
+                sg.popup("Nowhere to teleport to",keep_on_top=True)
                 break
             
 # round earth theory        
@@ -2745,7 +2745,7 @@ def useItems(gameBoard, x, y, window):
                     gameBoard[event[0][0]][event[0][1]][1].activeDebuffs.append("sticky time bomb")
                     gameBoard[x][y][1].storedItems.remove("sticky time bomb")
                     gameBoard[event[0][0]][event[0][1]][1].stickyTimeBomb = PublicStats.turnCount + turnsToArm
-                    sg.popup("Attached the sticky time bomb.  It'll explode in 5 turns, destroying the piece and all surrounding tiles.")
+                    sg.popup("Attached the sticky time bomb.  It'll explode in 5 turns, destroying the piece and all surrounding tiles.",keep_on_top=True)
                     
                     displayBoard(window, gameBoard)
                     window.refresh()
@@ -2754,10 +2754,10 @@ def useItems(gameBoard, x, y, window):
                     sg.popup("There's no one there to attach the bomb to.")
                     continue
                 elif "sticky time bomb" in gameBoard[event[0][0]][event[0][1]][0].activeDebuffs:
-                    sg.popup("This piece already has a sticky time bomb attached to it, you can't put a second one on it")
+                    sg.popup("This piece already has a sticky time bomb attached to it, you can't put a second one on it",keep_on_top=True)
                     continue
                 else:
-                    sg.popup("That piece is unaffected due to an item effect")
+                    sg.popup("That piece is unaffected due to an item effect",keep_on_top=True)
                     continue
             else:
                 pm(window, "Can't place mine there.  Must attach it to a nearby piece (including yourself).")
@@ -4227,10 +4227,10 @@ def forcefieldCheck(window, gameBoard, startLocation = 0, endLocation = 0):
         if "Energy Forcefield" in g[1].activeBuffs:
             g[1].shieldTurn = PublicStats.turnCount
             g[1].activeBuffs.remove("Energy Forcefield")
-            sg.popup("The forcefield activated and will protect you from energy until the end of this turn")
+            sg.popup("The forcefield activated and will protect you from energy until the end of this turn",keep_on_top=True)
             return True
         elif g[1].shieldTurn == PublicStats.turnCount:
-            sg.popup("A forcefield is still active until the end of this turn.  It has saved you again.")
+            sg.popup("A forcefield is still active until the end of this turn.  It has saved you again.",keep_on_top=True)
             return True
         else:
             #DEATH
@@ -4254,13 +4254,13 @@ def secretAgentCheck(window, gameBoard, startLocation, endLocation, playerTurn):
             for i in gameBoard[endLocation[0]][endLocation[1]][0].secretAgentList:
                 gameBoard[endLocation[0]][endLocation[1]][1].storedItems.append(i)
                 count+=1
-            sg.popup(f"The allied secret agent gave you all the items he's stolen on your behalf. ({count} total)")
+            sg.popup(f"The allied secret agent gave you all the items he's stolen on your behalf. ({count} total)",keep_on_top=True)
             pm(window, f"The allied secret agent gave you all the items he's stolen on your behalf. ({count} total)")
             #and then erases his collection
             gameBoard[endLocation[0]][endLocation[1]][0].secretAgentList.clear()
         #otherwise, if he doesn't have anything, show a little message
         elif len(gameBoard[endLocation[0]][endLocation[1]][0].secretAgentList) == 0:
-            sg.popup("This secret agent is on your side, but isn't interested in small talk.  He nods, but otherwise ignores you.  You should visit him after he steals something from your enemy.")        
+            sg.popup("This secret agent is on your side, but isn't interested in small talk.  He nods, but otherwise ignores you.  You should visit him after he steals something from your enemy.",keep_on_top=True)        
 
     #if the secretAgent is your enemy's
     elif gameBoard[endLocation[0]][endLocation[1]][0].secretAgent != playerTurn:
@@ -4273,9 +4273,9 @@ def secretAgentCheck(window, gameBoard, startLocation, endLocation, playerTurn):
                         gameBoard[endLocation[0]][endLocation[1]][0].secretAgentList.append(i)
                     #wipe out the victim's items
                     gameBoard[endLocation[0]][endLocation[1]][1].storedItems.clear()
-                    sg.popup("The secret agent stole all your held items")
+                    sg.popup("The secret agent stole all your held items",keep_on_top=True)
             else:
-                sg.popup("The secret agent sees you don't have any items, so he gives you a dirty look, but doesn't do anything else.")
+                sg.popup("The secret agent sees you don't have any items, so he gives you a dirty look, but doesn't do anything else.",keep_on_top=True)
     
 
 def repairFloor(window, gameBoard):
@@ -4437,15 +4437,15 @@ def roundEarthTheoryFunction(gameBoard,startLocation,endLocation,columns,rows):
     #try to go straight right to straight left
     if startLocation[0] == endLocation[0]:
         if startLocation[1] == columns-1 and endLocation[1] == 0:
-            sg.popup("Your piece rolled around to the other side!")
+            sg.popup("Your piece rolled around to the other side!",keep_on_top=True)
             return True
     #trying to go down right
     elif startLocation[0] == endLocation[0]-1 and startLocation[1] == columns -1 and endLocation[1] == 0 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-        sg.popup("Your piece rolled around to the other side!")
+        sg.popup("Your piece rolled around to the other side!",keep_on_top=True)
         return True
     #trying to go up right
     elif startLocation[0] == endLocation[0]+1 and startLocation[1] == columns -1 and endLocation[1] == 0 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-        sg.popup("Your piece rolled around to the other side!")
+        sg.popup("Your piece rolled around to the other side!",keep_on_top=True)
         return True
     
 
@@ -4453,15 +4453,15 @@ def roundEarthTheoryFunction(gameBoard,startLocation,endLocation,columns,rows):
     #try to go straight left to straight right
     if startLocation[0] == endLocation[0]:
         if startLocation[1] == 0 and endLocation[1] == columns -1:
-            sg.popup("Your piece rolled around to the other side!")
+            sg.popup("Your piece rolled around to the other side!",keep_on_top=True)
             return True
     #trying to go down right
     elif startLocation[0] == endLocation[0]-1 and startLocation[1] == 0  and endLocation[1] == columns -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-        sg.popup("Your piece rolled around to the other side!")
+        sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
         return True
     #trying to go up right
     elif startLocation[0] == endLocation[0]+1 and startLocation[1] == 0 and endLocation[1] == columns -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-        sg.popup("Your piece rolled around to the other side!")
+        sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
         return True
 
         
@@ -4469,34 +4469,34 @@ def roundEarthTheoryFunction(gameBoard,startLocation,endLocation,columns,rows):
     #try to go straight up to straight down
     if startLocation[1] == endLocation[1]:
         if startLocation[0] == 0 and endLocation[0] == rows -1:
-            sg.popup("Your piece rolled around to the other side!")
+            sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
             return True
     #trying to go up right
     elif startLocation[0] == 0 and startLocation[1] == (endLocation[1] +1) and endLocation[0] == rows -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-        sg.popup("Your piece rolled around to the other side!")
+        sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
         return True
     #trying to go up right
     elif startLocation[1] == endLocation[1]-1 and startLocation[0] == 0 and endLocation[0] == rows -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-        sg.popup("Your piece rolled around to the other side!")
+        sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
         return True
 
 #diagonals (only works with diagonal enabled
     if "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
         #upleft
         if startLocation[0] == 0 and startLocation[1] == 0 and endLocation[0] == rows-1 and endLocation[1] == columns-1:
-            sg.popup("Your piece rolled around to the other side!")
+            sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
             return True
         #upright
         if startLocation[0] == 0 and startLocation[1] == columns-1 and endLocation[0] == rows-1 and endLocation[1] == 0:
-            sg.popup("Your piece rolled around to the other side!")
+            sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
             return True
         #downleft
         if startLocation[0] == rows-1 and startLocation[1] == 0 and endLocation[0] == 0 and endLocation[1] == columns-1:
-            sg.popup("Your piece rolled around to the other side!")
+            sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
             return True
         #downright
         if startLocation[0] == rows-1 and startLocation[1] == columns-1 and endLocation[0] == 0 and endLocation[1] == 0:
-            sg.popup("Your piece rolled around to the other side!")
+            sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
             return True
     else:
         return False
@@ -4770,7 +4770,7 @@ def movePiece(playerTurn, window, gameBoard):
                         buffslist = "NONE"
                     if debuffslist == "":
                         debuffslist = "NONE"
-                    sg.popup(f"The piece here belongs to {owner}.\nIt currently holds {len(gameBoard[event[0][0]][event[0][1]][1].storedItems)} inactive items.\nIt has the following buffs:\n{buffslist}\nIt has the current debuffs:\n{debuffslist}",)
+                    sg.popup(f"The piece here belongs to {owner}.\nIt currently holds {len(gameBoard[event[0][0]][event[0][1]][1].storedItems)} inactive items.\nIt has the following buffs:\n{buffslist}\nIt has the current debuffs:\n{debuffslist}",keep_on_top = True)
                     pm(
                         window,
                         f"The piece here belongs to {owner}.\nIt currently holds {len(gameBoard[event[0][0]][event[0][1]][1].storedItems)} inactive items.\nIt has the following buffs:\n{buffslist}\nIt has the current debuffs:\n{debuffslist}",
@@ -4843,10 +4843,10 @@ def movePiece(playerTurn, window, gameBoard):
             if event[0][0] >= 0 and event[0][0] < rows and event[0][1] >= 0 and event[0][1] < columns:
                 location = ( event[0][0] , event[0][1] )
             else:
-                sg.popup("An error occurred during piece selection.  Please try again.")
+                sg.popup("An error occurred during piece selection.  Please try again.",keep_on_top = True)
                 continue
         except:
-            sg.popup("An exception error has occurred during piece selection.  Attempting to recover.  Please try again.")
+            sg.popup("An exception error has occurred during piece selection.  Attempting to recover.  Please try again.",keep_on_top = True)
             continue
 
             
@@ -5243,7 +5243,7 @@ def movePiece(playerTurn, window, gameBoard):
                             break
                         endlocation = []
                         endLocation = jumpoline(window, gameBoard, (endLocation[0],endLocation[1]), playerTurn)
-                        sg.popup("Bounced to a new spot!")
+                        sg.popup("Bounced to a new spot!",keep_on_top = True)
                         pm(window,"Bounced to a new spot!")
   
                     # copy the actual piece object over from the old address to the new one (deepcopy needed?)
@@ -5263,7 +5263,7 @@ def movePiece(playerTurn, window, gameBoard):
                     #secretAgent check
                     usedShield = forcefieldCheck(window, gameBoard, startLocation, endLocation)
                     if usedShield == True:
-                        sg.popup("A shield was used")
+                        sg.popup("A shield was used",keep_on_top = True)
                     secretAgentCheck(window, gameBoard, startLocation, endLocation, playerTurn)
 
 
@@ -5276,7 +5276,7 @@ def movePiece(playerTurn, window, gameBoard):
                                 if j[0].occupied == True:
                                     if j[1].stickyTimeBomb != False:
                                         j[1].stickyTimeBomb = False
-                        sg.popup("Any negative effects on this piece have been cleared.")
+                        sg.popup("Any negative effects on this piece have been cleared.",keep_on_top = True)
                         gameBoard[endLocation[0]][endLocation[1]][1].activeDebuffs.clear()
                         
                     if gameBoard[endLocation[0]][endLocation[1]][0].tileType == "itemDump":
@@ -5308,7 +5308,7 @@ def movePiece(playerTurn, window, gameBoard):
                             for i in gameBoard[endLocation[0]][endLocation[1]][0].dumpList:
                                 gameBoard[endLocation[0]][endLocation[1]][1].storedItems.append(i)
                                 itemsGained += 1
-                            sg.popup(f"Gained {itemsGained} items from the item dump!")
+                            sg.popup(f"Gained {itemsGained} items from the item dump!",keep_on_top = True)
                             gameBoard[endLocation[0]][endLocation[1]][0].tileType = "default"
 
 
@@ -5376,7 +5376,7 @@ def movePiece(playerTurn, window, gameBoard):
                                 pickUpItemOrb(gameBoard, endLocation[0], endLocation[1])
                         elif randomEvent == "lose items":
                             gameBoard[endLocation[0]][endLocation[1]][1].storedItems.clear()
-                            sg.popup("You've lost all your held items")
+                            sg.popup("You've lost all your held items",keep_on_top = True)
                         elif randomEvent == "die":
                             gameBoard[endLocation[0]][endLocation[1]][0].occupied = False
                             gameBoard[startLocation[0]][startLocation[1]][0].occupied = False
@@ -5529,7 +5529,7 @@ def movePiece(playerTurn, window, gameBoard):
 
                     #Program dead man's trigger
                     elif ("dead man's trigger" in gameBoard[endLocation[0]][endLocation[1]][1].activeBuffs):
-                        sg.popup("The piece had a dead man's trigger.  Your piece died as well.")
+                        sg.popup("The piece had a dead man's trigger.  Your piece died as well.",keep_on_top = True)
                         deadMansTrigger = True
 
                         #delete the original location
@@ -5899,7 +5899,7 @@ def recallFunction(window,gameBoard):
                 sleep(.5)
                 window.refresh()
                 
-                sg.popup("A piece has recalled")
+                sg.popup("A piece has recalled",keep_on_top = True)
                 
             
 def stickyTimeBomb(window,gameBoard):

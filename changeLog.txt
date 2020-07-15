@@ -1,4 +1,6 @@
 ChangeLog
+v.0.9.84 July 15, 2020
+	Added a bug fix/suggestions document for testers.  Added "keep on top" to all popups (this should really have had a universal toggle).  Removed the py version (was accidentally left over when creating the .pyw version).
 
 v.0.9.83 July 15, 2020
 	Added more highlighting, started using highlighting to show the range of an item, along with a confirmation message asking if you're sure you want to use it.  Currently highlights everything within range; may add a secondary highlight effect that shows specifically what units will be affected (for example, generic grey highlighting to show where it reaches, red to show what enemies are getting hurt, and green highlighting to show what allies are getting helped; or perhaps red to show any pieces that are getting hurt).  Also will make the range indicator not ask for confirmation if it's a "place an item down" type item as opposed to a "use it and it's done" item (in the interest of not showing too many popups). Renamed to PYW file to avoid the console from interfering as much.
