@@ -7,6 +7,7 @@ from PIL import Image
 from io import BytesIO
 import base64
 from playsound import playsound
+import pyautogui
 
 PublicPNGList = []     
 
@@ -355,9 +356,12 @@ def countPieces(gameBoard, window):
 
 # the actual loop that is used to progress turns
 def gamePlay(playerTurn, window, gameBoard):
+
+    
     countPieces(gameBoard, window)
     createOrbs(window, gameBoard)
     #displayBoard(window, gameBoard)
+
     movePiece(playerTurn, window, gameBoard)
     PublicStats.turnCount += 1
     repairFloor(window, gameBoard)
@@ -1313,13 +1317,13 @@ def disableEverything(window, turnOn = False):
         window["exit"].update(disabled = True)
         #window["itemButton"].update(disabled=True)
         window["examineItem"].update(disabled=True)
-        window["readItems"].update(disabled=True)
+        ###window["readItems"].update(disabled=True)
         window["cheetz"].update(disabled=True)
     else:
         window["exit"].update(disabled = False)
         #window["itemButton"].update(disabled=False)
         window["examineItem"].update(disabled=False)
-        window["readItems"].update(disabled=False)
+        ###window["readItems"].update(disabled=False)
         window["cheetz"].update(disabled=True)
 # using an item
 def useItems(gameBoard, x, y, window):
@@ -1332,16 +1336,15 @@ def useItems(gameBoard, x, y, window):
     updateToolTips(window, gameBoard, playerTurn)
     startLocation = (x,y)
     for i in gameBoard[x][y][1].storedItems:
-        #picture = f"images/{i}.png"
+        picture = f"images/{i}.png"
 
         
-        picture = "images/default.png"
+        #picture = "images/default.png"
         explanation = "no explanation supplied... yet"
         if i == "bernie sanders":
             explanation: "gather up all of your unactivated items and all of your opponent's unactivated items.  Shuffles the items around and randomly redistributes the wealth among all pieces that are capable of receiving items."
         elif i == "bowling ball":
             explanation = "Your piece loses all of its powers and negative effects... but comes a crazy bowling ball on a rampage."
-            picture =  (f"images/{i}.png")
         elif i == "care package drop":
             explanation = "A plane drops off some item orbs near the selected opponent"
         elif i == "charity":
@@ -1360,7 +1363,6 @@ def useItems(gameBoard, x, y, window):
             explanation = "Your piece dons a dapper hard hat, naturally making you immune to being jumped on.  It does not provide any other forms of protection."
         elif i == "jumpoline":
             explanation = "Spawns a jumpoline, which is what they used to call those devices consisting of a piece of taut, strong fabric stretched between a steel frame using many coiled springs, at least until your mom jumped on one.  If a piece belonging to either player jumps onto a jumpoline, they'll be tossed to another random empty square."
-            
         elif i in ("laser column","laser row"):
             explanation = "Place a laser turret that will shoot out an infinite range beam that'll destroy any pieces it hits (including your own).  Laser turrets are immune to other laser turrets, but are affected by pieces and other items."
         elif i == "magnet":
@@ -1425,47 +1427,6 @@ def useItems(gameBoard, x, y, window):
             explanation = "What, did you think you were going to gain the abilities of a landfill?  Well, that's a pretty stupid thing to think...  After activating this item, your other unused items clump together into a giant item orb and then get dumped on a nearby tile.  Any piece that is capable of picking up items - including your enemy's pieces - can then grab this wad of powers."
 
 
-##        "vile radial", 
-##        "warp",
-##        "wololo",
-##        "worm hole",
-##        "dump powers"
-##        if z ==
-##            z = 
-##            zz = 
-##        elif z == "images/trip mine radial.png":
-##            z = "images/tripMine.png"
-##            zz = "set up a trip mine"
-##        elif z == "images/place mine.png":
-##            z = "images/mine.png"
-##            zz = "place a mine"
-##        elif z == "images/vile radial.png":
-##            z = "images/vile.png"
-##            zz = "removes all buffs (beneficial effects) from surrounding enemies."
-##        elif z == "images/purify radial.png":
-##            z = "images/purified1.png"
-##            zz = "removes all debuffs (negative effects) from all surrounding allies and this piece."
-##        elif z == "images/jumpProof.png":
-##            z = "images/jumpProof.png"
-##            zz = "This piece is wearing a hardhat, so naturally, he can't be jumped on by a 3 ton block of metal machinery."
-##        elif z == "images/shuffle column.png":
-##            z = "images/shuffleColumn.png"
-##            zz = "Randomly shuffle a column."
-##        elif z == "images/shuffle radial.png":
-##            z = "images/shuffleRadial.png"
-##            zz = "Shuffle your piece and all surrounding tiles around."
-##        elif z == "images/spooky hand.png":
-##            z = "images/Hand3.png"
-##            zz = "A scary hand that will periodically grab a random piece from the field."
-##        elif z == "images/haymaker.png":
-##            z = "images/haymaker.png"
-##            zz = "A strong punch that will send a piece flying until it smashes into something."
-##        elif z == "images/Energy Forcefield.png":
-##            z = "images/Forcefield.png"
-##            zz = "Protects you from energy attacks for one turn."
-##        elif z == "images/bowling ball.png":
-##            z = "images/bowling ball.png"
-##            zz = "Your piece loses all of its effects and items... but turns into a crazy bowling ball."
         else:
             #z = "images/default.png"
             
@@ -1646,6 +1607,39 @@ def useItems(gameBoard, x, y, window):
             sg.popup(f"Taught buffs to {taughtPieces} piece(s).",keep_on_top=True)
             pm(window,f"Taught buffs to {taughtPieces} piece(s).")
 
+        elif str.find(i, "bernie sanders") >= 0:
+            itemsMenu.close()
+            itemsCollected = []
+            validPieces = []
+            gameBoard[x][y][1].storedItems.remove("bernie sanders")
+            count = 0
+            
+            for iIndex, iData in enumerate(gameBoard):
+                for jIndex,j in enumerate(iData):
+                    #if there is a piece
+                    if j[0].occupied == True:
+                        #grab (a copy of) all its items
+                        for k in j[1].storedItems:
+                            itemsCollected.append(k)
+                        #delete the original items
+                        j[1].storedItems.clear()
+                        if "burdened" not in j[1].activeDebuffs and "bowling ball" not in j[1].activeBuffs:
+                            validPieces.append( (iIndex, jIndex) )
+                            count+=1
+            displayBoard(window, gameBoard)
+            window.refresh()
+            sg.popup("Bernie has taken everyone's wealth",keep_on_top = True)
+            for i in itemsCollected:
+                luckyRecipient = random.choice(validPieces)
+                xi = luckyRecipient[0]
+                yi = luckyRecipient[1]
+                gameBoard[xi][yi][1].storedItems.append(i)
+            itemsRedistributed = len(itemsCollected)
+            itemsCollected.clear()
+            updateToolTips(window, gameBoard,playerTurn)
+            sg.popup(f"{itemsRedistributed} items have been redistributed!")
+            pm(window,f"{itemsRedistributed} items have been redistributed!")
+
 # care package drop
         # care package drop
         elif str.find(i, "care package drop") >= 0:
@@ -1664,7 +1658,9 @@ def useItems(gameBoard, x, y, window):
                 sg.popup("You cannot center the airdrop on your own piece.",keep_on_top=True)
                 continue
             else:
+                gameBoard[x][y][1].storedItems.remove("care package drop")
                 validLocations = getRadial(location, gameBoard)
+                
                 for i in validLocations:
                     dropX = i[0]
                     dropY = i[1]
@@ -1729,7 +1725,7 @@ def useItems(gameBoard, x, y, window):
                 window["exit"].update(disabled = False)
                 #window["itemButton"].update(disabled=True)
                 window["examineItem"].update(disabled=True)
-                window["readItems"].update(disabled=True)
+                ###window["readItems"].update(disabled=True)
                 event = window.read()
                 x1 = event[0][0]
                 y1 = event[0][1]
@@ -1885,7 +1881,7 @@ def useItems(gameBoard, x, y, window):
             gameBoard[x][y][1].activeBuffs.append("dead man's trigger")
             sg.popup("This piece has applied a dead man's trigger to itself.  If he is jumped by an enemy, they will die as well.",keep_on_top=True)
 
-# mutual treation row  
+# mutual treason row  
         elif str.find(i,"mutual treason row") >=0 or str.find(i,"mutual treason column")>=0 or str.find(i,"mutual treason radial")>=0:
             itemsMenu.close()
             validList = []
@@ -4812,7 +4808,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
         
 
 def movePiece(playerTurn, window, gameBoard):
-    
+    #pyautogui.moveTo(10, 10)
     # a small list that is used to make sure a player that gets a second turn for a piece can only use that specific piece twice
     repeatRestrictor = [False, (-1, -1)]
     pieceTeleported = False
@@ -4822,11 +4818,18 @@ def movePiece(playerTurn, window, gameBoard):
     rows = len(gameBoard)
     columns = len(gameBoard[0])
     #displayBoard(window, gameBoard)
-    
+##    #currentMouseX, currentMouseY = pyautogui.position()  
+##    sleep(4)
+##    #pyautogui.moveTo(currentMouseX, currentMouseY)
 ##    window.refresh()
 ##    updateToolTips(window, gameBoard,playerTurn)
+##    updateToolTips(window, gameBoard, playerTurn)
 ##    window.refresh()
+
     while True:
+        
+        
+        
         highlightValidDistance(gameBoard, window, (0,0),turnOff = True)
         #flag for keeping track of pieces that were teleported
         if pieceTeleported == True:
@@ -4839,7 +4842,7 @@ def movePiece(playerTurn, window, gameBoard):
         usedItem = False
         #window["itemButton"].update(disabled=True)
         window["examineItem"].update(disabled=False)
-        window["readItems"].update(disabled=False)
+        ###window["readItems"].update(disabled=False)
         window["cheetz"].update(disabled=False)
         
         window.refresh()
@@ -4929,73 +4932,73 @@ def movePiece(playerTurn, window, gameBoard):
                         f"The piece here belongs to {owner}.\nIt currently holds {len(gameBoard[event[0][0]][event[0][1]][1].storedItems)} inactive items.\nIt has the following buffs:\n{buffslist}\nIt has the current debuffs:\n{debuffslist}",
                     )
                 window["examineItem"].update(disabled=False)
-                window["readItems"].update(disabled=False)
+                ###window["readItems"].update(disabled=False)
                 continue
 
-            #if the player wants to read about items
-            if "readItems" in event:
-                    highlightValidDistance(gameBoard, window, (0,0),turnOff = True)
-                #readItems()
-                    learnItemsLayout = []
-                    itemList = [
-                    "<QUIT>",
-                    "orb eater",
-                    "magnet",
-                    "trap orb",
-                    "place mine",
-                    "move again",
-                    "suicide bomb row",
-                    "Energy Forcefield",
-                    "suicide bomb column",
-                    "haphazard airstrike",
-                    "suicide bomb radial",
-                    "jump proof",
-                    "smart bombs",
-                    "move diagonal",
-                    "trip mine radial",
-                    "purify radial",
-                    "napalm radial",
-                    "vile radial",
-                    "haymaker",
-                    "bowling ball",
-                    "laser column",
-                    "laser row",
-                    "shuffle column",
-                    "shuffle radial",
-                    "spooky hand",
-                    "reproduce",
-                    "worm hole",
-                    "warp"
-                    ]
-                    itemList.sort()
-                    disableEverything(window)
-                    for i in itemList:
-                        learnItemsLayout+= [ [sg.Button(f"{i}",key = i)] ]
-                    learnItems = sg.Window("Title",learnItemsLayout,keep_on_top = True).finalize()
-                    #window.disable()
-                    learnItems.bind('<FocusOut>', '+FOCUS OUT+')
-                    
-                    event = learnItems.read()
-                    
-                    
-                    
-                    while event[0]!="<QUIT>" and event[0]!=None and event[0]!= '+FOCUS OUT+':
-                    
-                        itemExplanation(event[0])
-                        event = learnItems.read()
-                        if event[0] == None:
-                            break
-                    #disableEverything(window, turnOn = True)
-                    learnItems.close()
-                    
-                    disableEverything(window, turnOn = True)
-                    #window.enable()
-                    continue
+##            #if the player wants to read about items
+##            if "readItems" in event:
+##                    highlightValidDistance(gameBoard, window, (0,0),turnOff = True)
+##                #readItems()
+##                    learnItemsLayout = []
+##                    itemList = [
+##                    "<QUIT>",
+##                    "orb eater",
+##                    "magnet",
+##                    "trap orb",
+##                    "place mine",
+##                    "move again",
+##                    "suicide bomb row",
+##                    "Energy Forcefield",
+##                    "suicide bomb column",
+##                    "haphazard airstrike",
+##                    "suicide bomb radial",
+##                    "jump proof",
+##                    "smart bombs",
+##                    "move diagonal",
+##                    "trip mine radial",
+##                    "purify radial",
+##                    "napalm radial",
+##                    "vile radial",
+##                    "haymaker",
+##                    "bowling ball",
+##                    "laser column",
+##                    "laser row",
+##                    "shuffle column",
+##                    "shuffle radial",
+##                    "spooky hand",
+##                    "reproduce",
+##                    "worm hole",
+##                    "warp"
+##                    ]
+##                    itemList.sort()
+##                    disableEverything(window)
+##                    for i in itemList:
+##                        learnItemsLayout+= [ [sg.Button(f"{i}",key = i)] ]
+##                    learnItems = sg.Window("Title",learnItemsLayout,keep_on_top = True).finalize()
+##                    #window.disable()
+##                    learnItems.bind('<FocusOut>', '+FOCUS OUT+')
+##                    
+##                    event = learnItems.read()
+##                    
+##                    
+##                    
+##                    while event[0]!="<QUIT>" and event[0]!=None and event[0]!= '+FOCUS OUT+':
+##                    
+##                        itemExplanation(event[0])
+##                        event = learnItems.read()
+##                        if event[0] == None:
+##                            break
+##                    #disableEverything(window, turnOn = True)
+##                    learnItems.close()
+##                    
+##                    disableEverything(window, turnOn = True)
+##                    #window.enable()
+##                    continue
                 
         #disable the exit button to avoid issues
         window["exit"].update(disabled=True)
         window["cheetz"].update(disabled=True)
-        window["readItems"].update(disabled=True)
+        ###window["readItems"].update(disabled=True)
         ##############################################################
         #  Assuming a window tile was clicked for the start location #
         ##############################################################
@@ -5154,7 +5157,7 @@ def movePiece(playerTurn, window, gameBoard):
                     f"Selection made, pick a destination or click the same piece again to access items.",
                 )
 
-                window["readItems"].update(disabled=True)
+                ###window["readItems"].update(disabled=True)
             
             # if the piece doesn't belong to you
             elif playerTurn != gameBoard[event[0][0]][event[0][1]][1].ownedBy:
@@ -6120,7 +6123,8 @@ def begin():
                 size=(75, 75),
                 button_color=("white", "grey"),
                 tooltip="square",
-                pad=(2, 2),
+                #pad=(2, 2),
+                pad = (1,1)
             )
             for j in range(columns)
         ]
@@ -6194,7 +6198,7 @@ def begin():
                 key="examineItem",
                 image_filename="images/examine.png",
             ),
-            sg.Button("Learn about items",key="readItems",size=(40,4)),
+            #sg.Button("Learn about items",key="readItems",size=(40,4)),
             sg.Button("Exit", size=(20,4), key="exit"),
             sg.Button("cheetz")
         ]
