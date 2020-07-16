@@ -1332,48 +1332,144 @@ def useItems(gameBoard, x, y, window):
     updateToolTips(window, gameBoard, playerTurn)
     startLocation = (x,y)
     for i in gameBoard[x][y][1].storedItems:
-        z = f"images/{i}.png"
-        zz = "no explanation supplied... yet"
+        #picture = f"images/{i}.png"
+
         
-        if z == "images/move again.png":
-            z = "images/moveAgainMax.png"
-            zz = "Move an extra space"
-        elif z == "images/trip mine radial.png":
-            z = "images/tripMine.png"
-            zz = "set up a trip mine"
-        elif z == "images/place mine.png":
-            z = "images/mine.png"
-            zz = "place a mine"
-        elif z == "images/vile radial.png":
-            z = "images/vile.png"
-            zz = "removes all buffs (beneficial effects) from surrounding enemies."
-        elif z == "images/purify radial.png":
-            z = "images/purified1.png"
-            zz = "removes all debuffs (negative effects) from all surrounding allies and this piece."
-        elif z == "images/jumpProof.png":
-            z = "images/jumpProof.png"
-            zz = "This piece is wearing a hardhat, so naturally, he can't be jumped on by a 3 ton block of metal machinery."
-        elif z == "images/shuffle column.png":
-            z = "images/shuffleColumn.png"
-            zz = "Randomly shuffle a column."
-        elif z == "images/shuffle radial.png":
-            z = "images/shuffleRadial.png"
-            zz = "Shuffle your piece and all surrounding tiles around."
-        elif z == "images/spooky hand.png":
-            z = "images/Hand3.png"
-            zz = "A scary hand that will periodically grab a random piece from the field."
-        elif z == "images/haymaker.png":
-            z = "images/haymaker.png"
-            zz = "A strong punch that will send a piece flying until it smashes into something."
-        elif z == "images/Energy Forcefield.png":
-            z = "images/Forcefield.png"
-            zz = "Protects you from energy attacks for one turn."
-        elif z == "images/bowling ball.png":
-            z = "images/bowling ball.png"
-            zz = "Your piece loses all of its effects and items... but turns into a crazy bowling ball."
+        picture = "images/default.png"
+        explanation = "no explanation supplied... yet"
+        if i == "bernie sanders":
+            explanation: "gather up all of your unactivated items and all of your opponent's unactivated items.  Shuffles the items around and randomly redistributes the wealth among all pieces that are capable of receiving items."
+        elif i == "bowling ball":
+            explanation = "Your piece loses all of its powers and negative effects... but comes a crazy bowling ball on a rampage."
+            picture =  (f"images/{i}.png")
+        elif i == "care package drop":
+            explanation = "A plane drops off some item orbs near the selected opponent"
+        elif i == "charity":
+            explanation = "Gift your opponent a brand new piece.  How charitable!"
+        elif i == "dead man's trigger":
+            explanation = "Strap a bomb to yourself and activate the trigger.  If you die, you release the trigger, and the enemy that jumped on you dies as well."
+        elif i == "Energy Forcefield":
+            explanation = "A forcefield that will protect you from an explosion or energy attack; the shield remains active for one turn, shielding you from further explosions."
+        elif i == "floor restore":
+            explanation = "Repair all damaged/missing floor tiles and replace them with pristine ones."
+        elif i == "haphazard airstrike":
+            explanation = "Call in an airstrike from an underfunded army.  The plane doesn't have targeting systems installed, so it will carpet bomb the field at random."
+        elif i == "haymaker":
+            explanation = "Unleash a strong punch that sends a piece flying."
+        elif i == "jump proof":
+            explanation = "Your piece dons a dapper hard hat, naturally making you immune to being jumped on.  It does not provide any other forms of protection."
+        elif i == "jumpoline":
+            explanation = "Spawns a jumpoline, which is what they used to call those devices consisting of a piece of taut, strong fabric stretched between a steel frame using many coiled springs, at least until your mom jumped on one.  If a piece belonging to either player jumps onto a jumpoline, they'll be tossed to another random empty square."
+            
+        elif i in ("laser column","laser row"):
+            explanation = "Place a laser turret that will shoot out an infinite range beam that'll destroy any pieces it hits (including your own).  Laser turrets are immune to other laser turrets, but are affected by pieces and other items."
+        elif i == "magnet":
+            explanation = "Uses Science (tm) to create a powerful magnet that pulls in nearby lightweight objects, then proceeds to pull in slightly farther items if there is room to pull them in."
+        elif i == "move again":
+            explanation = "Activate this to gain the move again shoes, which allow this piece to permanently move twice in one turn. This effect stacks if it uses multiple move agains."
+        elif i == "move diagonal":
+            explanation = "Activate this piece to gain a cool diagonal arrows logo, which allow this piece to permanently move diagonal (while still having access to normal movement)"
+        elif i == "secretAgent":
+            explanation = "Activate this to reveal a secret agent in a neighboring square.  This creepy guy will steal items from your opponents if they visit his square, and will give those items to you if you vist him."
+        elif i in ("mutual treason column", "mutual treason row", "mutual treason radial"):
+            explanation = "You and your opponent both utilize some excellent propoganda... any affected pieces permanently switch their allegiances."
+        elif i == "mystery box":
+            explanation = "Summon a mysterious box.  A random effect will occur for any piece that steps in, from gaining items, getting buffs, being cleansed, losing buffs, getting a random negative effect, or even spontaneously exploding!"
+        elif i in ("napalm radial", "napalm column", "napalm row"):
+            explanation = "Fire off a stream of fire and sticky substance at your opponents.  Any opponent hit by it will burn to a crisp and leave a hole in the ground.  Allies are unaffected thanks to your sweet aiming skills."
+        elif i == "orb eater":
+            explanation = "Summon a hungry orb eater (totally not a mouse) on any empty spot in the field.  It will move around in between turns and eat up any item orbs it finds. Legend has it that you shouldn't let an orb eater eat too many..."
+        elif i == "place mine":
+            explanation = "Place a mine down on an adjacent square.  Any player stepping on it goes boom."
+        elif i in ("purify radial", "purify column", "purify row"):
+            explanation = "Clear out all negative effects from all of your allies within range.  Who needs a medical degree when you have this?!"
+        elif i == "purity tile":
+            explanation = "Step into this tile to remove all negative effects from your piece.  Rinse, lather, repeat. (I mean, you can if you want, but you'd just be wasting your time if you're already purified, y'know?)"
+        elif i == "recall":
+            explanation = "at the earlier time.  Activate this and your tile will be marked with a recall logo, which will whisk you back to the exact snapshot you were at the earlier time."
+        elif i == "reproduce":
+            explanation = "Use this to create a baby piece within range.  It will be a brand new simple piece.  How do non-sentient pieces have babies?  Life... uh... finds a way."
+        elif i == "round earth theory":
+            explanation = "The scientists called us insane, but thanks to the power of pseudoscience, you prove the earth is totally round, so if you can totally wrap around the playing field.  That is, if you wanted to, you can move from the right edge of the map straight to the left edge.  Or from the top straight to the bottom.  Pac man style."
+        elif i in ("shuffle column", "shuffle radial", "shuffle row"):
+            explanation = "All tiles in the affected area get shuffled around randomly."
+        elif i == "shuffle item orbs":
+            explanation = "All item orbs (and trap orbs) get removed from the field and then are randomly redistributed on empty spots of the field."
+        elif i == "smart bombs":
+            explanation = "A well funded military sends in a precision bomber to shoot bombs on the field and will make sure to avoid hitting your pieces."
+        elif i == "snake tunneling":
+            explanation = "A robotic snake starts digging around from the summoning point.  It burrows around and pushes the ground up (to an elevation of 2), killing enemies but sparing your pieces."
+        elif i == "spooky hand":
+            explanation = "A scary hand that will periodically grab a random piece from the field, permanently removing it from play.  After claiming a victim, it takes its time doing whatever it is that spooky hands do, before looking for a new victim."
+        elif i == "sticky time bomb":
+            explanation = "Attach a bomb to any in-range piece (including your own).  After five turns, it explodes, killing all surrounding pieces."
+        elif i in ("study column", "study row", "study radial"):
+            explanation = "Copy any activated buffs from your in-range allies (aside for special cases such as recall and bowling ball)"
+        elif i in ("suicide bomb column", "suicide bomb row", "suicide bomb radial"):
+            explanation = "Kills every piece within range - yours and your enemy's.  Terrorism is not cool, but I guess it's ok if non-sentient pieces do it to each other."
+        elif i in ("teach column", "teach radial", "teach row"):
+            explanation = "Become a master tutor and teach your in-range allies whatever buffs you have."
+        elif i == "trap orb":
+            explanation = "Put a bomb disguised as an item orb that will explode on your enemy if they touch it.  The trap orb looks exactly like a normal item orb, so there's no way to tell it apart.  However, your pieces will be aware that it's a trap and will be unaffected by them (stepping on them leaves the trap as-is so that your opponent still has a shot at getting tricked by it"
+        elif i in ("trip mine radial", "trip mine row", "trip mine column"):
+            explanation = "Set up a bomb on all in-range enemies that can detect when the piece moves.  Upon moving, the piece will trigger the bomb, causing it to explode upon finishing its action.  A piece that has a trip mine set up on it can still use most items (including teleporting items) safely without setting the bomb off. However, items that are linked to moving will still set it off."
+        elif i in ("vile radial", "vile column", "vile row"):
+            explanation = "Apply the 'vile' debuff to all enemies within range. This nasty effect stops affected pieces from being able to apply buffs to themselves.  They can still pick up any items normally, and use items that don't apply positive effects to themselves."
+        elif i == "warp" :
+            explanation = "Your piece is randomly whisked away to an empty spot in the field. Where you end up is completely random, so don't bother whining about 'boo hoo how come I always end up in the worst position possible everytime I use this item', because that's your fault for being unlucky."
+        elif i in ("wololo radial", "wololo column", "wololo row"):
+            explanation = "Your piece uses the ancient incantatation of the ancient Ayoh Eetoo religion, which convinces all in-range pieces that hear the word of truth to join your side.  It somehow changes their color to match your team's color, too.  Weird how that works."
+        elif i == "worm hole":
+            explanation = "Set up a worm hole at an adjacent tile.  As long as your pieces are not on the warp tile, you can use your move to teleport to that worm hole from anywhere."
+        elif i == "dump powers":
+            explanation = "What, did you think you were going to gain the abilities of a landfill?  Well, that's a pretty stupid thing to think...  After activating this item, your other unused items clump together into a giant item orb and then get dumped on a nearby tile.  Any piece that is capable of picking up items - including your enemy's pieces - can then grab this wad of powers."
+
+
+##        "vile radial", 
+##        "warp",
+##        "wololo",
+##        "worm hole",
+##        "dump powers"
+##        if z ==
+##            z = 
+##            zz = 
+##        elif z == "images/trip mine radial.png":
+##            z = "images/tripMine.png"
+##            zz = "set up a trip mine"
+##        elif z == "images/place mine.png":
+##            z = "images/mine.png"
+##            zz = "place a mine"
+##        elif z == "images/vile radial.png":
+##            z = "images/vile.png"
+##            zz = "removes all buffs (beneficial effects) from surrounding enemies."
+##        elif z == "images/purify radial.png":
+##            z = "images/purified1.png"
+##            zz = "removes all debuffs (negative effects) from all surrounding allies and this piece."
+##        elif z == "images/jumpProof.png":
+##            z = "images/jumpProof.png"
+##            zz = "This piece is wearing a hardhat, so naturally, he can't be jumped on by a 3 ton block of metal machinery."
+##        elif z == "images/shuffle column.png":
+##            z = "images/shuffleColumn.png"
+##            zz = "Randomly shuffle a column."
+##        elif z == "images/shuffle radial.png":
+##            z = "images/shuffleRadial.png"
+##            zz = "Shuffle your piece and all surrounding tiles around."
+##        elif z == "images/spooky hand.png":
+##            z = "images/Hand3.png"
+##            zz = "A scary hand that will periodically grab a random piece from the field."
+##        elif z == "images/haymaker.png":
+##            z = "images/haymaker.png"
+##            zz = "A strong punch that will send a piece flying until it smashes into something."
+##        elif z == "images/Energy Forcefield.png":
+##            z = "images/Forcefield.png"
+##            zz = "Protects you from energy attacks for one turn."
+##        elif z == "images/bowling ball.png":
+##            z = "images/bowling ball.png"
+##            zz = "Your piece loses all of its effects and items... but turns into a crazy bowling ball."
         else:
-            z = "images/default.png"
-            zz = "no explanation supplied... yet"
+            #z = "images/default.png"
+            
+            explanation = "no explanation supplied... yet"
 
         if itemsLength < 5:
             listData += [
@@ -1381,8 +1477,8 @@ def useItems(gameBoard, x, y, window):
                     sg.Button(
                         i,
                         key=i,
-                        image_filename=z,
-                        tooltip=zz,
+                        image_filename=picture,
+                        tooltip=explanation,
                         font="Arial 20",
                         size=(30, 1),
                         button_color=("pink", "grey"),
@@ -1396,8 +1492,8 @@ def useItems(gameBoard, x, y, window):
                     sg.Button(
                         i,
                         key=i,
-                        image_filename=z,
-                        tooltip=zz,
+                        image_filename=picture,
+                        tooltip=explanation,
                         font="Arial 20",
                         size=(30, 1),
                         button_color=("pink", "grey"),
@@ -1411,8 +1507,8 @@ def useItems(gameBoard, x, y, window):
                     sg.Button(
                         i,
                         key=i,
-                        image_filename=z,
-                        tooltip=zz,
+                        image_filename=picture,
+                        tooltip=explanation,
                         font="Arial 20",
                         size=(30, 1),
                         button_color=("pink", "grey"),
