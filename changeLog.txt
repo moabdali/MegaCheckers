@@ -1,5 +1,8 @@
 ChangeLog
 
+v.0.8.87 July 16, 2020
+	Added a turn counter frame on main menu, added the item orb forecast (should automatically update to accomodate any changes to the item list size), added a temporary placeholder button for the items "bestiary".  Renamed jumpProof.png to jump proof to match the in game png loader.  Also changed references to "abolish" to "vile" for now. 
+
 v.0.8.86 July 15, 2020
 	Preloading all .pngs to try to have max speed (and minimal disk wear).
 

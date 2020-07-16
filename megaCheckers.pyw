@@ -102,13 +102,13 @@ class PublicStats:
     turnCount = 1
     cycle = 0
     #orbCycleList = [5, 10, 0, 0, 3, 1, 0, 2, 1]
-    orbCycleList = [5, 0, 0, 1, 3, 3, 2, 2, 1]
+    orbCycleList = [4, 0, 0, 1, 3, 2, 2, 0, 1,0,0]
     spookyHand = False
     spookyHandTurnCount = 5
     hotSpot = []
     recallCount = 0
     def getOrbCount(self):
-        cycle = PublicStats.turnCount % 9
+        cycle = PublicStats.turnCount % 11
         return PublicStats.orbCycleList[cycle]
     
 
@@ -787,6 +787,7 @@ def publicPNGloader():
         "highlight2",#33
         "highlight",#34
         "vile",#35
+        "jump proof", #36
         ]):
 
         myImage = Image.open(f"images/{i}.png").convert("RGBA")
@@ -899,7 +900,7 @@ def displayBoard(window, gameBoard):
                 continue
             #snake
             if gameBoard[i][j][0].snake == True:
-                print("HSS")
+                pm(window,"Hiss.")
                 avatar = PublicPNGList[19].convert("RGBA")
                 avatarFunction(window, avatar, gameBoard, i, j)
                 continue
@@ -1042,8 +1043,14 @@ def displayBoard(window, gameBoard):
                         avatar.paste(donut, (0, 0), donut)
 
                     if "jump proof" in g.activeBuffs:
-                        jumpProof = Image.open("images/jumpProof.png").convert("RGBA")
+
+                        jumpProof = (PublicPNGList[36]).convert("RGBA")
                         avatar.paste(jumpProof, (0, 0), jumpProof)
+                        avatarFunction(window, avatar, gameBoard, i, j)
+
+                
+                        #jumpProof = Image.open("images/jumpProof.png").convert("RGBA")
+                        #avatar.paste(jumpProof, (0, 0), jumpProof)
                     
                     if "dead man's trigger" in g.activeBuffs:
                         deadmanstrigger = Image.open("images/deadmanstrigger.png").convert("RGBA")
@@ -1288,7 +1295,7 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False):
     playerOwned = gameBoard[x][y][1].ownedBy
     #modifies your avatar to signify the player is holding an item(s)
     gameBoard[x][y][1].avatar = f"player{playerOwned}stored"
-    sg.popup("Picked up an item!",keep_on_top=True)
+    sg.popup(f"Picked up an item orb containing \n[{randItem}]!",keep_on_top=True)
 
 
 def jumpoline(window, gameBoard, location, playerTurn):
@@ -1446,9 +1453,7 @@ def useItems(gameBoard, x, y, window):
         for j,jdata in enumerate(idata):
             window[(i,j)].update(disabled = True)
     while True:
-        #window.disable()
-        event = (itemsMenu.read())
-        #window.enable()
+        event = (itemsMenu.read()) 
         try:
             i = event[0]
             for inum,idata in enumerate(gameBoard):
@@ -1472,7 +1477,7 @@ def useItems(gameBoard, x, y, window):
             break
 
         itemsMenu.close()
-        sg.popup(i)
+        
         
 #def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk", reachType = "cross", turnOff = False):
         
@@ -4656,7 +4661,6 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                     
                     #if nothing's there
                     if g[xi][yi][0].occupied == False:
-                        print(f"not occupied): {xi},{yi}")
                         g[xi][yi][0].highlight = True
                     #if someone is there
                     elif g[xi][yi][0].occupied == True:
@@ -4823,7 +4827,7 @@ def movePiece(playerTurn, window, gameBoard):
                         buffslist = "NONE"
                     if debuffslist == "":
                         debuffslist = "NONE"
-                    sg.popup(f"The piece here belongs to {owner}.\nIt currently holds {len(gameBoard[event[0][0]][event[0][1]][1].storedItems)} inactive items.\nIt has the following buffs:\n{buffslist}\nIt has the current debuffs:\n{debuffslist}",keep_on_top = True)
+                    sg.popup(f"The piece here belongs to {owner}.\nIt currently holds {len(gameBoard[event[0][0]][event[0][1]][1].storedItems)} inactive items.\nIt has the following buffs:\n{buffslist}\nIt has the current debuffs:\n{debuffslist}\n\n\nThe tile elevation is {gameBoard[event[0][0]][event[0][1]][0].tileHeight}",keep_on_top = True)
                     pm(
                         window,
                         f"The piece here belongs to {owner}.\nIt currently holds {len(gameBoard[event[0][0]][event[0][1]][1].storedItems)} inactive items.\nIt has the following buffs:\n{buffslist}\nIt has the current debuffs:\n{debuffslist}",
@@ -4867,21 +4871,29 @@ def movePiece(playerTurn, window, gameBoard):
                     "worm hole",
                     "warp"
                     ]
+                    itemList.sort()
+                    disableEverything(window)
                     for i in itemList:
                         learnItemsLayout+= [ [sg.Button(f"{i}",key = i)] ]
-                    learnItems = sg.Window("Title",learnItemsLayout,keep_on_top = True)
-                    window.disable()
+                    learnItems = sg.Window("Title",learnItemsLayout,keep_on_top = True).finalize()
+                    #window.disable()
+                    learnItems.bind('<FocusOut>', '+FOCUS OUT+')
                     
                     event = learnItems.read()
                     
-                
-                    while event[0]!="<QUIT>" and event[0]!=None :
+                    
+                    
+                    while event[0]!="<QUIT>" and event[0]!=None and event[0]!= '+FOCUS OUT+':
+                    
                         itemExplanation(event[0])
                         event = learnItems.read()
                         if event[0] == None:
                             break
+                    #disableEverything(window, turnOn = True)
                     learnItems.close()
-                    window.enable()
+                    
+                    disableEverything(window, turnOn = True)
+                    #window.enable()
                     continue
                 
         #disable the exit button to avoid issues
@@ -5083,7 +5095,7 @@ def movePiece(playerTurn, window, gameBoard):
         # get the next location
         event = window.read()
         
-        print("Turning off highlighting")
+        
         highlightValidDistance(gameBoard, window, startLocation,turnOff = True)
         displayBoard(window, gameBoard)
         window.refresh
@@ -5098,10 +5110,6 @@ def movePiece(playerTurn, window, gameBoard):
 
         
         # trying to use item (if the player clicked a piece and then the item button, or clicked the same icon twice)
-##        if (
-##            "itemButton" in event
-##            and gameBoard[startLocation[0]][startLocation[1]][0].occupied == True
-##        ) or
         if (
             startLocation == endLocation
             and gameBoard[startLocation[0]][startLocation[1]][0].occupied == True
@@ -5959,7 +5967,9 @@ def recallFunction(window,gameBoard):
                 window.refresh()
                 
                 sg.popup("A piece has recalled",keep_on_top = True)
-                
+
+
+        
             
 def stickyTimeBomb(window,gameBoard):
     validLocations = []
@@ -5985,7 +5995,19 @@ def stickyTimeBomb(window,gameBoard):
                             sleep(.1)
                         #validLocations.clear()
                                 
+def itemOrbForecast(window):
+    #print each member of the orb list (used for balancing)
+    for iIndex, i in enumerate(PublicStats.orbCycleList):
+        window[f"Orb{iIndex}"].update(i,text_color = "grey30",font = "Cambria 20")
+        
+    
+    index = (PublicStats.turnCount+1)%len(PublicStats.orbCycleList)
+    print(index)
+    if index >= len(PublicStats.orbCycleList):
+        index = 0
+    window[f"Orb{index}"].update(f"{PublicStats.orbCycleList[index]}",text_color = ("orange"), font = "Cambria 30")
 
+        
 def begin():
 
     # variables
@@ -6009,6 +6031,20 @@ def begin():
         for i in range(0, rows)
     ]
 
+    frame_itemInfo = [
+        [sg.Button("Toggle Item Guide", size = (50,10), disabled = True)]
+
+
+
+    ]
+    frame_turnsPassed = [
+        [sg.T(f"{1:3}",font = "Cambria, 30",text_color = "Black",key = 'turnspassed',size = (3,1))]
+        ]
+
+    frame_itemOrbForecast =[
+        [sg.T(f"123:>3",key = f"Orb{i}",size = (4,1),pad = (0,0),font = "Cambria, 30")for i in range(0,len(PublicStats.orbCycleList))]
+    ]
+    
     frame_remaining = [
         [
             sg.T(
@@ -6027,7 +6063,7 @@ def begin():
             )
         ],
     ]
-
+    #item info is in this frame
     frame_layout = [
         [sg.Image("images/up.png", key="turn", visible=True)],
         [
@@ -6035,7 +6071,8 @@ def begin():
             sg.T(f"", key="playerTurn", font="Cambria 30", pad=(4, 4)),
         ],
         [sg.T(f" " * 50, key="information", size=(37, 3), font="Cambria 30")],
-        [sg.Frame("Pieces Remaining", frame_remaining)],
+        [sg.Frame("Pieces Remaining", frame_remaining), sg.Frame("Item Info",frame_itemInfo)],
+        [sg.Frame("Current Turn", frame_turnsPassed), sg.Frame("Item Orb Forecast (expected number of orbs that will spawn after your turn ends):",frame_itemOrbForecast)],
         [
             sg.Output(
                 size=(70, 10),
@@ -6044,6 +6081,7 @@ def begin():
                 text_color="black",
             )
         ],
+        
     ]
 
     layout = [
@@ -6083,7 +6121,7 @@ def begin():
         location=(0, 0),
     ).finalize()
     #grab_anywhere=True,
-    # window.maximize()
+    window.maximize()
 
     # gameBoard for logic
     gameBoard = []
@@ -6115,7 +6153,7 @@ def begin():
     while True:
 
         updateToolTips(window, gameBoard,playerTurn)
-        
+        itemOrbForecast(window)
         gamePlay(playerTurn, window, gameBoard)
         x = -1
         y = -1
@@ -6123,7 +6161,8 @@ def begin():
         if playerTurn == 1:
             
             window["turn"].update(filename="images/down.png")
-
+            window['turnspassed'].update(f"{PublicStats.turnCount:>3}")
+            itemOrbForecast(window)
             #check for recalled pieces
             if PublicStats.recallCount > 0:
                 recallFunction(window,gameBoard)
@@ -6173,7 +6212,8 @@ def begin():
         # end player two's turn, begin player one's turn
         else:
             window["turn"].update(filename="images/up.png")
-
+            window['turnspassed'].update(f"{PublicStats.turnCount:>3}")
+            itemOrbForecast(window)
             #check for recalled pieces
             if PublicStats.recallCount > 0:
                 recallFunction(window,gameBoard)
