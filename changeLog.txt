@@ -1,4 +1,8 @@
 ChangeLog
+
+v.0.9.85 July 15, 2020
+	Per a tester's suggestions: alphabetized the picked up items, made it to where clicking away from the item menu closes it, removed the "space is at a premium" message when there's no more room for item orbs. Reworked code a little to avoid errors with highlighting.
+
 v.0.9.84 July 15, 2020
 	Added a bug fix/suggestions document for testers.  Added "keep on top" to all popups (this should really have had a universal toggle).  Removed the py version (was accidentally left over when creating the .pyw version).
 

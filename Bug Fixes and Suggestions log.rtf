@@ -1,5 +1,5 @@
 {\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033{\fonttbl{\f0\fnil\fcharset0 Times New Roman;}{\f1\fswiss\fprq2\fcharset0 Calibri;}}
-{\colortbl ;\red0\green255\blue0;\red0\green255\blue255;\red255\green255\blue0;\red255\green0\blue0;\red255\green0\blue255;}
+{\colortbl ;\red0\green255\blue0;\red0\green255\blue255;\red255\green255\blue0;\red255\green0\blue255;\red255\green0\blue0;}
 {\*\generator Riched20 10.0.18362}\viewkind4\uc1 
 \pard\f0\fs28\par
 Template:\par
@@ -18,8 +18,7 @@ Template:\par
 Status:\line\b0\par
 -----------------------------------------------------------------------------------\par
 \b ISSUE #1)\b0\par
-
-\pard\highlight1\b Bug: \b0 "How to play" doesn't work\highlight0\par
+\highlight1\b Bug: \b0 "How to play" doesn't work\highlight0\par
 \i\par
 \b\i0 Reported by: \b0 Ha V.\par
 \par
@@ -33,8 +32,7 @@ Actual result: clicking How to play shows an error saying that "backpack.png doe
 \b Severity: \b0 High\par
 \b Cause: \b0 reworked the main code to point to an "Images" folder instead of the root of the program folder.  Forgot to update the tutorial to reflect this.\par
 \b Planned Fix: \b0 pointing the program to the new location of the png file\b\par
-
-\pard Status: \b0 Corrected on 7/14/2020\par
+Status: \b0 Corrected on 7/14/2020\par
 -----------------------------------------------------------------------------------\par
 \par
 \par
@@ -60,8 +58,7 @@ Details: \b0 It's not readily apparent what the item orbs are.  I couldn't tell 
 \b Status: \b0 queued\par
 \par
 ------------------------------------------------------------------------------------\par
-
-\pard\b ISSUE #4)\par
+\b ISSUE #4)\par
 \highlight3 Suggestion: \b0 show a message letting the player know what item was picked up\par
 \highlight0\b Reported by: \b0 Ha V.\par
 \b Reported on: 7/14/2020\par
@@ -91,24 +88,27 @@ Details: \b0 include images for all of the item explanations on the "learn about
 \b Planned fix: \b0 Add pictures using the logic/pictures from Issue 5;  low priority as this option is not expected to be used frequently\par
 \b Status: \b0 backburner\par
 -------------------------------------------------------------------------------------------\par
-\b ISSUE #7)\line\highlight2 Suggestion: \b0 alphabetize the item menu\highlight3\par
+\b ISSUE #7)\line\highlight1 Suggestion: \b0 alphabetize the item menu\highlight3\par
 \highlight0\b Reported by: \b0 Ha V.\par
 \b Reported on: 7/14/2020\par
 Details: \b0 the list isn't alphabetized when I open the item menu\par
 ---------------------------------------\par
 \b Severity: \b0 Low\par
 \b Planned fix: \b0 Currently the list is organized chronologically by order picked up.  Can add a simple .sort to organize it, since it doesn't really matter what order the items were picked up in due to \par
-\b Status: \b0 queued\par
+\b Status: \par
+\b0 7/15/2020 - item menu gets sorted when opened\par
 --------------------------------------------------------------------------------------------\par
 \b ISSUE #8)\par
-\highlight3 Bug: \b0 Clicking on the main window makes the "learn about items menu" hide in the back\par
+\highlight1 Bug: \b0 Clicking on the main window makes the "learn about items menu" hide in the back\par
 \highlight0\b Reported by: \b0 Ha V.\par
 \b Reported on: 7/14/2020\par
 Details: \b0 When I click away, the learn items menu hides in the background of the program.  Make it close when I click away without forcing me to click "x".\par
 ---------------------------------------\par
 \b Severity: \b0\strike High\strike0  demoted to medium due to patch\par
 \b Planned fix: \b0 temporary fix: add "keep on top" focus along with deactivating the main window in the interim. Final fix: figure out how to detect loss of focus and force it to close when detected. \par
-\b Status: \b0 temporary fix applied for main issue of the window hiding in the background; need to learn how to detect focus to finish \par
+\b Status: \par
+\b0 7/15/2020 - temporary fix applied for main issue of the window hiding in the background; need to learn how to detect focus to finish \par
+7/15/2020 - finished the fix; added a detection variable that closes the window when focus is lost\par
 --------------------------------------------------------------------------------------------\par
 \b ISSUE #9)\par
 \highlight2 Suggestion: \b0 Have items have different levels.  Have players unlock weapons or perks as they level up.\highlight3\par
@@ -122,20 +122,19 @@ Details: \b0 At level 1, give them access to a few weak items.  As they beat the
 ------------------------------------------------------------------------------------------------\par
 \par
 \b ISSUE #10)\par
-\highlight4 Bug: \b0 Menus are going in the background and freeze the game unless OK is clicked on them\highlight3\par
+\highlight1 Bug: \b0 Menus are going in the background and freeze the game unless OK is clicked on them\highlight3\par
 \highlight0\b Reported by: \b0 Ha V.\par
 \b Reported on: 7/14/2020\par
 Details: \b0 The game stopped working at a few points, but then I found some menus behind the window.  Keep them on top.\par
 ---------------------------------------\par
 \b Severity: High\b0\par
-\b Planned fix: \b0 Add a "keep on top" setting to all popups\par
-\b Status: \b0 queued\par
+\b Planned fix: \b0 Add a "keep on top" setting to all popups and menus\par
+\b Status: \par
+\b0 7/15/2020 - completed\par
 \par
 \par
-
-\pard ------------------------------------------------------------------------------------------------\par
-
-\pard\b ISSUE #11)\par
+------------------------------------------------------------------------------------------------\par
+\b ISSUE #11)\par
 \highlight2 Problem: \b0 Cannot see what items the opponent has even after clicking the Look button and Learn About Items buttons.\highlight3\par
 \highlight0\b Reported by: \b0 Ha V.\par
 \b Reported on: 7/14/2020\par
@@ -145,10 +144,8 @@ Details: \b0 When it's my turn, I cannot see what items my opponent has.  It onl
 \b Planned fix: \b0 This is intended behavior.  Player is supposed to know how many items their opponent is holding, but not what they are.  Adding a tooltip feature that will show details about each piece/tile and show the appropriate number of items the opponent has, while showing the items as "???" to show it's intentionally obscured.  A quickstart guide would also help convey important information like that without forcing the player to go through the whole tutorial.\par
 \par
 \b Status: \b0 backburner\par
-
-\pard ----------------------------------------------------------------------------------------------\par
-
-\pard\b ISSUE #12)\par
+----------------------------------------------------------------------------------------------\par
+\b ISSUE #12)\par
 \highlight2 Problem: \b0 Cannot jump over opponents to capture them\highlight3\par
 \highlight0\b Reported by: \b0 Ha V.\par
 \b Reported on: 7/14/2020\par
@@ -197,11 +194,10 @@ Details: \b0 n/a\par
 ---------------------------------------\par
 \b Severity: \b0 Low\par
 \b Planned fix: \b0 Will do, thanks!\par
-\b Status: \b0 will commit to adding more funny descriptions\par
-
-\pard ------------------------------------------------------------------------------------------------\par
-
-\pard\b ISSUE #17)\par
+\b Status: \par
+7/14/2020 \b0 will commit to adding more funny descriptions\par
+------------------------------------------------------------------------------------------------\par
+\b ISSUE #17)\par
 \highlight2 Suggestion: \b0 remove the "learn about items" button and move the actual menu to the right and let players hover over the items to learn about the items without having to click on them.\highlight3\par
 \highlight0\b Reported by: \b0 Ha V.\par
 \b Reported on: 7/14/2020\par
@@ -210,12 +206,10 @@ Details: \b0 move the menu to the side so that I don't have to click so much.\pa
 \b Severity: \b0 low\par
 \b Planned fix: \b0 since there is some space on the right side, I can make use of it as a item guide as requested.  However, some people might not like having the screen cluttered, so as a compromise, a toggle can be made to show/hide the menu.  It will take a lot of time to create the descriptions and set up the pictures for them, so it'll be a backburner issue.\par
 \b Status: \b0 backburner\par
+\b ------------------------------------------------------------------------------------------------\par
+ISSUE #18)\par
 
-\pard\b ------------------------------------------------------------------------------------------------\par
-
-\pard ISSUE #18)\par
-
-\pard\widctlpar\sa200\sl276\slmult1\highlight5 Problem: \b0 Items that were played were sometimes eventually used on that player themselves instead of only attacking the other player.\highlight0\f1\fs22\par
+\pard\widctlpar\sa200\sl276\slmult1\highlight4 Problem: \b0 Items that were played were sometimes eventually used on that player themselves instead of only attacking the other player.\highlight0\f1\fs22\par
 
 \pard\highlight3\f0\fs28\par
 \highlight0\b Reported by: \b0 Ha V.\par
@@ -241,7 +235,7 @@ Status: \b0 waiting on more details to do more testing/fixing as needed.  Specif
 
 \pard\b\f0\fs28 ISSUE #20)\par
 
-\pard\widctlpar\sa200\sl276\slmult1\highlight4 Problem: \b0 Magnet shows an error saying list index is out of range\f1\fs22\par
+\pard\widctlpar\sa200\sl276\slmult1\highlight1 Problem: \b0 Magnet shows an error saying list index is out of range\highlight5\f1\fs22\par
 
 \pard\highlight3\f0\fs28\par
 \highlight0\b Reported by: \b0 Ha V.\par
@@ -250,11 +244,12 @@ Details: \b0 clicking magnet causes an indexError: list index out of range on li
 ---------------------------------------\par
 \b Severity: \b0 High\par
 \b Planned fix: \b0 test to see why the index is larger than the limit\par
-\b Status: \b0 queued\par
+\b Status: \par
+\b0 7/14/2020 - Magnet must have been corrected during a patch between the test version used by the tester and the newest version because the error is not reproducable. \par
 ----------------------------------------------------------------------------------------------\par
 \b ISSUE #21)\par
 
-\pard\widctlpar\sa200\sl276\slmult1\highlight2 Problem: \b0 Got a message about space being at a premium when I was about to move.\par
+\pard\widctlpar\sa200\sl276\slmult1\highlight1 Problem: \b0 Got a message about space being at a premium when I was about to move.\highlight2\par
 
 \pard\highlight0\b Reported by: \b0 Ha V.\par
 \b Reported on: 7/14/2020\par
@@ -262,7 +257,8 @@ Details: \b0 "space is at a premium for orb generation.  Aborting"\par
 ---------------------------------------\par
 \b Severity: \b0 low\par
 \b Planned fix: \b0 This is an instance of badly wording a notification.  The message is intended to let the player know that there's no space left to create new item orbs.  Realistically, instead of a more simplified message ("Couldn't find space to make item orbs; skipping"), I'll just remove the message altogether.  It was initially intended more as a debugging message to make it easier to tell if an infinite loop was created by not finding anywhere to place orbs.  Will also reduce item orb generation to make sure this is not a common occurrence (running out of space)\par
-\b Status: \b0 todo\par
+\b Status:\par
+\b0 7/14/2020 - Removed the message\b  \b0\par
 ------------------------------------------------------------------------------------------------\par
 \par
 \b ISSUE #22)\par
@@ -300,8 +296,7 @@ Details: \b0 "space is at a premium for orb generation.  Aborting"\par
 \par
 
 \pard\f0\fs28\par
-
-\pard\b\par
+\b\par
 \b0\par
 }
  

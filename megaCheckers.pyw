@@ -781,7 +781,8 @@ def publicPNGloader():
         "damaged4",#28
         "damaged3",#29
         "damaged2",#30
-        "damaged"#31
+        "damaged",#31
+        "highlight1",#32
         ]):
 
         myImage = Image.open(f"images/{i}.png").convert("RGBA")
@@ -1139,7 +1140,8 @@ def displayBoard(window, gameBoard):
 
 
             if gameBoard[i][j][0].highlight == True:
-                grey = Image.open("images/highlight1.png").convert("RGBA")
+                grey = (PublicPNGList[32]).convert("RGBA")
+                #grey = Image.open("images/highlight1.png").convert("RGBA")
                 avatar = Image.blend(grey, avatar, 0.50)
             avatarFunction(window, avatar, gameBoard, i ,j)
 
@@ -1289,18 +1291,20 @@ def jumpoline(window, gameBoard, location, playerTurn):
 def disableEverything(window, turnOn = False):
     if turnOn == False:
         window["exit"].update(disabled = True)
-        window["itemButton"].update(disabled=True)
+        #window["itemButton"].update(disabled=True)
         window["examineItem"].update(disabled=True)
         window["readItems"].update(disabled=True)
         window["cheetz"].update(disabled=True)
     else:
         window["exit"].update(disabled = False)
-        window["itemButton"].update(disabled=False)
+        #window["itemButton"].update(disabled=False)
         window["examineItem"].update(disabled=False)
         window["readItems"].update(disabled=False)
         window["cheetz"].update(disabled=True)
 # using an item
 def useItems(gameBoard, x, y, window):
+
+    gameBoard[x][y][1].storedItems.sort()
     layout = []
     listData = [[sg.T("Item Menu", justification="center", font="Calibri 30")]]
     itemsLength = len(gameBoard[x][y][1].storedItems)
@@ -1404,9 +1408,10 @@ def useItems(gameBoard, x, y, window):
 
 
     
-    itemsMenu = sg.Window("Items Menu", layout, keep_on_top=True).finalize()
+    itemsMenu = sg.Window("Items Menu", layout,  no_titlebar = True).finalize()
     #disable_close=True,
     #grab_anywhere=True
+    #keep_on_top=True,
     enemyTurn = 0
     playerTurn = gameBoard[x][y][1].ownedBy
     if playerTurn == 1:
@@ -1418,13 +1423,43 @@ def useItems(gameBoard, x, y, window):
     rows = len(gameBoard)
     columns = len(gameBoard[0])
     location = (x, y)
+
+    eventList = []
+    eventNotReceived = True
+    focusOutFlag = False
+    itemsMenu.bind('<FocusOut>', '+FOCUS OUT+')
+
+    for i,idata in enumerate(gameBoard):
+        for j,jdata in enumerate(idata):
+            window[(i,j)].update(disabled = True)
     while True:
-        window.disable()
-        event = itemsMenu.read()
-        window.enable()
-        i = event[0]
-        if i == None:
+        #window.disable()
+        event = (itemsMenu.read())
+        #window.enable()
+        try:
+            i = event[0]
+            for inum,idata in enumerate(gameBoard):
+                for jnum,jdata in enumerate(idata):
+                    window[(inum,jnum)].update(disabled = False)
+                
+            if i == None:
+                itemsMenu.close()
+                return "earlyBreak"
+            if i == "CANCEL":
+                itemsMenu.close()
+                return "earlyBreak"
+            if i == '+FOCUS OUT+':
+                itemsMenu.close()
+                return "earlyBreak"
+                
+            
+            if i in (0,1,2,3,4,5,6,7,8,9):
+                break
+        except:
             break
+
+        itemsMenu.close()
+        sg.popup(i)
         
 #def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk", reachType = "cross", turnOff = False):
         
@@ -1578,7 +1613,7 @@ def useItems(gameBoard, x, y, window):
                 sg.popup("Pick any unoccupied space on the board to spawn a free basic piece for your opponent.  How charitable!",keep_on_top=True)
                 pm(window, "Pick any unoccupied space on the board to spawn a free basic piece for your opponent.  How charitable!")
                 window["exit"].update(disabled = False)
-                window["itemButton"].update(disabled=True)
+                #window["itemButton"].update(disabled=True)
                 window["examineItem"].update(disabled=True)
                 window["readItems"].update(disabled=True)
                 event = window.read()
@@ -4506,7 +4541,8 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
     x = startLocation[0]
     y = startLocation[1]
     g = gameBoard
-    playerTurn = g[x][y][1].ownedBy
+    if g[x][y][0].occupied == True:
+        playerTurn = g[x][y][1].ownedBy
     location = (x,y)
     if turnOff == True:
         for i in gameBoard:
@@ -4684,7 +4720,7 @@ def movePiece(playerTurn, window, gameBoard):
         pickedUpItem = False
         window["exit"].update(disabled=False)
         usedItem = False
-        window["itemButton"].update(disabled=True)
+        #window["itemButton"].update(disabled=True)
         window["examineItem"].update(disabled=False)
         window["readItems"].update(disabled=False)
         window["cheetz"].update(disabled=False)
@@ -4910,14 +4946,17 @@ def movePiece(playerTurn, window, gameBoard):
             
         #allow player to read about items, but not view tiles; helps avoid glitches
         #window["itemButton"].update(disabled=False)
-        window["itemButton"].update(disabled=True)
+        #window["itemButton"].update(disabled=True)
         window["examineItem"].update(disabled=True)
 
 
         #sL = startLocation; this is where the player started; keep track of this for calculations
         
         startLocation = event[0]
-        highlightValidDistance(gameBoard, window, startLocation)
+        startLocationBackup = startLocation
+
+        if gameBoard[startLocation[0]][startLocation[1]][0].occupied == True:
+            highlightValidDistance(gameBoard, window, startLocation)
 
         #if the person is trying to move a piece that isn't the same piece they just moved
         if (repeatRestrictor[0] == True) and (event[0] != repeatRestrictor[1]):
@@ -5042,10 +5081,11 @@ def movePiece(playerTurn, window, gameBoard):
 
         
         # trying to use item (if the player clicked a piece and then the item button, or clicked the same icon twice)
+##        if (
+##            "itemButton" in event
+##            and gameBoard[startLocation[0]][startLocation[1]][0].occupied == True
+##        ) or
         if (
-            "itemButton" in event
-            and gameBoard[startLocation[0]][startLocation[1]][0].occupied == True
-        ) or (
             startLocation == endLocation
             and gameBoard[startLocation[0]][startLocation[1]][0].occupied == True
         ):
@@ -5057,7 +5097,9 @@ def movePiece(playerTurn, window, gameBoard):
                 gameBoard[startLocation[0]][startLocation[1]][1].ownedBy == playerTurn
             ):
 
-                useItems(gameBoard, startLocation[0], startLocation[1], window)
+                earlyBreak = useItems(gameBoard, startLocation[0], startLocation[1], window)
+                if earlyBreak == "earlyBreak":
+                    startLocation = startLocationBackup
 
                 if gameBoard[startLocation[0]][startLocation[1]][0].occupied == True:
                     gameBoard[startLocation[0]][startLocation[1]][1].grey = False
@@ -5990,9 +6032,9 @@ def begin():
     layout = [
         [
             sg.T("MegaCheckers", font="Cambria 50"),
-            sg.Button(
-                "USE ITEMS", key="itemButton", image_filename="images/backpack.png"
-            ),
+            #sg.Button(
+            #    "USE ITEMS", key="itemButton", image_filename="images/backpack.png"
+            #),
             sg.Button(
                 "Look",
                 button_color=("Blue", "White"),
