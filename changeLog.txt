@@ -1,5 +1,8 @@
 ChangeLog
 
+v.0.8.86 July 15, 2020
+	Preloading all .pngs to try to have max speed (and minimal disk wear).
+
 v.0.9.85 July 15, 2020
 	Per a tester's suggestions: alphabetized the picked up items, made it to where clicking away from the item menu closes it, removed the "space is at a premium" message when there's no more room for item orbs. Reworked code a little to avoid errors with highlighting.
 

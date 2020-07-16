@@ -31,64 +31,64 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[rows - i - 1][j][1].avatar = "default"
 
  ###### DELETE ME ##########
-    for i in range(2):
-       for j in range(columns):
-           #middle row generator
-           rows = 6
-           gameBoard[rows - i - 1][j][0] = Tile(occupied=True)
-           piece = Piece(playerTurn=2)
-
-
+##    for i in range(2):
+##       for j in range(columns):
+##           #middle row generator
+##           rows = 6
+##           gameBoard[rows - i - 1][j][0] = Tile(occupied=True)
+##           piece = Piece(playerTurn=2)
+##
+##
 
            #give items to main row
-           gameBoard[i][j][1].storedItems.append("dump items")
-           gameBoard[i][j][1].storedItems.append("teach row")
-           gameBoard[i][j][1].storedItems.append("teach radial")
-           gameBoard[i][j][1].storedItems.append("charity")
-           gameBoard[i][j][1].storedItems.append("mystery box")
-           gameBoard[i][j][1].storedItems.append("study row")
-           gameBoard[i][j][1].storedItems.append("jumpoline")
-           gameBoard[i][j][1].storedItems.append("secretAgent")
-           gameBoard[i][j][1].storedItems.append("shuffle item orbs")
-           gameBoard[i][j][1].storedItems.append("laser row")
-           gameBoard[i][j][1].storedItems.append("mutual treason row")
-           gameBoard[i][j][1].storedItems.append("mutual treason radial")
-           gameBoard[i][j][1].storedItems.append("mutual treason column")
-           gameBoard[i][j][1].storedItems.append("shuffle column")
-           gameBoard[i][j][1].storedItems.append("reproduce")
-           gameBoard[i][j][1].storedItems.append("snake tunneling")
-           gameBoard[i][j][1].storedItems.append("haphazard airstrike")
-           gameBoard[i][j][1].storedItems.append("warp")
-           gameBoard[i][j][1].storedItems.append("purity tile")
-           
-           gameBoard[i][j][1].activeBuffs.append("move diagonal")
-           gameBoard[i][j][1].activeBuffs.append("jump proof")
-           
-
-           #the middle row
-           gameBoard[rows - i - 1][j][1] = piece
-           gameBoard[rows - i - 1][j][1].location = (rows - i - 1, j)
-           gameBoard[rows - i - 1][j][0].tileType = "player2default"
-           gameBoard[rows - i - 1][j][1].avatar = "default"
-           gameBoard[rows - i - 1][j][1].storedItems.append("haphazard airstrike")
-           gameBoard[rows - i - 1][j][1].storedItems.append("haymaker")
-
-
-
-           #give items to middle row
-           gameBoard[rows - i - 1][j][1].storedItems.append("shuffle radial")
-           gameBoard[rows - i - 1][j][1].storedItems.append("worm hole")
-           gameBoard[rows - i - 1][j][1].storedItems.append("orb eater")
-           gameBoard[rows - i - 1][j][1].storedItems.append("shuffle item orbs")
-           gameBoard[rows - i - 1][j][1].storedItems.append("laser row")
-           gameBoard[rows - i - 1][j][1].storedItems.append("warp")
-           gameBoard[rows - i - 1][j][1].storedItems.append("laser column")
-           gameBoard[rows - i - 1][j][1].storedItems.append("place mine")
-           gameBoard[rows - i - 1][j][1].storedItems.append("haymaker")
-           gameBoard[rows - i - 1][j][1].storedItems.append("haphazard airstrike")
-           gameBoard[rows - i - 1][j][1].storedItems.append("laser row")
-           gameBoard[rows - i - 1][j][1].activeBuffs.append("move diagonal")
-           gameBoard[rows - i - 1][j][1].storedItems.append("bowling ball")
+##           gameBoard[i][j][1].storedItems.append("dump items")
+##           gameBoard[i][j][1].storedItems.append("teach row")
+##           gameBoard[i][j][1].storedItems.append("teach radial")
+##           gameBoard[i][j][1].storedItems.append("charity")
+##           gameBoard[i][j][1].storedItems.append("mystery box")
+##           gameBoard[i][j][1].storedItems.append("study row")
+##           gameBoard[i][j][1].storedItems.append("jumpoline")
+##           gameBoard[i][j][1].storedItems.append("secretAgent")
+##           gameBoard[i][j][1].storedItems.append("shuffle item orbs")
+##           gameBoard[i][j][1].storedItems.append("laser row")
+##           gameBoard[i][j][1].storedItems.append("mutual treason row")
+##           gameBoard[i][j][1].storedItems.append("mutual treason radial")
+##           gameBoard[i][j][1].storedItems.append("mutual treason column")
+##           gameBoard[i][j][1].storedItems.append("shuffle column")
+##           gameBoard[i][j][1].storedItems.append("reproduce")
+##           gameBoard[i][j][1].storedItems.append("snake tunneling")
+##           gameBoard[i][j][1].storedItems.append("haphazard airstrike")
+##           gameBoard[i][j][1].storedItems.append("warp")
+##           gameBoard[i][j][1].storedItems.append("purity tile")
+##           
+##           gameBoard[i][j][1].activeBuffs.append("move diagonal")
+##           gameBoard[i][j][1].activeBuffs.append("jump proof")
+##           
+##
+##           #the middle row
+##           gameBoard[rows - i - 1][j][1] = piece
+##           gameBoard[rows - i - 1][j][1].location = (rows - i - 1, j)
+##           gameBoard[rows - i - 1][j][0].tileType = "player2default"
+##           gameBoard[rows - i - 1][j][1].avatar = "default"
+##           gameBoard[rows - i - 1][j][1].storedItems.append("haphazard airstrike")
+##           gameBoard[rows - i - 1][j][1].storedItems.append("haymaker")
+##
+##
+##
+##           #give items to middle row
+##           gameBoard[rows - i - 1][j][1].storedItems.append("shuffle radial")
+##           gameBoard[rows - i - 1][j][1].storedItems.append("worm hole")
+##           gameBoard[rows - i - 1][j][1].storedItems.append("orb eater")
+##           gameBoard[rows - i - 1][j][1].storedItems.append("shuffle item orbs")
+##           gameBoard[rows - i - 1][j][1].storedItems.append("laser row")
+##           gameBoard[rows - i - 1][j][1].storedItems.append("warp")
+##           gameBoard[rows - i - 1][j][1].storedItems.append("laser column")
+##           gameBoard[rows - i - 1][j][1].storedItems.append("place mine")
+##           gameBoard[rows - i - 1][j][1].storedItems.append("haymaker")
+##           gameBoard[rows - i - 1][j][1].storedItems.append("haphazard airstrike")
+##           gameBoard[rows - i - 1][j][1].storedItems.append("laser row")
+##           gameBoard[rows - i - 1][j][1].activeBuffs.append("move diagonal")
+##           gameBoard[rows - i - 1][j][1].storedItems.append("bowling ball")
            #print(sg.list_of_look_and_feel_values())
            #gameBoard[2][0][0].tileHeight = 2
            #gameBoard[2][1][0].tileHeight = 1
@@ -156,6 +156,7 @@ class Tile:
         self.dumpList = []
         self.snake = False
         self.highlight = False
+        self.highlight2 = False
 
     def describeSelf(self):
 
@@ -783,6 +784,9 @@ def publicPNGloader():
         "damaged2",#30
         "damaged",#31
         "highlight1",#32
+        "highlight2",#33
+        "highlight",#34
+        "vile",#35
         ]):
 
         myImage = Image.open(f"images/{i}.png").convert("RGBA")
@@ -899,8 +903,10 @@ def displayBoard(window, gameBoard):
                 avatar = PublicPNGList[19].convert("RGBA")
                 avatarFunction(window, avatar, gameBoard, i, j)
                 continue
-            if gameBoard[i][j][0].tileType == "abolished":
-                window[i, j].update(image_filename="images/abolished.png")
+            if gameBoard[i][j][0].tileType == "vile":
+                avatar = (PublicPNGList[35]).convert("RGBA")
+                avatarFunction(window, avatar, gameBoard, i, j)
+                #window[i, j].update(image_filename="images/vile.png")
                 continue
             if gameBoard[i][j][0].wormHole1 == True:
 
@@ -1085,13 +1091,14 @@ def displayBoard(window, gameBoard):
                         stepMax = Image.open("images/moveAgainMax.png").convert("RGBA")
                         avatar.paste(stepMax, (0, 0), stepMax)
 
-                    if "abolished" in g.activeDebuffs:
-                        abolished = Image.open("images/abolished.png").convert("RGBA")
-                        avatar.paste(abolished, (0, 0), abolished)
+                    if "vile" in g.activeDebuffs:
+                        vile = Image.open("images/vile.png").convert("RGBA")
+                        avatar.paste(vile, (0, 0), vile)
 
                     # if it's supposed to be highlighted... then highlight it
                     if g.grey == True:
-                        grey = Image.open("images/highlight.png").convert("RGBA")
+                        grey = (PublicPNGList[34]).convert("RGBA")
+##                        grey = Image.open("images/highlight.png").convert("RGBA")
                         avatar = Image.blend(grey, avatar, 0.50)
                         
                     
@@ -1143,6 +1150,12 @@ def displayBoard(window, gameBoard):
                 grey = (PublicPNGList[32]).convert("RGBA")
                 #grey = Image.open("images/highlight1.png").convert("RGBA")
                 avatar = Image.blend(grey, avatar, 0.50)
+
+
+            if gameBoard[i][j][0].highlight2 == True:
+                red = (PublicPNGList[33]).convert("RGBA")
+                #grey = Image.open("images/highlight1.png").convert("RGBA")
+                avatar = Image.blend(red, avatar, 0.50)
             avatarFunction(window, avatar, gameBoard, i ,j)
 
 
@@ -2840,10 +2853,10 @@ def useItems(gameBoard, x, y, window):
                             for i in g[1].activeBuffs:
                                 abolishCheck = True
                                 previousTile = g[0].tileType
-                                g[1].activeDebuffs.append("abolished")
+                                g[1].activeDebuffs.append("vile")
                                 displayBoard(window, gameBoard)
                                 window.refresh()
-                                g[1].activeDebuffs.remove("abolished")
+                                g[1].activeDebuffs.remove("vile")
                                 
                                 listOfBuffs = ""
                                 for j in g[1].activeBuffs:
@@ -4547,8 +4560,9 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
     if turnOff == True:
         for i in gameBoard:
             for j in i:
-                if j[0].highlight == True:
+                if j[0].highlight == True or j[0].highlight2:
                     j[0].highlight = False
+                    j[0].highlight2 = False
         return
     validLocations = []
     
@@ -4610,10 +4624,10 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                     #if someone is there
                     elif g[xi][yi][0].occupied == True:
                         if g[xi][yi][1].ownedBy != g[x][y][1].ownedBy:
-                            g[xi][yi][0].highlight = True
+                            g[xi][yi][0].highlight2 = True
                         if g[xi][yi][1].ownedBy == g[xi][yi][1].ownedBy:
                             if "feral" in g[x][y][1].activeBuffs:
-                                g[xi][yi][0].highlight = True
+                                g[xi][yi][0].highlight2 = True
                             else:
                                 continue
 
@@ -4639,16 +4653,19 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                     "damaged7",
                     "damaged8"
                 ]:
+                    
                     #if nothing's there
                     if g[xi][yi][0].occupied == False:
+                        print(f"not occupied): {xi},{yi}")
                         g[xi][yi][0].highlight = True
                     #if someone is there
                     elif g[xi][yi][0].occupied == True:
-                        if g[xi][yi][1].ownedBy != g[xi][yi][1].ownedBy:
-                            g[xi][yi][0].highlight = True
+                        if g[xi][yi][1].ownedBy != g[x][y][1].ownedBy:
+                            print("Enemy highlighted")
+                            g[xi][yi][0].highlight2 = True
                         if g[xi][yi][1].ownedBy == g[xi][yi][1].ownedBy:
                             if "feral" in g[x][y][1].activeBuffs:
-                                g[xi][yi][0].highlight = True
+                                g[xi][yi][0].highlight2 = True
                             else:
                                 continue
                                 
