@@ -1,12 +1,18 @@
 ChangeLog
 
-v.0.8.88 July 16, 2020
+v.0.9.90 July 17, 2020
+	Completed adding pictures for every item, and (hopefully) correctly points to the correct file names for all the pictures.  Fixed some errors in the tutorial mode and removed references to the "use items" button, which is not really a user friendy way of playing the game (instead have the player double click a piece).  Reworked the intro screen to be able to show all items in the game for the item showcase (as in it has access to the entire item list).  Realphabetized the item list.  Reworked the item explanation function to use it for tooltips and regular explanations.   
+
+v.0.9.89 July 16, 2020
+	Added bernie sanders item.  Added pictures for every item so far (hopefully).
+
+v.0.9.88 July 16, 2020
 	Added explanations to every item.  Still need to enable/create pictures for all of them.  
 
-v.0.8.87 July 16, 2020
+v.0.9.87 July 16, 2020
 	Added a turn counter frame on main menu, added the item orb forecast (should automatically update to accomodate any changes to the item list size), added a temporary placeholder button for the items "bestiary".  Renamed jumpProof.png to jump proof to match the in game png loader.  Also changed references to "abolish" to "vile" for now. 
 
-v.0.8.86 July 15, 2020
+v.0.9.86 July 15, 2020
 	Preloading all .pngs to try to have max speed (and minimal disk wear).
 
 v.0.9.85 July 15, 2020
