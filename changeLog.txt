@@ -1,5 +1,7 @@
 ChangeLog
 
+v.0.9.91 July 17, 2020
+	Added more highlighting.  Fixed some tooltips freezing issues by doing a quick window.disappear and window.reappear function inside the tooltip update section.  More testing needed to verify.  Applied a "window always on top" setting again (and again fixed all popups to also have that) to further help with the perma-tooltips.  Picking up an item now shows a nicer formatted popup window complete with a centered image of the item, with the ability to hover over the image for a description.  
 
 v.0.9.90.1 July 17, 2020
 	Some progress made with highlighting squares after selecting an item.  Currently have the logic in for "hurt everyone in range" and "help only allies in range" and "hurt only enemies in range" (hurt = red, help = green, neutral = blue). 

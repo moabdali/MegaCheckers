@@ -132,7 +132,7 @@ class Piece:
         self.moveAgain = 0
         self.standingOnSelfOrb = False
         self.recallTurn = False
-        self.shieldTurn = 0
+        self.forcefieldTurn = 0
         self.stickyTimeBomb = False
     def determineAvatar(self):
         pass
@@ -159,6 +159,7 @@ class Tile:
         self.highlight = False #blue
         self.highlightRed = False #red
         self.highlightGreen = False #green
+        self.highlightBrown = False #brown
 
     def describeSelf(self):
 
@@ -794,6 +795,7 @@ def publicPNGloader():
         "vile",#35
         "jump proof", #36
         "highlightGreen", #37
+        "highlightBrown", #38
         ]):
 
         myImage = Image.open(f"images/{i}.png").convert("RGBA")
@@ -1171,12 +1173,18 @@ def displayBoard(window, gameBoard):
                 avatar = Image.blend(red, avatar, 0.50)
 
             if gameBoard[i][j][0].highlightGreen == True:
-                red = (PublicPNGList[37]).convert("RGBA")
+                green = (PublicPNGList[37]).convert("RGBA")
                 #grey = Image.open("images/highlightBlue.png").convert("RGBA")
-                avatar = Image.blend(red, avatar, 0.50)
+                avatar = Image.blend(green, avatar, 0.50)
+                
+            if gameBoard[i][j][0].highlightBrown == True:
+                #sg.popup("Brown activated")
+                brown = (PublicPNGList[38]).convert("RGBA")
+                #grey = Image.open("images/highlightBlue.png").convert("RGBA")
+                avatar = Image.blend(brown, avatar, 0.50)
 
 
-                g[ix][iy][0].highlightGreen = True
+                #g[ix][iy][0].highlightGreen = True
 
                 
             avatarFunction(window, avatar, gameBoard, i ,j)
@@ -1247,11 +1255,11 @@ def emptySpots(gameBoard,trueEmpty = False):
 
 
 # the item list
-def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False):
+def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None):
     # items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
     items = [
         
-        "bernie sanders"
+        "bernie sanders",
         "bowling ball",
         "care package drop",
         "charity",
@@ -1320,7 +1328,35 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False):
     playerOwned = gameBoard[x][y][1].ownedBy
     #modifies your avatar to signify the player is holding an item(s)
     gameBoard[x][y][1].avatar = f"player{playerOwned}stored"
-    sg.popup(f"Picked up an item orb containing \n[{randItem}]!",keep_on_top=True)
+    explanation = itemExplanation(randItem)
+    #randItemName = randItem.center(35)
+    youFoundA = "You found a".center(len(randItem*2))
+    pickupFrame = [ [sg.Image(f"images/{randItem}.png",tooltip = explanation) ],
+        [sg.T(youFoundA, font = "Cambria 30")],
+        [sg.T(randItem, font = "Cambria 50", text_color = "Blue")],
+        [sg.T("(Hover over the picture to read about the item)")],
+        [sg.Button("SWEET", key = "Affirmative")]
+                    ]
+        
+    pickUpLayout = [
+            [sg.Frame("GET ITEM", pickupFrame,element_justification = "center")]
+        ]
+    window.disable()
+    affirmativeList = ("Sweet", "Nice!", "Thanks", "Woot!", "Ok", "K.", "I see...", "Neat.")
+    randomChoice = random.choice(affirmativeList)
+    
+    pickUpWindow = sg.Window("Get item.", pickUpLayout,keep_on_top = True).finalize()
+    pickUpWindow["Affirmative"].update(randomChoice)
+    a = pickUpWindow.read()
+    
+
+    
+    if a[0] == "Affirmative":
+        pickUpWindow.close()
+    window.enable()
+    
+    
+    #sg.PopupAnimated(f"images/{randItem}.png",no_titlebar = False, font = "cambria 20",message = f"Picked up an item orb containing \n[{randItemName}]!")
 
 
 def jumpoline(window, gameBoard, location, playerTurn):
@@ -1351,6 +1387,8 @@ def disableEverything(window, turnOn = False):
         
 # using an item
 def useItems(gameBoard, x, y, window):
+
+
 
     gameBoard[x][y][1].storedItems.sort()
     layout = []
@@ -1385,6 +1423,7 @@ def useItems(gameBoard, x, y, window):
             listData += [
                 [
                     sg.Button(
+                        
                         i,
                         key=i,
                         image_filename=picture,
@@ -1419,7 +1458,8 @@ def useItems(gameBoard, x, y, window):
 
 
     
-    itemsMenu = sg.Window("Items Menu", layout,  no_titlebar = True).finalize()
+    itemsMenu = sg.Window("Items Menu", layout,  no_titlebar = True,keep_on_top = True).finalize()
+    
     #disable_close=True,
     #grab_anywhere=True
     #keep_on_top=True,
@@ -1469,7 +1509,7 @@ def useItems(gameBoard, x, y, window):
 
         itemsMenu.close()
         
-        
+#all, allHurt, enemiesHurtOnly, alliesHelpedOnly, allOccupiedNeutral  
 #def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk", reachType = "cross", turnOff = False):
         
 # suicidebomb row
@@ -1482,15 +1522,19 @@ def useItems(gameBoard, x, y, window):
             yesno = sg.popup_yes_no("Use?",keep_on_top=True)
             if yesno == "No":
                 continue
-            
+
+            gameBoard[x][y][1].grey = False
             gameBoard[x][y][1].storedItems.remove("suicide bomb row")
             # for each item inside the specific gameBoard row
             for j in gameBoard[x]:
                 if isinstance(j[1], Piece):
                     if "Energy Forcefield" in j[1].activeBuffs:
-
+                        sg.popup("Your shield activated and protected you from damage.", keep_on_top = True)
                         j[1].activeBuffs.remove("Energy Forcefield")
-
+                        continue
+                    if j[1].forcefieldTurn == PublicStats.turnCount:
+                        sg.popup("Your shield continues to protect you.",keep_on_top = True)
+                        continue
                     else:
                         # set the tile to be empty
                         j[0].occupied = False
@@ -1506,6 +1550,7 @@ def useItems(gameBoard, x, y, window):
             yesno = sg.popup_yes_no("Use?",keep_on_top=True)
             if yesno == "No":
                 continue
+            
             gameBoard[x][y][1].grey = False
             #if there is fewer than one item in the list
             if len(gameBoard[x][y][1].activeBuffs) < 1:
@@ -1543,6 +1588,13 @@ def useItems(gameBoard, x, y, window):
 
         elif str.find(i, "bernie sanders") >= 0:
             itemsMenu.close()
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "allOccupiedNeutral", reachType = "all" )
+            displayBoard(window, gameBoard)
+            window.refresh()
+            yesno = sg.popup_yes_no("Use?",keep_on_top=True)
+            if yesno == "No":
+                continue
+            
             itemsCollected = []
             validPieces = []
             gameBoard[x][y][1].storedItems.remove("bernie sanders")
@@ -1571,7 +1623,7 @@ def useItems(gameBoard, x, y, window):
             itemsRedistributed = len(itemsCollected)
             itemsCollected.clear()
             updateToolTips(window, gameBoard,playerTurn)
-            sg.popup(f"{itemsRedistributed} items have been redistributed!")
+            sg.popup(f"{itemsRedistributed} items have been redistributed!",keep_on_top = True)
             pm(window,f"{itemsRedistributed} items have been redistributed!")
 
 # care package drop
@@ -1765,7 +1817,7 @@ def useItems(gameBoard, x, y, window):
                     continue
             if bowlingBallRejected == True:
                 sg.popup("You attempted to learn bowling ball from at least one piece, but it proved to be too difficult.",keep_on_top=True)
-            sg.popup(f"Learned buffs from {learnedFromPieces} piece(s).")
+            sg.popup(f"Learned buffs from {learnedFromPieces} piece(s).", keep_on_top = True)
             pm(window,f"Learned buffs from {learnedFromPieces} piece(s).")
 
             
@@ -2320,7 +2372,7 @@ def useItems(gameBoard, x, y, window):
                     and "stunned" not in g[x][y][1].activeDebuffs
                 ):
                     g[ix][iy][0].tileType = "default"
-                    pickUpItemOrb(gameBoard, x, y)
+                    pickUpItemOrb(gameBoard, x, y, window = window)
                     pm(window, "You picked up an item")
                     displayBoard(window, gameBoard)
                     sleep(0.1)
@@ -2369,14 +2421,14 @@ def useItems(gameBoard, x, y, window):
                             and "stunned" not in g[ix][iy][1].activeDebuffs
                         ):
                             pm(window, "You picked up an item")
-                            pickUpItemOrb(gameBoard, ix, iy)
+                            pickUpItemOrb(gameBoard, ix, iy, window = window)
 
                         elif (
                             g[ix][iy][1].ownedBy == enemyTurn
                             and "stunned" not in g[ix][iy][1].activeDebuffs
                         ):
                             pm(window, "Your opponent picked up an item")
-                            pickUpItemOrb(gameBoard, ix, iy)
+                            pickUpItemOrb(gameBoard, ix, iy, window = window)
 
                         g[outx][outy][0].tileType = "default"
 
@@ -2424,9 +2476,13 @@ def useItems(gameBoard, x, y, window):
             # for each item inside the specific gameBoard row
             for j in gameBoard:
                 if isinstance(j[y][1], Piece):
-                    if "Energy Forcefield" in j[y][1].activeBuffs:
-
-                        j[y][1].activeBuffs.remove("Energy Forcefield")
+                    if "Energy Forcefield" in j[1].activeBuffs:
+                        sg.popup("Your shield activated and protected you from damage.", keep_on_top = True)
+                        j[1].activeBuffs.remove("Energy Forcefield")
+                        continue
+                    if j[1].forcefieldTurn == PublicStats.turnCount:
+                        sg.popup("Your shield continues to protect you.",keep_on_top = True)
+                        continue
 
                     else:
                         # set the tile to be empty
@@ -2444,9 +2500,14 @@ def useItems(gameBoard, x, y, window):
                 y = i[1]
 
                 if isinstance(gameBoard[x][y][1], Piece):
-                    if "Energy Forcefield" in gameBoard[x][y][1].activeBuffs:
-
-                        gameBoard[x][y][1].activeBuffs.remove("Energy Forcefield")
+                    if "Energy Forcefield" in j[1].activeBuffs:
+                        sg.popup("Your shield activated and protected you from damage.", keep_on_top = True)
+                        j[1].activeBuffs.remove("Energy Forcefield")
+                        continue
+                    
+                    if j[1].forcefieldTurn == PublicStats.turnCount:
+                        sg.popup("Your shield continues to protect you.",keep_on_top = True)
+                        continue
 
                     else:
                         # set the tile to be empty
@@ -2847,7 +2908,7 @@ def useItems(gameBoard, x, y, window):
                     window.refresh()
                     continue
                 elif gameBoard[event[0][0]][event[0][1]][0].occupied == False:
-                    sg.popup("There's no one there to attach the bomb to.")
+                    sg.popup("There's no one there to attach the bomb to.", keep_on_top = True)
                     continue
                 elif "sticky time bomb" in gameBoard[event[0][0]][event[0][1]][0].activeDebuffs:
                     sg.popup("This piece already has a sticky time bomb attached to it, you can't put a second one on it",keep_on_top=True)
@@ -3372,28 +3433,41 @@ def useItems(gameBoard, x, y, window):
             displayBoard(window, gameBoard)
             pm(window, "Congrats; your piece can't be jumped on.")
 
-### wololo 
-##        elif str.find(i, "Wololo (convert to your side)") >= 0:
-##            itemsMenu.close()
-##            pm(window, "Choose an enemy to recruit")
-##
-##            event = window.read()
-##            player = gameBoard[x][y][1].ownedBy
-##            if player == 1:
-##                enemy = 2
-##            elif player == 2:
-##                enemy = 1
-##            if gameBoard[event[0][0]][event[0][1]][1] == 0:
-##                pm(window, "Choose an enemy, not a vacant tile...")
-##                continue
-##            elif gameBoard[event[0][0]][event[0][1]][1].ownedBy == enemy:
-##                gameBoard[event[0][0]][event[0][1]][1].ownedBy = player
-##                gameBoard[x][y][1].storedItems.remove("Wololo (convert to your side)")
-##            else:
-##                pm(window, "Wololo only works on enemies.")
-##                sleep(1)
-##            displayBoard(window, gameBoard)
-##            window.refresh()
+# wololo 
+        elif str.find(i, "wololo radial") >= 0:
+
+            
+            itemsMenu.close()
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemiesHurtOnly", reachType = "radial")
+            displayBoard(window, gameBoard)
+            window.refresh()
+            yesno = sg.popup_yes_no("Use?",keep_on_top=True)
+            if yesno == "No":
+                continue
+            validList = []
+            validList = getRadial(location, gameBoard)
+            player = gameBoard[x][y][1].ownedBy
+            converted = 0
+            if player == 1:
+                enemy = 2
+            elif player == 2:
+                enemy = 1
+            for i in validList:
+                ix = i[0]
+                iy = i[1]
+                if gameBoard[ix][iy][0].occupied == True:
+                    if gameBoard[ix][iy][1].ownedBy == enemy:
+                        gameBoard[ix][iy][1].ownedBy = player
+                        converted+=1
+            gameBoard[x][y][1].storedItems.remove("wololo radial")
+
+            if converted > 0:
+                sg.popup(f"WOLOLO!  You've converted {converted} pieces to your side!", keep_on_top = True)
+                pm(window, f"WOLOLO!  You've converted {converted} pieces to your side!")
+                
+            
+            displayBoard(window, gameBoard)
+            window.refresh()
 
 # haphazard airstrike
         elif str.find(i, "haphazard airstrike") >= 0:
@@ -4416,7 +4490,7 @@ def itemExplanation(i):
 
         
         if i == "bowling ball":
-            explanation = "Your piece loses all of its powers and negative effects... but comes a crazy bowling ball on a rampage."
+            explanation = "Your piece loses all of its powers and negative effects... but becomes a crazy bowling ball on a rampage."
         elif i == "care package drop":
             explanation = "A plane drops off some item orbs near the selected opponent"
         elif i == "charity":
@@ -4707,9 +4781,11 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
     if turnOff == True:
         for i in gameBoard:
             for j in i:
-                if j[0].highlight == True or j[0].highlightRed or j[0].highlightGreen:
+                if j[0].highlight == True or j[0].highlightRed or j[0].highlightGreen or j[0].highlightBrown:
                     j[0].highlight = False
                     j[0].highlightRed = False
+                    j[0].highlightGreen = False
+                    j[0].highlightBrown = False
         return
     validLocations = []
     
@@ -4871,6 +4947,44 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                 g[ix][iy][0].highlight = True
             return
 
+
+    if actionType == "allOccupiedNeutral":
+        if reachType == "row":
+            validLocations = getRow(location, gameBoard)
+            for i in validLocations:
+                ix = i[0]
+                iy = i[1]
+                if g[ix][iy][0].occupied == True:
+                    j[0].highlightBrown = True
+            return
+        if reachType == "column":
+            validLocations = getColumn(location, gameBoard)
+            for i in validLocations:
+                ix = i[0]
+                iy = i[1]
+                if g[ix][iy][0].occupied == True:
+                    j[0].highlightBrown = True
+            return
+        if reachType == "radial":
+            validLocations = getRadial(location, gameBoard)
+            for i in validLocations:
+                ix = i[0]
+                iy = i[1]
+                if g[ix][iy][0].occupied == True:
+                    j[0].highlightBrown = True
+            return
+        if reachType == "allOccupied":
+            #validLocations = []
+            #validLocations = emptySpots(gameBoard, trueEmpty = True)
+            for i in gameBoard:
+                for j in i:
+                    
+                    if j[0].occupied == True:
+                        j[0].highlightBrown = True
+            return
+        
+
+
     if actionType == "allHurt":
         if reachType == "row":
             validLocations = getRow(location, gameBoard)
@@ -4903,27 +5017,13 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                 else:
                     g[ix][iy][0].highlight = True
             return
-        if reachType == "allTrueEmpty":
-            validLocations = []
-            validLocations = emptySpots(gameBoard, trueEmpty = True)
-            for i in validLocations:
-                ix = i[0]
-                iy = i[1]
-                if g[ix][iy][0].occupied == True:
-                    g[ix][iy][0].highlightRed = True
-                else:
-                    g[ix][iy][0].highlight = True
-            return
-        if reachType == "allUnoccupied":
-            validLocations = []
-            validLocations = emptySpots(gameBoard, trueEmpty = True)
-            for i in validLocations:
-                ix = i[0]
-                iy = i[1]
-                if g[ix][iy][0].occupied == True:
-                    g[ix][iy][0].highlightRed = True
-                else:
-                    g[ix][iy][0].highlight = True
+        
+        if reachType == "allOccupied":
+            for i in gameBoard:
+                for j in i:
+                    
+                    if j[0].occupied == True:
+                        j[0].highlightBrown = True
             return
 
 
@@ -4950,6 +5050,8 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                 if g[ix][iy][0].occupied == True:
                     if g[ix][iy][1].ownedBy == enemyTurn:
                         g[ix][iy][0].highlightRed = True
+                    else:
+                        g[ix][iy][0].highlight = True
                 else:
                     g[ix][iy][0].highlight = True
             return
@@ -4961,10 +5063,13 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                 if g[ix][iy][0].occupied == True:
                     if g[ix][iy][1].ownedBy == enemyTurn:
                         g[ix][iy][0].highlightRed= True
+                    else:
+                       g[ix][iy][0].highlight = True 
                 else:
                     g[ix][iy][0].highlight = True
             return
-        
+
+
     if actionType == "alliesHelpedOnly":
         if reachType == "row":
             validLocations = getRow(location, gameBoard)
@@ -4987,6 +5092,8 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                 if g[ix][iy][0].occupied == True:
                     if g[ix][iy][1].ownedBy == playerTurn:
                         g[ix][iy][0].highlightGreen = True
+                    else:
+                        g[ix][iy][0].highlight = True
                 else:
                     g[ix][iy][0].highlight = True
             return
@@ -4998,6 +5105,8 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                 if g[ix][iy][0].occupied == True:
                     if g[ix][iy][1].ownedBy == playerTurn:
                         g[ix][iy][0].highlightGreen = True
+                    else:
+                        g[ix][iy][0].highlight = True
                 else:
                     g[ix][iy][0].highlight = True
             return
@@ -5416,7 +5525,7 @@ def movePiece(playerTurn, window, gameBoard):
             ) > 0 and (
                 gameBoard[startLocation[0]][startLocation[1]][1].ownedBy == playerTurn
             ):
-
+                
                 earlyBreak = useItems(gameBoard, startLocation[0], startLocation[1], window)
                 if earlyBreak == "earlyBreak":
                     startLocation = startLocationBackup
@@ -5547,7 +5656,7 @@ def movePiece(playerTurn, window, gameBoard):
 
                 # if the landing spot is an item Orb:
                 if gameBoard[endLocation[0]][endLocation[1]][0].tileType == "itemOrb":
-                    pickUpItemOrb(gameBoard, startLocation[0], startLocation[1])
+                    pickUpItemOrb(gameBoard, startLocation[0], startLocation[1], window = window)
                     pm(window, "Picked up an item")
                     pickedUpItem = True
                     
@@ -5735,7 +5844,7 @@ def movePiece(playerTurn, window, gameBoard):
                         if randomEvent == "getItems":
                             #get three items
                             for i in range(1,4):
-                                pickUpItemOrb(gameBoard, endLocation[0], endLocation[1])
+                                pickUpItemOrb(gameBoard, endLocation[0], endLocation[1], window = window)
                         elif randomEvent == "lose items":
                             gameBoard[endLocation[0]][endLocation[1]][1].storedItems.clear()
                             sg.popup("You've lost all your held items",keep_on_top = True)
@@ -6093,7 +6202,9 @@ def resetMoveAgain(gameBoard):
 
 def updateToolTips(window, gameBoard,playerTurn):
     #debug attempt
-    window.disappear()
+
+    
+    #window.disappear()
 
     
 
@@ -6151,8 +6262,10 @@ def updateToolTips(window, gameBoard,playerTurn):
                 window[(iIndex,j)].SetTooltip(toolTipData)
             except:
                 pm(window, "oops, an error occurred with trying to set a new tooltip")
-
+    #debug attempt
+    window.disappear()
     window.reappear()
+    #debug attempt
                 
 
 def spookyHand(window, gameBoard):
@@ -6297,6 +6410,7 @@ def stickyTimeBomb(window,gameBoard):
                             displayBoard(window, gameBoard)
                             window.refresh()
                             sleep(.1)
+                        sg.popup("The sticky time bomb went off!",keep_on_top())
                         #validLocations.clear()
                                 
 def itemOrbForecast(window):
@@ -6425,7 +6539,7 @@ def begin():
     window = sg.Window(
         "MegaCheckers",
         layout,
-        
+        keep_on_top = True,
         disable_close=False,
         
         location=(0, 0),
@@ -6498,7 +6612,7 @@ def begin():
                                         "A stunned piece recovered and picked up the item orb it had landed on",
                                         keep_on_top=True,
                                     )
-                                    pickUpItemOrb(gameBoard, x, y)
+                                    pickUpItemOrb(gameBoard, x, y, window = window)
                 y = -1
             playerTurn = 2
 
@@ -6549,7 +6663,7 @@ def begin():
                                         "A stunned piece recovered and picked up the item orb it had landed on",
                                         keep_on_top=True,
                                     )
-                                    pickUpItemOrb(gameBoard, x, y)
+                                    pickUpItemOrb(gameBoard, x, y, window = window)
                 y = -1
             playerTurn = 1
 
