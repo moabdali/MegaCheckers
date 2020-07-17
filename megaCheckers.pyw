@@ -156,8 +156,9 @@ class Tile:
         self.purityTile = False
         self.dumpList = []
         self.snake = False
-        self.highlight = False
-        self.highlight2 = False
+        self.highlight = False #blue
+        self.highlightRed = False #red
+        self.highlightGreen = False #green
 
     def describeSelf(self):
 
@@ -787,11 +788,12 @@ def publicPNGloader():
         "damaged3",#29
         "damaged2",#30
         "damaged",#31
-        "highlight1",#32
-        "highlight2",#33
+        "highlightBlue",#32
+        "highlightRed",#33
         "highlight",#34
         "vile",#35
         "jump proof", #36
+        "highlightGreen", #37
         ]):
 
         myImage = Image.open(f"images/{i}.png").convert("RGBA")
@@ -822,7 +824,7 @@ def avatarFunction(window, avatar, gameBoard, i,j):
         window[(i,j)].update(button_color = ("white","black"))
     
     if gameBoard[i][j][0].highlight == True:
-        grey = Image.open("images/highlight1.png").convert("RGBA")
+        grey = Image.open("images/highlightBlue.png").convert("RGBA")
         avatar = Image.blend(grey, avatar, 0.50)
     im_file = BytesIO()
     avatar.save(im_file, format="png")
@@ -1159,15 +1161,28 @@ def displayBoard(window, gameBoard):
 
             if gameBoard[i][j][0].highlight == True:
                 grey = (PublicPNGList[32]).convert("RGBA")
-                #grey = Image.open("images/highlight1.png").convert("RGBA")
+                #grey = Image.open("images/highlightBlue.png").convert("RGBA")
                 avatar = Image.blend(grey, avatar, 0.50)
 
 
-            if gameBoard[i][j][0].highlight2 == True:
+            if gameBoard[i][j][0].highlightRed == True:
                 red = (PublicPNGList[33]).convert("RGBA")
-                #grey = Image.open("images/highlight1.png").convert("RGBA")
+                #grey = Image.open("images/highlightBlue.png").convert("RGBA")
                 avatar = Image.blend(red, avatar, 0.50)
+
+            if gameBoard[i][j][0].highlightGreen == True:
+                red = (PublicPNGList[37]).convert("RGBA")
+                #grey = Image.open("images/highlightBlue.png").convert("RGBA")
+                avatar = Image.blend(red, avatar, 0.50)
+
+
+                g[ix][iy][0].highlightGreen = True
+
+                
             avatarFunction(window, avatar, gameBoard, i ,j)
+
+
+            
 
 
 
@@ -1241,7 +1256,7 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False):
         "care package drop",
         "charity",
         "dead man's trigger",
-        "dump powers",
+        "dump items",
         "Energy Forcefield",
         "floor restore",
         "haphazard airstrike",
@@ -1461,7 +1476,7 @@ def useItems(gameBoard, x, y, window):
         if str.find(i, "suicide bomb row") >= 0:
             itemsMenu.close()
             gameBoard[x][y][1].grey = False
-            highlightValidDistance(gameBoard, window, startLocation, actionType = "all", reachType = "row" )
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "allHurt", reachType = "row" )
             displayBoard(window, gameBoard)
             window.refresh()
             yesno = sg.popup_yes_no("Use?",keep_on_top=True)
@@ -1757,6 +1772,14 @@ def useItems(gameBoard, x, y, window):
 # teach row
         elif str.find(i, "teach row") >= 0:
             itemsMenu.close()
+
+
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "alliesHelpedOnly", reachType = "row" )
+            displayBoard(window, gameBoard)
+            window.refresh()
+            yesno = sg.popup_yes_no("Use?",keep_on_top=True)
+            if yesno == "No":
+                continue
             gameBoard[x][y][1].grey = False
             #if there is fewer than one item in the list
             if len(gameBoard[x][y][1].activeBuffs) < 1:
@@ -2433,6 +2456,15 @@ def useItems(gameBoard, x, y, window):
 
 # napalm row
         elif str.find(i, "napalm row") >= 0:
+
+            itemsMenu.close()
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemiesHurtOnly", reachType = "row")
+            displayBoard(window, gameBoard)
+            window.refresh()
+            yesno = sg.popup_yes_no("Use?",keep_on_top=True)
+            if yesno == "No":
+                continue
+            
             gameBoard[x][y][1].storedItems.remove("napalm row")
             # for each column inside the row
             for j in gameBoard[x]:
@@ -4463,8 +4495,8 @@ def itemExplanation(i):
             explanation = "Your piece uses the ancient incantatation of the ancient Ayoh Eetoo religion, which convinces all in-range pieces that hear the word of truth to join your \nside.  It somehow changes their color to match your team's color, too.  Weird how that works."
         elif i == "worm hole":
             explanation = "Set up a worm hole at an adjacent tile.  As long as your pieces are not on the warp tile, you can use your move to teleport to that worm hole from anywhere."
-        elif i == "dump powers":
-            explanation = "What, did you think you were going to gain the abilities of a landfill?  Well, that's a pretty stupid thing to think...  After activating this item, your other \nunused items clump together into a giant item orb and then get dumped on a nearby tile.  Any piece that is capable of picking up items - including your enemy's pieces - can then grab this wad of powers."
+        elif i == "dump items":
+            explanation = "After activating this item, your other unused items clump together into a giant item orb and then get dumped on any empty tile on the field.  \nAny piece that is capable of picking up items - including your enemy's pieces - can then grab this wad of powers."
 
         elif i == "bernie sanders":
             explanation = "Taxes all pieces on the field and gathers up all of your unactivated items and all of your opponent's unactivated items.  Shuffles the items around and randomly redistributes the wealth \namong all pieces that are capable of receiving items.  DO YOU FEEL THE BURN?  If so... that might be a napalm row...  uh oh."
@@ -4663,15 +4695,21 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
     x = startLocation[0]
     y = startLocation[1]
     g = gameBoard
+
     if g[x][y][0].occupied == True:
         playerTurn = g[x][y][1].ownedBy
+
+    if playerTurn == 1:
+        enemyTurn = 2
+    else:
+        enemyTurn = 1
     location = (x,y)
     if turnOff == True:
         for i in gameBoard:
             for j in i:
-                if j[0].highlight == True or j[0].highlight2:
+                if j[0].highlight == True or j[0].highlightRed or j[0].highlightGreen:
                     j[0].highlight = False
-                    j[0].highlight2 = False
+                    j[0].highlightRed = False
         return
     validLocations = []
     
@@ -4733,10 +4771,10 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                     #if someone is there
                     elif g[xi][yi][0].occupied == True:
                         if g[xi][yi][1].ownedBy != g[x][y][1].ownedBy:
-                            g[xi][yi][0].highlight2 = True
+                            g[xi][yi][0].highlightRed = True
                         if g[xi][yi][1].ownedBy == g[xi][yi][1].ownedBy:
                             if "feral" in g[x][y][1].activeBuffs:
-                                g[xi][yi][0].highlight2 = True
+                                g[xi][yi][0].highlightRed = True
                             else:
                                 continue
 
@@ -4770,12 +4808,27 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                     elif g[xi][yi][0].occupied == True:
                         if g[xi][yi][1].ownedBy != g[x][y][1].ownedBy:
                             print("Enemy highlighted")
-                            g[xi][yi][0].highlight2 = True
+                            g[xi][yi][0].highlightRed = True
                         if g[xi][yi][1].ownedBy == g[xi][yi][1].ownedBy:
                             if "feral" in g[x][y][1].activeBuffs:
-                                g[xi][yi][0].highlight2 = True
+                                g[xi][yi][0].highlightRed = True
                             else:
                                 continue
+                            
+                #if the floor is gone, continue
+                if g[xi][yi][0].tileType in [
+                    "damaged",
+                    "destroyed",
+                    "damaged1",
+                    "damaged2",
+                    "damaged3",
+                    "damaged4",
+                    "damaged5",
+                    "damaged6",
+                    "damaged7",
+                    "damaged8"
+                ]:
+                    continue
                                 
                 g[xi][yi][0].highlight = True
                 
@@ -4816,6 +4869,137 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                 ix = i[0]
                 iy = i[1]
                 g[ix][iy][0].highlight = True
+            return
+
+    if actionType == "allHurt":
+        if reachType == "row":
+            validLocations = getRow(location, gameBoard)
+            for i in validLocations:
+                ix = i[0]
+                iy = i[1]
+                
+                if g[ix][iy][0].occupied == True:
+                    g[ix][iy][0].highlightRed = True
+                else:
+                    g[ix][iy][0].highlight = True
+            return
+        if reachType == "column":
+            validLocations = getColumn(location, gameBoard)
+            for i in validLocations:
+                ix = i[0]
+                iy = i[1]
+                if g[ix][iy][0].occupied == True:
+                    g[ix][iy][0].highlightRed = True
+                else:
+                    g[ix][iy][0].highlight = True
+            return
+        if reachType == "radial":
+            validLocations = getRadial(location, gameBoard)
+            for i in validLocations:
+                ix = i[0]
+                iy = i[1]
+                if g[ix][iy][0].occupied == True:
+                    g[ix][iy][0].highlightRed = True
+                else:
+                    g[ix][iy][0].highlight = True
+            return
+        if reachType == "allTrueEmpty":
+            validLocations = []
+            validLocations = emptySpots(gameBoard, trueEmpty = True)
+            for i in validLocations:
+                ix = i[0]
+                iy = i[1]
+                if g[ix][iy][0].occupied == True:
+                    g[ix][iy][0].highlightRed = True
+                else:
+                    g[ix][iy][0].highlight = True
+            return
+        if reachType == "allUnoccupied":
+            validLocations = []
+            validLocations = emptySpots(gameBoard, trueEmpty = True)
+            for i in validLocations:
+                ix = i[0]
+                iy = i[1]
+                if g[ix][iy][0].occupied == True:
+                    g[ix][iy][0].highlightRed = True
+                else:
+                    g[ix][iy][0].highlight = True
+            return
+
+
+        
+    if actionType == "enemiesHurtOnly":
+        if reachType == "row":
+            validLocations = getRow(location, gameBoard)
+            for i in validLocations:
+                ix = i[0]
+                iy = i[1]
+                if g[ix][iy][0].occupied == True:
+                    if g[ix][iy][1].ownedBy == enemyTurn:
+                        g[ix][iy][0].highlightRed = True
+                    else:
+                        g[ix][iy][0].highlight = True
+                else:
+                    g[ix][iy][0].highlight = True
+            return
+        if reachType == "column":
+            validLocations = getColumn(location, gameBoard)
+            for i in validLocations:
+                ix = i[0]
+                iy = i[1]
+                if g[ix][iy][0].occupied == True:
+                    if g[ix][iy][1].ownedBy == enemyTurn:
+                        g[ix][iy][0].highlightRed = True
+                else:
+                    g[ix][iy][0].highlight = True
+            return
+        if reachType == "radial":
+            validLocations = getRadial(location, gameBoard)
+            for i in validLocations:
+                ix = i[0]
+                iy = i[1]
+                if g[ix][iy][0].occupied == True:
+                    if g[ix][iy][1].ownedBy == enemyTurn:
+                        g[ix][iy][0].highlightRed= True
+                else:
+                    g[ix][iy][0].highlight = True
+            return
+        
+    if actionType == "alliesHelpedOnly":
+        if reachType == "row":
+            validLocations = getRow(location, gameBoard)
+            for i in validLocations:
+                ix = i[0]
+                iy = i[1]
+                if g[ix][iy][0].occupied == True:
+                    if g[ix][iy][1].ownedBy == playerTurn:
+                        g[ix][iy][0].highlightGreen = True
+                    else:
+                        g[ix][iy][0].highlight = True
+                else:
+                    g[ix][iy][0].highlight = True
+            return
+        if reachType == "column":
+            validLocations = getColumn(location, gameBoard)
+            for i in validLocations:
+                ix = i[0]
+                iy = i[1]
+                if g[ix][iy][0].occupied == True:
+                    if g[ix][iy][1].ownedBy == playerTurn:
+                        g[ix][iy][0].highlightGreen = True
+                else:
+                    g[ix][iy][0].highlight = True
+            return
+        if reachType == "radial":
+            validLocations = getRadial(location, gameBoard)
+            for i in validLocations:
+                ix = i[0]
+                iy = i[1]
+                if g[ix][iy][0].occupied == True:
+                    if g[ix][iy][1].ownedBy == playerTurn:
+                        g[ix][iy][0].highlightGreen = True
+                else:
+                    g[ix][iy][0].highlight = True
             return
         
 
@@ -5908,6 +6092,11 @@ def resetMoveAgain(gameBoard):
 
 
 def updateToolTips(window, gameBoard,playerTurn):
+    #debug attempt
+    window.disappear()
+
+    
+
     
     for iIndex, iData in enumerate(gameBoard):
         for j, jData in enumerate(iData):
@@ -5917,8 +6106,12 @@ def updateToolTips(window, gameBoard,playerTurn):
                 debuffs = "\n"+f"[DEBUFFS] x{len(gameBoard[iIndex][j][1].activeDebuffs)} "+"\n"
                 storedItems = "\n"+f"[ITEMS] x{len(gameBoard[iIndex][j][1].storedItems)}"+"\n"
                 for b in gameBoard[iIndex][j][1].activeBuffs:
+                    if b == None:
+                        b = ""
                     buffs+=b+"\n"
                 for d in gameBoard[iIndex][j][1].activeDebuffs:
+                    if d == None:
+                        d = ""
                     debuffs+=d+"\n"
                 if gameBoard[iIndex][j][1].ownedBy == playerTurn:
                     for s in  gameBoard[iIndex][j][1].storedItems:
@@ -5959,7 +6152,7 @@ def updateToolTips(window, gameBoard,playerTurn):
             except:
                 pm(window, "oops, an error occurred with trying to set a new tooltip")
 
-
+    window.reappear()
                 
 
 def spookyHand(window, gameBoard):
@@ -6113,7 +6306,7 @@ def itemOrbForecast(window):
         
     
     index = (PublicStats.turnCount+1)%len(PublicStats.orbCycleList)
-    print(index)
+    
     if index >= len(PublicStats.orbCycleList):
         index = 0
     window[f"Orb{index}"].update(f"{PublicStats.orbCycleList[index]}",text_color = ("orange"), font = "Cambria 30")
@@ -6126,17 +6319,22 @@ def begin():
     rows = 10
     gameBoard = []
 
-    # window
+
+    buttonSize = (75,75)
+    # window 
     frame_main = [
         [
+            #individual squares
             sg.Button(
                 image_filename="images/default.png",
+                #image_size = buttonSize,
                 key=(i, j),
-                size=(75, 75),
+                size= buttonSize,
                 button_color=("white", "grey"),
                 tooltip="square",
                 #pad=(2, 2),
-                pad = (1,1)
+                pad = (1,1),
+                
             )
             for j in range(columns)
         ]
@@ -6182,7 +6380,7 @@ def begin():
             sg.T(f"Player:", font="Cambria 30", pad=(4, 4)),
             sg.T(f"", key="playerTurn", font="Cambria 30", pad=(4, 4)),
         ],
-        [sg.T(f" " * 50, key="information", size=(37, 3), font="Cambria 30")],
+        [sg.T(f" " * 50, key="information", size=(25, 3), font="Cambria 30")],
         [sg.Frame("Pieces Remaining", frame_remaining), sg.Frame("Item Info",frame_itemInfo)],
         [sg.Frame("Current Turn", frame_turnsPassed), sg.Frame("Item Orb Forecast (expected number of orbs that will spawn after your turn ends):",frame_itemOrbForecast)],
         [
@@ -6764,7 +6962,6 @@ def main():
         
             sg.popup("Error in introwindow")
             continue
-    
     event = introWindow.read()
     if event[0] == "tutorial":
         introWindow.close()

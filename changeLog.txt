@@ -1,5 +1,9 @@
 ChangeLog
 
+
+v.0.9.90.1 July 17, 2020
+	Some progress made with highlighting squares after selecting an item.  Currently have the logic in for "hurt everyone in range" and "help only allies in range" and "hurt only enemies in range" (hurt = red, help = green, neutral = blue). 
+
 v.0.9.90 July 17, 2020
 	Completed adding pictures for every item, and (hopefully) correctly points to the correct file names for all the pictures.  Fixed some errors in the tutorial mode and removed references to the "use items" button, which is not really a user friendy way of playing the game (instead have the player double click a piece).  Reworked the intro screen to be able to show all items in the game for the item showcase (as in it has access to the entire item list).  Realphabetized the item list.  Reworked the item explanation function to use it for tooltips and regular explanations.   
 
