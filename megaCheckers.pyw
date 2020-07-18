@@ -1404,117 +1404,122 @@ def useItems(gameBoard, x, y, window):
     updateToolTips(window, gameBoard, playerTurn)
     startLocation = (x,y)
     for i in gameBoard[x][y][1].storedItems:
-        picture = f"images/{i}.png"
-
-        #send out the item's name to get an explanation
+        
+##        picture = f"images/{i}.png"
+##
+##        #send out the item's name to get an explanation
         explanation = itemExplanation(i)
+##
+##
+##        if itemsLength < 5:
+##            listData += [
+##                [
+##                    sg.Button(
+##                        i,
+##                        key=i,
+##                        image_filename=picture,
+##                        tooltip=explanation,
+##                        font="Arial 20",
+##                        size=(30, 1),
+##                        button_color=("pink", "grey"),
+##                        image_size=(400, 100),
+##                    )
+##                ]
+##            ]
+##        elif itemsLength <10:
+##            listData += [
+##                [
+##                    sg.Button(
+##                        
+##                        i,
+##                        key=i,
+##                        image_filename=picture,
+##                        tooltip=explanation,
+##                        font="Arial 20",
+##                        size=(30, 1),
+##                        button_color=("pink", "grey"),
+##                        image_size=(400, 75),
+##                    )
+##                ]
+##            ]
+##        else:
+        listData += [
+            [
+                sg.Button(
+                    i,
+                    key=i,
+                    #image_filename=picture,
+                    tooltip=explanation,
+                    font="Arial 20",
+                    size=(30, 1),
+                    button_color=("pink", "grey"),
+                    image_size=(400, 30),
+                )
+            ]
+        ]
 
-
-        if itemsLength < 5:
-            listData += [
-                [
-                    sg.Button(
-                        i,
-                        key=i,
-                        image_filename=picture,
-                        tooltip=explanation,
-                        font="Arial 20",
-                        size=(30, 1),
-                        button_color=("pink", "grey"),
-                        image_size=(400, 100),
-                    )
-                ]
-            ]
-        elif itemsLength <10:
-            listData += [
-                [
-                    sg.Button(
-                        
-                        i,
-                        key=i,
-                        image_filename=picture,
-                        tooltip=explanation,
-                        font="Arial 20",
-                        size=(30, 1),
-                        button_color=("pink", "grey"),
-                        image_size=(400, 75),
-                    )
-                ]
-            ]
-        else:
-            listData += [
-                [
-                    sg.Button(
-                        i,
-                        key=i,
-                        image_filename=picture,
-                        tooltip=explanation,
-                        font="Arial 20",
-                        size=(30, 1),
-                        button_color=("pink", "grey"),
-                        image_size=(400, 30),
-                    )
-                ]
-            ]
             
-        
-    listData += [[sg.Button("CANCEL")]]
-
-    layout += [[sg.Column(listData, justification="center")]]
-
-
-    
-    itemsMenu = sg.Window("Items Menu", layout,  no_titlebar = True,keep_on_top = True).finalize()
-    
-    #disable_close=True,
-    #grab_anywhere=True
-    #keep_on_top=True,
-    enemyTurn = 0
-    playerTurn = gameBoard[x][y][1].ownedBy
-    if playerTurn == 1:
-        enemyTurn = 2
-    elif playerTurn == 2:
-        enemyTurn = 1
-    else:
-        pm(window, "An error occured in the turn assignment in items")
-    rows = len(gameBoard)
-    columns = len(gameBoard[0])
-    location = (x, y)
-
-    eventList = []
-    eventNotReceived = True
-    focusOutFlag = False
-    itemsMenu.bind('<FocusOut>', '+FOCUS OUT+')
-
-    for i,idata in enumerate(gameBoard):
-        for j,jdata in enumerate(idata):
-            window[(i,j)].update(disabled = True)
-    while True:
-        event = (itemsMenu.read()) 
-        try:
-            i = event[0]
-            for inum,idata in enumerate(gameBoard):
-                for jnum,jdata in enumerate(idata):
-                    window[(inum,jnum)].update(disabled = False)
-                
-            if i == None:
-                itemsMenu.close()
-                return "earlyBreak"
-            if i == "CANCEL":
-                itemsMenu.close()
-                return "earlyBreak"
-            if i == '+FOCUS OUT+':
-                itemsMenu.close()
-                return "earlyBreak"
-                
-            
-            if i in (0,1,2,3,4,5,6,7,8,9):
-                break
-        except:
-            break
-
-        itemsMenu.close()
-        
+##            
+##        
+##    listData += [[sg.Button("CANCEL")]]
+##
+##    layout += [[sg.Column(listData, justification="center")]]
+##
+##
+##    
+##    itemsMenu = sg.Window("Items Menu", layout,  no_titlebar = True,keep_on_top = True).finalize()
+##    
+##    #disable_close=True,
+##    #grab_anywhere=True
+##    #keep_on_top=True,
+##    enemyTurn = 0
+##    playerTurn = gameBoard[x][y][1].ownedBy
+##    if playerTurn == 1:
+##        enemyTurn = 2
+##    elif playerTurn == 2:
+##        enemyTurn = 1
+##    else:
+##        pm(window, "An error occured in the turn assignment in items")
+##    rows = len(gameBoard)
+##    columns = len(gameBoard[0])
+##    location = (x, y)
+##
+##    eventList = []
+##    eventNotReceived = True
+##    focusOutFlag = False
+##    itemsMenu.bind('<FocusOut>', '+FOCUS OUT+')
+##
+##    for i,idata in enumerate(gameBoard):
+##        for j,jdata in enumerate(idata):
+##            window[(i,j)].update(disabled = True)
+##    while True:
+##        event = (itemsMenu.read()) 
+##        try:
+##            i = event[0]
+##            for inum,idata in enumerate(gameBoard):
+##                for jnum,jdata in enumerate(idata):
+##                    window[(inum,jnum)].update(disabled = False)
+##                
+##            if i == None:
+##                itemsMenu.close()
+##                return "earlyBreak"
+##            if i == "CANCEL":
+##                itemsMenu.close()
+##                return "earlyBreak"
+##            if i == '+FOCUS OUT+':
+##                itemsMenu.close()
+##                return "earlyBreak"
+##                
+##            
+##            if i in (0,1,2,3,4,5,6,7,8,9):
+##                break
+##        except:
+##            break
+##
+##        itemsMenu.close()
+        itemsMenu = sg.Window("items",listData,keep_on_top = True)
+        i = itemsMenu.read()
+        i = i[0]
 #all, allHurt, enemiesHurtOnly, alliesHelpedOnly, allOccupiedNeutral  
 #def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk", reachType = "cross", turnOff = False):
         
