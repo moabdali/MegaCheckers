@@ -1269,6 +1269,7 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None):
         "floor restore",
         "haphazard airstrike",
         "haymaker",
+        "heir",
         "jump proof",
         "jumpoline",
         "laser column",
@@ -1299,11 +1300,11 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None):
         "snake tunneling",
         "spooky hand",
         "steal items column",
-        #"steal items radial",
-        #"steal items row",
-        #"steal powers column"
-        #"steal powers radial",
-        #"steal powers row",
+        "steal items radial",
+        "steal items row",
+        "steal powers column",
+        "steal powers radial",
+        "steal powers row",
         "sticky time bomb",
         #"study column",
         #"study radial",
@@ -1515,7 +1516,7 @@ def useItems(gameBoard, x, y, window):
 
         itemsMenu.close()
         
-#all, allHurt, enemiesHurtOnly, alliesHelpedOnly, allOccupiedNeutral  
+#all, allHurt, enemiesHurtOnly, alliesHelpedOnly, allOccupiedNeutral, alliesHurtOnly
 #def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk", reachType = "cross", turnOff = False):
         
 # suicidebomb row
@@ -1635,20 +1636,21 @@ def useItems(gameBoard, x, y, window):
             yesno = sg.popup_yes_no("Use?",keep_on_top=True)
             if yesno == "No":
                 continue
-            stolenItems = 0
-            namesOfStolenItems = ""
+            stolenPowers = 0
+            namesOfStolenPowerss = ""
             for iIndex, i in enumerate(gameBoard):
                 if i[y][0].occupied == True:
                     if i[y][1].ownedBy == enemyTurn:
-                        for items in i[y][1].storedItems:
-                            gameBoard[x][y][1].storedItems.append(items)
-                            stolenItems+=1
-                            namesOfStolenItems+=items+"\n"
-                        i[y][1].storedItems.clear()
-            if stolenItems > 0:
-                sg.popup(f"You've stolen {stolenItems} items:\n"+namesOfStolenItems, keep_on_top = True)
+                        for powers in i[y][1].activeBuffs:
+                            if powers != "bowling ball":
+                                gameBoard[x][y][1].activeBuffs.append(powers)
+                                stolenpowers+=1
+                                namesOfStolenpowers+=powers+"\n"
+                        i[y][1].activeBuffs.clear()
+            if stolenPowers > 0:
+                sg.popup(f"You've stolen {stolenPowers} powers:\n"+namesOfStolenPowers, keep_on_top = True)
             
-            gameBoard[x][y][1].storedItems.remove("steal items column")
+            gameBoard[x][y][1].itemsStored.remove("steal powers column")
 
 
 # steal powers row
@@ -1660,22 +1662,23 @@ def useItems(gameBoard, x, y, window):
             yesno = sg.popup_yes_no("Use?",keep_on_top=True)
             if yesno == "No":
                 continue
-            stolenItems = 0
-            namesOfStolenItems = ""
+            stolenpowers = 0
+            namesOfStolenpowers = ""
             for iIndex, i in enumerate(gameBoard[x]):
                 if i[0].occupied == True:
                     if i[1].ownedBy == enemyTurn:
-                        for items in i[1].storedItems:
-                            gameBoard[x][y][1].storedItems.append(items)
-                            stolenItems+=1
-                            namesOfStolenItems+=items+"\n"
-                        i[1].storedItems.clear()
-            if stolenItems > 0:
-                sg.popup(f"You've stolen {stolenItems} items:\n"+namesOfStolenItems, keep_on_top = True)
+                        for powers in i[1].activeBuffs:
+                            if powers != "bowling ball":
+                                gameBoard[x][y][1].activeBuffs.append(powers)
+                                stolenpowers+=1
+                                namesOfStolenpowers+=powers+"\n"
+                        i[1].activeBuffs.clear()
+            if stolenpowers > 0:
+                sg.popup(f"You've stolen {stolenpowers} powers:\n"+namesOfStolenpowers, keep_on_top = True)
             
-            gameBoard[x][y][1].storedItems.remove("steal powers row")
+            gameBoard[x][y][1].itemsStored.remove("steal powers row")
 
-# steal items radial
+# steal powers radial
         elif str.find(i, "steal powers radial") >= 0:
             itemsMenu.close()
             highlightValidDistance(gameBoard, window, startLocation, actionType = "enemiesHurtOnly", reachType = "radial" )
@@ -1684,8 +1687,8 @@ def useItems(gameBoard, x, y, window):
             yesno = sg.popup_yes_no("Use?",keep_on_top=True)
             if yesno == "No":
                 continue
-            stolenItems = 0
-            namesOfStolenItems = ""
+            stolenpowers = 0
+            namesOfStolenpowers = ""
 
             validCoordinates = getRadial(location, gameBoard)
             
@@ -1695,15 +1698,16 @@ def useItems(gameBoard, x, y, window):
                 g = gameBoard[ix][iy]
                 if g[0].occupied == True:
                     if g[1].ownedBy == enemyTurn:
-                        for items in g[1].storedItems:
-                            gameBoard[x][y][1].storedItems.append(items)
-                            stolenItems+=1
-                            namesOfStolenItems+=items+"\n"
-                        g[1].storedItems.clear()
-            if stolenItems > 0:
-                sg.popup(f"You've stolen {stolenItems} items:\n"+namesOfStolenItems, keep_on_top = True)
+                        for powers in g[1].activeBuffs:
+                            if powers != "bowling ball":
+                                gameBoard[x][y][1].activeBuffs.append(powers)
+                                stolenpowers+=1
+                                namesOfStolenpowers+=powers+"\n"
+                        g[1].activeBuffs.clear()
+            if stolenpowers > 0:
+                sg.popup(f"You've stolen {stolenpowers} powers:\n"+namesOfStolenpowers, keep_on_top = True)
             
-            gameBoard[x][y][1].storedItems.remove("steal powers radial")                              
+            gameBoard[x][y][1].itemsStored.remove("steal powers radial")                              
 
 # teach column
         elif str.find(i, "teach column") >= 0:
@@ -1749,7 +1753,48 @@ def useItems(gameBoard, x, y, window):
                     continue
             sg.popup(f"Taught buffs to {taughtPieces} piece(s).",keep_on_top=True)
             pm(window,f"Taught buffs to {taughtPieces} piece(s).")
+            
+        elif str.find(i, "heir") >= 0:
+            itemsMenu.close()
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "alliesHurtOnly", reachType = "all" )
+            displayBoard(window, gameBoard)
+            window.refresh()
+            yesno = sg.popup_yes_no("Use?",keep_on_top=True)
+            if yesno == "No":
+                continue
 
+            if "burdened" in gameBoard[x][y][1].activeDebuffs:
+                sg.popup("This piece cannot acquire item orbs as it is burdened by an effect.")
+                pm(window, "This piece cannot acquire item orbs as it is burdened by an effect.")
+                continue
+
+            itemsCount = 0
+            for i in gameBoard:
+                for j in i:
+                    if j[0].occupied and j[1].ownedBy == playerTurn and j[1]!= gameBoard[x][y][1]:
+                        for items in j[1].storedItems:
+                            gameBoard[x][y][1].storedItems.append(items)
+                            itemsCount+=1
+                        j[1].storedItems.clear()
+            if itemsCount > 0:
+                sg.popup(f"You've inherited {itemsCount} items from your allies.  Don't get yourself killed, now.",keep_on_top = True)
+                pm(window,f"You've inherited {itemsCount} items from your allies.  Don't get yourself killed, now.")
+                
+            updateToolTips(window, gameBoard, playerTurn)
+            sleep(2)
+
+#vampiricism
+        elif str.find(i, "vampiricism") >= 0:
+                itemsMenu.close()
+                yesno = sg.popup_yes_no("Use?",keep_on_top=True)
+                if yesno == "Apply the vampricism buff to yourself?  (Jump killing an enemy allows you to steal (most) powers from them)":
+                    continue
+                gameBoard[x][y][1].activeBuffs.append("vampiricism")
+                gameBoard[x][y][1].storedItems.remove("vampiricism")
+                    
+                        
+            
+#bernie sanders   
         elif str.find(i, "bernie sanders") >= 0:
             itemsMenu.close()
             highlightValidDistance(gameBoard, window, startLocation, actionType = "allOccupiedNeutral", reachType = "all" )
@@ -4669,6 +4714,8 @@ def itemExplanation(i):
             explanation = "Call in an airstrike from an underfunded army.  The plane doesn't have targeting systems installed, so it will carpet bomb the field at random."
         elif i == "haymaker":
             explanation = "Unleash a strong punch that sends a piece flying."
+        elif i == "heir":
+            explanation = "Looks like you're going to have a good heir day!  There is luck in the heir today!  Because this item lets you grab every single item that your allies carry onto this specific piece.  Become an army of one!"
         elif i == "jump proof":
             explanation = "Your piece dons a dapper hard hat, naturally making you immune to being jumped on.  It does not provide any other forms of protection."
         elif i == "jumpoline":
@@ -4682,13 +4729,13 @@ def itemExplanation(i):
         elif i == "move diagonal":
             explanation = "Activate this piece to gain a cool diagonal arrows logo, which allow this piece to permanently move diagonal (while still having access to normal movement)"
         elif i == "secretAgent":
-            explanation = "Activate this to reveal a secret agent in a neighboring square.  This creepy guy will steal items from your opponents if they visit his square, and will give those items to you if you vist him."
+            explanation = "Activate this to reveal a secret agent in a neighboring square.  This creepy guy will steal items from your opponents if they visit his square, and will give those items to you if you visit him."
         elif i in ("mutual treason column", "mutual treason row", "mutual treason radial"):
             explanation = "You and your opponent both utilize some excellent propoganda... any affected pieces permanently switch their allegiances."
         elif i == "mystery box":
             explanation = "Summon a mysterious box.  A random effect will occur for any piece that steps in, from gaining items, getting buffs, being cleansed, losing buffs, getting a\n random negative effect, or even spontaneously exploding!"
         elif i in ("napalm radial", "napalm column", "napalm row"):
-            explanation = "Fire off a stream of fire and sticky substance at your opponents.  Any opponent hit by it will burn to a crisp and leave a hole in the ground.  Allies are unaffected thanks to your sweet aiming skills."
+            explanation = "Fire off a stream of fire and sticky substances at your opponents.  Any opponent hit by it will burn to a crisp and leave a hole in the ground.  Allies are unaffected thanks to your sweet aiming skills."
         elif i == "orb eater":
             explanation = "Summon a hungry orb eater (totally not a mouse) on any empty spot in the field.  It will move around in between turns and eat up any item orbs it finds. Legend has \nit that you shouldn't let an orb eater eat too many..."
         elif i == "place mine":
@@ -4715,6 +4762,8 @@ def itemExplanation(i):
             explanation = "A scary hand that will periodically grab a random piece from the field, permanently removing it from play.  \nAfter claiming a victim, it takes its time doing whatever it is that spooky hands do, before looking for a new victim."
         elif i in ("steal items column","steal items radial","steal items row"):
             explanation = "Steal all unactivated items from all enemies in range.  POSSESSION IS 9/10s of the law, yo!"
+        elif i in ("steal powers column","steal powers radial","steal powers row"):
+            explanation = "Steal (almost) all active buffs from all enemies in range.  Finders keepers! (exceptions exist for some buffs, such as bowling ball)"
         elif i == "sticky time bomb":
             explanation = "Attach a bomb to any in-range piece (including your own).  After five turns, it explodes, killing all surrounding pieces."
         elif i in ("study column", "study row", "study radial"):
@@ -5276,7 +5325,61 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                 else:
                     g[ix][iy][0].highlight = True
             return
-        
+
+
+
+    if actionType == "alliesHurtOnly":
+        if reachType == "row":
+            validLocations = getRow(location, gameBoard)
+            for i in validLocations:
+                ix = i[0]
+                iy = i[1]
+                if g[ix][iy][0].occupied == True:
+                    if g[ix][iy][1].ownedBy == playerTurn:
+                        g[ix][iy][0].highlightRed = True
+                    else:
+                        g[ix][iy][0].highlight = True
+                else:
+                    g[ix][iy][0].highlight = True
+            return
+        if reachType == "column":
+            validLocations = getColumn(location, gameBoard)
+            for i in validLocations:
+                ix = i[0]
+                iy = i[1]
+                if g[ix][iy][0].occupied == True:
+                    if g[ix][iy][1].ownedBy == playerTurn:
+                        g[ix][iy][0].highlightRed = True
+                    else:
+                        g[ix][iy][0].highlight = True
+                else:
+                    g[ix][iy][0].highlight = True
+            return
+        if reachType == "radial":
+            validLocations = getRadial(location, gameBoard)
+            for i in validLocations:
+                ix = i[0]
+                iy = i[1]
+                if g[ix][iy][0].occupied == True:
+                    if g[ix][iy][1].ownedBy == playerTurn:
+                        g[ix][iy][0].highlightRed= True
+                    else:
+                       g[ix][iy][0].highlight = True 
+                else:
+                    g[ix][iy][0].highlight = True
+            return
+        if reachType == "all":
+            for i in gameBoard:
+                for j in i:
+                    
+                    if j[0].occupied == True:
+                        if j[1].ownedBy == playerTurn:
+                            j[0].highlightRed = True
+                            
+            g[x][y][0].highlightRed = False
+            g[x][y][0].hightlightGreen = True
+            return
+            
 
 def movePiece(playerTurn, window, gameBoard):
     #pyautogui.moveTo(10, 10)
@@ -5823,15 +5926,11 @@ def movePiece(playerTurn, window, gameBoard):
                 # if the landing spot is an item Orb:
                 if gameBoard[endLocation[0]][endLocation[1]][0].tileType == "itemOrb":
 
-                    try:
-                        pickUpItemOrb(gameBoard, startLocation[0], startLocation[1], window = window)
-                        pm(window, "Picked up an item")
-                        pickedUpItem = True
-                    except:
-                        print ("Exception in user code:")
-                        print ('-'*60)
-                        traceback.print_exc(file=sys.stdout)
-                        print ('-'*60)
+                   
+                    pickUpItemOrb(gameBoard, startLocation[0], startLocation[1], window = window)
+                    pm(window, "Picked up an item")
+                    pickedUpItem = True
+                 
                     
                 # if the landing spot is missing or still damaged
                 if gameBoard[endLocation[0]][endLocation[1]][0].tileType in [
@@ -6013,14 +6112,23 @@ def movePiece(playerTurn, window, gameBoard):
                             ].tileType = "mystery box"
                             break
                         
-                        randomEvent = random.choice( ["getItems", "lose items", "die"])
+                        randomEvent = random.choice( ["getItems", "lose items", "die", "lose buffs", "lose debuffs"])
                         if randomEvent == "getItems":
                             #get three items
                             for i in range(1,4):
                                 pickUpItemOrb(gameBoard, endLocation[0], endLocation[1], window = window)
                         elif randomEvent == "lose items":
                             gameBoard[endLocation[0]][endLocation[1]][1].storedItems.clear()
-                            sg.popup("You've lost all your held items",keep_on_top = True)
+                            sg.popup("The mystery box has confiscated all of your held items",keep_on_top = True)
+                            pm(window,"The mystery box has confiscated all of your held items")
+                        elif randomEvent == "lose debuffs":
+                            gameBoard[endLocation[0]][endLocation[1]][1].activeDebuffs.clear()
+                            sg.popup("The mystery box has purified you of all negative effects.")
+                            pm(window,"The mystery box has purified you of all negative effects.")
+                        elif randomEvent == "lose buffs":
+                            gameBoard[endLocation[0]][endLocation[1]][1].activeBuffs.clear()
+                            sg.popup("The mystery box has stripped you of all your active buffs.  At least it didn't kill ya, I guess?")
+                            pm(window,"The mystery box has stripped you of all your active buffs.  At least it didn't kill ya, I guess?")
                         elif randomEvent == "die":
                             gameBoard[endLocation[0]][endLocation[1]][0].occupied = False
                             gameBoard[startLocation[0]][startLocation[1]][0].occupied = False
@@ -6032,7 +6140,7 @@ def movePiece(playerTurn, window, gameBoard):
                             window.refresh()
                             playsound("sounds/grenade.mp3", block = False)
                             sg.popup("The mystery box has killed ya!  Get wrecked.", keep_on_top=True)
-                            gameBoard[endLocation[0]][endLocation[1]][0].tileType = "default"
+                            gameBoard[endLocation[0]][endLocation[1]][0].tileType = "mystery box"
                             return
                         
                     if (
@@ -6139,9 +6247,11 @@ def movePiece(playerTurn, window, gameBoard):
                             f"This piece gets to move again; {gameBoard[ endLocation[0] ] [ endLocation[1] ][1].moveAgain} remaining!"
                         )
                         displayBoard(window, gameBoard)
+                        window.disable()
                         moveAgainCheck = sg.popup_yes_no(
                             "This piece gets to go again. Would you like to use it again?", keep_on_top=True
                         )
+                        window.enable()
                         if moveAgainCheck == "Yes":
                             gameBoard[endLocation[0]][endLocation[1]][1].moveAgain -= 1
                             repeatRestrictor[0] = True
@@ -6186,7 +6296,18 @@ def movePiece(playerTurn, window, gameBoard):
                         
                         return
 
-                        
+                    #if vampiricism, then steal the pieces
+                    if "vampiricism" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs and len(gameBoard[endLocation[0]][endLocation[1]][1].activeBuffs)>0:
+                        stealPowersCount = 0
+                        powersList = ""
+                        for buffs in gameBoard[endLocation[0]][endLocation[1]][1].activeBuffs:
+                            if buffs not in ("bowling ball"):
+                                gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs.append(buffs)
+                                powersList += f"{powersList}\n"
+                                stealPowersCount +=1
+                        if stealPowersCount > 0:
+                            sg.popup("You stole {stealPowersCount} powers from the victim: {powersList}", keep_on_top = True)
+                                
                     # set the internal location of the piece to where you want to end up
                     gameBoard[startLocation[0]][startLocation[1]][1].location = (
                         endLocation[0],
