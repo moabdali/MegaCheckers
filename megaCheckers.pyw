@@ -1336,32 +1336,32 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None):
     gameBoard[x][y][1].avatar = f"player{playerOwned}stored"
     explanation = itemExplanation(randItem)
     #randItemName = randItem.center(35)
-    youFoundA = "You found a".center(len(randItem*2))
-    pickupFrame = [ [sg.Image(f"images/{randItem}.png",tooltip = explanation) ],
-        [sg.T(youFoundA, font = "Cambria 30")],
-        [sg.T(randItem, font = "Cambria 50", text_color = "Blue")],
-        [sg.T("(Hover over the picture to read about the item)")],
-        [sg.Button("SWEET", key = "Affirmative")]
-                    ]
-        
-    pickUpLayout = [
-            [sg.Frame("GET ITEM", pickupFrame,element_justification = "center")]
-        ]
-    window.disable()
-    affirmativeList = ("Sweet", "Nice!", "Thanks", "Woot!", "Ok", "K.", "I see...", "Neat.")
-    randomChoice = random.choice(affirmativeList)
-    
-    pickUpWindow = sg.Window("Get item.", pickUpLayout,keep_on_top = True).finalize()
-    pickUpWindow["Affirmative"].update(randomChoice)
-    a = pickUpWindow.read()
-    
-
-    
-    if a[0] == "Affirmative":
-        pickUpWindow.close()
-    window.enable()
-    
-    
+##    youFoundA = "You found a".center(len(randItem*2))
+##    pickupFrame = [ [sg.Image(f"images/{randItem}.png",tooltip = explanation) ],
+##        [sg.T(youFoundA, font = "Cambria 30")],
+##        [sg.T(randItem, font = "Cambria 50", text_color = "Blue")],
+##        [sg.T("(Hover over the picture to read about the item)")],
+##        [sg.Button("SWEET", key = "Affirmative")]
+##                    ]
+##        
+##    pickUpLayout = [
+##            [sg.Frame("GET ITEM", pickupFrame,element_justification = "center")]
+##        ]
+##    window.disable()
+##    affirmativeList = ("Sweet", "Nice!", "Thanks", "Woot!", "Ok", "K.", "I see...", "Neat.")
+##    randomChoice = random.choice(affirmativeList)
+##    
+##    pickUpWindow = sg.Window("Get item.", pickUpLayout,keep_on_top = True).finalize()
+##    pickUpWindow["Affirmative"].update(randomChoice)
+##    a = pickUpWindow.read()
+##    
+##
+##    
+##    if a[0] == "Affirmative":
+##        pickUpWindow.close()
+##    window.enable()
+##    
+    sg.popup(f"You got an item: {randItem}",keep_on_top = True)
     #sg.PopupAnimated(f"images/{randItem}.png",no_titlebar = False, font = "cambria 20",message = f"Picked up an item orb containing \n[{randItemName}]!")
 
 
