@@ -1565,11 +1565,36 @@ def useItems(gameBoard, x, y, window):
                             gameBoard[x][y][1].storedItems.append(items)
                             stolenItems+=1
                             namesOfStolenItems+=items+"\n"
-                        i[y][1].storedItems.remove()
+                        i[y][1].storedItems.clear()
             if stolenItems > 0:
                 sg.popup(f"You've stolen {stolenItems} items:\n"+namesOfStolenItems, keep_on_top = True)
             
-            gameBoard[x][y][1].storedItems.remove("steal items column")                
+            gameBoard[x][y][1].storedItems.remove("steal items column")
+
+
+# steal items row
+        elif str.find(i, "steal items row") >= 0:
+            itemsMenu.close()
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemiesHurtOnly", reachType = "row" )
+            displayBoard(window, gameBoard)
+            window.refresh()
+            yesno = sg.popup_yes_no("Use?",keep_on_top=True)
+            if yesno == "No":
+                continue
+            stolenItems = 0
+            namesOfStolenItems = ""
+            for iIndex, i in enumerate(gameBoard[x]):
+                if i[0].occupied == True:
+                    if i[1].ownedBy == enemyTurn:
+                        for items in i[1].storedItems:
+                            gameBoard[x][y][1].storedItems.append(items)
+                            stolenItems+=1
+                            namesOfStolenItems+=items+"\n"
+                        i[1].storedItems.clear()
+            if stolenItems > 0:
+                sg.popup(f"You've stolen {stolenItems} items:\n"+namesOfStolenItems, keep_on_top = True)
+            
+            gameBoard[x][y][1].storedItems.remove("steal items row")   
                             
 
 # teach column
@@ -3785,7 +3810,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j[0].tileType = "exploding"
                                 displayBoard(window, gameBoard)
                                 window.refresh()
-                                playsound("sounds/grenade.mp3", block = False)
+                                ("sounds/grenade.mp3", block = False)
 
                                 #occupy it with the bowling ball
                                 j[0].tileType = "default"
