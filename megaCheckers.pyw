@@ -6,8 +6,8 @@ from time import sleep
 from PIL import Image
 from io import BytesIO
 import base64
-from playsound import playsound
-import pyautogui
+#from #playsound import #playsound
+#import pyautogui
 
 PublicPNGList = []     
 
@@ -420,7 +420,7 @@ def tripMineCheck(window, gameBoard, x, y):
         if "Energy Forcefield" in g[1].activeBuffs:
             g[1].activeBuffs.remove("Energy Forcefield")
             pm(window, "Trip mine went off!")
-            playsound("sounds/grenade.mp3", block = False)
+            #playsound("sounds/grenade.mp3", block = False)
             sleep(1)
             pm(window, "...But your forcefield saved you.")
             while "trip mine" in g[1].activeBuffs:
@@ -430,7 +430,7 @@ def tripMineCheck(window, gameBoard, x, y):
             g[0].tileType = "exploding"
             displayBoard(window, gameBoard)
             window.refresh()
-            playsound("sounds/grenade.mp3", block = False)
+            #playsound("sounds/grenade.mp3", block = False)
             sleep(0.1)
             g[0].tileType = "default"
             window.refresh()
@@ -456,7 +456,7 @@ def deathCheck(window, gameBoard, move=False):
                     displayBoard(window, gameBoard)
                     
                     window.refresh()
-                    playsound("sounds/grenade.mp3", block = False)
+                    #playsound("sounds/grenade.mp3", block = False)
                     j[0].tileType = "default"
                     displayBoard(window, gameBoard)
                     window.refresh()
@@ -470,7 +470,7 @@ def deathCheck(window, gameBoard, move=False):
             ):
                 if "forceField" in j[1].activeBuffs:
                     j[1].activeBuffs.remove("forcefield")
-                    playsound("sounds/grenade.mp3", block = False)
+                    #playsound("sounds/grenade.mp3", block = False)
                     sg.popup(
                         "You were protected from certain death by your forcefield",
                         keep_on_top=True,
@@ -482,7 +482,7 @@ def deathCheck(window, gameBoard, move=False):
                     j[0].occupied = False
                     displayBoard(window, gameBoard)
                     window.refresh()
-                    playsound("sounds/grenade.mp3", block = False)
+                    #playsound("sounds/grenade.mp3", block = False)
                     sleep(1)
                     j[0].tileType = "default"
                     displayBoard(window, gameBoard)
@@ -510,7 +510,7 @@ def deathCheck(window, gameBoard, move=False):
                     j[0].tileType = "default"
                     displayBoard(window, gameBoard)
                     window.refresh()
-                    playsound("sounds/grenade.mp3", block = False)
+                    #playsound("sounds/grenade.mp3", block = False)
                     sg.popup("A piece died!", keep_on_top=True)
                     return "death"
             # do something for holes
@@ -2185,7 +2185,7 @@ def useItems(gameBoard, x, y, window):
                     gameBoard[x][y][1].storedItems.remove("orb eater")
                     gameBoard[event[0][0]][event[0][1]][0].orbEater = True
                     fileNum = random.randint(1,4)
-                    playsound(f"sounds/squeak{fileNum}.mp3", block = False)
+                    #playsound(f"sounds/squeak{fileNum}.mp3", block = False)
                 elif gameBoard[event[0][0]][event[0][1]][0].orbEater == True:
                     sg.popup("There's already an orb eater here... get your mind out of the gutter, that's not going to happen.",keep_on_top=True)
                     pm(window, "There's already an orb eater here... get your mind out of the gutter, that's not going to happen.")
@@ -3785,7 +3785,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j[0].tileType = "exploding"
                                 displayBoard(window, gameBoard)
                                 window.refresh()
-                                playsound("sounds/grenade.mp3", block = False)
+                                #playsound("sounds/grenade.mp3", block = False)
 
                                 #occupy it with the bowling ball
                                 j[0].tileType = "default"
@@ -3888,7 +3888,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             j[0].tileType = "exploding"
                             displayBoard(window, gameBoard)
                             window.refresh()
-                            playsound("sounds/grenade.mp3", block = False)
+                            #playsound("sounds/grenade.mp3", block = False)
 
                             #occupy it with the bowling ball
                             j[0].tileType = "default"
@@ -3961,7 +3961,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j[0].tileType = "exploding"
                                 displayBoard(window, gameBoard)
                                 window.refresh()
-                                playsound("sounds/grenade.mp3", block = False)
+                                #playsound("sounds/grenade.mp3", block = False)
 
                                 #occupy it with the bowling ball
                                 j[0].tileType = "default"
@@ -4062,7 +4062,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             j[0].tileType = "exploding"
                             displayBoard(window, gameBoard)
                             window.refresh()
-                            playsound("sounds/grenade.mp3", block = False)
+                            #playsound("sounds/grenade.mp3", block = False)
 
                             #occupy it with the bowling ball
                             j[0].tileType = "default"
@@ -4129,7 +4129,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j[0].tileType = "exploding"
                                 displayBoard(window, gameBoard)
                                 window.refresh()
-                                playsound("sounds/grenade.mp3", block = False)
+                                #playsound("sounds/grenade.mp3", block = False)
 
                                 #occupy it with the bowling ball
                                 j[0].tileType = "default"
@@ -4230,7 +4230,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             j[0].tileType = "exploding"
                             displayBoard(window, gameBoard)
                             window.refresh()
-                            playsound("sounds/grenade.mp3", block = False)
+                            #playsound("sounds/grenade.mp3", block = False)
 
                             #occupy it with the bowling ball
                             j[0].tileType = "default"
@@ -4297,7 +4297,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j[0].tileType = "exploding"
                                 displayBoard(window, gameBoard)
                                 window.refresh()
-                                playsound("sounds/grenade.mp3", block = False)
+                                #playsound("sounds/grenade.mp3", block = False)
 
                                 #occupy it with the bowling ball
                                 j[0].tileType = "default"
@@ -4398,7 +4398,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             j[0].tileType = "exploding"
                             displayBoard(window, gameBoard)
                             window.refresh()
-                            playsound("sounds/grenade.mp3", block = False)
+                            #playsound("sounds/grenade.mp3", block = False)
 
                             #occupy it with the bowling ball
                             j[0].tileType = "default"
@@ -5746,7 +5746,7 @@ def movePiece(playerTurn, window, gameBoard):
                             ].tileType = "exploding"
                             displayBoard(window, gameBoard)
                             window.refresh()
-                            playsound("sounds/grenade.mp3", block = False)
+                            #playsound("sounds/grenade.mp3", block = False)
                             sg.popup("Burned to a crisp by the laser", keep_on_top=True)
                             gameBoard[endLocation[0]][endLocation[1]][
                                 0
@@ -5807,7 +5807,7 @@ def movePiece(playerTurn, window, gameBoard):
                             ].tileType = "exploding"
                             displayBoard(window, gameBoard)
                             window.refresh()
-                            playsound("sounds/grenade.mp3", block = False)
+                            #playsound("sounds/grenade.mp3", block = False)
                             sg.popup("Burned to a crisp by the laser", keep_on_top=True)
                             gameBoard[endLocation[0]][endLocation[1]][
                                 0
@@ -5845,7 +5845,7 @@ def movePiece(playerTurn, window, gameBoard):
 ##                            ].tileType = "exploding"
 ##                            displayBoard(window, gameBoard)
 ##                            window.refresh()
-##                            playsound("sounds/grenade.mp3", block = False)
+##                            #playsound("sounds/grenade.mp3", block = False)
 ##                            sg.popup("Burned to a crisp by the laser", keep_on_top=True)
 ##                            return
                             
@@ -5873,7 +5873,7 @@ def movePiece(playerTurn, window, gameBoard):
                             ].tileType = "exploding"
                             displayBoard(window, gameBoard)
                             window.refresh()
-                            playsound("sounds/grenade.mp3", block = False)
+                            #playsound("sounds/grenade.mp3", block = False)
                             sg.popup("Burned to a crisp by the laser", keep_on_top=True)
                             gameBoard[endLocation[0]][endLocation[1]][
                                 0
@@ -5897,7 +5897,7 @@ def movePiece(playerTurn, window, gameBoard):
                             gameBoard[endLocation[0]][endLocation[1]][0].tileType = "exploding"
                             displayBoard(window, gameBoard)
                             window.refresh()
-                            playsound("sounds/grenade.mp3", block = False)
+                            #playsound("sounds/grenade.mp3", block = False)
                             sg.popup("The mystery box has killed ya!  Get wrecked.", keep_on_top=True)
                             gameBoard[endLocation[0]][endLocation[1]][0].tileType = "default"
                             return
@@ -5955,7 +5955,7 @@ def movePiece(playerTurn, window, gameBoard):
                                 1
                             ].activeBuffs.remove("Energy Forcefield")
                             pm(window, "Trip mine went off!")
-                            playsound("sounds/grenade.mp3", block = False)
+                            #playsound("sounds/grenade.mp3", block = False)
                             sleep(1)
                             pm(window, "...But your forcefield saved you.")
                             while (
@@ -5979,7 +5979,7 @@ def movePiece(playerTurn, window, gameBoard):
                             ].tileType = "exploding"
                             displayBoard(window, gameBoard)
                             window.refresh()
-                            playsound("sounds/grenade.mp3", block = False)
+                            #playsound("sounds/grenade.mp3", block = False)
                             sg.popup("Trip mine went off!", keep_on_top=True)
                             gameBoard[endLocation[0]][endLocation[1]][
                                 0
@@ -6101,7 +6101,7 @@ def movePiece(playerTurn, window, gameBoard):
                                 1
                             ].activeBuffs.remove("Energy Forcefield")
                             pm(window, "Trip mine went off!")
-                            playsound("sounds/grenade.mp3", block = False)
+                            #playsound("sounds/grenade.mp3", block = False)
                             sleep(1)
                             pm(window, "...But your forcefield saved you.")
                             while (
@@ -6125,7 +6125,7 @@ def movePiece(playerTurn, window, gameBoard):
                             ].tileType = "exploding"
                             displayBoard(window, gameBoard)
                             window.refresh()
-                            playsound("sounds/grenade.mp3", block = False)
+                            #playsound("sounds/grenade.mp3", block = False)
                             sg.popup("Trip mine went off!", keep_on_top=True)
                             gameBoard[endLocation[0]][endLocation[1]][
                                 0
@@ -6671,7 +6671,7 @@ def begin():
             if orbsEaten > 0:
                 pm(window, f"Orbs eaten by the orb eaters: {orbsEaten}")
                 fileNum = random.randint(1,4)
-                playsound(f"sounds/squeak{fileNum}.mp3", block = False)
+                #playsound(f"sounds/squeak{fileNum}.mp3", block = False)
 
 
 
@@ -6717,7 +6717,7 @@ def begin():
             if orbsEaten > 0:
                 pm(window, f"Orbs eaten by the orb eaters: {orbsEaten}")
                 fileNum = random.randint(1,4)
-                playsound(f"sounds/squeak{fileNum}.mp3", block = False)
+                #playsound(f"sounds/squeak{fileNum}.mp3", block = False)
             
 
 
