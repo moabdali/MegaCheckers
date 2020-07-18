@@ -1594,8 +1594,116 @@ def useItems(gameBoard, x, y, window):
             if stolenItems > 0:
                 sg.popup(f"You've stolen {stolenItems} items:\n"+namesOfStolenItems, keep_on_top = True)
             
-            gameBoard[x][y][1].storedItems.remove("steal items row")   
-                            
+            gameBoard[x][y][1].storedItems.remove("steal items row")
+
+# steal items radial
+        elif str.find(i, "steal items radial") >= 0:
+            itemsMenu.close()
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemiesHurtOnly", reachType = "radial" )
+            displayBoard(window, gameBoard)
+            window.refresh()
+            yesno = sg.popup_yes_no("Use?",keep_on_top=True)
+            if yesno == "No":
+                continue
+            stolenItems = 0
+            namesOfStolenItems = ""
+
+            validCoordinates = getRadial(location, gameBoard)
+            
+            for i in (validCoordinates):
+                ix = i[0]
+                iy = i[1]
+                g = gameBoard[ix][iy]
+                if g[0].occupied == True:
+                    if g[1].ownedBy == enemyTurn:
+                        for items in g[1].storedItems:
+                            gameBoard[x][y][1].storedItems.append(items)
+                            stolenItems+=1
+                            namesOfStolenItems+=items+"\n"
+                        g[1].storedItems.clear()
+            if stolenItems > 0:
+                sg.popup(f"You've stolen {stolenItems} items:\n"+namesOfStolenItems, keep_on_top = True)
+            
+            gameBoard[x][y][1].storedItems.remove("steal items radial")
+            
+# steal powers column
+        elif str.find(i, "steal powers column") >= 0:
+            itemsMenu.close()
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemiesHurtOnly", reachType = "column" )
+            displayBoard(window, gameBoard)
+            window.refresh()
+            yesno = sg.popup_yes_no("Use?",keep_on_top=True)
+            if yesno == "No":
+                continue
+            stolenItems = 0
+            namesOfStolenItems = ""
+            for iIndex, i in enumerate(gameBoard):
+                if i[y][0].occupied == True:
+                    if i[y][1].ownedBy == enemyTurn:
+                        for items in i[y][1].storedItems:
+                            gameBoard[x][y][1].storedItems.append(items)
+                            stolenItems+=1
+                            namesOfStolenItems+=items+"\n"
+                        i[y][1].storedItems.clear()
+            if stolenItems > 0:
+                sg.popup(f"You've stolen {stolenItems} items:\n"+namesOfStolenItems, keep_on_top = True)
+            
+            gameBoard[x][y][1].storedItems.remove("steal items column")
+
+
+# steal powers row
+        elif str.find(i, "steal powers row") >= 0:
+            itemsMenu.close()
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemiesHurtOnly", reachType = "row" )
+            displayBoard(window, gameBoard)
+            window.refresh()
+            yesno = sg.popup_yes_no("Use?",keep_on_top=True)
+            if yesno == "No":
+                continue
+            stolenItems = 0
+            namesOfStolenItems = ""
+            for iIndex, i in enumerate(gameBoard[x]):
+                if i[0].occupied == True:
+                    if i[1].ownedBy == enemyTurn:
+                        for items in i[1].storedItems:
+                            gameBoard[x][y][1].storedItems.append(items)
+                            stolenItems+=1
+                            namesOfStolenItems+=items+"\n"
+                        i[1].storedItems.clear()
+            if stolenItems > 0:
+                sg.popup(f"You've stolen {stolenItems} items:\n"+namesOfStolenItems, keep_on_top = True)
+            
+            gameBoard[x][y][1].storedItems.remove("steal powers row")
+
+# steal items radial
+        elif str.find(i, "steal powers radial") >= 0:
+            itemsMenu.close()
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemiesHurtOnly", reachType = "radial" )
+            displayBoard(window, gameBoard)
+            window.refresh()
+            yesno = sg.popup_yes_no("Use?",keep_on_top=True)
+            if yesno == "No":
+                continue
+            stolenItems = 0
+            namesOfStolenItems = ""
+
+            validCoordinates = getRadial(location, gameBoard)
+            
+            for i in (validCoordinates):
+                ix = i[0]
+                iy = i[1]
+                g = gameBoard[ix][iy]
+                if g[0].occupied == True:
+                    if g[1].ownedBy == enemyTurn:
+                        for items in g[1].storedItems:
+                            gameBoard[x][y][1].storedItems.append(items)
+                            stolenItems+=1
+                            namesOfStolenItems+=items+"\n"
+                        g[1].storedItems.clear()
+            if stolenItems > 0:
+                sg.popup(f"You've stolen {stolenItems} items:\n"+namesOfStolenItems, keep_on_top = True)
+            
+            gameBoard[x][y][1].storedItems.remove("steal powers radial")                              
 
 # teach column
         elif str.find(i, "teach column") >= 0:
@@ -3810,7 +3918,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j[0].tileType = "exploding"
                                 displayBoard(window, gameBoard)
                                 window.refresh()
-                                ("sounds/grenade.mp3", block = False)
+                                playsound("sounds/grenade.mp3", block = False)
 
                                 #occupy it with the bowling ball
                                 j[0].tileType = "default"
