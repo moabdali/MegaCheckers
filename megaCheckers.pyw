@@ -1298,6 +1298,12 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None):
         "smart bombs",
         "snake tunneling",
         "spooky hand",
+        "steal items column",
+        #"steal items radial",
+        #"steal items row",
+        #"steal powers column"
+        #"steal powers radial",
+        #"steal powers row",
         "sticky time bomb",
         #"study column",
         #"study radial",
@@ -1315,7 +1321,7 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None):
         "vile radial",
         "warp",
         #"wololo column",
-        #"wololo radial",
+        "wololo radial",
         #"wololo row",
         "worm hole",
     ]
@@ -1540,6 +1546,31 @@ def useItems(gameBoard, x, y, window):
                         j[0].occupied = False
                         j[1] = 0
                         j[0].tileType = "default"
+
+# steal items column
+        elif str.find(i, "steal items column") >= 0:
+            itemsMenu.close()
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemiesHurtOnly", reachType = "column" )
+            displayBoard(window, gameBoard)
+            window.refresh()
+            yesno = sg.popup_yes_no("Use?",keep_on_top=True)
+            if yesno == "No":
+                continue
+            stolenItems = 0
+            namesOfStolenItems = ""
+            for iIndex, i in enumerate(gameBoard):
+                if i[y][0].occupied == True:
+                    if i[y][1].ownedBy == enemyTurn:
+                        for items in i[y][1].storedItems:
+                            gameBoard[x][y][1].storedItems.append(items)
+                            stolenItems+=1
+                            namesOfStolenItems+=items+"\n"
+                        i[y][1].storedItems.remove()
+            if stolenItems > 0:
+                sg.popup(f"You've stolen {stolenItems} items:\n"+namesOfStolenItems, keep_on_top = True)
+            
+            gameBoard[x][y][1].storedItems.remove("steal items column")                
+                            
 
 # teach column
         elif str.find(i, "teach column") >= 0:
@@ -4549,6 +4580,8 @@ def itemExplanation(i):
             explanation = "A robotic snake starts digging around from the summoning point.  It burrows around and pushes the ground up (to an elevation of 2), killing enemies but sparing your pieces."
         elif i == "spooky hand":
             explanation = "A scary hand that will periodically grab a random piece from the field, permanently removing it from play.  \nAfter claiming a victim, it takes its time doing whatever it is that spooky hands do, before looking for a new victim."
+        elif i in ("steal items column","steal items radial","steal items row"):
+            explanation = "Steal all unactivated items from all enemies in range.  POSSESSION IS 9/10s of the law, yo!"
         elif i == "sticky time bomb":
             explanation = "Attach a bomb to any in-range piece (including your own).  After five turns, it explodes, killing all surrounding pieces."
         elif i in ("study column", "study row", "study radial"):
@@ -4571,7 +4604,7 @@ def itemExplanation(i):
             explanation = "Set up a worm hole at an adjacent tile.  As long as your pieces are not on the warp tile, you can use your move to teleport to that worm hole from anywhere."
         elif i == "dump items":
             explanation = "After activating this item, your other unused items clump together into a giant item orb and then get dumped on any empty tile on the field.  \nAny piece that is capable of picking up items - including your enemy's pieces - can then grab this wad of powers."
-
+        
         elif i == "bernie sanders":
             explanation = "Taxes all pieces on the field and gathers up all of your unactivated items and all of your opponent's unactivated items.  Shuffles the items around and randomly redistributes the wealth \namong all pieces that are capable of receiving items.  DO YOU FEEL THE BURN?  If so... that might be a napalm row...  uh oh."
         else:
@@ -5656,9 +5689,16 @@ def movePiece(playerTurn, window, gameBoard):
 
                 # if the landing spot is an item Orb:
                 if gameBoard[endLocation[0]][endLocation[1]][0].tileType == "itemOrb":
-                    pickUpItemOrb(gameBoard, startLocation[0], startLocation[1], window = window)
-                    pm(window, "Picked up an item")
-                    pickedUpItem = True
+
+                    try:
+                        pickUpItemOrb(gameBoard, startLocation[0], startLocation[1], window = window)
+                        pm(window, "Picked up an item")
+                        pickedUpItem = True
+                    except:
+                        print ("Exception in user code:")
+                        print ('-'*60)
+                        traceback.print_exc(file=sys.stdout)
+                        print ('-'*60)
                     
                 # if the landing spot is missing or still damaged
                 if gameBoard[endLocation[0]][endLocation[1]][0].tileType in [
