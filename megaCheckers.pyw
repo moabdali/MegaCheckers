@@ -1288,6 +1288,9 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None):
         "berzerk",
         "bernie sanders",
         "bowling ball",
+        "canyon column",
+        "canyon radial",
+        "canyon row",
         "care package drop",
         "charity",
         "dead man's trigger",
@@ -1320,6 +1323,7 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None):
         "reproduce",
         "round earth theory",
         "secretAgent",
+        "seismic activity",
         "shuffle column",
         "shuffle item orbs",
         "shuffle radial",
@@ -1421,6 +1425,16 @@ def disableEverything(window, turnOn = False):
         window["cheetz"].update(disabled=True)
 
 
+
+#####################################################################
+#  Adding an item:  note that each item you add has a
+#  few dependencies.  You must add the item logic in this section,
+#  add the name of the file to the function pickUpItemOrbs,
+#  add an explanation to the def itemExplanation, add a 75x75 .png
+#  to the images folder that matches the item name, and also add a
+#  picture, if needed, to def displayBoard if the item has any
+#  pictures that need to show up on the board.
+#####################################################################
         
 # using an item
 def useItems(gameBoard, x, y, window):
@@ -1578,6 +1592,62 @@ def useItems(gameBoard, x, y, window):
                         j[1] = 0
                         j[0].tileType = "default"
 
+
+# canyon row
+        if str.find(i, "canyon row") >= 0:
+            itemsMenu.close()
+            gameBoard[x][y][1].grey = False
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "all", reachType = "row" )
+            displayBoard(window, gameBoard)
+            window.refresh()
+            yesno = sg.popup_yes_no("Lower all affected tiles?",keep_on_top=True)
+            if yesno == "No":
+                continue
+            gameBoard[x][y][1].storedItems.remove("canyon row")
+
+            for i in gameBoard[x]:
+                i[0].tileHeight = -2
+            sg.popup("A canyon row was created.", keep_on_top = True)
+            pm(window, "A canyon row was created.")
+
+# canyon column
+        if str.find(i, "canyon column") >= 0:
+            itemsMenu.close()
+            gameBoard[x][y][1].grey = False
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "all", reachType = "column" )
+            displayBoard(window, gameBoard)
+            window.refresh()
+            yesno = sg.popup_yes_no("Lower all affected tiles?",keep_on_top=True)
+            if yesno == "No":
+                continue
+            gameBoard[x][y][1].storedItems.remove("canyon column")
+
+            for i in gameBoard:
+                i[y][0].tileHeight = -2
+            sg.popup("A canyon column was created.", keep_on_top = True)
+            pm(window, "A canyon column was created.")
+
+#canyon radial
+        if str.find(i, "canyon radial") >= 0:
+            itemsMenu.close()
+            gameBoard[x][y][1].grey = False
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "all", reachType = "radial" )
+            displayBoard(window, gameBoard)
+            window.refresh()
+            yesno = sg.popup_yes_no("Lower all affected tiles?",keep_on_top=True)
+            if yesno == "No":
+                continue
+            gameBoard[x][y][1].storedItems.remove("canyon radial")
+
+            validLocations = getRadial(location, gameBoard)
+            for i in validLocations:
+                ix = i[0]
+                iy = i[1]
+                gameBoard[ix][iy][0].tileHeight = -2
+            sg.popup("A canyon radial was created.", keep_on_top = True)
+            pm(window, "A canyon radial was created.")
+
+            
 #elevate tile
         elif str.find(i, "elevate tile") >= 0:
             itemsMenu.close()
@@ -1682,6 +1752,66 @@ def useItems(gameBoard, x, y, window):
                 gameBoard[x][y][1].storedItems.remove("elevate tile")
                 sg.popup(f"The tile was raised to a height of {gameBoard[x][y][0].tileHeight}", keep_on_top = True)
                 continue
+#seismic activity
+        elif str.find(i, "seismic activity") >= 0:
+            itemsMenu.close()
+            yesno = sg.popup_yes_no("Induce an earthquake?  This will cause random elevation changes to the field.  Pieces will not be harmed.",keep_on_top=True)
+            if yesno == "No":
+                continue
+            magnitude = random.randint(1,10)
+            gameBoard[x][y][1].storedItems.remove("seismic activity")
+            if magnitude in (1,2,3,4):
+                raiseLower = (-1,0,0,0,0,1)
+                for j in gameBoard:
+                    for i in j:
+                        change = random.choice(raiseLower)
+                        i[0].tileHeight = i[0].tileHeight + change
+                        if i[0].tileHeight < -2:
+                            i[0].tileHeight = -2
+                        elif i[0].tileHeight > 2:
+                            i[0].tileHeight = 2
+                sg.popup(f"A minor magnitude {magnitude} earthquake hit.",keep_on_top = True)
+            if magnitude in (5,6,7,8):
+                raiseLower = (-2,-1,-1,0,0,0,0,1,1,1,2)
+                for j in gameBoard:
+                    for i in j:
+                        change = random.choice(raiseLower)
+                        i[0].tileHeight = i[0].tileHeight + change
+                        if i[0].tileHeight < -2:
+                            i[0].tileHeight = -2
+                        elif i[0].tileHeight > 2:
+                            i[0].tileHeight = 2
+                sg.popup(f"A high magnitude {magnitude} earthquake hit.",keep_on_top = True)
+            if magnitude in (9,10):
+                raiseLower = (-2,-1,1,+2)
+                for j in gameBoard:
+                    for i in j:
+                        change = random.choice(raiseLower)
+                        i[0].tileHeight = i[0].tileHeight + change
+                        if i[0].tileHeight < -2:
+                            i[0].tileHeight = -2
+                        elif i[0].tileHeight > 2:
+                            i[0].tileHeight = 2
+                sg.popup(f"An extreme magnitude {magnitude} earthquake hit!  The playing field has been altered significantly.",keep_on_top = True)
+
+
+#invert elevation all
+        elif str.find(i, "invert elevation all") >= 0:
+            itemsMenu.close()
+##            highlightValidDistance(gameBoard, window, startLocation, actionType = "all", reachType = "invert elevation all" )
+##            displayBoard(window, gameBoard)
+##            window.refresh()
+            yesno = sg.popup_yes_no("Do you want to invert all the heights of tiles on the field to their opposites? (low -> high, high -> low, neutral height tiles will be unaffected)",keep_on_top=True)
+            if yesno == "No":
+                continue
+
+            for i in gameBoard:
+                for j in i:
+                    j[0].tileHeight *= -1
+            sg.popup("The field's topology has been inverted.  All highs are lows, and all lows are highs.", keep_on_top = True)
+            pm(window,"The field's topology has been inverted.  All highs are lows, and all lows are highs.")
+            gameBoard[x][y][1].storedItems.remove("invert elevation all")
+        
 #trump
         elif str.find(i, "trump") >= 0:
             itemsMenu.close()
@@ -4879,12 +5009,16 @@ def itemExplanation(i):
             explanation = "Your piece loses all of its powers and negative effects... but becomes a crazy bowling ball on a rampage."
         elif i == "berzerk":
             explanation = "MUST RIP AND TEAR!  BERZERK MAKE PIECE GO ANGRY.  PIECE GO HUNGRY.  PIECE EAT ENEMY AND FOE ALIKE! IF PIECE EAT A PIECE, PIECE MOVE AGAIN!  \nIF PIECE EAT AGAIN ON THIS BONUS MOVE, THEN PIECE GO AGAIN ONE MORE TIME!  THAT THREE TIME MAX!  PIECE MUST EAT MEAT FROM DEAD ENEMY EVERY TURN!  \nPIECE STORE MEAT FROM EACH KILL!  IF PIECE HAVE NO MEAT STORED TO EAT, PIECE DIE!  PIECE NO LIKE DIE UNLESS HE MAKE OTHERS DIE!"
+        elif i in ("canyon row","canyon column","canyon radial"):
+            explanation = "Dig a canyon that lowers all the pieces in the affected area.  The tiles are only lowered; the pieces on the tiles are not affected in any way."
         elif i == "care package drop":
             explanation = "A plane drops off some item orbs near the selected opponent"
         elif i == "charity":
             explanation = "Gift your opponent a brand new piece.  How charitable!"
         elif i == "dead man's trigger":
             explanation = "Strap a bomb to yourself and activate the trigger.  If you die, you release the trigger, and the enemy that jumped on you dies as well."
+        elif i == "dump items":
+            explanation = "After activating this item, your other unused items clump together into a giant item orb and then get dumped on any empty tile on the field.  \nAny piece that is capable of picking up items - including your enemy's pieces - can then grab this wad of powers."
         elif i == "elevate tile":
             explanation = "Spontaneously cause the tile that you're standing on to rise up to a chosen height.  Let the other pieces know you are above them, in more ways than one."
         elif i == "Energy Forcefield":
@@ -4929,6 +5063,8 @@ def itemExplanation(i):
             explanation = "at the earlier time no matter what.  Activate this and your tile will be marked with a recall logo, which in 10 turns will whisk you back to the exact snapshot you were at the earlier time no matter what.\n Activate this and your tile will be marked with a recall logo, which in 10 turns will whisk you back to the exact snapshot you were"
         elif i == "reproduce":
             explanation = "Use this to create a baby piece within range.  It will be a brand new simple piece.  How do non-sentient pieces have babies?  Life... uh... finds a way."
+        elif i == "seismic activity":
+            explanation = "Induce an earthquake.  A random magnitude earthquake will occur: the higher the magnitude, the more drastically the field will be altered.  Random elevations and depressions will occur throughout the field.  Surprisingly, no pieces will be harmed."
         elif i == "round earth theory":
             explanation = "The scientists called us insane, but thanks to the power of pseudoscience, you prove the earth is totally round, so if you can totally wrap around the playing field.  \nThat is, if you wanted to, you can move from the right edge of the map straight to the left edge.  Or from the top straight to the bottom.  Pac man style."
         elif i in ("shuffle column", "shuffle radial", "shuffle row"):
@@ -4969,8 +5105,6 @@ def itemExplanation(i):
             explanation = "Your piece uses the ancient incantatation of the ancient Ayoh Eetoo religion, which convinces all in-range pieces that hear the word of truth to join your \nside.  It somehow changes their color to match your team's color, too.  Weird how that works."
         elif i == "worm hole":
             explanation = "Set up a worm hole at an adjacent tile.  As long as your pieces are not on the warp tile, you can use your move to teleport to that worm hole from anywhere."
-        elif i == "dump items":
-            explanation = "After activating this item, your other unused items clump together into a giant item orb and then get dumped on any empty tile on the field.  \nAny piece that is capable of picking up items - including your enemy's pieces - can then grab this wad of powers."
         elif i == "vampiricism":
             explanation = "Pounce and feed on a piece's essence, gaining its power.  Sorry, the piece doesn't come back from the dead as your lover, nor do you get to sparkle in the sun.  Well, you do, because you're made of metal, but whatever."
         elif i == "bernie sanders":
@@ -5347,6 +5481,11 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                 iy = i[1]
                 g[ix][iy][0].highlight = True
             return
+##        if reachType == "invert elevation all":
+##            for i in gameBoard:
+##                for j in i:
+##                    if j[0].tileHeight != 0:
+##                        j[0].highlightRed = True
 
 
     if actionType == "allOccupiedNeutral":
