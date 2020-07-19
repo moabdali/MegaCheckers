@@ -1285,7 +1285,7 @@ def emptySpots(gameBoard,trueEmpty = False):
 def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None):
     # items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
     items = [
-        
+        "berzerk",
         "bernie sanders",
         "bowling ball",
         "care package drop",
@@ -1345,6 +1345,7 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None):
         "teach radial",
         "teach row",
         "trap orb",
+        "trump",
         #"trip mine column",
         "trip mine radial",
         #"trip mine row",
@@ -1681,8 +1682,39 @@ def useItems(gameBoard, x, y, window):
                 gameBoard[x][y][1].storedItems.remove("elevate tile")
                 sg.popup(f"The tile was raised to a height of {gameBoard[x][y][0].tileHeight}", keep_on_top = True)
                 continue
+#trump
+        elif str.find(i, "trump") >= 0:
+            itemsMenu.close()
+            yesno = sg.popup_yes_no("Do you want to build a wall and make your opponent pay for it?* (*The wall is free and no one will actually pay for it)",keep_on_top=True)
+            if yesno == "No":
+                continue
 
-
+            wallWindowLayout = [
+                [ sg.T(f"The wall can be built in either your row or your column.  The wall will raise all existing tiles in range, but will not repair any broken tiles.  Any pieces that are on the tiles will not be affected other than being elevated.") ],
+                [ sg.Button(f"Build Row Wall",key = "row wall"), sg.Button(f"Build Column Wall", key = "column wall"),sg.Button("Cancel")]
+                ]
+            wallWindow = sg.Window("Do you want to build a wall?", wallWindowLayout)
+            while True:
+                event = wallWindow.read()
+                if event[0] == "Cancel":
+                    wallWindow.close()
+                    break
+                if event[0] == "row wall":
+                    for i in gameBoard[x]:
+                        wallWindow.close()
+                        i[0].tileHeight = 2
+                        gameBoard[x][y][1].storedItems.remove("trump")
+                    sg.popup("The wall was built with the most covfefe of engineering.  Congrats!", keep_on_top = True)
+                    pm(window, "The wall was built with the most covfefe of engineering.  Congrats!")
+                    break
+                if event[0] == "column wall":
+                    for i in gameBoard:
+                        wallWindow.close()
+                        i[y][0].tileHeight = 2
+                        gameBoard[x][y][1].storedItems.remove("trump")
+                    sg.popup("The wall was built with the most covfefe of engineering.  Congrats!", keep_on_top = True)
+                    pm(window, "The wall was built with the most covfefe of engineering.  Congrats!")
+                    break
 # steal items column
         elif str.find(i, "steal items column") >= 0:
             itemsMenu.close()
@@ -4927,6 +4959,8 @@ def itemExplanation(i):
             explanation = "Put a bomb disguised as an item orb that will explode on your enemy if they touch it.  The trap orb looks exactly like a normal item orb, \nso there's no way to tell it apart.  However, your pieces will be aware that it's a trap and will be unaffected by them (stepping on them leaves the trap as-is so that your opponent still has a shot at getting tricked by it"
         elif i in ("trip mine radial", "trip mine row", "trip mine column"):
             explanation = "Set up a bomb on all in-range enemies that can detect when the piece moves.  Upon moving, the piece will trigger the bomb, causing it to explode upon finishing its action.  \nA piece that has a trip mine set up on it can still use most items (including teleporting items) safely without setting the bomb off. However, items that are linked to moving will still set it off."
+        elif i == ("trump"):
+            explanation = "We're gonna build a great wall, a wall greater than what the enemy team ever built, and we're gonna make them pay for it!  The wall will be built by taking all of the affected tiles and raising them to max height.  The wall can either be built as a row or a column."
         elif i in ("vile radial", "vile column", "vile row"):
             explanation = "Apply the 'vile' debuff to all enemies within range. This nasty effect stops affected pieces from being able to apply buffs to themselves.  \nThey can still pick up any items normally, and use items that don't apply positive effects to themselves."
         elif i == "warp" :

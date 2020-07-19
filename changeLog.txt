@@ -1,5 +1,8 @@
 ChangeLog
 
+v.0.9.95 July 19, 2020
+	Added Trump (build a wall)
+
 v.0.9.94 July 19, 2020
 	Added elevate tile and sink tile.  Added meat icons to berzerk.  Berzerk still needs an icon and piece indicator.
 
