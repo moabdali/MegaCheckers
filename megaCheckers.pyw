@@ -1703,7 +1703,7 @@ def useItems(gameBoard, x, y, window):
                     for i in gameBoard[x]:
                         wallWindow.close()
                         i[0].tileHeight = 2
-                        gameBoard[x][y][1].storedItems.remove("trump")
+                    gameBoard[x][y][1].storedItems.remove("trump")
                     sg.popup("The wall was built with the most covfefe of engineering.  Congrats!", keep_on_top = True)
                     pm(window, "The wall was built with the most covfefe of engineering.  Congrats!")
                     break
@@ -1711,7 +1711,7 @@ def useItems(gameBoard, x, y, window):
                     for i in gameBoard:
                         wallWindow.close()
                         i[y][0].tileHeight = 2
-                        gameBoard[x][y][1].storedItems.remove("trump")
+                    gameBoard[x][y][1].storedItems.remove("trump")
                     sg.popup("The wall was built with the most covfefe of engineering.  Congrats!", keep_on_top = True)
                     pm(window, "The wall was built with the most covfefe of engineering.  Congrats!")
                     break
