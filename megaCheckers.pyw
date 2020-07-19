@@ -1282,7 +1282,7 @@ def emptySpots(gameBoard,trueEmpty = False):
 
 
 # the item list
-def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None):
+def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getItemsList = False):
     # items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
     items = [
         "berzerk",
@@ -1362,6 +1362,8 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None):
     ]
     if introOnly == True:
         return random.choice(items)
+    if getItemsList == True:
+        return items
 
     #pick an item at random; should eventually have biases on the items by separating them into different lists that have different odds of being chosen
     randItem = random.choice(items)
@@ -7690,7 +7692,15 @@ def tutorial():
             myText = "Invalid choice.  There are no tutorials in progress. Try clicking something on the menu on the left."
             window["tutorialInfo"].update(myText)
 
-
+def popupItemExplanation():
+    itemsList = pickUpItemOrb(getItemsList = True)
+        
+    text = "THIS IS A TEMPORARY SOLUTION TO SHOWING ALL THE ITEMS.  IT'LL BE REPLACED BY SOMETHING PRETTIER... EVENTUALLY.\n\n\n"
+    for i in itemsList:
+        explanation = itemExplanation(i)
+        text+= f"{i}: {explanation}"
+        text+="\n\n\n"
+    sg.PopupScrolled(text)
     
 
 def main():
@@ -7699,6 +7709,7 @@ def main():
     frame_1 = [
         [sg.Button("Begin game", key="begin", size = (20,5))],
         [sg.Button("How to play", key="tutorial", size = (20,2))],
+        [sg.Button("Read about items")]
     ]
     frame_2 = [
         #name of item
@@ -7735,11 +7746,15 @@ def main():
     if event[0] == "begin":
         introWindow.close()
         begin()
-
+    if event[0] == "Read about items":
+        introWindow.close()
+        popupItemExplanation()
+        main()
 
 # delete me after debug
 #begin()
 # delete me
+
 
 
 main()

@@ -1,5 +1,8 @@
 ChangeLog
 
+v.0.9.96.1 July 19, 2020
+	Added a small item explanations popup as an interim item log.
+
 v.0.9.96 July 19. 2020
 	Added canyon CRR, added invert elevation all, added seismic activity.
 
