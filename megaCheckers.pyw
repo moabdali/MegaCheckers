@@ -134,6 +134,8 @@ class Piece:
         self.recallTurn = False
         self.forcefieldTurn = 0
         self.stickyTimeBomb = False
+        self.feralMeatCount = False
+        self.feralAttacksLeft = False
     def determineAvatar(self):
         pass
 
@@ -160,8 +162,7 @@ class Tile:
         self.highlightRed = False #red
         self.highlightGreen = False #green
         self.highlightBrown = False #brown
-        self.feralMeatCount = False
-        self.feralAttacksLeft = False
+        
 
     def describeSelf(self):
 
@@ -1122,6 +1123,16 @@ def displayBoard(window, gameBoard):
                         stepMax = Image.open("images/moveAgainMax.png").convert("RGBA")
                         avatar.paste(stepMax, (0, 0), stepMax)
 
+                    if g.feralMeatCount == 1:
+                        meat1 = Image.open("images/meat1.png").convert("RGBA")
+                        avatar.paste(meat1, (0, 0), meat1)
+                    elif g.feralMeatCount == 2:
+                        meat2 = Image.open("images/meat2.png").convert("RGBA")
+                        avatar.paste(meat2, (0, 0), meat2)
+                    elif g.feralMeatCount >= 3:
+                        meat3 = Image.open("images/meat3.png").convert("RGBA")
+                        avatar.paste(meat3, (0, 0), meat3)
+                    
                     if "vile" in g.activeDebuffs:
                         vile = Image.open("images/vile.png").convert("RGBA")
                         avatar.paste(vile, (0, 0), vile)
@@ -1281,6 +1292,7 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None):
         "charity",
         "dead man's trigger",
         "dump items",
+        "elevate tile",
         "Energy Forcefield",
         "floor restore",
         "haphazard airstrike",
@@ -1312,6 +1324,7 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None):
         "shuffle item orbs",
         "shuffle radial",
         "shuffle row",
+        "sink tile",
         "smart bombs",
         "snake tunneling",
         "spooky hand",
@@ -1563,6 +1576,112 @@ def useItems(gameBoard, x, y, window):
                         j[0].occupied = False
                         j[1] = 0
                         j[0].tileType = "default"
+
+#elevate tile
+        elif str.find(i, "elevate tile") >= 0:
+            itemsMenu.close()
+            yesno = sg.popup_yes_no("Elevate the tile you're on?",keep_on_top=True)
+            if yesno == "No":
+                continue
+            elevateTileLayout = [
+                [ sg.T(f"What level would you like to increase the elevation to? (CurrentElevation: {gameBoard[x][y][0].tileHeight})") ],
+                [ sg.Button(f"Elevation {elevation}",key = f"elevation{elevation}")for elevation in range(-1,3)],[sg.Button("Cancel")]
+                ]
+            elevateWindow = sg.Window("Choose an elevation", elevateTileLayout,keep_on_top = True)
+            while True:
+                window.disable()
+                event = elevateWindow.read()
+                window.enable()
+                if event[0] == f"elevation-1":
+                    raiseTile = -1
+                elif event[0] == f"elevation0":
+                    raiseTile = 0
+                elif event[0] == f"elevation1":
+                    raiseTile = 1
+                elif event[0] == f"elevation2":
+                    raiseTile = 2
+                elif event[0] == "Cancel":
+                    elevateWindow.close()
+                    break
+                if raiseTile <= gameBoard[x][y][0].tileHeight:
+                    sg.popup("You must pick a height greater than the current height.", keep_on_top = True)
+                    pm(window,"You must pick a height greater than the current height.")
+                    continue
+                if raiseTile > gameBoard[x][y][0].tileHeight:
+                    gameBoard[x][y][0].tileHeight = raiseTile
+                    sg.popup("The tile was raised up!  Look down upon the peons.", keep_on_top = True)
+                    pm(window,"The tile was raised up!  Look down upon the peons.")
+                    elevateWindow.close()
+                    break
+
+
+#sink tile
+        elif str.find(i, "sink tile") >= 0:
+            itemsMenu.close()
+            yesno = sg.popup_yes_no("Lower the tile you're on?",keep_on_top=True)
+            if yesno == "No":
+                continue
+            elevateTileLayout = [
+                [ sg.T(f"What level would you like to decrease the elevation to? (CurrentElevation: {gameBoard[x][y][0].tileHeight})") ],
+                [ sg.Button(f"Elevation {elevation}",key = f"elevation{elevation}")for elevation in range(-2,2)],[sg.Button("Cancel")]
+                ]
+            elevateWindow = sg.Window("Choose an elevation", elevateTileLayout,keep_on_top = True)
+            while True:
+                window.disable()
+                event = elevateWindow.read()
+                window.enable()
+                if event[0] == f"elevation-2":
+                    lowerTile = -2
+                elif event[0] == f"elevation-1":
+                    lowerTile = -1
+                elif event[0] == f"elevation0":
+                    lowerTile = 0
+                elif event[0] == f"elevation1":
+                    lowerTile = 1
+                elif event[0] == "Cancel":
+                    elevateWindow.close()
+                    break
+                if lowerTile >= gameBoard[x][y][0].tileHeight:
+                    sg.popup("You must pick a height lower than the current height.", keep_on_top = True)
+                    pm(window,"You must pick a height lower than the current height.")
+                    continue
+                if lowerTile < gameBoard[x][y][0].tileHeight:
+                    gameBoard[x][y][0].tileHeight = lowerTile
+                    sg.popup("The tile was lowered down!  I guess you like looking up to others?", keep_on_top = True)
+                    pm(window,"The tile was lowered down!  I guess you like looking up to other?")
+                    elevateWindow.close()
+                    break
+                
+##            if gameBoard[x][y][0].tileHeight == 2:
+##                sg.popup("Tile is already at maximum elevation; it can't be raised further", keep_on_top = True)
+##                pm(window, "Tile is already at maximum elevation; it can't be raised further")
+##                continue
+##            else:
+##                gameBoard[x][y][0].tileHeight+=1
+##                if gameBoard[x][y][0].tileHeight > 2:
+##                    gameBoard[x][y][0].tileHeight = 2
+##                gameBoard[x][y][1].storedItems.remove("elevate tile")
+##                sg.popup(f"The tile was raised to a height of {gameBoard[x][y][0].tileHeight}", keep_on_top = True)
+##                continue
+
+#sink tile
+        elif str.find(i, "sink tile") >= 0:
+            itemsMenu.close()
+            yesno = sg.popup_yes_no("Sink this tile?",keep_on_top=True)
+            if yesno == "No":
+                continue
+            if gameBoard[x][y][0].tileHeight == 2:
+                sg.popup("Tile is already at maximum elevation; it can't be raised further", keep_on_top = True)
+                pm(window, "Tile is already at maximum elevation; it can't be raised further")
+                continue
+            else:
+                gameBoard[x][y][0].tileHeight+=1
+                if gameBoard[x][y][0].tileHeight > 2:
+                    gameBoard[x][y][0].tileHeight = 2
+                gameBoard[x][y][1].storedItems.remove("elevate tile")
+                sg.popup(f"The tile was raised to a height of {gameBoard[x][y][0].tileHeight}", keep_on_top = True)
+                continue
+
 
 # steal items column
         elif str.find(i, "steal items column") >= 0:
@@ -4734,6 +4853,8 @@ def itemExplanation(i):
             explanation = "Gift your opponent a brand new piece.  How charitable!"
         elif i == "dead man's trigger":
             explanation = "Strap a bomb to yourself and activate the trigger.  If you die, you release the trigger, and the enemy that jumped on you dies as well."
+        elif i == "elevate tile":
+            explanation = "Spontaneously cause the tile that you're standing on to rise up to a chosen height.  Let the other pieces know you are above them, in more ways than one."
         elif i == "Energy Forcefield":
             explanation = "A forcefield that will protect you from an explosion or energy attack; the shield remains active for one turn, shielding you from further explosions."
         elif i == "floor restore":
@@ -4782,6 +4903,8 @@ def itemExplanation(i):
             explanation = "All tiles in the affected area get shuffled around randomly."
         elif i == "shuffle item orbs":
             explanation = "All item orbs (and trap orbs) get removed from the field and then are randomly redistributed on empty spots of the field."
+        elif i == "sink tile":
+            explanation = "Use sheer will to lower the tile to a chosen elevation."
         elif i == "smart bombs":
             explanation = "A well funded military sends in a precision bomber to shoot bombs on the field and will make sure to avoid hitting your pieces."
         elif i == "snake tunneling":
@@ -4789,7 +4912,7 @@ def itemExplanation(i):
         elif i == "spooky hand":
             explanation = "A scary hand that will periodically grab a random piece from the field, permanently removing it from play.  \nAfter claiming a victim, it takes its time doing whatever it is that spooky hands do, before looking for a new victim."
         elif i in ("steal items column","steal items radial","steal items row"):
-            explanation = "Steal all unactivated items from all enemies in range.  POSSESSION IS 9/10s of the law, yo!"
+            explanation = "Steal all unactivated items from all enemies in range.  POSSESSION IS 9/10 OF THE LAW, YO!"
         elif i in ("steal powers column","steal powers radial","steal powers row"):
             explanation = "Steal (almost) all active buffs from all enemies in range.  Finders keepers! (exceptions exist for some buffs, such as bowling ball)"
         elif i == "sticky time bomb":
@@ -6895,7 +7018,7 @@ def begin():
     window = sg.Window(
         "MegaCheckers",
         layout,
-        keep_on_top = True,
+        #keep_on_top = True,
         disable_close=False,
         
         location=(0, 0),

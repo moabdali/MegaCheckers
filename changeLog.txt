@@ -1,8 +1,11 @@
 ChangeLog
 
+v.0.9.94 July 19, 2020
+	Added elevate tile and sink tile.  Added meat icons to berzerk.  Berzerk still needs an icon and piece indicator.
+
 
 v.0.9.93 July 18, 2020
-	Added Berzerk.  Began working on stopping pieces from jumping to higher tiles (nothing added for forced movement pieces yet such as haymaker).  Added the vampiricism explanation mentioned earlier.  Bezerker still needs a picture for the item, and a indicator.  Vampiricism needs an indicator as well. 
+	Added Berzerk.  Began working on stopping pieces from jumping to higher tiles (nothing added for forced movement pieces yet such as haymaker).  Added the vampiricism explanation mentioned earlier.  Bezerk still needs a picture for the item, and a indicator.  Vampiricism needs an indicator as well. 
 
 v.0.9.92 July 18, 2020
 	Added steal powers CRR, steal items CRR, heir, and vampiricism.  Must add explanation for vampiricism to items explanation.
