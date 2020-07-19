@@ -1,7 +1,11 @@
 ChangeLog
 
+
+v.0.9.93 July 18, 2020
+	Added Berzerk.  Began working on stopping pieces from jumping to higher tiles (nothing added for forced movement pieces yet such as haymaker).  Added the vampiricism explanation mentioned earlier.  Bezerker still needs a picture for the item, and a indicator.  Vampiricism needs an indicator as well. 
+
 v.0.9.92 July 18, 2020
-	Added steal powers CRR, steal items CRR, heir, and vampiricism.
+	Added steal powers CRR, steal items CRR, heir, and vampiricism.  Must add explanation for vampiricism to items explanation.
 v.0.9.91.1 July 17, 2020
 	Added a try except for pickupitems.  Added steal items column.
 v.0.9.91 July 17, 2020

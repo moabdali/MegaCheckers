@@ -160,6 +160,8 @@ class Tile:
         self.highlightRed = False #red
         self.highlightGreen = False #green
         self.highlightBrown = False #brown
+        self.feralMeatCount = False
+        self.feralAttacksLeft = False
 
     def describeSelf(self):
 
@@ -375,6 +377,20 @@ def getDistance(a, b, c, d):
     distance = verticalDistance + horizontalDistance
     return distance
 
+def feralFunction(window, gameBoard, playerTurn):
+    for i in gameBoard:
+        for j in i:
+            if j[0].occupied == True and j[1].ownedBy == playerTurn and "feral" in j[1].activeBuffs:
+                j[1].feralMeatCount -= 1
+                
+                j[1].feralAttacksLeft = 3
+                if j[1].feralMeatCount < 0:
+                    sg.popup("Your feral piece died of hunger.  Being feral is energy intensive!", keep_on_top = True)
+                    pm(window, "Your feral piece died of hunger.  Being feral is energy intensive!")
+                    j[0].occupied = False
+                    #explode
+            
+    
 # generate item orbs
 def createOrbs(window, gameBoard):
     dangerTurn = 30
@@ -2962,7 +2978,17 @@ def useItems(gameBoard, x, y, window):
             laserCheck(window, gameBoard)
             displayBoard(window, g)
 
-            
+# berzerk
+        elif str.find(i, "berzerk") >= 0:
+            itemsMenu.close
+            yesno = sg.popup_yes_no("Using this item will make this piece go berzerk, allowing it to attack again after each kill (up to three times), but at the cost of dying if it goes any turns without attacking (it can also attack its allies). Use?",keep_on_top=True)
+            if yesno == "No":
+                continue
+            g = gameBoard
+            g[x][y][1].storedItems.remove("berzerk")
+            g[x][y][1].activeBuffs.append("feral")
+            g[x][y][1].feralMeatCount = 0
+            g[x][y][1].feralAttacksLeft = 3
 # shuffle radial
         elif str.find(i, "shuffle radial") >= 0:
             itemsMenu.close()
@@ -4700,6 +4726,8 @@ def itemExplanation(i):
         
         if i == "bowling ball":
             explanation = "Your piece loses all of its powers and negative effects... but becomes a crazy bowling ball on a rampage."
+        elif i == "berzerk":
+            explanation = "MUST RIP AND TEAR!  BERZERK MAKE PIECE GO ANGRY.  PIECE GO HUNGRY.  PIECE EAT ENEMY AND FOE ALIKE! IF PIECE EAT A PIECE, PIECE MOVE AGAIN!  \nIF PIECE EAT AGAIN ON THIS BONUS MOVE, THEN PIECE GO AGAIN ONE MORE TIME!  THAT THREE TIME MAX!  PIECE MUST EAT MEAT FROM DEAD ENEMY EVERY TURN!  \nPIECE STORE MEAT FROM EACH KILL!  IF PIECE HAVE NO MEAT STORED TO EAT, PIECE DIE!  PIECE NO LIKE DIE UNLESS HE MAKE OTHERS DIE!"
         elif i == "care package drop":
             explanation = "A plane drops off some item orbs near the selected opponent"
         elif i == "charity":
@@ -4786,7 +4814,8 @@ def itemExplanation(i):
             explanation = "Set up a worm hole at an adjacent tile.  As long as your pieces are not on the warp tile, you can use your move to teleport to that worm hole from anywhere."
         elif i == "dump items":
             explanation = "After activating this item, your other unused items clump together into a giant item orb and then get dumped on any empty tile on the field.  \nAny piece that is capable of picking up items - including your enemy's pieces - can then grab this wad of powers."
-        
+        elif i == "vampiricism":
+            explanation = "Pounce and feed on a piece's essence, gaining its power.  Sorry, the piece doesn't come back from the dead as your lover, nor do you get to sparkle in the sun.  Well, you do, because you're made of metal, but whatever."
         elif i == "bernie sanders":
             explanation = "Taxes all pieces on the field and gathers up all of your unactivated items and all of your opponent's unactivated items.  Shuffles the items around and randomly redistributes the wealth \namong all pieces that are capable of receiving items.  DO YOU FEEL THE BURN?  If so... that might be a napalm row...  uh oh."
         else:
@@ -5403,7 +5432,7 @@ def movePiece(playerTurn, window, gameBoard):
     while True:
         
         
-        
+        updateToolTips(window, gameBoard,playerTurn)
         highlightValidDistance(gameBoard, window, (0,0),turnOff = True)
         #flag for keeping track of pieces that were teleported
         if pieceTeleported == True:
@@ -5923,6 +5952,21 @@ def movePiece(playerTurn, window, gameBoard):
                 # if it's close enough:  (DESTINATION/LEGAL MOVE)#
                 ##################################################
 
+
+
+                
+                if (gameBoard[startLocation[0]][startLocation[1]][0].tileHeight+1 < gameBoard[endLocation[0]][endLocation[1]][0].tileHeight) and ("climb tile" not in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs):
+                    sg.popup("The tile you're trying to get to is too high",keep_on_top = True)
+                    pm(window,"The tile you're trying to get to is too high")
+                    continue
+
+
+
+
+
+
+
+                #####
                 # if the landing spot is an item Orb:
                 if gameBoard[endLocation[0]][endLocation[1]][0].tileType == "itemOrb":
 
@@ -6264,13 +6308,13 @@ def movePiece(playerTurn, window, gameBoard):
                         return 1
 
                 # killing own piece (illegal)
-                elif gameBoard[endLocation[0]][endLocation[1]][1].ownedBy == playerTurn:
+                elif gameBoard[endLocation[0]][endLocation[1]][1].ownedBy == playerTurn and "feral" not in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
                     pm(window, "You can't jumpkill your own piece.")
                     window.refresh
                     continue
 
                 # kill enemy piece; elif enemy owns the ending location
-                elif gameBoard[endLocation[0]][endLocation[1]][1].ownedBy != playerTurn:
+                elif gameBoard[endLocation[0]][endLocation[1]][1].ownedBy != playerTurn or "feral" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
                     # test to see if the piece can be jumped
                     if (
                         "jump proof"
@@ -6385,8 +6429,24 @@ def movePiece(playerTurn, window, gameBoard):
                                 0
                             ].tileType = "default"
                             break
-                    window["information"].update(f"Jumpkilled an enemy piece!")
-                    pm(window, "Jumpkilled an enemy piece!")
+                    if "feral" in gameBoard[endLocation[0]][endLocation[1]][1].activeBuffs:
+                        window["information"].update(f"THE BEZERKER KILLED A PIECE AND ENRAGED!  IT HAS EATEN PART OF THE VICTIM AND IS STORING THE REST FOR LATER!")
+                        gameBoard[endLocation[0]][endLocation[1]][1].feralAttacksLeft -=1
+                        gameBoard[endLocation[0]][endLocation[1]][1].feralMeatCount +=1
+                        sg.popup(f"THE BEZERKER KILLED A PIECE AND ENRAGED!  IT HAS EATEN PART OF THE VICTIM AND IS STORING THE REST FOR LATER!",keep_on_top = True)
+                        if gameBoard[endLocation[0]][endLocation[1]][1].feralAttacksLeft > 0:
+                            sleep(1)
+                            window["information"].update(f"THE BEZERKER IS STILL ENRAGED AND HAS {gameBoard[endLocation[0]][endLocation[1]][1].feralAttacksLeft} ATTACKS LEFT, AND HAS STORED {gameBoard[endLocation[0]][endLocation[1]][1].feralMeatCount} MEATS")
+                            sg.popup(f"THE BEZERKER IS STILL ENRAGED AND HAS {gameBoard[endLocation[0]][endLocation[1]][1].feralAttacksLeft} ATTACKS LEFT, AND HAS STORED {gameBoard[endLocation[0]][endLocation[1]][1].feralMeatCount} MEATS",keep_on_top = True)
+                            continue
+                        else:
+                            return
+                        pm(window, "Jumpkilled an enemy piece!")
+
+
+                    else:
+                        window["information"].update(f"Jumpkilled an enemy piece!")
+                        pm(window, "Jumpkilled an enemy piece!")
 
                     secretAgentCheck(window, gameBoard, startLocation, endLocation, playerTurn)
                     
@@ -6513,6 +6573,8 @@ def updateToolTips(window, gameBoard,playerTurn):
                 for b in gameBoard[iIndex][j][1].activeBuffs:
                     if b == None:
                         b = ""
+                    if b == "feral":
+                        b = f"berzerk - [{gameBoard[iIndex][j][1].feralMeatCount} meats stored]"
                     buffs+=b+"\n"
                 for d in gameBoard[iIndex][j][1].activeDebuffs:
                     if d == None:
@@ -6525,7 +6587,7 @@ def updateToolTips(window, gameBoard,playerTurn):
 
                     for s in  gameBoard[iIndex][j][1].storedItems:
                         storedItems += "???"+"\n"
-                toolTipData = buffs+debuffs+storedItems
+                toolTipData = buffs+debuffs+storedItems+f"\nTILE HEIGHT: {gameBoard[iIndex][j][0].tileHeight}"
             else:
                 toolTipData = ""
                 specialConditions = "Special Conditions:\n"
@@ -6557,8 +6619,8 @@ def updateToolTips(window, gameBoard,playerTurn):
             except:
                 pm(window, "oops, an error occurred with trying to set a new tooltip")
     #debug attempt
-    window.disappear()
-    window.reappear()
+##    window.disappear()
+##    window.reappear()
     #debug attempt
                 
 
@@ -6926,7 +6988,7 @@ def begin():
                 pm(window, f"Orbs eaten by the orb eaters: {orbsEaten}")
                 fileNum = random.randint(1,4)
                 playsound(f"sounds/squeak{fileNum}.mp3", block = False)
-
+            feralFunction(window, gameBoard, playerTurn)
 
 
 
@@ -6972,7 +7034,7 @@ def begin():
                 pm(window, f"Orbs eaten by the orb eaters: {orbsEaten}")
                 fileNum = random.randint(1,4)
                 playsound(f"sounds/squeak{fileNum}.mp3", block = False)
-            
+            feralFunction(window, gameBoard, playerTurn)
 
 
 def tutorial():
