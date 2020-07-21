@@ -1,5 +1,8 @@
 ChangeLog
 
+v.0.9.99 July 20, 2020
+	Added study column.  
+
 v.0.9.98 July 20, 2020
 	Added sounds to vampiricism.  Corrected an error that showed your own buffs instead of your enemies when stealing powers with vampiricism.  Added an indicator for vampiricism.  Added sounds for Trump, canyon CRR, earthquake.
 

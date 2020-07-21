@@ -1347,7 +1347,7 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
         "steal powers radial",
         "steal powers row",
         "sticky time bomb",
-        #"study column",
+        "study column",
         #"study radial",
         "study row",
         "suicide bomb column",
@@ -1357,10 +1357,11 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
         "teach radial",
         "teach row",
         "trap orb",
-        "trump",
         #"trip mine column",
         "trip mine radial",
         #"trip mine row",
+        "trump",
+        "vampiricism",
         "vile radial",
         "warp",
         #"wololo column",
@@ -2316,6 +2317,43 @@ def useItems(gameBoard, x, y, window):
                     continue
             sg.popup(f"Taught buffs to {taughtPieces} piece(s).",keep_on_top=True)
             pm(window,f"Taught buffs to {taughtPieces} piece(s).")
+
+
+
+#study column           
+        elif str.find(i, "study column") >= 0:            
+            itemsMenu.close()
+            gameBoard[x][y][1].grey = False
+            if "inert" in gameBoard[x][y][1].activeDebuffs:
+                sg.popup("This piece is inert and can't learn anything",keep_on_top=True)
+                continue
+            learnedFromPieces = 0
+            learnedString = ""
+            bowlingBallRejected = False
+            # for every column in gameBoard
+            for iIndex, i in enumerate(gameBoard):
+                #if the x'th item belongs to you, and it's not the same item that's sharing the items
+                c = i[y]
+                if c[0].occupied == True and c[1].ownedBy == playerTurn and iIndex != x and len(c[1].activeBuffs)>0:
+                    #for every item in the active buffs list
+                    c[1].grey = True
+                    pm(window,"Learning")
+                    displayBoard(window,gameBoard)
+                    window.refresh()
+                    learnedFromPieces += 1
+                    for k in c[1].activeBuffs:
+                        if k != "bowling ball":
+                            learnedString += k + "\n"
+                            gameBoard[x][y][1].activeBuffs.append(k)
+                        else:
+                            bowlingBallRejected = True
+                    c[1].grey = False
+                else:
+                    continue
+            if bowlingBallRejected == True:
+                sg.popup("You attempted to learn bowling ball from at least one piece, but it proved to be too difficult.",keep_on_top=True)
+            sg.popup(f"Learned buffs from {learnedFromPieces} piece(s): \n{learnedString}", keep_on_top = True)
+            pm(window,f"Learned buffs from {learnedFromPieces} piece(s): \n{learnedString}")
 
 #study row            
         elif str.find(i, "study row") >= 0:            
