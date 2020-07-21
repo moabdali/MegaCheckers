@@ -1,5 +1,8 @@
 ChangeLog
 
+v.0.9.101 July 22, 2020
+	Fixed some more forcefield errors. Corrected a ton of round earth theory errors.  Added highlighting for round earth theory. Corrected some interaction errors between round earth theory and move diagonal (used to be able to teleport anywhere).
+
 v.0.9.100 July 21, 2020
 	Added Pandemonium (random shuffling of all tiles).  Fixed some errors with laser check (now correctly applies forcefields at the beginning of the turn and they last the entire turn).   Added a punch noise for haymaker.  Added a "get item" sound.  Added an elevation reference map. 
 v.0.9.99 July 20, 2020

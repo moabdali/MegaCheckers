@@ -32,8 +32,8 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[rows - i - 1][j][1].avatar = "default"
 
  ###### DELETE ME ##########
-##    for i in range(2):
-##       for j in range(columns):
+    for i in range(2):
+       for j in range(columns):
 ##           #middle row generator
 ##           rows = 6
 ##           gameBoard[rows - i - 1][j][0] = Tile(occupied=True)
@@ -62,8 +62,10 @@ def initializeField(columns, rows, window, gameBoard):
 ##           gameBoard[i][j][1].storedItems.append("warp")
 ##           gameBoard[i][j][1].storedItems.append("purity tile")
 ##           
-##           gameBoard[i][j][1].activeBuffs.append("move diagonal")
-##           gameBoard[i][j][1].activeBuffs.append("jump proof")
+           gameBoard[i][j][1].activeBuffs.append("move diagonal")
+           gameBoard[i][j][1].activeBuffs.append("feral")
+           gameBoard[i][j][1].feralMeatCount = 3
+           gameBoard[i][j][1].activeBuffs.append("round earth theory")
 ##           
 ##
 ##           #the middle row
@@ -3139,8 +3141,9 @@ def useItems(gameBoard, x, y, window):
             # for each item inside the specific gameBoard row
             for j in gameBoard:
                 if isinstance(j[y][1], Piece):
-                    if "Energy Forcefield" in j[1].activeBuffs:
+                    if "Energy Forcefield" in j[1][y].activeBuffs:
                         sg.popup("Your shield activated and protected you from damage.", keep_on_top = True)
+                        j[1].forceFieldTurn = PublicStats.turnCount
                         j[1].activeBuffs.remove("Energy Forcefield")
                         continue
                     if j[1].forceFieldTurn == PublicStats.turnCount:
@@ -3165,6 +3168,7 @@ def useItems(gameBoard, x, y, window):
                 if isinstance(gameBoard[x][y][1], Piece):
                     if "Energy Forcefield" in j[1].activeBuffs:
                         sg.popup("Your shield activated and protected you from damage.", keep_on_top = True)
+                        j[1].forceFieldTurn = PublicStats.turnCount
                         j[1].activeBuffs.remove("Energy Forcefield")
                         continue
                     
@@ -3208,6 +3212,17 @@ def useItems(gameBoard, x, y, window):
                                 sleep(1)
                                 j[0].tileType = backupTile
                                 j[1].activeBuffs.remove("Energy Forcefield")
+                                j[1].forceFieldTurn = PublicStats.turnCount
+                                sg.popup("A piece was protected by a force field.", keep_on_top = True)
+                                continue
+                            if j[1].forceFieldTurn == PublicStats.turnCount:
+                                backupTile = j[0].tileType
+                                j[0].tileType = "exploding"
+                                displayBoard(window, gameBoard)
+                                window.refresh()
+                                sleep(1)
+                                j[0].tileType = backupTile
+                                sg.popup("A piece was protected by a force field.", keep_on_top = True)
                                 continue
                             # if no forcefield, kill
                             else:
@@ -3254,6 +3269,17 @@ def useItems(gameBoard, x, y, window):
                                 sleep(1)
                                 j[y][0].tileType = backupTile
                                 j[y][1].activeBuffs.remove("Energy Forcefield")
+                                j[y][1].forceFieldTurn = PublicStats.turnCount
+                                sg.popup("A piece was protected by a force field.", keep_on_top = True)
+                                continue
+                            if j[y][1].forceFieldTurn == PublicStats.turnCount:
+                                backupTile = j[y][0].tileType
+                                j[y][0].tileType = "exploding"
+                                displayBoard(window, gameBoard)
+                                window.refresh()
+                                sleep(1)
+                                j[y][0].tileType = backupTile
+                                sg.popup("A piece was protected by a force field.", keep_on_top = True)
                                 continue
                             # if no forcefield, kill
                             else:
@@ -3299,7 +3325,17 @@ def useItems(gameBoard, x, y, window):
                             sleep(1)
                             g[0].tileType = backupTile
                             g[1].activeBuffs.remove("Energy Forcefield")
+                            g[1].forceFieldTurn = PublicStats.turnCount
                             continue
+                        if g[1].forceFieldTurn == PublicStats.turnCount:
+                                backupTile = g[0].tileType
+                                g[0].tileType = "exploding"
+                                displayBoard(window, gameBoard)
+                                window.refresh()
+                                sleep(1)
+                                g[0].tileType = backupTile
+                                sg.popup("A piece was protected by a force field.", keep_on_top = True)
+                                continue
                         # if no forcefield, kill
                         else:
                             g[0].occupied = False
@@ -4166,6 +4202,16 @@ def useItems(gameBoard, x, y, window):
                         sleep(1)
                         gameBoard[x][y][0].tileType = backupTile
                         gameBoard[x][y][1].activeBuffs.remove("Energy Forcefield")
+                        sg.popup("A piece was protected by a forcefield.", keep_on_top = True)
+                        continue
+                    elif gameBoard[x][y][1].forceFieldTurn == PublicStats.turnCount:
+                        backupTile = gameBoard[x][y][0].tileType
+                        gameBoard[x][y][0].tileType = "exploding"
+                        displayBoard(window, gameBoard)
+                        window.refresh()
+                        sleep(1)
+                        gameBoard[x][y][0].tileType = backupTile
+                        sg.popup("A piece was protected by a forcefield.", keep_on_top = True)
                         continue
                     else:
                         gameBoard[x][y][0].occupied = False
@@ -4230,6 +4276,17 @@ def useItems(gameBoard, x, y, window):
                         sleep(1)
                         gameBoard[x][y][0].tileType = backupTile
                         gameBoard[x][y][1].activeBuffs.remove("Energy Forcefield")
+                        sg.popup("A piece was protected by a forcefield.", keep_on_top = True)
+                        continue
+                    elif gameBoard[x][y][1].forceFieldTurn == PublicStats.turnCount:
+                        backupTile = gameBoard[x][y][0].tileType
+                        gameBoard[x][y][0].tileType = "exploding"
+                        displayBoard(window, gameBoard)
+                        window.refresh()
+                        sleep(1)
+                        gameBoard[x][y][0].tileType = backupTile
+                        gameBoard[x][y][1].activeBuffs.remove("Energy Forcefield")
+                        sg.popup("A piece was protected by a forcefield.", keep_on_top = True)
                         continue
                     # if the enemy is targeted and doesn't have a force field, kill them and the block
                     else:
@@ -5391,70 +5448,108 @@ def itemExplanation(i):
 def roundEarthTheoryFunction(gameBoard,startLocation,endLocation,columns,rows):
 #trying to go from right side to left side
     #try to go straight right to straight left
-    if startLocation[0] == endLocation[0]:
-        if startLocation[1] == columns-1 and endLocation[1] == 0:
-            sg.popup("Your piece rolled around to the other side!",keep_on_top=True)
+
+    #sg.popup("Checking round earth theory!", keep_on_top=True)
+   
+    if startLocation[0] == endLocation[0] and startLocation[1] == columns-1 and endLocation[1] == 0:
+            #sg.popup("Your piece rolled around to the other side!1",keep_on_top=True)
+            sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
             return True
     #trying to go down right
     elif startLocation[0] == endLocation[0]-1 and startLocation[1] == columns -1 and endLocation[1] == 0 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-        sg.popup("Your piece rolled around to the other side!",keep_on_top=True)
+        #sg.popup("Your piece rolled around to the other side!2",keep_on_top=True)
+        sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
         return True
     #trying to go up right
     elif startLocation[0] == endLocation[0]+1 and startLocation[1] == columns -1 and endLocation[1] == 0 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-        sg.popup("Your piece rolled around to the other side!",keep_on_top=True)
+        #sg.popup("Your piece rolled around to the other side!3",keep_on_top=True)
+        sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
         return True
     
 
 #trying to go from left to right side
     #try to go straight left to straight right
-    if startLocation[0] == endLocation[0]:
-        if startLocation[1] == 0 and endLocation[1] == columns -1:
-            sg.popup("Your piece rolled around to the other side!",keep_on_top=True)
+    if startLocation[0] == endLocation[0] and startLocation[1] == 0 and endLocation[1] == columns -1:
+            #sg.popup("Your piece rolled around to the other side4!",keep_on_top=True)
+            sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
             return True
     #trying to go down right
     elif startLocation[0] == endLocation[0]-1 and startLocation[1] == 0  and endLocation[1] == columns -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        #sg.popup("Your piece rolled around to the other side!5", keep_on_top=True)
         sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
         return True
     #trying to go up right
     elif startLocation[0] == endLocation[0]+1 and startLocation[1] == 0 and endLocation[1] == columns -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        #sg.popup("Your piece rolled around to the other side!6", keep_on_top=True)
         sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
         return True
 
         
 #trying to go from up to down
     #try to go straight up to straight down
-    if startLocation[1] == endLocation[1]:
-        if startLocation[0] == 0 and endLocation[0] == rows -1:
+    if startLocation[1] == endLocation[1] and startLocation[0] == 0 and endLocation[0] == rows -1:
+            #sg.popup("Your piece rolled around to the other side!7", keep_on_top=True)
             sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
             return True
     #trying to go up right
     elif startLocation[0] == 0 and startLocation[1] == (endLocation[1] +1) and endLocation[0] == rows -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        #sg.popup("Your piece rolled around to the other side!8", keep_on_top=True)
         sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
         return True
-    #trying to go up right
+    #trying to go up left
     elif startLocation[1] == endLocation[1]-1 and startLocation[0] == 0 and endLocation[0] == rows -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        #sg.popup("Your piece rolled around to the other side!9", keep_on_top=True)
         sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
         return True
+
+#in case of error, below is
+    #if startLocation[1] == endLocation[1]:
+        #if startLocation[0] == rows-1 and endLocation[0] == 0:
+#trying to go from down to up
+    #try to go straight down to straight up
+    if startLocation[1] == endLocation[1] and startLocation[0] == rows-1 and endLocation[0] == 0:
+            #sg.popup("Your piece rolled around to the other side!10", keep_on_top=True)
+            sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+            return True
+    #trying to go down right
+    elif startLocation[0] == rows-1 and startLocation[1] == (endLocation[1] +1) and endLocation[0] == 0 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        #sg.popup("Your piece rolled around to the other side!11", keep_on_top=True)
+        sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+        return True
+    #trying to go down left
+    elif startLocation[1] == endLocation[1]-1 and startLocation[0] == 0 and endLocation[0] == rows-1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        #sg.popup("Your piece rolled around to the other side!12", keep_on_top=True)
+        sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+        return True
+    
 
 #diagonals (only works with diagonal enabled
     if "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
         #upleft
         if startLocation[0] == 0 and startLocation[1] == 0 and endLocation[0] == rows-1 and endLocation[1] == columns-1:
+            #sg.popup("Your piece rolled around to the other side!13", keep_on_top=True)
             sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
             return True
         #upright
         if startLocation[0] == 0 and startLocation[1] == columns-1 and endLocation[0] == rows-1 and endLocation[1] == 0:
+            #sg.popup("Your piece rolled around to the other side!14", keep_on_top=True)
             sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
             return True
         #downleft
         if startLocation[0] == rows-1 and startLocation[1] == 0 and endLocation[0] == 0 and endLocation[1] == columns-1:
+            #sg.popup("Your piece rolled around to the other side!15", keep_on_top=True)
             sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
             return True
         #downright
         if startLocation[0] == rows-1 and startLocation[1] == columns-1 and endLocation[0] == 0 and endLocation[1] == 0:
+            #sg.popup("Your piece rolled around to the other side!16", keep_on_top=True)
             sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
             return True
+        else:
+            return False
     else:
+        #debug
+        sg.popup("Round earth theory failed.", keep_on_top = True)
         return False
 
 
@@ -5462,6 +5557,8 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
     x = startLocation[0]
     y = startLocation[1]
     g = gameBoard
+    columns = len(gameBoard)
+    rows = len(gameBoard)
 
     if g[x][y][0].occupied == True:
         playerTurn = g[x][y][1].ownedBy
@@ -5519,12 +5616,12 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                     else:
                         j[0].highlight = True
                         
-        if "move diagonal" in g[x][y][1].activeBuffs:
+        if "move diagonal" in g[x][y][1].activeBuffs: #and "round earth theory" not in g[x][y][1].activeBuffs
             validLocations = getRadial(location, gameBoard)
             for i in validLocations:
                 xi = i[0]
                 yi = i[1]
-
+                #print(validLocations)
                 #if the floor isn't gone
                 if g[xi][yi][0].tileType not in [
                     "damaged",
@@ -5556,61 +5653,449 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                             else:
                                 continue
 
-        #placeholder for around the world
-        #elif around the world
-        #normal
-        else:
-            validLocations = getCross(location, gameBoard)
-            for i in validLocations:
-                xi = i[0]
-                yi = i[1]
-                
-                #if the floor isn't gone
-                if g[xi][yi][0].tileType not in [
-                    "damaged",
-                    "destroyed",
-                    "damaged1",
-                    "damaged2",
-                    "damaged3",
-                    "damaged4",
-                    "damaged5",
-                    "damaged6",
-                    "damaged7",
-                    "damaged8"
-                ]:
-                    if g[xi][yi][0].tileHeight-1 > g[x][y][0].tileHeight:
-                        if "climb tile" not in g[x][y][1].activeBuffs:
-                            continue
+        
+        if "round earth theory" in g[x][y][1].activeBuffs:
+
+        #go right to straight left (you're on the right edge and want to appear on left edge)
+            #if you're on the very right side
+            if y == columns - 1:
+                #if it's really high
+                if g[x][0][0].tileHeight-1 > g[x][y][0].tileHeight:
+                    if "climb tile" in g[x][y][1].activeBuffs:
+                        if g[x][0][0].occupied == True:
+                            if g[x][0][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                g[x][0][0].highlightRed = True
+                        else:
+                            g[x][0][0].highlight = True
+                #if it's normal height
+                else:
+                    if g[x][0][0].occupied == True:
+                        if g[x][0][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                            g[x][0][0].highlightRed = True
+                    else:
+                        g[x][0][0].highlight = True
                         
-                    #if nothing's there
-                    if g[xi][yi][0].occupied == False:
-                        g[xi][yi][0].highlight = True
-                    #if someone is there
-                    elif g[xi][yi][0].occupied == True:
-                        if g[xi][yi][1].ownedBy != g[x][y][1].ownedBy:
-                            g[xi][yi][0].highlightRed = True
-                        if g[xi][yi][1].ownedBy == g[xi][yi][1].ownedBy:
-                            if "feral" in g[x][y][1].activeBuffs:
-                                g[xi][yi][0].highlightRed = True
+        #go left straight to the right (you're on the left edge and want to appear on the right edge)
+            if y == 0:
+                #if it's really high
+                if g[x][columns-1][0].tileHeight-1 > g[x][y][0].tileHeight:
+                    if "climb tile" in g[x][y][1].activeBuffs:
+                        if g[x][columns-1][0].occupied == True:
+                            if g[x][columns-1][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                g[x][columns-1][0].highlightRed = True
+                        else:
+                            g[x][columns-1][0].highlight = True
+                #if it's normal height
+                else:
+                    if g[x][columns-1][0].occupied == True:
+                        if g[x][columns-1][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                            g[x][columns-1][0].highlightRed = True
+                    else:
+                        g[x][columns-1][0].highlight = True
+                        
+        #go straight up to the bottom (you're on the top row and want to appear on the bottom)
+            if x == 0:
+                #if it's really high
+                if g[rows-1][y][0].tileHeight-1 > g[x][y][0].tileHeight:
+                    if "climb tile" in g[x][y][1].activeBuffs:
+                        if g[rows-1][y][0].occupied == True:
+                            if g[rows-1][y][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                g[rows-1][y][0].highlightRed = True
+                        else:
+                            g[rows-1][y][0].highlight = True
+                #if it's normal height
+                else:
+                    if g[rows-1][y][0].occupied == True:
+                        if g[rows-1][y][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                            g[rows-1][y][0].highlightRed = True
+                    else:
+                        g[rows-1][y][0].highlight = True
+                        
+        #go straight down to the top (you're on the bottom row and want to reappear on the top)
+            if x == rows-1:
+                #if it's really high
+                if g[0][y][0].tileHeight-1 > g[x][y][0].tileHeight:
+                    if "climb tile" in g[x][y][1].activeBuffs:
+                        if g[0][y][0].occupied == True:
+                            if g[0][y][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                g[0][y][0].highlightRed = True
+                        else:
+                            g[0][y][0].highlight = True
+                #if it's normal height
+                else:
+                    if g[0][y][0].occupied == True:
+                        if g[0][y][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                            g[0][y][0].highlightRed = True
+                    else:
+                        g[0][y][0].highlight = True
+                        
+        #teleport up right (you're on the top row and want to reappear on the bottom row, to the right)
+            if "move diagonal" in g[x][y][1].activeBuffs:
+                if x == 0 and y+1 < columns:
+                    #if it's really high
+                    if g[rows-1][y+1][0].tileHeight-1 > g[x][y][0].tileHeight:
+                        if "climb tile" in g[x][y][1].activeBuffs:
+                            if g[rows-1][y+1][0].occupied == True:
+                                if g[rows-1][y+1][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                    g[rows-1][y+1][0].highlightRed = True
                             else:
-                                continue
+                                g[rows-1][y+1][0].highlight = True
+                    #if it's normal height
+                    else:
+                        if g[rows-1][y+1][0].occupied == True:
+                            if g[rows-1][y+1][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                g[rows-1][y+1][0].highlightRed = True
+                        else:
+                            g[rows-1][y+1][0].highlight = True
                             
-                #if the floor is gone, continue
-                if g[xi][yi][0].tileType in [
-                    "damaged",
-                    "destroyed",
-                    "damaged1",
-                    "damaged2",
-                    "damaged3",
-                    "damaged4",
-                    "damaged5",
-                    "damaged6",
-                    "damaged7",
-                    "damaged8"
-                ]:
-                    continue
-                                
-                g[xi][yi][0].highlight = True
+                #upright along right edge but not top row            
+                elif x >= 0 and x < rows and y == columns-1:
+                    if g[x-1][0][0].tileHeight-1 > g[x][y][0].tileHeight:
+                        if "climb tile" in g[x][y][1].activeBuffs:
+                            if g[x-1][0][0].occupied == True:
+                                if g[x-1][0][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                    g[x-1][0][0].highlightRed = True
+                            else:
+                                g[x-1][0][0].highlight = True
+                    #if it's normal height
+                    else:
+                        if g[x-1][0][0].occupied == True:
+                            if g[x-1][0][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                g[x-1][0][0].highlightRed = True
+                        else:
+                            g[x-1][0][0].highlight = True
+                            
+        #teleport up left (you're on the top row and want to appear on the bottom, slightly to the left)
+            if "move diagonal" in g[x][y][1].activeBuffs:
+                if x == 0 and y-1>=0:
+                    #if it's really high
+                    if g[rows-1][y-1][0].tileHeight-1 > g[x][y][0].tileHeight:
+                        if "climb tile" in g[x][y][1].activeBuffs:
+                            if g[rows-1][y-1][0].occupied == True:
+                                if g[rows-1][y-1][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                    g[rows-1][y-1][0].highlightRed = True
+                            else:
+                                g[rows-1][y-1][0].highlight = True
+                    #if it's normal height
+                    else:
+                        if g[rows-1][y-1][0].occupied == True:
+                            if g[rows-1][y-1][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                g[rows-1][y-1][0].highlightRed = True
+                        else:
+                            g[rows-1][y-1][0].highlight = True
+                            
+                elif x >= 0 and x < rows and y==0:
+                    #if it's really high
+                    if g[x-1][columns-1][0].tileHeight-1 > g[x][y][0].tileHeight:
+                        if "climb tile" in g[x][y][1].activeBuffs:
+                            if g[x-1][columns-1][0].occupied == True:
+                                if g[x-1][columns-1][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                   g[x-1][columns-1][0].highlightRed = True
+                            else:
+                                g[x-1][columns-1][0].highlight = True
+                    #if it's normal height
+                    else:
+                        
+                        if g[x-1][columns-1][0].occupied == True:
+                            if g[x-1][columns-1][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                g[x-1][columns-1][0].highlightRed = True
+                        else:
+                            g[x-1][columns-1][0].highlight = True
+                    
+                
+
+        #teleport down right (you're on the bottom row and want to appear on the top to the right)
+            if "move diagonal" in g[x][y][1].activeBuffs:
+                if x == rows-1 and y+1 < columns:
+                    #if it's really high
+                    if g[0][y+1][0].tileHeight-1 > g[x][y][0].tileHeight:
+                        if "climb tile" in g[x][y][1].activeBuffs:
+                            if g[0][y+1][0].occupied == True:
+                                if g[0][y+1][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                    g[0][y+1][0].highlightRed = True
+                            else:
+                                g[0][y+1][0].highlight = True
+                    #if it's normal height
+                    else:
+                        if g[0][y+1][0].occupied == True:
+                            if g[0][y+1][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                g[0][y+1][0].highlightRed = True
+                        else:
+                            g[0][y+1][0].highlight = True
+
+                #elif x > 0 and x < rows-1 and y== columns - 1:
+                elif x >= 0 and x < rows-1 and y== columns - 1:
+                    #if it's really high
+                    
+                    if g[x+1][0][0].tileHeight-1 > g[x][y][0].tileHeight:
+                        if "climb tile" in g[x][y][1].activeBuffs:
+                            if g[x+1][0][0].occupied == True:
+                                if g[x+1][0][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                    g[x+1][0][0].highlightRed = True
+                            else:
+                                g[x+1][0][0].highlight = True
+                    #if it's normal height
+                    else:
+                        if g[x+1][0][0].occupied == True:
+                            if g[x+1][0][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                g[x+1][0][0].highlightRed = True
+                        else:
+                            g[x+1][0][0].highlight = True
+
+                
+                            
+        #teleport down left (you're on the bottom row and want to appear on the top to your left)
+            if "move diagonal" in g[x][y][1].activeBuffs:
+                if x == rows-1 and y-1 >= 0:
+                    #if it's really high
+                    if g[0][y-1][0].tileHeight-1 > g[x][y][0].tileHeight:
+                        if "climb tile" in g[x][y][1].activeBuffs:
+                            if g[0][y-1][0].occupied == True:
+                                if g[0][y-1][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                    g[0][y-1][0].highlightRed = True
+                            else:
+                                g[0][y-1][0].highlight = True
+                    #if it's normal height
+                    else:
+                        if g[0][y-1][0].occupied == True:
+                            if g[0][y-1][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                g[0][y-1][0].highlightRed = True
+                        else:
+                            g[0][y-1][0].highlight = True
+                
+                elif x >= 0 and x < rows-1 and y == 0:
+                    if g[x+1][columns-1][0].tileHeight-1 > g[x][y][0].tileHeight:
+                        if "climb tile" in g[x][y][1].activeBuffs:
+                            if g[x+1][columns-1][0].occupied == True:
+                                if g[x+1][columns-1][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                    g[x+1][columns-1][0].highlightRed = True
+                            else:
+                                g[x+1][columns-1][0].highlight = True
+                    #if it's normal height
+                    else:
+                        if g[x+1][columns-1][0].occupied == True:
+                            if g[x+1][columns-1][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                g[x+1][columns-1][0].highlightRed = True
+                        else:
+                            g[x+1][columns-1][0].highlight = True
+
+
+
+            # corner cases
+            if "move diagonal" in g[x][y][1].activeBuffs:
+                #top left corner
+                if x == 0 and y == 0:
+                    #if it's really high
+                    if g[rows-1][columns-1][0].tileHeight-1 > g[x][y][0].tileHeight:
+                        if "climb tile" in g[x][y][1].activeBuffs:
+                            if g[rows-1][columns-1][0].occupied == True:
+                                if g[rows-1][columns-1][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                    g[rows-1][columns-1][0].highlightRed = True
+                            else:
+                                g[rows-1][columns-1][0].highlight = True
+                    #if it's normal height
+                    else:
+                        if g[rows-1][columns-1][0].occupied == True:
+                            if g[rows-1][columns-1][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                g[rows-1][columns-1][0].highlightRed = True
+                        else:
+                            g[rows-1][columns-1][0].highlight = True
+
+                #top right corner
+                if x == 0 and y == columns-1:
+                    #if it's really high
+                    if g[rows-1][0][0].tileHeight-1 > g[x][y][0].tileHeight:
+                        if "climb tile" in g[x][y][1].activeBuffs:
+                            if g[rows-1][0][0].occupied == True:
+                                if g[rows-1][0][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                    g[rows-1][0][0].highlightRed = True
+                            else:
+                                g[rows-1][0][0].highlight = True
+                    #if it's normal height
+                    else:
+                        if g[rows-1][0][0].occupied == True:
+                            if g[rows-1][0][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                g[rows-1][0][0].highlightRed = True
+                        else:
+                            g[rows-1][0][0].highlight = True
+                            
+                #bottom left corner
+                if x == rows-1 and y == 0:
+                    #if it's really high
+                    if g[0][columns-1][0].tileHeight-1 > g[x][y][0].tileHeight:
+                        if "climb tile" in g[x][y][1].activeBuffs:
+                            if g[0][columns-1][0].occupied == True:
+                                if g[0][columns-1][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                    g[0][columns-1][0].highlightRed = True
+                            else:
+                                g[0][columns-1][0].highlight = True
+                    #if it's normal height
+                    else:
+                        if g[0][columns-1][0].occupied == True:
+                            if g[0][columns-1][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                g[0][columns-1][0].highlightRed = True
+                        else:
+                            g[0][columns-1][0].highlight = True
+
+                #bottom right corner
+                if x == rows-1 and y == columns - 1:
+                    #if it's really high
+                    if g[0][0][0].tileHeight-1 > g[x][y][0].tileHeight:
+                        if "climb tile" in g[x][y][1].activeBuffs:
+                            if g[0][0][0].occupied == True:
+                                if g[0][0][0].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                    g[0][0][0].highlightRed = True
+                            else:
+                                g[0][0][0].highlight = True
+                    #if it's normal height
+                    else:
+                        if g[0][0][0].occupied == True:
+                            if g[0][0][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                g[0][0][0].highlightRed = True
+                        else:
+                            g[0][0][0].highlight = True
+                            
+                
+##            if "move diagonal" in g[x][y][1].activeBuffs and y == columns - 1:
+##                #if it's really high
+##                if g[x][0].tileHeight-1 > g[x][y][0].tileHeight:
+##                    if "climb tile" in g[x][y][1].activeBuffs:
+##                        if g[x][0].occupied == True:
+##                            if g[x][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+##                                g[x][0].highlightRed = True
+##                        else:
+##                            g[x][0].highlight = True
+##                #if it's normal height
+##                else:
+##                    if g[x][0].occupied == True:
+##                            if g[x][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+##                                g[x][0].highlightRed = True
+##                        else:
+##                            g[x][0].highlight = True
+##                            
+##                        
+##
+##    #trying to go down right
+##    elif startLocation[0] == endLocation[0]-1 and startLocation[1] == columns -1 and endLocation[1] == 0 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+##        sg.popup("Your piece rolled around to the other side!",keep_on_top=True)
+##        return True
+##    #trying to go up right
+##    elif startLocation[0] == endLocation[0]+1 and startLocation[1] == columns -1 and endLocation[1] == 0 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+##        sg.popup("Your piece rolled around to the other side!",keep_on_top=True)
+##        return True
+    
+
+###trying to go from left to right side
+##    #try to go straight left to straight right
+##    if startLocation[0] == endLocation[0]:
+##        if startLocation[1] == 0 and endLocation[1] == columns -1:
+##            sg.popup("Your piece rolled around to the other side!",keep_on_top=True)
+##            return True
+##    #trying to go down right
+##    elif startLocation[0] == endLocation[0]-1 and startLocation[1] == 0  and endLocation[1] == columns -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+##        sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+##        return True
+##    #trying to go up right
+##    elif startLocation[0] == endLocation[0]+1 and startLocation[1] == 0 and endLocation[1] == columns -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+##        sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+##        return True
+##
+##        
+###trying to go from up to down
+##    #try to go straight up to straight down
+##    if startLocation[1] == endLocation[1]:
+##        if startLocation[0] == 0 and endLocation[0] == rows -1:
+##            sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+##            return True
+##    #trying to go up right
+##    elif startLocation[0] == 0 and startLocation[1] == (endLocation[1] +1) and endLocation[0] == rows -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+##        sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+##        return True
+##    #trying to go up right
+##    elif startLocation[1] == endLocation[1]-1 and startLocation[0] == 0 and endLocation[0] == rows -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+##        sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+##        return True
+##
+###diagonals (only works with diagonal enabled
+##    if "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+##        #upleft
+##        if startLocation[0] == 0 and startLocation[1] == 0 and endLocation[0] == rows-1 and endLocation[1] == columns-1:
+##            sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+##            return True
+##        #upright
+##        if startLocation[0] == 0 and startLocation[1] == columns-1 and endLocation[0] == rows-1 and endLocation[1] == 0:
+##            sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+##            return True
+##        #downleft
+##        if startLocation[0] == rows-1 and startLocation[1] == 0 and endLocation[0] == 0 and endLocation[1] == columns-1:
+##            sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+##            return True
+##        #downright
+##        if startLocation[0] == rows-1 and startLocation[1] == columns-1 and endLocation[0] == 0 and endLocation[1] == 0:
+##            sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+##            return True
+##    else:
+##        return False
+
+
+
+
+
+
+            
+        #normal
+        
+        validLocations = getCross(location, gameBoard)
+        for i in validLocations:
+            xi = i[0]
+            yi = i[1]
+            
+            #if the floor isn't gone
+            if g[xi][yi][0].tileType not in [
+                "damaged",
+                "destroyed",
+                "damaged1",
+                "damaged2",
+                "damaged3",
+                "damaged4",
+                "damaged5",
+                "damaged6",
+                "damaged7",
+                "damaged8"
+            ]:
+                if g[xi][yi][0].tileHeight-1 > g[x][y][0].tileHeight:
+                    if "climb tile" not in g[x][y][1].activeBuffs:
+                        continue
+                    
+                #if nothing's there
+                if g[xi][yi][0].occupied == False:
+                    g[xi][yi][0].highlight = True
+                #if someone is there
+                elif g[xi][yi][0].occupied == True:
+                    if g[xi][yi][1].ownedBy != g[x][y][1].ownedBy:
+                        g[xi][yi][0].highlightRed = True
+                    if g[xi][yi][1].ownedBy == g[xi][yi][1].ownedBy:
+                        if "feral" in g[x][y][1].activeBuffs:
+                            g[xi][yi][0].highlightRed = True
+                        else:
+                            continue
+                        
+            #if the floor is gone, continue
+            if g[xi][yi][0].tileType in [
+                "damaged",
+                "destroyed",
+                "damaged1",
+                "damaged2",
+                "damaged3",
+                "damaged4",
+                "damaged5",
+                "damaged6",
+                "damaged7",
+                "damaged8"
+            ]:
+                continue
+                            
+            g[xi][yi][0].highlight = True
                 
     if actionType == "all":
         if reachType == "row":
@@ -6381,6 +6866,12 @@ def movePiece(playerTurn, window, gameBoard):
                 # if you have a round earth theory item equipped (to "pac man" around the edge of the screen to the opposite side)
                 if "round earth theory" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
                     roundEarthTheory = roundEarthTheoryFunction(gameBoard,startLocation,endLocation,columns,rows)
+
+
+
+
+                
+                    
                 # if you're attemmpting to go somewhere that is too far...
                 # ...but you have a move diagonal and it turns out you're actually within range:
                 if roundEarthTheory == False and wormHole == False:
@@ -6397,6 +6888,7 @@ def movePiece(playerTurn, window, gameBoard):
                             "move diagonal"
                             in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs
                         ):
+                            
                             validRange = getRadial(
                                 (startLocation[0], startLocation[1]), gameBoard
                             )
