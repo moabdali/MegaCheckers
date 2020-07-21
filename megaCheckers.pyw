@@ -386,8 +386,10 @@ def feralFunction(window, gameBoard, playerTurn):
                 
                 j[1].feralAttacksLeft = 3
                 if j[1].feralMeatCount < 0:
+                    
                     sg.popup("Your feral piece died of hunger.  Being feral is energy intensive!", keep_on_top = True)
                     pm(window, "Your feral piece died of hunger.  Being feral is energy intensive!")
+                    playsound("sounds\destroy.wav",block=False)
                     j[0].occupied = False
                     #explode
             
@@ -813,6 +815,7 @@ def publicPNGloader():
         "jump proof", #36
         "highlightGreen", #37
         "highlightBrown", #38
+        "vampiricism", #39
         ]):
 
         myImage = Image.open(f"images/{i}.png").convert("RGBA")
@@ -1072,7 +1075,12 @@ def displayBoard(window, gameBoard):
                         jumpProof = (PublicPNGList[36]).convert("RGBA")
                         avatar.paste(jumpProof, (0, 0), jumpProof)
                         avatarFunction(window, avatar, gameBoard, i, j)
+                        
+                    if "vampiricism" in g.activeBuffs:
 
+                        vampiricism = (PublicPNGList[39]).convert("RGBA")
+                        avatar.paste(vampiricism, (0, 0), vampiricism)
+                        avatarFunction(window, avatar, gameBoard, i, j)
                 
                         #jumpProof = Image.open("images/jumpProof.png").convert("RGBA")
                         #avatar.paste(jumpProof, (0, 0), jumpProof)
@@ -1229,7 +1237,7 @@ def getOuterRadialOnly(location, gameBoard):
     rows = len(gameBoard)
     columns = len(gameBoard[0])
     #check for illegal boundaries outside of the playing field
-    if x < 0 or x > rows or y < 0 or y > columns:
+    if x < 0 or x >= rows or y < 0 or y >= columns:
         return -1
     else:
         return (x, y)
@@ -1537,6 +1545,7 @@ def useItems(gameBoard, x, y, window):
         for j,jdata in enumerate(idata):
             window[(i,j)].update(disabled = True)
     while True:
+        playsound("sounds/click2.wav",block=False)
         event = (itemsMenu.read()) 
         try:
             i = event[0]
@@ -1596,7 +1605,7 @@ def useItems(gameBoard, x, y, window):
 
 
 # canyon row
-        if str.find(i, "canyon row") >= 0:
+        elif str.find(i, "canyon row") >= 0:
             itemsMenu.close()
             gameBoard[x][y][1].grey = False
             highlightValidDistance(gameBoard, window, startLocation, actionType = "all", reachType = "row" )
@@ -1606,14 +1615,14 @@ def useItems(gameBoard, x, y, window):
             if yesno == "No":
                 continue
             gameBoard[x][y][1].storedItems.remove("canyon row")
-
+            playsound("sounds/building.mp3",block=False)
             for i in gameBoard[x]:
                 i[0].tileHeight = -2
             sg.popup("A canyon row was created.", keep_on_top = True)
             pm(window, "A canyon row was created.")
 
 # canyon column
-        if str.find(i, "canyon column") >= 0:
+        elif str.find(i, "canyon column") >= 0:
             itemsMenu.close()
             gameBoard[x][y][1].grey = False
             highlightValidDistance(gameBoard, window, startLocation, actionType = "all", reachType = "column" )
@@ -1623,14 +1632,14 @@ def useItems(gameBoard, x, y, window):
             if yesno == "No":
                 continue
             gameBoard[x][y][1].storedItems.remove("canyon column")
-
+            playsound("sounds/building.mp3",block=False)
             for i in gameBoard:
                 i[y][0].tileHeight = -2
             sg.popup("A canyon column was created.", keep_on_top = True)
             pm(window, "A canyon column was created.")
 
 #canyon radial
-        if str.find(i, "canyon radial") >= 0:
+        elif str.find(i, "canyon radial") >= 0:
             itemsMenu.close()
             gameBoard[x][y][1].grey = False
             highlightValidDistance(gameBoard, window, startLocation, actionType = "all", reachType = "radial" )
@@ -1640,7 +1649,7 @@ def useItems(gameBoard, x, y, window):
             if yesno == "No":
                 continue
             gameBoard[x][y][1].storedItems.remove("canyon radial")
-
+            playsound("sounds/building.mp3",block=False)
             validLocations = getRadial(location, gameBoard)
             for i in validLocations:
                 ix = i[0]
@@ -1764,6 +1773,7 @@ def useItems(gameBoard, x, y, window):
             gameBoard[x][y][1].storedItems.remove("seismic activity")
             if magnitude in (1,2,3,4):
                 raiseLower = (-1,0,0,0,0,1)
+                playsound("sounds/earthquake.wav",block=False)
                 for j in gameBoard:
                     for i in j:
                         change = random.choice(raiseLower)
@@ -1775,17 +1785,21 @@ def useItems(gameBoard, x, y, window):
                 sg.popup(f"A minor magnitude {magnitude} earthquake hit.",keep_on_top = True)
             if magnitude in (5,6,7,8):
                 raiseLower = (-2,-1,-1,0,0,0,0,1,1,1,2)
+                playsound("sounds/earthquake.wav",block=False)
                 for j in gameBoard:
                     for i in j:
                         change = random.choice(raiseLower)
                         i[0].tileHeight = i[0].tileHeight + change
+                        
                         if i[0].tileHeight < -2:
                             i[0].tileHeight = -2
                         elif i[0].tileHeight > 2:
                             i[0].tileHeight = 2
+                        
                 sg.popup(f"A high magnitude {magnitude} earthquake hit.",keep_on_top = True)
             if magnitude in (9,10):
                 raiseLower = (-2,-1,1,+2)
+                playsound("sounds/earthquake.wav",block=False)
                 for j in gameBoard:
                     for i in j:
                         change = random.choice(raiseLower)
@@ -1836,6 +1850,7 @@ def useItems(gameBoard, x, y, window):
                         wallWindow.close()
                         i[0].tileHeight = 2
                     gameBoard[x][y][1].storedItems.remove("trump")
+                    playsound("sounds\\building.mp3",block = False)
                     sg.popup("The wall was built with the most covfefe of engineering.  Congrats!", keep_on_top = True)
                     pm(window, "The wall was built with the most covfefe of engineering.  Congrats!")
                     break
@@ -1843,6 +1858,7 @@ def useItems(gameBoard, x, y, window):
                     for i in gameBoard:
                         wallWindow.close()
                         i[y][0].tileHeight = 2
+                    playsound("sounds\\building.mp3",block = False)
                     gameBoard[x][y][1].storedItems.remove("trump")
                     sg.popup("The wall was built with the most covfefe of engineering.  Congrats!", keep_on_top = True)
                     pm(window, "The wall was built with the most covfefe of engineering.  Congrats!")
@@ -1867,6 +1883,7 @@ def useItems(gameBoard, x, y, window):
                             namesOfStolenItems+=items+"\n"
                         i[y][1].storedItems.clear()
             if stolenItems > 0:
+                playsound("sounds\yoink.mp3",block = False)
                 sg.popup(f"You've stolen {stolenItems} items:\n"+namesOfStolenItems, keep_on_top = True)
             
             gameBoard[x][y][1].storedItems.remove("steal items column")
@@ -1892,6 +1909,7 @@ def useItems(gameBoard, x, y, window):
                             namesOfStolenItems+=items+"\n"
                         i[1].storedItems.clear()
             if stolenItems > 0:
+                playsound("sounds\yoink.mp3",block = False)
                 sg.popup(f"You've stolen {stolenItems} items:\n"+namesOfStolenItems, keep_on_top = True)
             
             gameBoard[x][y][1].storedItems.remove("steal items row")
@@ -1922,6 +1940,7 @@ def useItems(gameBoard, x, y, window):
                             namesOfStolenItems+=items+"\n"
                         g[1].storedItems.clear()
             if stolenItems > 0:
+                playsound("sounds\yoink.mp3",block = False)
                 sg.popup(f"You've stolen {stolenItems} items:\n"+namesOfStolenItems, keep_on_top = True)
             
             gameBoard[x][y][1].storedItems.remove("steal items radial")
@@ -1947,6 +1966,7 @@ def useItems(gameBoard, x, y, window):
                                 namesOfStolenpowers+=powers+"\n"
                         i[y][1].activeBuffs.clear()
             if stolenPowers > 0:
+                playsound("sounds\yoink.mp3",block = False)
                 sg.popup(f"You've stolen {stolenPowers} powers:\n"+namesOfStolenPowers, keep_on_top = True)
             
             gameBoard[x][y][1].itemsStored.remove("steal powers column")
@@ -1973,6 +1993,7 @@ def useItems(gameBoard, x, y, window):
                                 namesOfStolenpowers+=powers+"\n"
                         i[1].activeBuffs.clear()
             if stolenpowers > 0:
+                playsound("sounds\yoink.mp3",block = False)
                 sg.popup(f"You've stolen {stolenpowers} powers:\n"+namesOfStolenpowers, keep_on_top = True)
             
             gameBoard[x][y][1].itemsStored.remove("steal powers row")
@@ -2004,6 +2025,7 @@ def useItems(gameBoard, x, y, window):
                                 namesOfStolenpowers+=powers+"\n"
                         g[1].activeBuffs.clear()
             if stolenpowers > 0:
+                playsound("sounds\yoink.mp3",block = False)
                 sg.popup(f"You've stolen {stolenpowers} powers:\n"+namesOfStolenpowers, keep_on_top = True)
             
             gameBoard[x][y][1].itemsStored.remove("steal powers radial")                              
@@ -2088,6 +2110,7 @@ def useItems(gameBoard, x, y, window):
                 yesno = sg.popup_yes_no("Use?",keep_on_top=True)
                 if yesno == "Apply the vampricism buff to yourself?  (Jump killing an enemy allows you to steal (most) powers from them)":
                     continue
+                playsound("sounds/vampire.mp3",block=False)
                 gameBoard[x][y][1].activeBuffs.append("vampiricism")
                 gameBoard[x][y][1].storedItems.remove("vampiricism")
                     
@@ -2880,6 +2903,7 @@ def useItems(gameBoard, x, y, window):
                     and "stunned" not in g[x][y][1].activeDebuffs
                 ):
                     g[ix][iy][0].tileType = "default"
+                    playsound("sounds/getItem.wav",block=False)
                     pickUpItemOrb(gameBoard, x, y, window = window)
                     pm(window, "You picked up an item")
                     displayBoard(window, gameBoard)
@@ -2888,15 +2912,15 @@ def useItems(gameBoard, x, y, window):
 
             if itemOrbDeath == True:
                 pm(window, "A hostile trap orb was sucked in!")
-            if forceFieldUsed == True:
-                pm(window, "You were saved from explosives by your forcefield")
-                g[x][y][1].activeBuffs.remove("Energy Forcefield")
-                displayBoard(window, gameBoard)
-                sleep(0.1)
-                window.refresh()
-            if death == True:
-                g[x][y][0].tileType = "mine"
-                deathCheck(window, gameBoard)
+                if forceFieldUsed == True:
+                    pm(window, "You were saved from explosives by your forcefield")
+                    g[x][y][1].activeBuffs.remove("Energy Forcefield")
+                    displayBoard(window, gameBoard)
+                    sleep(0.1)
+                    window.refresh()
+                if death == True:
+                    g[x][y][0].tileType = "mine"
+                    deathCheck(window, gameBoard)
 
             #for every spot that exists in the outer ring that isn't off the playing field
             for i in legalOuterList:
@@ -2928,7 +2952,8 @@ def useItems(gameBoard, x, y, window):
                             g[ix][iy][1].ownedBy == playerTurn
                             and "stunned" not in g[ix][iy][1].activeDebuffs
                         ):
-                            pm(window, "You picked up an item")
+                            pm(window, "An item was picked up by your piece.")
+                            playsound("sounds/getItem.wav",block=False)
                             pickUpItemOrb(gameBoard, ix, iy, window = window)
 
                         elif (
@@ -3264,7 +3289,7 @@ def useItems(gameBoard, x, y, window):
 # berzerk
         elif str.find(i, "berzerk") >= 0:
             itemsMenu.close
-            yesno = sg.popup_yes_no("Using this item will make this piece go berzerk, allowing it to attack again after each kill (up to three times), but at the cost of dying if it goes any turns without attacking (it can also attack its allies). Use?",keep_on_top=True)
+            yesno = sg.popup_yes_no("Using this item will make this piece go berzerk and allow it to eat enemies and allies alike, enraging it and allowing it to attack again after each kill (up to three times per turn), but at the cost of dying if it goes any turns without eating (it stores leftovers from each enemy killed so it can eat on subsequent turns without attacking). Use?",keep_on_top=True)
             if yesno == "No":
                 continue
             g = gameBoard
@@ -3272,6 +3297,7 @@ def useItems(gameBoard, x, y, window):
             g[x][y][1].activeBuffs.append("feral")
             g[x][y][1].feralMeatCount = 0
             g[x][y][1].feralAttacksLeft = 3
+            
 # shuffle radial
         elif str.find(i, "shuffle radial") >= 0:
             itemsMenu.close()
@@ -5937,7 +5963,7 @@ def movePiece(playerTurn, window, gameBoard):
                 [sg.Button("Down",image_filename = "images/bowlingDown.png", size = (55,4),pad = (0,0))],
                 [sg.Button("Cancel", size = (19,1),pad = (0,0))]
                 ]
-
+            playsound("sounds/select.wav",block = False)
             window.disable()
             bowlingMenu = sg.Window("Direction",bowlingLayout,keep_on_top=True)
             event = bowlingMenu.read()
@@ -6020,6 +6046,7 @@ def movePiece(playerTurn, window, gameBoard):
             window["information"].update(
                 f"You can't interact directly with unoccupied spaces."
             )
+            playsound("sounds/wrong.wav",block=False) 
             pm(window, f"You can't interact directly with unoccupied spaces.")
             window.refresh()
             sleep(0.25)
@@ -6037,6 +6064,7 @@ def movePiece(playerTurn, window, gameBoard):
                 playerTurn == gameBoard[event[0][0]][event[0][1]][1].ownedBy
                 and "stunned" in gameBoard[event[0][0]][event[0][1]][1].activeDebuffs
             ):
+                playsound("sounds/wrong.wav",block=False) 
                 window["information"].update(
                     f"You cannot use a stunned/sleeping piece."
                 )
@@ -6050,6 +6078,7 @@ def movePiece(playerTurn, window, gameBoard):
                 playerTurn == gameBoard[event[0][0]][event[0][1]][1].ownedBy
                 and len(gameBoard[event[0][0]][event[0][1]][1].storedItems) > 0
             ):
+                playsound("sounds/select.wav",block=False)
                 window["information"].update(
                     f"Selection made. Pick a destination.\nOR CLICK THE PIECE AGAIN TO SEE AVAILABLE ITEMS."
                 )
@@ -6062,6 +6091,7 @@ def movePiece(playerTurn, window, gameBoard):
             
             # if the piece doesn't belong to you
             elif playerTurn != gameBoard[event[0][0]][event[0][1]][1].ownedBy:
+                playsound("sounds/wrong.wav",block=False) 
                 window["information"].update(f"That's not your piece...")
                 pm(window, f"That's not your piece...")
                 window["information"].update(text_color="red")
@@ -6071,6 +6101,7 @@ def movePiece(playerTurn, window, gameBoard):
             
             # if the piece belongs to you but doesn't have items
             else:
+                playsound("sounds/select.wav",block=False)
                 window["information"].update(f"Selection made, pick a destination.")
                 pm(window, f"Selection made, pick a destination.")
 
@@ -6147,6 +6178,7 @@ def movePiece(playerTurn, window, gameBoard):
                 gameBoard[startLocation[0]][startLocation[1]][1].grey = False
                 gameBoard[startLocation[0]][startLocation[1]][1].currentTurnPiece = False
                 pm(window, "There are no items on this piece.")
+                playsound("sounds/wrong.wav",block=False) 
                 sleep(.4)
                 continue
             # shouldn't get to here
@@ -6157,6 +6189,7 @@ def movePiece(playerTurn, window, gameBoard):
         # if there isn't any piece on the square
         if gameBoard[startLocation[0]][startLocation[1]][0].occupied == False:
             gameBoard[startLocation[0]][startLocation[1]][1].currentTurnPiece = False
+            playsound("sounds/wrong.wav",block=False) 
             pm(window, f"Nothing exists on the initial square!")
             window.refresh
             continue
@@ -6172,6 +6205,7 @@ def movePiece(playerTurn, window, gameBoard):
         
         #if your start location contains no pieces
         if gameBoard[startLocation[0]][startLocation[1]][0].occupied == False:
+            playsound("sounds/wrong.wav",block=False) 
             window["information"].update(f"Nothing here to move!")
             pm(window, "Nothing here to move!")
             window.refresh
@@ -6239,6 +6273,7 @@ def movePiece(playerTurn, window, gameBoard):
                         )
                         > gameBoard[startLocation[0]][startLocation[1]][1].distanceMax
                     ) and diagonalCheck == False:
+                        playsound("sounds/wrong.wav",block=False) 
                         window["information"].update(
                             f"That location is too far for you to move to!"
                         )
@@ -6254,6 +6289,7 @@ def movePiece(playerTurn, window, gameBoard):
 
                 
                 if (gameBoard[startLocation[0]][startLocation[1]][0].tileHeight+1 < gameBoard[endLocation[0]][endLocation[1]][0].tileHeight) and ("climb tile" not in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs):
+                    playsound("sounds/wrong.wav",block=False) 
                     sg.popup("The tile you're trying to get to is too high",keep_on_top = True)
                     pm(window,"The tile you're trying to get to is too high")
                     continue
@@ -6268,7 +6304,7 @@ def movePiece(playerTurn, window, gameBoard):
                 # if the landing spot is an item Orb:
                 if gameBoard[endLocation[0]][endLocation[1]][0].tileType == "itemOrb":
 
-                   
+                    playsound("sounds/getItem.wav",block=False)
                     pickUpItemOrb(gameBoard, startLocation[0], startLocation[1], window = window)
                     pm(window, "Picked up an item")
                     pickedUpItem = True
@@ -6287,6 +6323,7 @@ def movePiece(playerTurn, window, gameBoard):
                     "damaged7",
                     "damaged8"
                 ]:
+                    playsound("sounds/wrong.wav",block=False) 
                     window["information"].update(f"Can't move here!")
                     pm(window, "Can't move here!")
                     window.refresh()
@@ -6458,6 +6495,7 @@ def movePiece(playerTurn, window, gameBoard):
                         if randomEvent == "getItems":
                             #get three items
                             for i in range(1,4):
+                                playsound("sounds/getItem.wav",block=False)
                                 pickUpItemOrb(gameBoard, endLocation[0], endLocation[1], window = window)
                         elif randomEvent == "lose items":
                             gameBoard[endLocation[0]][endLocation[1]][1].storedItems.clear()
@@ -6574,7 +6612,7 @@ def movePiece(playerTurn, window, gameBoard):
 
                      
 
-                        
+                    playsound("sounds/thump.mp3",block=False)    
                     pm(window, "Moved successfully")
                     window.refresh
 
@@ -6607,6 +6645,7 @@ def movePiece(playerTurn, window, gameBoard):
 
                 # killing own piece (illegal)
                 elif gameBoard[endLocation[0]][endLocation[1]][1].ownedBy == playerTurn and "feral" not in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+                    playsound("sounds/wrong.wav",block=False) 
                     pm(window, "You can't jumpkill your own piece.")
                     window.refresh
                     continue
@@ -6618,6 +6657,7 @@ def movePiece(playerTurn, window, gameBoard):
                         "jump proof"
                         in gameBoard[endLocation[0]][endLocation[1]][1].activeBuffs
                     ):
+                        playsound("sounds/wrong.wav",block=False) 
                         pm(window, "No!  This opponent is jump proof!")
                         window.refresh()
                         sleep(1)
@@ -6645,10 +6685,12 @@ def movePiece(playerTurn, window, gameBoard):
                         for buffs in gameBoard[endLocation[0]][endLocation[1]][1].activeBuffs:
                             if buffs not in ("bowling ball"):
                                 gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs.append(buffs)
-                                powersList += f"{powersList}\n"
+                                powersList += f"{buffs}\n"
                                 stealPowersCount +=1
                         if stealPowersCount > 0:
-                            sg.popup("You stole {stealPowersCount} powers from the victim: {powersList}", keep_on_top = True)
+                            playsound("sounds/vampire.mp3",block=False)
+                            sg.popup(f"You stole {stealPowersCount} powers from the victim: \n{powersList}", keep_on_top = True)
+                            pm(window,f"You stole {stealPowersCount} powers from the victim: \n{powersList}")
                                 
                     # set the internal location of the piece to where you want to end up
                     gameBoard[startLocation[0]][startLocation[1]][1].location = (
@@ -6728,21 +6770,28 @@ def movePiece(playerTurn, window, gameBoard):
                             ].tileType = "default"
                             break
                     if "feral" in gameBoard[endLocation[0]][endLocation[1]][1].activeBuffs:
-                        window["information"].update(f"THE BEZERKER KILLED A PIECE AND ENRAGED!  IT HAS EATEN PART OF THE VICTIM AND IS STORING THE REST FOR LATER!")
+                        playsound("sounds/destroy.wav",block=False)
+                        pm(window, f"THE BEZERKER KILLED A PIECE AND ENRAGED!  IT HAS EATEN PART OF THE VICTIM AND IS STORING THE REST FOR LATER!")
+                        displayBoard(window, gameBoard)
+                        window.refresh()
                         gameBoard[endLocation[0]][endLocation[1]][1].feralAttacksLeft -=1
                         gameBoard[endLocation[0]][endLocation[1]][1].feralMeatCount +=1
                         sg.popup(f"THE BEZERKER KILLED A PIECE AND ENRAGED!  IT HAS EATEN PART OF THE VICTIM AND IS STORING THE REST FOR LATER!",keep_on_top = True)
+                        
                         if gameBoard[endLocation[0]][endLocation[1]][1].feralAttacksLeft > 0:
                             sleep(1)
                             window["information"].update(f"THE BEZERKER IS STILL ENRAGED AND HAS {gameBoard[endLocation[0]][endLocation[1]][1].feralAttacksLeft} ATTACKS LEFT, AND HAS STORED {gameBoard[endLocation[0]][endLocation[1]][1].feralMeatCount} MEATS")
                             sg.popup(f"THE BEZERKER IS STILL ENRAGED AND HAS {gameBoard[endLocation[0]][endLocation[1]][1].feralAttacksLeft} ATTACKS LEFT, AND HAS STORED {gameBoard[endLocation[0]][endLocation[1]][1].feralMeatCount} MEATS",keep_on_top = True)
+                            repeatRestrictor[0] = True
+                            repeatRestrictor[1] = (endLocation[0], endLocation[1])
                             continue
                         else:
                             return
-                        pm(window, "Jumpkilled an enemy piece!")
+                        #
 
 
                     else:
+                        playsound("sounds/destroy.wav",block=False)
                         window["information"].update(f"Jumpkilled an enemy piece!")
                         pm(window, "Jumpkilled an enemy piece!")
 
@@ -6775,6 +6824,7 @@ def movePiece(playerTurn, window, gameBoard):
                     return 2
             
             else:
+                playsound("sounds/wrong.wav",block=False) 
                 window["information"].update(f"That's not your piece!")
                 pm(window, "That's not your piece!")
                 sleep(.3)
@@ -7266,6 +7316,7 @@ def begin():
                                         "A stunned piece recovered and picked up the item orb it had landed on",
                                         keep_on_top=True,
                                     )
+                                    playsound("sounds/getItem.wav",block=False)
                                     pickUpItemOrb(gameBoard, x, y, window = window)
                 y = -1
             playerTurn = 2
@@ -7317,6 +7368,7 @@ def begin():
                                         "A stunned piece recovered and picked up the item orb it had landed on",
                                         keep_on_top=True,
                                     )
+                                    playsound("sounds/getItem.wav",block=False)
                                     pickUpItemOrb(gameBoard, x, y, window = window)
                 y = -1
             playerTurn = 1

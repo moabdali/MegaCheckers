@@ -1,5 +1,11 @@
 ChangeLog
 
+v.0.9.98 July 20, 2020
+	Added sounds to vampiricism.  Corrected an error that showed your own buffs instead of your enemies when stealing powers with vampiricism.  Added an indicator for vampiricism.  Added sounds for Trump, canyon CRR, earthquake.
+
+v.0.9.97 July 20, 2020
+	Added some sounds (movement click, error when selecting/moving, selection click, pick up item).  Fixed an error in magnet.  Need to also fix the problem where opponents aren't able to pick up items when being magneted.  
+	
 v.0.9.96.1 July 19, 2020
 	Added a small item explanations popup as an interim item log.
 
