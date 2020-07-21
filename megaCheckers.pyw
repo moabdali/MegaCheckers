@@ -132,7 +132,7 @@ class Piece:
         self.moveAgain = 0
         self.standingOnSelfOrb = False
         self.recallTurn = False
-        self.forcefieldTurn = 0
+        self.forceFieldTurn = 0
         self.stickyTimeBomb = False
         self.feralMeatCount = False
         self.feralAttacksLeft = False
@@ -464,7 +464,7 @@ def deathCheck(window, gameBoard, move=False):
             # if a regular mine or laser was stepped on
             if (j[0].occupied == True) and (j[0].tileType == "mine" or (j[0].vertLaser == True or j[0].horiLaser == True or j[0].crossLaser == True) ):
 
-                if j[1].shieldTurn == PublicStats.turnCount:
+                if j[1].forceFieldTurn == PublicStats.turnCount:
                     j[0].tileType = "default"
                     sg.popup("Forcefield saved you",keep_on_top=True)
                 else:
@@ -569,15 +569,29 @@ def laserCheck(window, gameBoard, resetOnly = False):
 
                         #if there is a piece where the laser is burning
                         if gameBoard[indexI][left][0].occupied == True:
-
-
-                            #forcefield check
-                            location = (indexI,left)
-                            forceFieldCheck = forcefieldCheck(window, gameBoard, location, location)
-                            sg.popup(f"Force field check is {forceFieldCheck}")
-                            if forceFieldCheck == True:
-                                sg.popup("Survived a laser",keep_on_top=True)
+                            
+                            if "Energy Forcefield" in gameBoard[indexI][left][1].activeBuffs:
+                                sg.popup("A forcefield activated to protect this piece.", keep_on_top = True)
+                                gameBoard[indexI][left][1].activeBuffs.remove("Energy Forcefield")
+                                gameBoard[indexI][left][1].forceFieldTurn = PublicStats.turnCount
+                                forceFieldLeftStop = True
                                 break
+                            elif gameBoardgameBoard[indexI][left][1].forceFieldTurn == PublicStats.turnCount:
+                                sg.popup("A forcefield is continuing to protect a piece until the end of the turn", keep_on_top = True)
+
+
+
+##                            #forcefield check
+##                            location = (indexI,left)
+##                            forceFieldCheck = forcefieldCheck(window, gameBoard, location, location)
+##                            #sg.popup(f"Force field check is {forceFieldCheck}")
+##                            if forceFieldCheck == True:
+##                                sg.popup("Survived a laser",keep_on_top=True)
+##                                break
+                            
+
+
+
                             #if it doesn't have a forcefield
                             else:
                                 
@@ -624,10 +638,17 @@ def laserCheck(window, gameBoard, resetOnly = False):
                         #if there's a piece to the right
                         if gameBoard[indexI][right][0].occupied == True:
 
-                            #if there's a forcefield on the piece
+
                             if "Energy Forcefield" in gameBoard[indexI][right][1].activeBuffs:
-                                #forceFieldRightStop = True
+                                sg.popup("A forcefield activated to protect this piece.", keep_on_top = True)
+                                gameBoard[indexI][right][1].activeBuffs.remove("Energy Forcefield")
+                                gameBoard[indexI][right][1].forceFieldTurn = PublicStats.turnCount
+                                forceFieldRightStop = True
                                 break
+                            elif gameBoardgameBoard[indexI][right][1].forceFieldTurn == PublicStats.turnCount:
+                                sg.popup("A forcefield is continuing to protect a piece until the end of the turn", keep_on_top = True)
+
+                                
 
                             #if there isn't a forcefield on the piece
                             else:
@@ -680,8 +701,13 @@ def laserCheck(window, gameBoard, resetOnly = False):
                         if gameBoard[up][indexJ][0].occupied == True:
                             
                             if "Energy Forcefield" in gameBoard[up][indexJ][1].activeBuffs:
-                                #forceFieldLeftStop = True
+                                sg.popup("A forcefield activated to protect this piece.", keep_on_top = True)
+                                gameBoard[up][indexJ][1].activeBuffs.remove("Energy Forcefield")
+                                gameBoard[up][indexJ][1].forceFieldTurn = PublicStats.turnCount
+                                forceFieldUpStop = True
                                 break
+                            elif gameBoard[up][indexJ][1].forceFieldTurn == PublicStats.turnCount:
+                                sg.popup("A forcefield is continuing to protect a piece until the end of the turn", keep_on_top = True)
                             
                             else:
                                 
@@ -729,10 +755,20 @@ def laserCheck(window, gameBoard, resetOnly = False):
                         #if there's a piece bottom
                         if gameBoard[down][indexJ][0].occupied == True:
 
-                            #if there's a forcefield on the piece
+
+
+
                             if "Energy Forcefield" in gameBoard[down][indexJ][1].activeBuffs:
-                                forceFieldLeftStop = True
+                                sg.popup("A forcefield activated to protect this piece.", keep_on_top = True)
+                                gameBoard[down][IndexJ][1].activeBuffs.remove("Energy Forcefield")
+                                gameBoard[down][indexJ][1].forceFieldTurn = PublicStats.turnCount
+                                forceFieldDownStop = True
                                 break
+                            elif gameBoard[down][indexJ][1].forceFieldTurn == PublicStats.turnCount:
+                                sg.popup("A forcefield is continuing to protect a piece until the end of the turn", keep_on_top = True)
+
+                                
+                            
 
                             #if there isn't a forcefield on the piece
                             else:
@@ -1595,7 +1631,7 @@ def useItems(gameBoard, x, y, window):
                         sg.popup("Your shield activated and protected you from damage.", keep_on_top = True)
                         j[1].activeBuffs.remove("Energy Forcefield")
                         continue
-                    if j[1].forcefieldTurn == PublicStats.turnCount:
+                    if j[1].forceFieldTurn == PublicStats.turnCount:
                         sg.popup("Your shield continues to protect you.",keep_on_top = True)
                         continue
                     else:
@@ -1864,6 +1900,62 @@ def useItems(gameBoard, x, y, window):
                     sg.popup("The wall was built with the most covfefe of engineering.  Congrats!", keep_on_top = True)
                     pm(window, "The wall was built with the most covfefe of engineering.  Congrats!")
                     break
+
+#pandemonium
+        elif str.find(i, "pandemonium") >= 0:
+            itemsMenu.close()
+            gameBoard[x][y][1].grey = False
+            random.shuffle(gameBoard)
+            coords = []
+            #gameBoardCopy = copy.deepcopy(gameBoard)
+            gameBoardCopy = []
+            vertical = []
+
+##            #go through each row
+##            for columns in range(len(gameBoard)):
+##                #go through each column
+##                for rows in range(len(gameBoard)):
+##                    #append each column to vertical
+##                    gameBoard[columns][rows].append(vertical)
+##                random.shuffle(vertical)
+##                gameBoardCopy.append(vertical)
+##                random.shuffle(gameBoardCopy)
+##                vertical.clear()
+##            gameBoard = copy.deepcopy(gameBoardCopy)
+##            random.shuffle(gameBoard)
+##            displayBoard(window,gameBoard)
+            
+            for i in range(0,len(gameBoard)):
+                for j in range(0,len(gameBoard)):
+                    coords.append( (i,j) )
+            #print (coords)
+            for i in range(0,len(coords)):
+                while True:
+                    xy = random.choice(coords)
+                    if xy == None:
+                        continue
+                    else:
+                        x = xy[0]
+                        y = xy[1]
+                        gameBoardCopy.append(copy.deepcopy(gameBoard[x][y]))
+                        coords[coords.index( xy)] = None
+                        break
+                    
+            coords2 = []
+            for i in range(0,len(gameBoard)):
+                for j in range(0,len(gameBoard)):
+                    coords2.append( (i,j) )
+            random.shuffle(gameBoardCopy)
+            for i in coords2:
+                x = i[0]
+                y = i[1]
+                print(f"doing {x},{y}\n")
+                gameBoard[x][y] = copy.deepcopy(gameBoardCopy[0])
+                gameBoardCopy.remove(gameBoardCopy[0])
+            laserCheck(window, gameBoard, resetOnly = True)
+            laserCheck(window, gameBoard)
+            displayBoard(window,gameBoard)
+            
 # steal items column
         elif str.find(i, "steal items column") >= 0:
             itemsMenu.close()
@@ -3051,7 +3143,7 @@ def useItems(gameBoard, x, y, window):
                         sg.popup("Your shield activated and protected you from damage.", keep_on_top = True)
                         j[1].activeBuffs.remove("Energy Forcefield")
                         continue
-                    if j[1].forcefieldTurn == PublicStats.turnCount:
+                    if j[1].forceFieldTurn == PublicStats.turnCount:
                         sg.popup("Your shield continues to protect you.",keep_on_top = True)
                         continue
 
@@ -3076,7 +3168,7 @@ def useItems(gameBoard, x, y, window):
                         j[1].activeBuffs.remove("Energy Forcefield")
                         continue
                     
-                    if j[1].forcefieldTurn == PublicStats.turnCount:
+                    if j[1].forceFieldTurn == PublicStats.turnCount:
                         sg.popup("Your shield continues to protect you.",keep_on_top = True)
                         continue
 
@@ -3601,7 +3693,7 @@ def useItems(gameBoard, x, y, window):
             # if the target is within range
             if event[0] in validTargets:
                 
-
+                playsound("sounds/punch.wav",block=False)
                 # s1 is the victim's start row, compare to x
                 s1 = event[0][0]
 
@@ -4977,11 +5069,11 @@ def forcefieldCheck(window, gameBoard, startLocation = 0, endLocation = 0):
     #if g[0].horiLaser or g[0].vertLaser or g[0].crossLaser or g[0].tileType == "mine" or (g[0].occupied == True and g[1].ownedBy != playerTurn and "dead man's trigger" in g[0].activeBuffsList):
         
         if "Energy Forcefield" in g[1].activeBuffs:
-            g[1].shieldTurn = PublicStats.turnCount
+            g[1].forceFieldTurn = PublicStats.turnCount
             g[1].activeBuffs.remove("Energy Forcefield")
             sg.popup("The forcefield activated and will protect you from energy until the end of this turn",keep_on_top=True)
             return True
-        elif g[1].shieldTurn == PublicStats.turnCount:
+        elif g[1].forceFieldTurn == PublicStats.turnCount:
             sg.popup("A forcefield is still active until the end of this turn.  It has saved you again.",keep_on_top=True)
             return True
         else:
@@ -5373,6 +5465,11 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
 
     if g[x][y][0].occupied == True:
         playerTurn = g[x][y][1].ownedBy
+    else:
+        if PublicStats.turnCount % 2 == 0:
+            playerTurn = 2
+        else:
+            playerTurn = 1
 
     if playerTurn == 1:
         enemyTurn = 2
@@ -5394,13 +5491,12 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
         for iIndex,i in enumerate(g):
             for jIndex,j in enumerate(i):
                 #if there's a worm hole and it's your turn
-                #print("Testing")
-                #print(f" {iIndex,jIndex} j0w1 {j[0].wormHole1}")
+                
                 if j[0].wormHole1 == True and playerTurn == 1:
                     
                     #if the location of the warp is empty
                     if j[0].occupied == False:
-                        print("highlighted worm hole")
+                        
                         #highlight it
                         j[0].highlight = True
                     #if you're there, don't allow movement there, unless feral
@@ -5442,6 +5538,11 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                     "damaged7",
                     "damaged8"
                 ]:
+                    if g[xi][yi][0].tileHeight-1 > g[x][y][0].tileHeight:
+                        if "climb tile" not in g[x][y][1].activeBuffs:
+                            continue
+                        
+                        
                     #if nothing's there
                     if g[xi][yi][0].occupied == False:
                         g[xi][yi][0].highlight = True
@@ -5463,7 +5564,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
             for i in validLocations:
                 xi = i[0]
                 yi = i[1]
-
+                
                 #if the floor isn't gone
                 if g[xi][yi][0].tileType not in [
                     "damaged",
@@ -5477,14 +5578,16 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                     "damaged7",
                     "damaged8"
                 ]:
-                    
+                    if g[xi][yi][0].tileHeight-1 > g[x][y][0].tileHeight:
+                        if "climb tile" not in g[x][y][1].activeBuffs:
+                            continue
+                        
                     #if nothing's there
                     if g[xi][yi][0].occupied == False:
                         g[xi][yi][0].highlight = True
                     #if someone is there
                     elif g[xi][yi][0].occupied == True:
                         if g[xi][yi][1].ownedBy != g[x][y][1].ownedBy:
-                            print("Enemy highlighted")
                             g[xi][yi][0].highlightRed = True
                         if g[xi][yi][1].ownedBy == g[xi][yi][1].ownedBy:
                             if "feral" in g[x][y][1].activeBuffs:
@@ -7203,6 +7306,11 @@ def begin():
 
 
     ]
+
+    frame_elevation = [
+            [ sg.Image(filename = "images\elevation.png", tooltip = "Each shade represents the height of a given tile.  A piece can jump down safely from any height to any tile that is lower than it.\nHowever, it cannot climb a tile that is more than one elevation unit taller.")]
+
+        ]
     frame_turnsPassed = [
         [sg.T(f"{1:3}",font = "Cambria, 30",text_color = "Black",key = 'turnspassed',size = (3,1))]
         ]
@@ -7237,7 +7345,7 @@ def begin():
             sg.T(f"", key="playerTurn", font="Cambria 30", pad=(4, 4)),
         ],
         [sg.T(f" " * 50, key="information", size=(25, 3), font="Cambria 30")],
-        [sg.Frame("Pieces Remaining", frame_remaining), sg.Frame("Item Info",frame_itemInfo)],
+        [sg.Frame("Elevation Info",frame_elevation), sg.Frame("Item Info",frame_itemInfo), sg.Frame("Pieces Remaining", frame_remaining) ],
         [sg.Frame("Current Turn", frame_turnsPassed), sg.Frame("Item Orb Forecast (expected number of orbs that will spawn after your turn ends):",frame_itemOrbForecast)],
         [
             sg.Output(
@@ -7281,11 +7389,14 @@ def begin():
     window = sg.Window(
         "MegaCheckers",
         layout,
-        #keep_on_top = True,
+        no_titlebar=True,
+        keep_on_top = True,
         disable_close=False,
-        
+        finalize = True,
         location=(0, 0),
-    ).finalize()
+        
+    )
+    
     
     #grab_anywhere=True,
     

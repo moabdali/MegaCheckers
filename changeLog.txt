@@ -1,5 +1,7 @@
 ChangeLog
 
+v.0.9.100 July 21, 2020
+	Added Pandemonium (random shuffling of all tiles).  Fixed some errors with laser check (now correctly applies forcefields at the beginning of the turn and they last the entire turn).   Added a punch noise for haymaker.  Added a "get item" sound.  Added an elevation reference map. 
 v.0.9.99 July 20, 2020
 	Added study column.  
 
