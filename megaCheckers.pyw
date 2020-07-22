@@ -32,8 +32,8 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[rows - i - 1][j][1].avatar = "default"
 
  ###### DELETE ME ##########
-    for i in range(2):
-       for j in range(columns):
+    #for i in range(2):
+       #for j in range(columns):
 ##           #middle row generator
 ##           rows = 6
 ##           gameBoard[rows - i - 1][j][0] = Tile(occupied=True)
@@ -62,10 +62,10 @@ def initializeField(columns, rows, window, gameBoard):
 ##           gameBoard[i][j][1].storedItems.append("warp")
 ##           gameBoard[i][j][1].storedItems.append("purity tile")
 ##           
-           gameBoard[i][j][1].activeBuffs.append("move diagonal")
-           gameBoard[i][j][1].activeBuffs.append("feral")
-           gameBoard[i][j][1].feralMeatCount = 3
-           gameBoard[i][j][1].activeBuffs.append("round earth theory")
+           #gameBoard[i][j][1].activeBuffs.append("move diagonal")
+           #gameBoard[i][j][1].activeBuffs.append("feral")
+           #gameBoard[i][j][1].feralMeatCount = 3
+           #gameBoard[i][j][1].activeBuffs.append("round earth theory")
 ##           
 ##
 ##           #the middle row
@@ -578,7 +578,7 @@ def laserCheck(window, gameBoard, resetOnly = False):
                                 gameBoard[indexI][left][1].forceFieldTurn = PublicStats.turnCount
                                 forceFieldLeftStop = True
                                 break
-                            elif gameBoardgameBoard[indexI][left][1].forceFieldTurn == PublicStats.turnCount:
+                            elif gameBoard[indexI][left][1].forceFieldTurn == PublicStats.turnCount:
                                 sg.popup("A forcefield is continuing to protect a piece until the end of the turn", keep_on_top = True)
 
 
@@ -824,7 +824,7 @@ def publicPNGloader():
         "itemOrb",#7
         "trapOrb",#8
         "vertLaserTripod",#9
-        "orbEater", #10
+        "orb eater", #10
         "secretAgent", #11
         "purityTile",#12
         "floor0",#13
@@ -984,7 +984,7 @@ def displayBoard(window, gameBoard):
                     continue
             if gameBoard[i][j][0].wormHole2 == True:
                 wormHole2 = Image.open("images/wormHole2.png").convert("RGBA")
-                avatar.paste(wormHole2, (0, 0), wormHole1)
+                avatar.paste(wormHole2, (0, 0), wormHole2)
                 avatarFunction(window, wormHole2, gameBoard, i, j)
                 if gameBoard[i][j][0].occupied == False:
                     continue
@@ -1004,7 +1004,8 @@ def displayBoard(window, gameBoard):
                         
                     #if the mouse is here
                     if gameBoard[i][j][0].orbEater == True:
-                        window[i, j].update(image_data=PublicPNGList[10])
+                        #window[i, j].update(image_filename = "images\orb eater.png")
+                        avatarFunction(window, PublicPNGList[10], gameBoard, i, j)
                     if gameBoard[i][j][0].secretAgent != False:
                         avatarFunction(window, PublicPNGList[11], gameBoard, i, j)
                     if gameBoard[i][j][0].purityTile != False:
@@ -1361,7 +1362,7 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
         "napalm column",
         "napalm radial",
         "napalm row",
-        "orb eater",
+        "orbEater",
         "place mine",
         "purify radial",
         "purity tile",
@@ -1951,7 +1952,7 @@ def useItems(gameBoard, x, y, window):
             for i in coords2:
                 x = i[0]
                 y = i[1]
-                print(f"doing {x},{y}\n")
+                
                 gameBoard[x][y] = copy.deepcopy(gameBoardCopy[0])
                 gameBoardCopy.remove(gameBoardCopy[0])
             laserCheck(window, gameBoard, resetOnly = True)
@@ -2123,7 +2124,7 @@ def useItems(gameBoard, x, y, window):
                 playsound("sounds\yoink.mp3",block = False)
                 sg.popup(f"You've stolen {stolenpowers} powers:\n"+namesOfStolenpowers, keep_on_top = True)
             
-            gameBoard[x][y][1].itemsStored.remove("steal powers radial")                              
+            gameBoard[x][y][1].storedItems.remove("steal powers radial")                              
 
 # teach column
         elif str.find(i, "teach column") >= 0:
@@ -3158,29 +3159,30 @@ def useItems(gameBoard, x, y, window):
 
 # suicide bomb radial
         elif str.find(i, "suicide bomb radial") >= 0:
-            gameBoard[x][y][1].storedItems.remove("suicide bomb radial")
-            validTargets = getRadial((x, y), gameBoard)
+            pass
+##            gameBoard[x][y][1].storedItems.remove("suicide bomb radial")
+##            validTargets = getRadial((x, y), gameBoard)
 
-            for i in validTargets:
-                x = i[0]
-                y = i[1]
+##            for i in validTargets:
+##                x = i[0]
+##                y = i[1]
 
-                if isinstance(gameBoard[x][y][1], Piece):
-                    if "Energy Forcefield" in j[1].activeBuffs:
-                        sg.popup("Your shield activated and protected you from damage.", keep_on_top = True)
-                        j[1].forceFieldTurn = PublicStats.turnCount
-                        j[1].activeBuffs.remove("Energy Forcefield")
-                        continue
+##                if isinstance(gameBoard[x][y][1], Piece):
+##                    if "Energy Forcefield" in j[1].activeBuffs:
+##                        sg.popup("Your shield activated and protected you from damage.", keep_on_top = True)
+##                        j[1].forceFieldTurn = PublicStats.turnCount
+##                        j[1].activeBuffs.remove("Energy Forcefield")
+##                        continue
                     
-                    if j[1].forceFieldTurn == PublicStats.turnCount:
-                        sg.popup("Your shield continues to protect you.",keep_on_top = True)
-                        continue
+##                    if j[1].forceFieldTurn == PublicStats.turnCount:
+##                        sg.popup("Your shield continues to protect you.",keep_on_top = True)
+##                        continue
 
-                    else:
-                        # set the tile to be empty
-                        gameBoard[x][y][0].occupied = False
-                        gameBoard[x][y][1] = 0
-                        gameBoard[x][y][0].tileType = "default"
+##                    else:
+##                        # set the tile to be empty
+##                        gameBoard[x][y][0].occupied = False
+##                        gameBoard[x][y][1] = 0
+##                        gameBoard[x][y][0].tileType = "default"
 
 # napalm row
         elif str.find(i, "napalm row") >= 0:
@@ -4947,7 +4949,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                 #else if out of bounds
                 else:
                     
-                    sg.popup("Slammed into wall?",keep_on_top=True)
+                    sg.popup("Slammed into wall!",keep_on_top=True)
                     return
     if direction == "Right":
         while True:
@@ -5268,6 +5270,8 @@ def itemExplanation(i):
             explanation = "Fire off a stream of fire and sticky substances at your opponents.  Any opponent hit by it will burn to a crisp and leave a hole in the ground.  Allies are unaffected thanks to your sweet aiming skills."
         elif i == "orb eater":
             explanation = "Summon a hungry orb eater (totally not a mouse) on any empty spot in the field.  It will move around in between turns and eat up any item orbs it finds. Legend has \nit that you shouldn't let an orb eater eat too many..."
+        elif i == "pandemonium":
+            explanation = "MASS HYSTERIA ENSUES.  Shuffle everything on the board."
         elif i == "place mine":
             explanation = "Place a mine down on an adjacent square.  Any player stepping on it goes boom."
         elif i in ("purify radial", "purify column", "purify row"):
@@ -5549,7 +5553,7 @@ def roundEarthTheoryFunction(gameBoard,startLocation,endLocation,columns,rows):
             return False
     else:
         #debug
-        sg.popup("Round earth theory failed.", keep_on_top = True)
+        #sg.popup("Round earth theory failed.", keep_on_top = True)
         return False
 
 
@@ -5601,8 +5605,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                         continue
                     else:
                         j[0].highlight = True
-                #print("Testing")
-                #print(f" j0w2 {j[0].wormHole2}")
+               
                 if j[0].wormHole2 == True and playerTurn==2:
                     #if it's empty
                     
@@ -5621,7 +5624,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
             for i in validLocations:
                 xi = i[0]
                 yi = i[1]
-                #print(validLocations)
+                
                 #if the floor isn't gone
                 if g[xi][yi][0].tileType not in [
                     "damaged",
@@ -6571,7 +6574,7 @@ def movePiece(playerTurn, window, gameBoard):
         
         #IS THE PIECE A BOWLING BALL?  
         if gameBoard[event[0][0]][event[0][1]][0].occupied == True and "bowling ball" in gameBoard[event[0][0]][event[0][1]][1].activeBuffs:
-            highlightValidDistance(gameBoard, window, startLocation,turnOff = True)
+            #highlightValidDistance(gameBoard, window, startLocation,turnOff = True)
             #if it's your enemy's bowling ball
             if gameBoard[event[0][0]][event[0][1]][1].ownedBy != playerTurn:
                 pm(window,"That's not your piece!")
@@ -7481,69 +7484,8 @@ def resetMoveAgain(gameBoard):
                 j[1].moveAgain = moveAgainCount
 
 
-##def updateToolTips(window, gameBoard,playerTurn):
-##    
-##    for i in range(0,len(gameBoard)):
-##        for j in range(0,len(gameBoard[0])):
-##            print(f"i and j are {i} {j}")
-##            if gameBoard[i][j][0].occupied == True:
-##                buffs = f"[BUFFS] x{len(gameBoard[i][j][1].activeBuffs)}"+"\n"
-##                debuffs = "\n"+f"[DEBUFFS] x{len(gameBoard[i][j][1].activeDebuffs)} "+"\n"
-##                storedItems = "\n"+f"[ITEMS] x{len(gameBoard[i][j][1].storedItems)}"+"\n"
-##                for b in gameBoard[i][j][1].activeBuffs:
-##                    buffs+=b+"\n"
-##                for d in gameBoard[i][j][1].activeDebuffs:
-##                    debuffs+=d+"\n"
-##                if gameBoard[i][j][1].ownedBy == playerTurn:
-##                    for s in  gameBoard[i][j][1].storedItems:
-##                        storedItems += s+"\n"
-##                else:
-##
-##                    for s in  gameBoard[i][j][1].storedItems:
-##                        storedItems += "???"+"\n"
-##                toolTipData = buffs+debuffs+storedItems
-##            else:
-##                toolTipData = ""
-##                specialConditions = "Special Conditions:\n"
-##                
-##                tileType = f"Tile Type: {gameBoard[i][j][0].tileType}"+"\n"
-##                tileHeight = f"Tile Height: {gameBoard[i][j][0].tileHeight}"+"\n"
-##                if gameBoard[i][j][0].horiLaser or gameBoard[i][j][0].vertLaser or gameBoard[i][j][0].crossLaser:
-##                    specialConditions += "Being lasered\n"
-##                if gameBoard[i][j][0].orbEater:
-##                    specialConditions += "Has an orb eater\n"
-##                if gameBoard[i][j][0].wormHole1:
-##                    specialConditions += "Has a worm hole (player 1)\n"
-##                if gameBoard[i][j][0].wormHole2:
-##                    specialConditions += "Has a worm hole (player 2)\n"
-##                if gameBoard[i][j][0].recallTurn != False:
-##                    specialConditions += "Has a recall slated"
-##                if gameBoard[i][j][0].secretAgent:
-##                    specialConditions += "Has a secret agent"
-##                if gameBoard[i][j][0].purityTile:
-##                    specialConditions += "Has a purity tile"
-##                if len(gameBoard[i][j][0].dumpList)>0:
-##                    specialConditions += "This item dump contains: \n"
-##                    for i in gameBoard[i][j][0].dumpList:
-##                        specialConditions += i+"\n"
-##                toolTipData += tileType + tileHeight + specialConditions
-##            try:
-##                window[(i,j)].SetTooltip(toolTipData)
-##            except:
-##                pm(window, "oops, an error occurred with trying to set a new tooltip")
-
-
-
-
 def updateToolTips(window, gameBoard,playerTurn):
-    #debug attempt
-
-    
-    #window.disappear()
-
-    
-
-    
+ 
     for iIndex, iData in enumerate(gameBoard):
         for j, jData in enumerate(iData):
             
@@ -7599,10 +7541,6 @@ def updateToolTips(window, gameBoard,playerTurn):
                 window[(iIndex,j)].SetTooltip(toolTipData)
             except:
                 pm(window, "oops, an error occurred with trying to set a new tooltip")
-    #debug attempt
-##    window.disappear()
-##    window.reappear()
-    #debug attempt
                 
 
 def spookyHand(window, gameBoard):
@@ -7613,7 +7551,6 @@ def spookyHand(window, gameBoard):
             attempts -= 1
             xrand = random.randint(0, len(gameBoard)-1)
             yrand = random.randint(0, len(gameBoard[0])-1)
-
 
             #only attack spaces with pieces
             if  gameBoard[xrand][yrand][0].occupied == True:
