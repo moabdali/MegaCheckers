@@ -108,9 +108,11 @@ class PublicStats:
     #orbCycleList = [5, 10, 0, 0, 3, 1, 0, 2, 1]
     orbCycleList = [4, 0, 0, 1, 3, 2, 2, 0, 1,0,0]
     spookyHand = False
-    spookyHandTurnCount = 5
+    spookyHandTurnCount = 15
     hotSpot = []
     recallCount = 0
+    playerAutoWin = 0
+    playerAutoWinTurn = False
     def getOrbCount(self):
         cycle = PublicStats.turnCount % 11
         return PublicStats.orbCycleList[cycle]
@@ -1333,6 +1335,7 @@ def emptySpots(gameBoard,trueEmpty = False):
 def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getItemsList = False):
     # items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
     items = [
+        "auto win",
         "bernie sanders",
         "berzerk",
         "bowling ball",
@@ -1654,7 +1657,24 @@ def useItems(gameBoard, x, y, window):
                         j[1] = 0
                         j[0].tileType = "default"
 
+# auto win
+        elif str.find(i, "auto win") >= 0:
+            itemsMenu.close()
 
+            if PublicStats.playerAutoWin != 0:
+                sg.popup("Sorry buddy, someone else has already used an auto win, so you're outta luck this time", keep_on_top = True)
+            else:
+                PublicStats.playerAutoWin = playerTurn
+                PublicStats.playerAutoWinTurn = PublicStats.turnCount + 100
+                #sg.popup(f"{PublicStats.playerAutoWinTurn}",keep_on_top = True)
+                window.disable()
+                layoutWin = [ [sg.T("CONGRATULATIONS, YOU WIN", font = "Cambria, 50", text_color = "Silver")], [sg.T("in 100 turns.", font = "Cambria 12")], [sg.Button("AWESOME I AM AMAZING",size = (100,2))] ]
+                winWindow = sg.Window("YOU WIN", layoutWin,keep_on_top = True).finalize()
+                winWindow.read()
+                window.enable()
+                winWindow.close()
+                
+                
 # canyon row
         elif str.find(i, "canyon row") >= 0:
             itemsMenu.close()
@@ -5837,10 +5857,10 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                         #highlight it
                         j[0].highlight = True
                     #if you're there, don't allow movement there, unless feral
-                    elif j[1].ownedBy == playerTurn and "feral" not in j[1].activeBuffs:
+                    elif j[1].ownedBy == playerTurn and "feral" not in g[x][y][1].activeBuffs:
                         continue
                     else:
-                        j[0].highlight = True
+                        j[0].highlightRed = True
                
                 if j[0].wormHole2 == True and playerTurn==2:
                     #if it's empty
@@ -5850,10 +5870,10 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                         
                         j[0].highlight = True
                     #if you're there, don't allow movement there, unless feral
-                    elif j[1].ownedBy == playerTurn and "feral" not in j[1].activeBuffs:
+                    elif j[1].ownedBy == playerTurn and "feral" not in g[x][y][1].activeBuffs:
                         continue
                     else:
-                        j[0].highlight = True
+                        j[0].highlightRed = True
                         
         if "move diagonal" in g[x][y][1].activeBuffs: #and "round earth theory" not in g[x][y][1].activeBuffs
             validLocations = getRadial(location, gameBoard)
@@ -6182,7 +6202,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                     if g[0][0][0].tileHeight-1 > g[x][y][0].tileHeight:
                         if "climb tile" in g[x][y][1].activeBuffs:
                             if g[0][0][0].occupied == True:
-                                if g[0][0][0].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
+                                if g[0][0][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
                                     g[0][0][0].highlightRed = True
                             else:
                                 g[0][0][0].highlight = True
@@ -6595,7 +6615,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                             j[0].highlightRed = True
                             
             g[x][y][0].highlightRed = False
-            g[x][y][0].hightlightGreen = True
+            g[x][y][0].highlightGreen = True
             return
 
         
@@ -6702,7 +6722,7 @@ def movePiece(playerTurn, window, gameBoard):
                     for j in i:
                         if j[0].occupied == True:
                             j[1].storedItems.append(items)
-                    pm(window,"CHEETZed some items")
+                pm(window,"CHEETZed some items.  What a cheetzer.")
                 continue
 
 
@@ -7053,31 +7073,6 @@ def movePiece(playerTurn, window, gameBoard):
             else:
                 return
 
-##        #if it's the same piece they moved earlier, make it grey.  If the piece isn't there, find it using the currentTurnPiece function
-##        if (repeatRestrictor[0] == True) and (startLocation == repeatRestrictor[1])and ( gameBoard[startLocation[0]][startLocation[1]][0].occupied == True and gameBoard[startLocation[0]][startLocation[1]][1].currentTurnPiece == True):
-##            try:
-##                gameBoard[startLocation[0]][startLocation[1]][1].grey = True
-##                gameBoard[startLocation[0]][startLocation[1]][1].currentTurnPiece = True
-##            except:
-##                startLocation = findCurrentTurnPiece(window, gameBoard)
-##                if startLocation == False:
-##                    sg.popup("err 1: An item caused an error that made it impossible to determine which piece was using the Move Again.  In order to prevent crashes, your turn will end now.", keep_on_top = True)
-##                    return
-##
-##                repeatRestrictor[1] = startLocation
-##            displayBoard(window, gameBoard)
-##        elif (repeatRestrictor[0] == True):
-##            startLocation = findCurrentTurnPiece(window, gameBoard)
-##            
-##            repeatRestrictor[1] = startLocation
-##            if startLocation == False:
-##                    sg.popup("err 2: An item caused an error that made it impossible to determine which piece was using the Move Again.  In order to prevent crashes, your turn will end now.", keep_on_top = True)
-##                    return
-##
-##            repeatRestrictor[1] = startLocation
-##            displayBoard(window, gameBoard)
-##            gameBoard[startLocation[0]][startLocation[1]][1].grey = True
-##            gameBoard[startLocation[0]][startLocation[1]][1].currentTurnPiece = True
 
         
 ##########################################################
@@ -7287,10 +7282,16 @@ def movePiece(playerTurn, window, gameBoard):
                 #test for tripmine trip mine
                 wormHole = False
                 #if player 1's turn and there's a worm hole there
-                if gameBoard[endLocation[0]][endLocation[1]][0].occupied == False and gameBoard[endLocation[0]][endLocation[1]][0].wormHole1 == True and playerTurn == 1:
-                    wormHole = True
-                elif gameBoard[endLocation[0]][endLocation[1]][0].occupied == False and gameBoard[endLocation[0]][endLocation[1]][0].wormHole2 == True and playerTurn == 2:
-                    wormHole = True
+                if gameBoard[endLocation[0]][endLocation[1]][0].wormHole1 == True and playerTurn == 1:
+                    if gameBoard[endLocation[0]][endLocation[1]][0].occupied == False or (gameBoard[endLocation[0]][endLocation[1]][0].occupied and gameBoard[endLocation[0]][endLocation[1]][1].ownedBy != playerTurn):
+                        wormHole = True
+                    elif gameBoard[endLocation[0]][endLocation[1]][0].occupied == True and "feral" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+                        wormHole = True
+                if gameBoard[endLocation[0]][endLocation[1]][0].wormHole2 == True and playerTurn == 2:
+                    if gameBoard[endLocation[0]][endLocation[1]][0].occupied == False or (gameBoard[endLocation[0]][endLocation[1]][0].occupied and gameBoard[endLocation[0]][endLocation[1]][1].ownedBy != playerTurn):
+                        wormHole = True
+                    elif gameBoard[endLocation[0]][endLocation[1]][0].occupied == True and "feral" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+                        wormHole = True
 
                 # assume the player isn't trying to move diagonally at first
                 diagonalCheck = False
@@ -7354,17 +7355,19 @@ def movePiece(playerTurn, window, gameBoard):
                 # if it's close enough:  (DESTINATION/LEGAL MOVE)#
                 ##################################################
 
-
-
                 
-                if (gameBoard[startLocation[0]][startLocation[1]][0].tileHeight+1 < gameBoard[endLocation[0]][endLocation[1]][0].tileHeight) and ("climb tile" not in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs):
+
+                #tile height gate (stops you from moving if the elevation is too high)
+                if (gameBoard[startLocation[0]][startLocation[1]][0].tileHeight+1 < gameBoard[endLocation[0]][endLocation[1]][0].tileHeight) and ("climb tile" not in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs) and wormHole == False:
                     playsound("sounds/wrong.wav",block=False) 
                     sg.popup("The tile you're trying to get to is too high",keep_on_top = True)
                     pm(window,"The tile you're trying to get to is too high")
                     continue
 
-
-
+                
+                if wormHole == True:
+                    sg.popup("Wormhole detected", keep_on_top = True)
+                    pass
 
 
 
@@ -7705,7 +7708,7 @@ def movePiece(playerTurn, window, gameBoard):
                         displayBoard(window, gameBoard)
                         window.disable()
                         moveAgainCheck = sg.popup_yes_no(
-                            "This piece gets to go again. Would you like to use it again?", keep_on_top=True
+                            "This piece has a Move Again buff, and gets to go again. Would you like to use it again?", keep_on_top=True,font = "Cambria 30",background_color="black", text_color = "green" , line_width = 15
                         )
                         window.enable()
                         if moveAgainCheck == "Yes":
@@ -8003,17 +8006,21 @@ def spookyHand(window, gameBoard):
 
             #only attack spaces with pieces
             if  gameBoard[xrand][yrand][0].occupied == True:
-
-                
+                nums = [1,2]
+                choice = random.choice(nums)
+                playsound(f"sounds\spookyHand{choice}.mp3", block = False)
                 gameBoard[xrand][yrand][0].tileType = "hand1"
                 displayBoard(window, gameBoard)
+                sleep(.5)
                 window.refresh()
                 
                 gameBoard[xrand][yrand][0].tileType = "hand2"
+                sleep(.5)
                 displayBoard(window, gameBoard)
                 window.refresh()
 
                 gameBoard[xrand][yrand][0].tileType = "hand3"
+                sleep(.5)
                 displayBoard(window, gameBoard)
                 window.refresh()
 
@@ -8313,6 +8320,10 @@ def begin():
 
         updateToolTips(window, gameBoard,playerTurn)
         itemOrbForecast(window)
+        
+        if PublicStats.playerAutoWin != 0:
+            if PublicStats.playerAutoWinTurn == PublicStats.turnCount:
+                sg.popup(f"Congrats to player {playerAutoWin}.  Your AutoWin item has allowed you to automatically win.  Enjoy your empty, undeserved victory.")
         gamePlay(playerTurn, window, gameBoard)
         x = -1
         y = -1
@@ -8374,6 +8385,11 @@ def begin():
             window["turn"].update(filename="images/up.png")
             window['turnspassed'].update(f"{PublicStats.turnCount:>3}")
             itemOrbForecast(window)
+            
+            if PublicStats.playerAutoWin != 0:
+                    if PublicStats.playerAutoWinTurn == PublicStats.turnCount:
+                        sg.popup(f"Congrats to player {playerAutoWin}.  Your AutoWin item has allowed you to automatically win.  Enjoy your empty, undeserved victory.")
+                
             #check for recalled pieces
             if PublicStats.recallCount > 0:
                 recallFunction(window,gameBoard)

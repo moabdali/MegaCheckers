@@ -1,7 +1,7 @@
 ChangeLog
 
 v.0.9.103 July 23, 2020
-	Much nicer item menu, changed pandemonium to shuffle all (pandemonium will be much crazier once implemented), fixed a huge "move again" glitch - should not crash anymore when using shuffles or making mistakes on the second turn; might still have errors for determining which piece moved again (more testing suggested).  Added purify column. Added messages and checking for cheetz. 
+	Much nicer item menu, changed pandemonium to shuffle all (pandemonium will be much crazier once implemented), fixed a huge "move again" glitch - should not crash anymore when using shuffles or making mistakes on the second turn; might still have errors for determining which piece moved again (more testing suggested).  Added purify column. Added messages and checking for cheetz. Added sound to spooky hand. 
 
 v.0.9.102 July 23, 2020
 	Fixed purify radial.  Added highlighting to purify radial.  Added purify row.  Added a nicer item read menu (shows pages, along with letters up top).  Changed color for "begin game".  Added some changes to better track of movement history (when turns end, when a piece moves again).  Corrected the alphabetical list (berzerk was before bernie sanders).  
