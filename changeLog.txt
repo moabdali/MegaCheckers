@@ -1,5 +1,8 @@
 ChangeLog
 
+v.0.9.102 July 23, 2020
+	Fixed purify radial.  Added highlighting to purify radial.  Added purify row.  Added a nicer item read menu (shows pages, along with letters up top).  Changed color for "begin game".  Added some changes to better track of movement history (when turns end, when a piece moves again).  Corrected the alphabetical list (berzerk was before bernie sanders).  
+
 v.0.9.101 July 22, 2020
 	Fixed some more forcefield errors. Corrected a ton of round earth theory errors.  Added highlighting for round earth theory. Corrected some interaction errors between round earth theory and move diagonal (used to be able to teleport anywhere).
 

@@ -398,13 +398,13 @@ def feralFunction(window, gameBoard, playerTurn):
     
 # generate item orbs
 def createOrbs(window, gameBoard):
-    dangerTurn = 30
+    dangerTurn = 40
     #dangerTurn = 1
     emptySpots = 0
     if PublicStats.turnCount == dangerTurn:
         sg.popup(
-            "Warning: mines disguised as item orbs may spawn from now on!  They will explode if either player steps on them.",
-            keep_on_top=True,
+            "Warning: TRAP ORBS disguised as ITEM ORBS may spawn from now on!  They will explode if either player steps on them.",font = "Cambria 30",
+            keep_on_top=True, image = "images/trapOrb.png"
         )
     for i in gameBoard:
         for j in i:
@@ -647,7 +647,7 @@ def laserCheck(window, gameBoard, resetOnly = False):
                                 gameBoard[indexI][right][1].forceFieldTurn = PublicStats.turnCount
                                 forceFieldRightStop = True
                                 break
-                            elif gameBoardgameBoard[indexI][right][1].forceFieldTurn == PublicStats.turnCount:
+                            elif gameBoard[indexI][right][1].forceFieldTurn == PublicStats.turnCount:
                                 sg.popup("A forcefield is continuing to protect a piece until the end of the turn", keep_on_top = True)
 
                                 
@@ -1426,7 +1426,7 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
         [sg.T(youFoundA, font = "Cambria 30")],
         [sg.T(randItem, font = "Cambria 50", text_color = "Blue")],
         [sg.T("(Hover over the picture to read about the item)")],
-        [sg.Button("SWEET", key = "Affirmative")]
+        [sg.Button("          ", key = "Affirmative", font = "Cambria 30")]
                     ]
         
     pickUpLayout = [
@@ -1581,10 +1581,15 @@ def useItems(gameBoard, x, y, window):
     focusOutFlag = False
     itemsMenu.bind('<FocusOut>', '+FOCUS OUT+')
 
-    for i,idata in enumerate(gameBoard):
-        for j,jdata in enumerate(idata):
-            window[(i,j)].update(disabled = True)
+    #disable tile buttons so they can't be clicked
+    #currently disabling this feature because it looks ugly
+##    for i,idata in enumerate(gameBoard):
+##        for j,jdata in enumerate(idata):
+##            window[(i,j)].update(disabled = True)
+
+    
     while True:
+        #window.disable()
         playsound("sounds/click2.wav",block=False)
         event = (itemsMenu.read()) 
         try:
@@ -1592,7 +1597,7 @@ def useItems(gameBoard, x, y, window):
             for inum,idata in enumerate(gameBoard):
                 for jnum,jdata in enumerate(idata):
                     window[(inum,jnum)].update(disabled = False)
-                
+            #window.enable()
             if i == None:
                 itemsMenu.close()
                 return "earlyBreak"
@@ -1604,9 +1609,11 @@ def useItems(gameBoard, x, y, window):
                 return "earlyBreak"
                 
             
-            if i in (0,1,2,3,4,5,6,7,8,9):
+            if i in range(0,len(gameBoard)):
+                window.enable()
                 break
         except:
+            #window.enable()
             break
 
         itemsMenu.close()
@@ -3159,30 +3166,100 @@ def useItems(gameBoard, x, y, window):
 
 # suicide bomb radial
         elif str.find(i, "suicide bomb radial") >= 0:
-            pass
-##            gameBoard[x][y][1].storedItems.remove("suicide bomb radial")
-##            validTargets = getRadial((x, y), gameBoard)
+            j = gameBoard[x][y]
+            j[1].storedItems.remove("suicide bomb radial")
+            validTargets = getRadial((x, y), gameBoard)
 
-##            for i in validTargets:
-##                x = i[0]
-##                y = i[1]
-
-##                if isinstance(gameBoard[x][y][1], Piece):
-##                    if "Energy Forcefield" in j[1].activeBuffs:
-##                        sg.popup("Your shield activated and protected you from damage.", keep_on_top = True)
-##                        j[1].forceFieldTurn = PublicStats.turnCount
-##                        j[1].activeBuffs.remove("Energy Forcefield")
-##                        continue
+            for i in validTargets:
+                x = i[0]
+                y = i[1]
+                j = gameBoard[x][y]
+                
+                destroyedCheck = False
+                if j[0].tileType in ("damaged",
+                                "destroyed",
+                                "damaged1",
+                                "damaged2",
+                                "damaged3",
+                                "damaged4",
+                                "damaged5",
+                                "damaged6",
+                                "damaged7",
+                                "damaged8"):
+                    destroyedCheck = True
+                    backupTileType = j[0].tileType
+                if isinstance(j[1], Piece):
+                    if "Energy Forcefield" in j[1].activeBuffs:
+                        sg.popup("Your shield activated and protected you from damage.", keep_on_top = True)
+                        validTargets.remove( (x,y) )
+                        j[1].forceFieldTurn = PublicStats.turnCount
+                        j[1].activeBuffs.remove("Energy Forcefield")
+                        continue
                     
-##                    if j[1].forceFieldTurn == PublicStats.turnCount:
-##                        sg.popup("Your shield continues to protect you.",keep_on_top = True)
-##                        continue
+                    elif j[1].forceFieldTurn == PublicStats.turnCount:
+                        validTargets.remove( (x,y) )
+                        sg.popup("Your shield continues to protect you.",keep_on_top = True)
+                        continue
 
-##                    else:
-##                        # set the tile to be empty
-##                        gameBoard[x][y][0].occupied = False
-##                        gameBoard[x][y][1] = 0
-##                        gameBoard[x][y][0].tileType = "default"
+                    else:
+                        # set the tile to be empty
+                        if destroyedCheck == False:
+                            j[0].occupied = False
+                            j[1] = 0
+
+        
+
+            for i in validTargets:
+                
+                x = i[0]
+                y = i[1]
+                j = gameBoard[x][y]
+                j[0].occupied = False
+                j[0].tileType = "exploding"
+                
+            displayBoard(window, gameBoard)
+            window.refresh()
+            sleep(.3)
+
+            for i in validTargets:
+                x = i[0]
+                y = i[1]
+
+                j = gameBoard[x][y]
+                j[0].occupied = False
+                if destroyedCheck == False:
+                    j[0].tileType = "default"
+                else:
+                    j[0].tileTpe = backupTileType
+            displayBoard(window, gameBoard)
+            window.refresh()
+            sleep(.3)
+                
+            for i in validTargets:
+                x = i[0]
+                y = i[1]
+                j = gameBoard[x][y]
+                j[0].occupied = False
+                j[0].tileType = "exploding"
+                displayBoard(window, gameBoard)
+                
+            displayBoard(window, gameBoard)
+            window.refresh()
+            sleep(.3)
+
+            for i in validTargets:
+                x = i[0]
+                y = i[1]
+
+                j = gameBoard[x][y]
+                if destroyedCheck == False:
+                    j[0].tileType = "default"
+                else:
+                    j[0].tileType = backupTileType
+            displayBoard(window, gameBoard)
+            window.refresh
+            sleep(.3)
+                        
 
 # napalm row
         elif str.find(i, "napalm row") >= 0:
@@ -6368,6 +6445,7 @@ def movePiece(playerTurn, window, gameBoard):
     # a small list that is used to make sure a player that gets a second turn for a piece can only use that specific piece twice
     repeatRestrictor = [False, (-1, -1)]
     pieceTeleported = False
+    
     #startLocation = [0,0]
     startLocation = []
     roundEarthTheory = False
@@ -6384,7 +6462,7 @@ def movePiece(playerTurn, window, gameBoard):
 
     while True:
         
-        
+        laserCheck(window, gameBoard)
         updateToolTips(window, gameBoard,playerTurn)
         highlightValidDistance(gameBoard, window, (0,0),turnOff = True)
         #flag for keeping track of pieces that were teleported
@@ -6430,6 +6508,10 @@ def movePiece(playerTurn, window, gameBoard):
             #if you wanna cheat
             if "cheetz" in event:
                 buffs = sg.popup_get_text("",keep_on_top = True)
+                itemsList = pickUpItemOrb(getItemsList = True)
+                if buffs not in itemsList:
+                    sg.popup("BOGUS CHEETZ ATTEMPT.  GET OUTTA HERE.", keep_on_top = True)
+                    continue
                 for i in gameBoard:
                     for j in i:
                         if j[0].occupied == True:
@@ -7730,14 +7812,14 @@ def begin():
     ]
 
     frame_itemInfo = [
-        [sg.Button("Toggle Item Guide", size = (50,10), disabled = True)]
+        [sg.Button("Toggle Item Guide (Disabled until a future update)", size = (50,10), disabled = True)]
 
 
 
     ]
 
     frame_elevation = [
-            [ sg.Image(filename = "images\elevation.png", tooltip = "Each shade represents the height of a given tile.  A piece can jump down safely from any height to any tile that is lower than it.\nHowever, it cannot climb a tile that is more than one elevation unit taller.")]
+            [sg.Image(filename = "images\elevation.png", tooltip = "Each shade represents the height of a given tile.  A piece can jump down safely from any height to any tile that is lower than it.\nHowever, it cannot climb a tile that is more than one elevation unit taller.")]
 
         ]
     frame_turnsPassed = [
@@ -7745,7 +7827,7 @@ def begin():
         ]
 
     frame_itemOrbForecast =[
-        [sg.T(f"123:>3",key = f"Orb{i}",size = (4,1),pad = (0,0),font = "Cambria, 30")for i in range(0,len(PublicStats.orbCycleList))]
+        [sg.T(f"123:>3",key = f"Orb{i}",size = (4,1),pad = (0,0),font = "Cambria, 30", )for i in range(0,len(PublicStats.orbCycleList))]
     ]
     
     frame_remaining = [
@@ -7775,7 +7857,7 @@ def begin():
         ],
         [sg.T(f" " * 50, key="information", size=(25, 3), font="Cambria 30")],
         [sg.Frame("Elevation Info",frame_elevation), sg.Frame("Item Info",frame_itemInfo), sg.Frame("Pieces Remaining", frame_remaining) ],
-        [sg.Frame("Current Turn", frame_turnsPassed), sg.Frame("Item Orb Forecast (expected number of orbs that will spawn after your turn ends):",frame_itemOrbForecast)],
+        [sg.Frame("Current Turn", frame_turnsPassed), sg.Frame("Item Orb Forecast (expected number of orbs that will spawn after your turn ends):",frame_itemOrbForecast, title_color = "Silver",font = "Cambria, 15")],
         [
             sg.Output(
                 size=(70, 10),
