@@ -33,8 +33,8 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[rows - i - 1][j][1].avatar = "default"
 
  ###### DELETE ME ##########
-    for i in range(2):
-       for j in range(columns):
+##    for i in range(2):
+##       for j in range(columns):
 ##           #middle row generator
 ##           rows = 6
 ##           gameBoard[rows - i - 1][j][0] = Tile(occupied=True)
@@ -63,8 +63,10 @@ def initializeField(columns, rows, window, gameBoard):
 ##           gameBoard[i][j][1].storedItems.append("warp")
 ##           gameBoard[i][j][1].storedItems.append("purity tile")
 ##           
-           gameBoard[i][j][1].activeBuffs.append("move again")
-           gameBoard[i][j][1].storedItems.append("shuffle all")
+##           gameBoard[i][j][1].activeBuffs.append("move again")
+##           gameBoard[i][j][1].storedItems.append("trip mine column")
+##           gameBoard[i][j][1].storedItems.append("shuffle all")
+##           gameBoard[9][0][1].storedItems.append("purity tile")
            #gameBoard[i][j][1].feralMeatCount = 3
            #gameBoard[i][j][1].activeBuffs.append("round earth theory")
 ##           
@@ -235,7 +237,7 @@ Player two's worm hole? {self.wormHole2}
             return f"This is an item orb tile with an elevation of {self.tileHeight}"
 
 
-def getColumn(location, gameBoard, grow=False, emptyOnly=False):
+def getColumn(location, gameBoard, grow=False):
     validLocations = []
     if grow == False:
         for i in range(len(gameBoard)):
@@ -248,7 +250,7 @@ def filterEmpty(gameBoard, filterList):
     for i in filterList:
         x = i[0]
         y = i[1]
-        if gameBoard[x][y][0].tileType == "default":
+        if gameBoard[x][y][0].tileType == "default" and gameBoard[x][y][0].occupied == False:
             cleanedList.append((x, y))
     return cleanedList
 
@@ -308,32 +310,32 @@ def getCross(location, gameBoard, grow=False, includeSelf=False, trueEmpty = Fal
         # one row up (guaranteed already)
         if trueEmpty == False:
             validLocations.append((location[0] - 1, location[1] + 0))
-        elif trueEmpty == True and g[0].orbEater == False and g[0].wormHole1 == False and g[0].wormHole2 == False:
+        elif trueEmpty == True and g[0].orbEater == False and g[0].wormHole1 == False and g[0].wormHole2 == False and g[0].occupied == False:
             validLocations.append((location[0] - 1, location[1] + 0))
     # check if you can go left
     if location[1] - 1 != -1:
         if trueEmpty == False:
             validLocations.append((location[0], location[1] - 1))
-        elif trueEmpty == True and g[0].orbEater == False and g[0].wormHole1 == False and g[0].wormHole2 == False:
+        elif trueEmpty == True and g[0].orbEater == False and g[0].wormHole1 == False and g[0].wormHole2 == False and g[0].occupied == False:
             validLocations.append((location[0], location[1] -1))
         
     if includeSelf == True:
         if trueEmpty == False:
             validLocations.append((location[0], location[1]))
-        elif trueEmpty == True and g[0].orbEater == False and g[0].wormHole1 == False and g[0].wormHole2 == False:
+        elif trueEmpty == True and g[0].orbEater == False and g[0].wormHole1 == False and g[0].wormHole2 == False and g[0].occupied == False:
             validLocations.append((location[0], location[1]))
     # check if you can go right
     if location[1] + 1 != columns:
         if trueEmpty == False:
             validLocations.append((location[0], location[1] + 1))
-        elif trueEmpty == True and g[0].orbEater == False and g[0].wormHole1 == False and g[0].wormHole2 == False:
+        elif trueEmpty == True and g[0].orbEater == False and g[0].wormHole1 == False and g[0].wormHole2 == False and g[0].occupied == False:
             validLocations.append((location[0], location[1]+1))
     # check if you can go down
     if location[0] + 1 != rows:
         # bottom guaranteed
         if trueEmpty == False:
             validLocations.append((location[0] + 1, location[1]))
-        elif trueEmpty == True and g[0].orbEater == False and g[0].wormHole1 == False and g[0].wormHole2 == False:
+        elif trueEmpty == True and g[0].orbEater == False and g[0].wormHole1 == False and g[0].wormHole2 == False and g[0].occupied == False:
             validLocations.append((location[0] + 1, location[1]))
     return validLocations
 
@@ -1350,8 +1352,8 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
         "canyon row",
         "care package drop",
         "charity",
-        "dead man's trigger",
-        "dump items", #10
+        "dead man's trigger",#10
+        "dump items", 
         "elevate tile",
         "Energy Forcefield",
         "floor restore",
@@ -1360,9 +1362,9 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
         "haymaker",
         "heir",
         "jump proof",
-        "jumpoline",
+        "jumpoline",#20
         "laser column",
-        "laser row",#20
+        "laser row",
         "magnet",
         "move again",
         "move diagonal",
@@ -1370,9 +1372,9 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
         "mutual treason radial",
         "mutual treason row",
         "mystery box",
-        "napalm column",
+        "napalm column",#30
         "napalm radial",
-        "napalm row",#30
+        "napalm row",
         "orbEater",
         "place mine",
         "purify column",
@@ -1380,17 +1382,17 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
         "purify row",
         "purity tile",
         "recall",
-        "reproduce",
+        "reproduce",#40
         "round earth theory",
         "secretAgent",
-        "seismic activity",#40
+        "seismic activity",
         "shuffle all",
         "shuffle column",
         "shuffle item orbs",
         "shuffle radial",
         "shuffle row",
         "sink tile",
-        "smart bombs",
+        "smart bombs",#50
         "snake tunneling",
         "spooky hand",
         "steal items column",#50
@@ -1400,27 +1402,27 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
         "steal powers radial",
         "steal powers row",
         "sticky time bomb",
-        "study column",
-        #"study radial",
+        "study column",#60
+        "study radial",
         "study row",
-        "suicide bomb column",#60
+        "suicide bomb column",
         "suicide bomb radial",
         "suicide bomb row",
         "teach column",
         "teach radial",
         "teach row",
         "trap orb",
-        #"trip mine column",
+        "trip mine column",#70
         "trip mine radial",
-        #"trip mine row",
-        "trump",#70
+        "trip mine row",
+        "trump",
         "vampiricism",
         "vile radial",
         "warp",
-        #"wololo column",
+        "wololo column",
         "wololo radial",
-        #"wololo row",
-        "worm hole",
+        "wololo row",
+        "worm hole",#80
     ]
     if introOnly == True:
         return random.choice(items)
@@ -1967,28 +1969,12 @@ def useItems(gameBoard, x, y, window):
             gameBoard[x][y][1].grey = False
             random.shuffle(gameBoard)
             coords = []
-            #gameBoardCopy = copy.deepcopy(gameBoard)
             gameBoardCopy = []
             vertical = []
-
-##            #go through each row
-##            for columns in range(len(gameBoard)):
-##                #go through each column
-##                for rows in range(len(gameBoard)):
-##                    #append each column to vertical
-##                    gameBoard[columns][rows].append(vertical)
-##                random.shuffle(vertical)
-##                gameBoardCopy.append(vertical)
-##                random.shuffle(gameBoardCopy)
-##                vertical.clear()
-##            gameBoard = copy.deepcopy(gameBoardCopy)
-##            random.shuffle(gameBoard)
-##            displayBoard(window,gameBoard)
             
             for i in range(0,len(gameBoard)):
                 for j in range(0,len(gameBoard)):
                     coords.append( (i,j) )
-            #print (coords)
             for i in range(0,len(coords)):
                 while True:
                     xy = random.choice(coords)
@@ -2470,8 +2456,6 @@ def useItems(gameBoard, x, y, window):
             sg.popup(f"Taught buffs to {taughtPieces} piece(s).",keep_on_top=True)
             pm(window,f"Taught buffs to {taughtPieces} piece(s).")
 
-
-
 #study column           
         elif str.find(i, "study column") >= 0:            
             itemsMenu.close()
@@ -2507,6 +2491,48 @@ def useItems(gameBoard, x, y, window):
             sg.popup(f"Learned buffs from {learnedFromPieces} piece(s): \n{learnedString}", keep_on_top = True)
             pm(window,f"Learned buffs from {learnedFromPieces} piece(s): \n{learnedString}")
 
+# study radial
+        elif str.find(i, "study radial") >= 0:
+            itemsMenu.close()
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "alliesHelpedOnly", reachType = "radial" )
+            displayBoard(window, gameBoard)
+            window.refresh()
+            if "burdened" in gameBoard[x][y][1].activeDebuffs:
+                sg.popup("This piece can't learn anything because it's got a 'burdened' debuff.  Try clearing it with a purify item or tile first.")
+                pm(window,"This piece can't learn anything because it's got a 'burdened' debuff.  Try clearing it with a purify item or tile first.")
+                continue
+            yesno = sg.popup_yes_no("Learn buffs from allied pieces in range?  (You cannot learn some buffs, including bowling buff and berzerk.)",keep_on_top=True)
+            if yesno == "No":
+                continue
+            gameBoard[x][y][1].grey = False
+            gameBoard[x][y][1].storedItems.remove("study radial")
+            validList = getRadial(location, gameBoard)
+            buffsCount = 0
+            buffsName = "\nLearned the following:\n"
+            for i in validList:
+                ix = i[0]
+                iy = i[1]
+                
+                if gameBoard[ix][iy][0].occupied and (x,y) != (ix,iy):
+                    if gameBoard[ix][iy][1].ownedBy == playerTurn:
+                        for buffs in gameBoard[ix][iy][1].activeBuffs:
+                            if buffs not in ("bowling ball","feral"):
+                                #sg.popup(f"adding {buffs}", keep_on_top = True)
+                                gameBoard[x][y][1].activeBuffs.append(buffs)
+                                buffsCount += 1
+                                buffsName += buffs.center(25)+"\n"
+            
+            if buffsCount > 0:
+                # took a surprising amount of work to get it to center properly
+                # apparently you can't just center the whole thing in one fell swoop
+                text = f"Learned {buffsCount} skills!".center(25)
+                text += f"{buffsName}"
+                sg.popup(text, font = "Cambria, 20",keep_on_top = True)
+            else:
+                sg.popup("You didn't learn anything!  What a waste!", keep_on_top = True)
+            
+
+            
 #study row            
         elif str.find(i, "study row") >= 0:            
             itemsMenu.close()
@@ -2723,9 +2749,23 @@ def useItems(gameBoard, x, y, window):
         elif str.find(i,"purity tile") >= 0:
             itemsMenu.close()
             validTargets = getCross((x, y), gameBoard, trueEmpty = True)
-            
+            startLocation = (x,y)
+            for i in validTargets:
+                ix = i[0]
+                iy = i[1]
+                gameBoard[ix][iy][0].highlight= True
+                
+            displayBoard(window, gameBoard)
+            window.refresh()
             pm(window, "Pick an adjacent location to place the purity tile.")
             event = window.read()
+            for i in validTargets:
+                ix = i[0]
+                iy = i[1]
+                gameBoard[ix][iy][0].highlight = False
+            displayBoard(window, gameBoard)
+            window.refresh()
+            
             if event[0] in validTargets:
                 x1 = event[0][0]
                 y1 = event[0][1]
@@ -2740,7 +2780,7 @@ def useItems(gameBoard, x, y, window):
                     break
                 else:
                     gameBoard[x][y][1].storedItems.remove("purity tile")
-                    g[0].purityTile = playerTurn
+                    g[0].purityTile = True
                     
 
             else:
@@ -3178,6 +3218,13 @@ def useItems(gameBoard, x, y, window):
 
 # trip mine radial
         elif str.find(i, "trip mine radial") >= 0:
+            itemsMenu.close()
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemiesHurtOnly", reachType = "radial")
+            displayBoard(window, gameBoard)
+            window.refresh()
+            yesno = sg.popup_yes_no("Use?",keep_on_top=True)
+            if yesno == "No":
+                continue
             gameBoard[x][y][1].storedItems.remove("trip mine radial")
             validTargets = getRadial((x, y), gameBoard)
 
@@ -3192,6 +3239,55 @@ def useItems(gameBoard, x, y, window):
                         window.refresh()
                         sleep(0.5)
                         # add code for graphics
+
+# trip mine row
+        elif str.find(i, "trip mine row") >= 0:
+            itemsMenu.close()
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemiesHurtOnly", reachType = "row")
+            displayBoard(window, gameBoard)
+            window.refresh()
+            yesno = sg.popup_yes_no("Use?",keep_on_top=True)
+            if yesno == "No":
+                continue
+            
+            gameBoard[x][y][1].storedItems.remove("trip mine row")
+            validTargets = getRow(location, gameBoard)
+
+            for i in validTargets:
+                g = gameBoard[i[0]][i[1]]
+
+                if g[0].occupied == True:
+
+                    if g[1].ownedBy != playerTurn:
+                        g[1].activeDebuffs.append("trip mine")
+                        pm(window, "Trip mine has been placed")
+                        window.refresh()
+                        sleep(0.5)
+                        # add code for graphics
+
+# trip mine column
+        elif str.find(i, "trip mine column") >= 0:
+            itemsMenu.close()
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemiesHurtOnly", reachType = "column")
+            displayBoard(window, gameBoard)
+            window.refresh()
+            yesno = sg.popup_yes_no("Use?",keep_on_top=True)
+            if yesno == "No":
+                continue
+            validTargets = getColumn(location, gameBoard)
+
+            for i in validTargets:
+                g = gameBoard[i[0]][i[1]]
+
+                if g[0].occupied == True:
+
+                    if g[1].ownedBy != playerTurn:
+                        g[1].activeDebuffs.append("trip mine")
+                        pm(window, "Trip mine has been placed")
+                        window.refresh()
+                        sleep(0.5)
+                        # add code for graphics
+
 
 # suicide bomb column
         elif str.find(i, "suicide bomb column") >= 0:
@@ -4413,7 +4509,7 @@ def useItems(gameBoard, x, y, window):
             displayBoard(window, gameBoard)
             pm(window, "Congrats; your piece can't be jumped on.")
 
-# wololo 
+# wololo radial
         elif str.find(i, "wololo radial") >= 0:
 
             
@@ -4424,6 +4520,7 @@ def useItems(gameBoard, x, y, window):
             yesno = sg.popup_yes_no("Use?",keep_on_top=True)
             if yesno == "No":
                 continue
+            highlightValidDistance(gameBoard, window, startLocation, turnOff=True)
             validList = []
             validList = getRadial(location, gameBoard)
             player = gameBoard[x][y][1].ownedBy
@@ -4437,8 +4534,21 @@ def useItems(gameBoard, x, y, window):
                 iy = i[1]
                 if gameBoard[ix][iy][0].occupied == True:
                     if gameBoard[ix][iy][1].ownedBy == enemy:
-                        gameBoard[ix][iy][1].ownedBy = player
                         converted+=1
+                        displayBoard(window, gameBoard)
+                        sleep(.5)
+                        gameBoard[ix][iy][1].ownedBy = player
+                        displayBoard(window, gameBoard)
+                        window.refresh()
+                        sleep(.5)
+                        gameBoard[ix][iy][1].ownedBy = enemy
+                        displayBoard(window, gameBoard)
+                        window.refresh()
+                        sleep(.5)
+                        gameBoard[ix][iy][1].ownedBy = player
+                        displayBoard(window, gameBoard)
+                        window.refresh()
+                        
             gameBoard[x][y][1].storedItems.remove("wololo radial")
 
             if converted > 0:
@@ -4448,6 +4558,102 @@ def useItems(gameBoard, x, y, window):
             
             displayBoard(window, gameBoard)
             window.refresh()
+            
+
+# wololo row
+        elif str.find(i, "wololo row") >= 0:
+
+            
+            itemsMenu.close()
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemiesHurtOnly", reachType = "row")
+            displayBoard(window, gameBoard)
+            window.refresh()
+            yesno = sg.popup_yes_no("Use?",keep_on_top=True)
+            if yesno == "No":
+                continue
+
+            gameBoard[x][y][1].storedItems.remove("wololo row")
+            highlightValidDistance(gameBoard, window, startLocation, turnOff=True)
+            converted = 0
+            # for each column inside the row
+            for j in gameBoard[x]:
+                    # if there is a piece
+                    if j[0].occupied == True:
+
+                        # if it's the enemy's piece
+                        if j[1].ownedBy != playerTurn:
+                            j[1].ownedBy = playerTurn
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            sleep(.5)
+                            j[1].ownedBy = enemyTurn
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            sleep(.5)
+                            j[1].ownedBy = playerTurn
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            sleep(.5)
+                            converted += 1
+                            
+            if converted > 0:
+                sg.popup(f"WOLOLO!  You've converted {converted} pieces to your side!", keep_on_top = True)
+                pm(window, f"WOLOLO!  You've converted {converted} pieces to your side!")
+                
+            if converted == 0:
+                sg.popup(f"Your incantation wasn't heart by any enemies.", keep_on_top = True)
+                pm(window, f"Your incantation wasn't heart by any enemies.")
+                
+            displayBoard(window, gameBoard)
+            window.refresh()       
+
+# wololo column
+        elif str.find(i, "wololo column") >= 0:
+
+            
+            itemsMenu.close()
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemiesHurtOnly", reachType = "column")
+            displayBoard(window, gameBoard)
+            window.refresh()
+            yesno = sg.popup_yes_no("Use?",keep_on_top=True)
+            if yesno == "No":
+                continue
+
+            gameBoard[x][y][1].storedItems.remove("wololo column")
+            highlightValidDistance(gameBoard, window, startLocation, turnOff=True)
+            converted = 0
+            # for each row inside the column
+            for j in gameBoard:
+                # if there is a piece
+                if j[y][0].occupied == True:
+
+                    # if it's the enemy's piece
+                    if j[y][1].ownedBy != playerTurn:
+                        j[y][1].ownedBy = playerTurn
+                        displayBoard(window, gameBoard)
+                        window.refresh()
+                        sleep(.5)
+                        j[y][1].ownedBy = enemyTurn
+                        displayBoard(window, gameBoard)
+                        window.refresh()
+                        sleep(.5)
+                        j[y][1].ownedBy = playerTurn
+                        displayBoard(window, gameBoard)
+                        window.refresh()
+                        sleep(.5)
+                        converted += 1
+                            
+            if converted > 0:
+                sg.popup(f"WOLOLO!  You've converted {converted} pieces to your side!", keep_on_top = True)
+                pm(window, f"WOLOLO!  You've converted {converted} pieces to your side!")
+                
+            if converted == 0:
+                sg.popup(f"Your incantation wasn't heart by any enemies.", keep_on_top = True)
+                pm(window, f"Your incantation wasn't heart by any enemies.")
+            displayBoard(window, gameBoard)
+            window.refresh()
+
+            
 
 # haphazard airstrike
         elif str.find(i, "haphazard airstrike") >= 0:
@@ -7471,7 +7677,7 @@ def movePiece(playerTurn, window, gameBoard):
                     gameBoard[endLocation[0]][endLocation[1]][0].occupied = True
                     #might be glitchy
                     
-                    # set the original location as being empty; delete the class; set a default tile
+                    # set the original location as being empty; delete the class
                     gameBoard[startLocation[0]][startLocation[1]][0].occupied = False
                     gameBoard[startLocation[0]][startLocation[1]][1] = 0
 
@@ -7486,15 +7692,17 @@ def movePiece(playerTurn, window, gameBoard):
 
 
 
-
+                    
                     #purity tile check
                     if gameBoard[endLocation[0]][endLocation[1]][0].purityTile == True:
-                        for iIndex,i in enumerate(gameBoard):
-                            for jIndex,j in enumerate(i):
-                                if j[0].occupied == True:
-                                    if j[1].stickyTimeBomb != False:
-                                        j[1].stickyTimeBomb = False
-                        sg.popup("Any negative effects on this piece have been cleared.",keep_on_top = True)
+                        debuffsCleaned = ""
+                        if gameBoard[endLocation[0]][endLocation[1]][0].occupied == True:
+                            if gameBoard[endLocation[0]][endLocation[1]][1].stickyTimeBomb != False:
+                                    debuffsCleaned += "Sticky Bomb\n"
+                                    gameBoard[endLocation[0]][endLocation[1]][1].stickyTimeBomb = False
+                            for debuffs in gameBoard[endLocation[0]][endLocation[1]][1].activeDebuffs:
+                                debuffsCleaned += debuffs+"\n"
+                        sg.popup(f"All negative effects on this piece have been cleared:\n {debuffsCleaned}",keep_on_top = True)
                         gameBoard[endLocation[0]][endLocation[1]][1].activeDebuffs.clear()
                         
                     if gameBoard[endLocation[0]][endLocation[1]][0].tileType == "itemDump":
@@ -7697,7 +7905,7 @@ def movePiece(playerTurn, window, gameBoard):
                             displayBoard(window, gameBoard)
                             window.refresh()
                             playsound("sounds/grenade.mp3", block = False)
-                            sg.popup("Trip mine went off!", keep_on_top=True)
+                            sg.popup("Trip mine went off! GG", keep_on_top=True)
                             gameBoard[endLocation[0]][endLocation[1]][
                                 0
                             ].tileType = "default"

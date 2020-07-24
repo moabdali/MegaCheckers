@@ -1,5 +1,11 @@
 ChangeLog
 
+v.0.9.106 July 24, 2020
+	Added Wololo Row, Added wololo column (steal enemy pieces).  Added highlighting and animations to wololo radial (and the new wololos).
+ 
+v.0.9.105 July 24, 2020
+	Fixed an error with purity tile.  It correctly cleans off tripwire bombs.  Added study column and study row. 
+
 v.0.9.104 July 24, 2020
 	Added grappling hook item (for climbing tiles).  Added auto win for winning automatically (after 100 turns).  Added better text for the itemOrb to explain what it does.
 
