@@ -857,6 +857,7 @@ def publicPNGloader():
         "highlightGreen", #37
         "highlightBrown", #38
         "vampiricism", #39
+        "grapple icon", #40
         ]):
 
         myImage = Image.open(f"images/{i}.png").convert("RGBA")
@@ -1118,6 +1119,11 @@ def displayBoard(window, gameBoard):
                         avatar.paste(jumpProof, (0, 0), jumpProof)
                         avatarFunction(window, avatar, gameBoard, i, j)
                         
+                    if "grappling hook" in g.activeBuffs:
+                        grapple = (PublicPNGList[40]).convert("RGBA")
+                        avatar.paste(grapple, (0,0), grapple)
+                        avatarFunction(window, avatar, gameBoard, i,j)
+                        
                     if "vampiricism" in g.activeBuffs:
 
                         vampiricism = (PublicPNGList[39]).convert("RGBA")
@@ -1349,6 +1355,7 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
         "elevate tile",
         "Energy Forcefield",
         "floor restore",
+        "grappling hook",
         "haphazard airstrike",
         "haymaker",
         "heir",
@@ -1666,7 +1673,7 @@ def useItems(gameBoard, x, y, window):
             else:
                 PublicStats.playerAutoWin = playerTurn
                 PublicStats.playerAutoWinTurn = PublicStats.turnCount + 100
-                #sg.popup(f"{PublicStats.playerAutoWinTurn}",keep_on_top = True)
+                gameBoard[x][y][1].storedItems.remove("auto win")
                 window.disable()
                 layoutWin = [ [sg.T("CONGRATULATIONS, YOU WIN", font = "Cambria, 50", text_color = "Silver")], [sg.T("in 100 turns.", font = "Cambria 12")], [sg.Button("AWESOME I AM AMAZING",size = (100,2))] ]
                 winWindow = sg.Window("YOU WIN", layoutWin,keep_on_top = True).finalize()
@@ -1674,6 +1681,20 @@ def useItems(gameBoard, x, y, window):
                 window.enable()
                 winWindow.close()
                 
+# grappling hook
+        elif str.find(i, "grappling hook") >= 0:
+            itemsMenu.close()
+
+            if "burdened" in gameBoard[x][y][1].activeDebuffs:
+                
+                sg.popup("This piece has been hit by the burdened debuff and can't equip the grappling hook.  Try finding a purifying item or tile.", keep_on_top = True)
+                continue
+            else:
+                gameBoard[x][y][1].storedItems.remove("grappling hook")
+                gameBoard[x][y][1].activeBuffs.append("grappling hook")
+                pm(window,"Your piece now has a grappling hook and can climb even the tallest of tiles.", )
+                sg.popup("Your piece now has a grappling hook and can climb even the tallest of tiles.",keep_on_top=True)
+                continue
                 
 # canyon row
         elif str.find(i, "canyon row") >= 0:
@@ -5477,8 +5498,9 @@ def findCurrentTurnPiece(window, gameBoard, reset = False):
 def itemExplanation(i):
 
 
-        
-        if i == "bowling ball":
+        if i == "auto win":
+            explanation = "CONGRATULATIONS! THIS IS THE MOST POWERFUL ITEM IN THE GAME!  AS SOON AS YOU ACTIVATE THIS, YOU WILL WIN\nin 100 turns."
+        elif i == "bowling ball":
             explanation = "Your piece loses all of its powers and negative effects... but becomes a crazy bowling ball on a rampage."
         elif i == "berzerk":
             explanation = "MUST RIP AND TEAR!  BERZERK MAKE PIECE GO ANGRY.  PIECE GO HUNGRY.  PIECE EAT ENEMY AND FOE ALIKE! IF PIECE EAT A PIECE, PIECE MOVE AGAIN!  \nIF PIECE EAT AGAIN ON THIS BONUS MOVE, THEN PIECE GO AGAIN ONE MORE TIME!  THAT THREE TIME MAX!  PIECE MUST EAT MEAT FROM DEAD ENEMY EVERY TURN!  \nPIECE STORE MEAT FROM EACH KILL!  IF PIECE HAVE NO MEAT STORED TO EAT, PIECE DIE!  PIECE NO LIKE DIE UNLESS HE MAKE OTHERS DIE!"
@@ -5498,6 +5520,8 @@ def itemExplanation(i):
             explanation = "A forcefield that will protect you from an explosion or energy attack; the shield remains active for one turn, shielding you from further explosions."
         elif i == "floor restore":
             explanation = "Repair all damaged/missing floor tiles and replace them with pristine ones."
+        elif i == "grappling hook":
+            explanation = "Use a grappling hook to climb the tallest of tiles with barely any effort.  Be a ninja!  Or Batman.  Or nerd with a hook-on-a-rope.  Whatever."
         elif i == "haphazard airstrike":
             explanation = "Call in an airstrike from an underfunded army.  The plane doesn't have targeting systems installed, so it will carpet bomb the field at random."
         elif i == "haymaker":
@@ -5895,7 +5919,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                     "damaged8"
                 ]:
                     if g[xi][yi][0].tileHeight-1 > g[x][y][0].tileHeight:
-                        if "climb tile" not in g[x][y][1].activeBuffs:
+                        if "grappling hook" not in g[x][y][1].activeBuffs:
                             continue
                         
                         
@@ -5920,7 +5944,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
             if y == columns - 1:
                 #if it's really high
                 if g[x][0][0].tileHeight-1 > g[x][y][0].tileHeight:
-                    if "climb tile" in g[x][y][1].activeBuffs:
+                    if "grappling hook" in g[x][y][1].activeBuffs:
                         if g[x][0][0].occupied == True:
                             if g[x][0][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
                                 g[x][0][0].highlightRed = True
@@ -5938,7 +5962,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
             if y == 0:
                 #if it's really high
                 if g[x][columns-1][0].tileHeight-1 > g[x][y][0].tileHeight:
-                    if "climb tile" in g[x][y][1].activeBuffs:
+                    if "grappling hook" in g[x][y][1].activeBuffs:
                         if g[x][columns-1][0].occupied == True:
                             if g[x][columns-1][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
                                 g[x][columns-1][0].highlightRed = True
@@ -5956,7 +5980,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
             if x == 0:
                 #if it's really high
                 if g[rows-1][y][0].tileHeight-1 > g[x][y][0].tileHeight:
-                    if "climb tile" in g[x][y][1].activeBuffs:
+                    if "grappling hook" in g[x][y][1].activeBuffs:
                         if g[rows-1][y][0].occupied == True:
                             if g[rows-1][y][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
                                 g[rows-1][y][0].highlightRed = True
@@ -5974,7 +5998,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
             if x == rows-1:
                 #if it's really high
                 if g[0][y][0].tileHeight-1 > g[x][y][0].tileHeight:
-                    if "climb tile" in g[x][y][1].activeBuffs:
+                    if "grappling hook" in g[x][y][1].activeBuffs:
                         if g[0][y][0].occupied == True:
                             if g[0][y][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
                                 g[0][y][0].highlightRed = True
@@ -5993,7 +6017,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                 if x == 0 and y+1 < columns:
                     #if it's really high
                     if g[rows-1][y+1][0].tileHeight-1 > g[x][y][0].tileHeight:
-                        if "climb tile" in g[x][y][1].activeBuffs:
+                        if "grappling hook" in g[x][y][1].activeBuffs:
                             if g[rows-1][y+1][0].occupied == True:
                                 if g[rows-1][y+1][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
                                     g[rows-1][y+1][0].highlightRed = True
@@ -6010,7 +6034,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                 #upright along right edge but not top row            
                 elif x >= 0 and x < rows and y == columns-1:
                     if g[x-1][0][0].tileHeight-1 > g[x][y][0].tileHeight:
-                        if "climb tile" in g[x][y][1].activeBuffs:
+                        if "grappling hook" in g[x][y][1].activeBuffs:
                             if g[x-1][0][0].occupied == True:
                                 if g[x-1][0][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
                                     g[x-1][0][0].highlightRed = True
@@ -6029,7 +6053,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                 if x == 0 and y-1>=0:
                     #if it's really high
                     if g[rows-1][y-1][0].tileHeight-1 > g[x][y][0].tileHeight:
-                        if "climb tile" in g[x][y][1].activeBuffs:
+                        if "grappling hook" in g[x][y][1].activeBuffs:
                             if g[rows-1][y-1][0].occupied == True:
                                 if g[rows-1][y-1][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
                                     g[rows-1][y-1][0].highlightRed = True
@@ -6046,7 +6070,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                 elif x >= 0 and x < rows and y==0:
                     #if it's really high
                     if g[x-1][columns-1][0].tileHeight-1 > g[x][y][0].tileHeight:
-                        if "climb tile" in g[x][y][1].activeBuffs:
+                        if "grappling hook" in g[x][y][1].activeBuffs:
                             if g[x-1][columns-1][0].occupied == True:
                                 if g[x-1][columns-1][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
                                    g[x-1][columns-1][0].highlightRed = True
@@ -6068,7 +6092,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                 if x == rows-1 and y+1 < columns:
                     #if it's really high
                     if g[0][y+1][0].tileHeight-1 > g[x][y][0].tileHeight:
-                        if "climb tile" in g[x][y][1].activeBuffs:
+                        if "grappling hook" in g[x][y][1].activeBuffs:
                             if g[0][y+1][0].occupied == True:
                                 if g[0][y+1][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
                                     g[0][y+1][0].highlightRed = True
@@ -6087,7 +6111,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                     #if it's really high
                     
                     if g[x+1][0][0].tileHeight-1 > g[x][y][0].tileHeight:
-                        if "climb tile" in g[x][y][1].activeBuffs:
+                        if "grappling hook" in g[x][y][1].activeBuffs:
                             if g[x+1][0][0].occupied == True:
                                 if g[x+1][0][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
                                     g[x+1][0][0].highlightRed = True
@@ -6108,7 +6132,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                 if x == rows-1 and y-1 >= 0:
                     #if it's really high
                     if g[0][y-1][0].tileHeight-1 > g[x][y][0].tileHeight:
-                        if "climb tile" in g[x][y][1].activeBuffs:
+                        if "grappling hook" in g[x][y][1].activeBuffs:
                             if g[0][y-1][0].occupied == True:
                                 if g[0][y-1][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
                                     g[0][y-1][0].highlightRed = True
@@ -6124,7 +6148,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                 
                 elif x >= 0 and x < rows-1 and y == 0:
                     if g[x+1][columns-1][0].tileHeight-1 > g[x][y][0].tileHeight:
-                        if "climb tile" in g[x][y][1].activeBuffs:
+                        if "grappling hook" in g[x][y][1].activeBuffs:
                             if g[x+1][columns-1][0].occupied == True:
                                 if g[x+1][columns-1][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
                                     g[x+1][columns-1][0].highlightRed = True
@@ -6146,7 +6170,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                 if x == 0 and y == 0:
                     #if it's really high
                     if g[rows-1][columns-1][0].tileHeight-1 > g[x][y][0].tileHeight:
-                        if "climb tile" in g[x][y][1].activeBuffs:
+                        if "grappling hook" in g[x][y][1].activeBuffs:
                             if g[rows-1][columns-1][0].occupied == True:
                                 if g[rows-1][columns-1][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
                                     g[rows-1][columns-1][0].highlightRed = True
@@ -6164,7 +6188,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                 if x == 0 and y == columns-1:
                     #if it's really high
                     if g[rows-1][0][0].tileHeight-1 > g[x][y][0].tileHeight:
-                        if "climb tile" in g[x][y][1].activeBuffs:
+                        if "grappling hook" in g[x][y][1].activeBuffs:
                             if g[rows-1][0][0].occupied == True:
                                 if g[rows-1][0][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
                                     g[rows-1][0][0].highlightRed = True
@@ -6182,7 +6206,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                 if x == rows-1 and y == 0:
                     #if it's really high
                     if g[0][columns-1][0].tileHeight-1 > g[x][y][0].tileHeight:
-                        if "climb tile" in g[x][y][1].activeBuffs:
+                        if "grappling hook" in g[x][y][1].activeBuffs:
                             if g[0][columns-1][0].occupied == True:
                                 if g[0][columns-1][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
                                     g[0][columns-1][0].highlightRed = True
@@ -6200,7 +6224,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                 if x == rows-1 and y == columns - 1:
                     #if it's really high
                     if g[0][0][0].tileHeight-1 > g[x][y][0].tileHeight:
-                        if "climb tile" in g[x][y][1].activeBuffs:
+                        if "grappling hook" in g[x][y][1].activeBuffs:
                             if g[0][0][0].occupied == True:
                                 if g[0][0][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
                                     g[0][0][0].highlightRed = True
@@ -6218,7 +6242,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
 ##            if "move diagonal" in g[x][y][1].activeBuffs and y == columns - 1:
 ##                #if it's really high
 ##                if g[x][0].tileHeight-1 > g[x][y][0].tileHeight:
-##                    if "climb tile" in g[x][y][1].activeBuffs:
+##                    if "grappling hook" in g[x][y][1].activeBuffs:
 ##                        if g[x][0].occupied == True:
 ##                            if g[x][1].ownedBy == enemyTurn or "feral" in g[x][y][1].activeBuffs:
 ##                                g[x][0].highlightRed = True
@@ -6323,7 +6347,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                 "damaged8"
             ]:
                 if g[xi][yi][0].tileHeight-1 > g[x][y][0].tileHeight:
-                    if "climb tile" not in g[x][y][1].activeBuffs:
+                    if "grappling hook" not in g[x][y][1].activeBuffs:
                         continue
                     
                 #if nothing's there
@@ -7358,7 +7382,7 @@ def movePiece(playerTurn, window, gameBoard):
                 
 
                 #tile height gate (stops you from moving if the elevation is too high)
-                if (gameBoard[startLocation[0]][startLocation[1]][0].tileHeight+1 < gameBoard[endLocation[0]][endLocation[1]][0].tileHeight) and ("climb tile" not in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs) and wormHole == False:
+                if (gameBoard[startLocation[0]][startLocation[1]][0].tileHeight+1 < gameBoard[endLocation[0]][endLocation[1]][0].tileHeight) and ("grappling hook" not in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs) and wormHole == False:
                     playsound("sounds/wrong.wav",block=False) 
                     sg.popup("The tile you're trying to get to is too high",keep_on_top = True)
                     pm(window,"The tile you're trying to get to is too high")
@@ -7969,6 +7993,13 @@ def updateToolTips(window, gameBoard,playerTurn):
 
                 
                 tileType = f"Tile Type: {gameBoard[iIndex][j][0].tileType}"+"\n"
+                if playerTurn == 1:
+                    
+                    if jData[0].tileType in ("itemOrb", "trap orb 0", "trap orb 2"):
+                        tileType += "\nThis tile will give you an item if you land on it!\n(Or on rare occasions, it might actually be a trap orb and blow you up)\n\n"
+                elif playerTurn == 2:
+                    if jData[0].tileType in ("itemOrb", "trap orb 0", "trap orb 1"):
+                        tileType += "\nThis tile will give you an item if you land on it!\n(Or on rare occasions, it might actually be a trap orb and blow you up)\n\n"
                 tileHeight = f"Tile Height: {gameBoard[iIndex][j][0].tileHeight}"+"\n"
                 if gameBoard[iIndex][j][0].horiLaser or gameBoard[iIndex][j][0].vertLaser or gameBoard[iIndex][j][0].crossLaser:
                     specialConditions += "Being lasered\n"

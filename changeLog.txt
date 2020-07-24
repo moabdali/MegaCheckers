@@ -1,5 +1,9 @@
 ChangeLog
 
+v.0.9.104 July 24, 2020
+	Added grappling hook item (for climbing tiles).  Added auto win for winning automatically (after 100 turns).  Added better text for the itemOrb to explain what it does.
+
+
 v.0.9.103 July 23, 2020
 	Much nicer item menu, changed pandemonium to shuffle all (pandemonium will be much crazier once implemented), fixed a huge "move again" glitch - should not crash anymore when using shuffles or making mistakes on the second turn; might still have errors for determining which piece moved again (more testing suggested).  Added purify column. Added messages and checking for cheetz. Added sound to spooky hand. 
 
