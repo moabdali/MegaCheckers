@@ -10,6 +10,8 @@ import base64
 from playsound import playsound
 import pyautogui
 
+import sys
+
 PublicPNGList = []     
 
 def initializeField(columns, rows, window, gameBoard):
@@ -304,39 +306,46 @@ def getCross(location, gameBoard, grow=False, includeSelf=False, trueEmpty = Fal
     validLocations = []
     rows = len(gameBoard)
     columns = len(gameBoard[0])
-    g = gameBoard[location[0]][location[1]]
+    
+    x = location[0]
+    y = location[1]
     # check if you can go up one
     if location[0] - 1 != -1:
+        g = gameBoard[location[0]-1][y][0]
         # one row up (guaranteed already)
         if trueEmpty == False:
             validLocations.append((location[0] - 1, location[1] + 0))
-        elif trueEmpty == True and g[0].orbEater == False and g[0].wormHole1 == False and g[0].wormHole2 == False and g[0].occupied == False:
+        elif trueEmpty == True and g.orbEater == False and g.wormHole1 == False and g.tileType == "default" and g.wormHole2 == False and g.occupied == False and g.recallBackup == False and g.secretAgent == False and g.purityTile == False:
             validLocations.append((location[0] - 1, location[1] + 0))
     # check if you can go left
     if location[1] - 1 != -1:
+        g = gameBoard[x][location[1]-1][0]
         if trueEmpty == False:
             validLocations.append((location[0], location[1] - 1))
-        elif trueEmpty == True and g[0].orbEater == False and g[0].wormHole1 == False and g[0].wormHole2 == False and g[0].occupied == False:
+        elif trueEmpty == True and g.orbEater == False and g.wormHole1 == False and g.tileType == "default" and g.wormHole2 == False and g.occupied == False and g.recallBackup == False and g.secretAgent == False and g.purityTile == False:
             validLocations.append((location[0], location[1] -1))
         
     if includeSelf == True:
         if trueEmpty == False:
             validLocations.append((location[0], location[1]))
-        elif trueEmpty == True and g[0].orbEater == False and g[0].wormHole1 == False and g[0].wormHole2 == False and g[0].occupied == False:
-            validLocations.append((location[0], location[1]))
+            
     # check if you can go right
     if location[1] + 1 != columns:
+        g = gameBoard[x][location[1] + 1][0]
         if trueEmpty == False:
             validLocations.append((location[0], location[1] + 1))
-        elif trueEmpty == True and g[0].orbEater == False and g[0].wormHole1 == False and g[0].wormHole2 == False and g[0].occupied == False:
+        elif trueEmpty == True and g.orbEater == False and g.wormHole1 == False and g.tileType == "default" and g.wormHole2 == False and g.occupied == False and g.recallBackup == False and g.secretAgent == False and g.purityTile == False:
             validLocations.append((location[0], location[1]+1))
     # check if you can go down
     if location[0] + 1 != rows:
+        g = gameBoard[location[0] + 1][y][0]
         # bottom guaranteed
         if trueEmpty == False:
             validLocations.append((location[0] + 1, location[1]))
-        elif trueEmpty == True and g[0].orbEater == False and g[0].wormHole1 == False and g[0].wormHole2 == False and g[0].occupied == False:
+        elif trueEmpty == True and g.orbEater == False and g.wormHole1 == False and g.tileType == "default" and g.wormHole2 == False and g.occupied == False and g.recallBackup == False and g.secretAgent == False and g.purityTile == False:
             validLocations.append((location[0] + 1, location[1]))
+
+    #sg.popup(f"Inside function {validLocations}",keep_on_top = True)
     return validLocations
 
 
@@ -1483,12 +1492,14 @@ def disableEverything(window, turnOn = False):
         window["examineItem"].update(disabled=True)
         ###window["readItems"].update(disabled=True)
         window["cheetz"].update(disabled=True)
+        window["Read Items"].update(disabled=True)
     else:
         window["exit"].update(disabled = False)
         #window["itemButton"].update(disabled=False)
         window["examineItem"].update(disabled=False)
         ###window["readItems"].update(disabled=False)
-        window["cheetz"].update(disabled=True)
+        window["cheetz"].update(disabled=False)
+        window["Read Items"].update(disabled=False)
 
 
 
@@ -2749,6 +2760,7 @@ def useItems(gameBoard, x, y, window):
         elif str.find(i,"purity tile") >= 0:
             itemsMenu.close()
             validTargets = getCross((x, y), gameBoard, trueEmpty = True)
+            
             startLocation = (x,y)
             for i in validTargets:
                 ix = i[0]
@@ -2765,7 +2777,6 @@ def useItems(gameBoard, x, y, window):
                 gameBoard[ix][iy][0].highlight = False
             displayBoard(window, gameBoard)
             window.refresh()
-            
             if event[0] in validTargets:
                 x1 = event[0][0]
                 y1 = event[0][1]
@@ -6870,14 +6881,61 @@ def movePiece(playerTurn, window, gameBoard):
         for j in i:
             if j[0].occupied == True:
                 j[1].currentTurnPiece = False
+                
+    index = 0
+    #lookhere
 
-
+    listOfItemListCoordinates = []
+    for j in range(0,15):
+            for i in range(0,3):
+                window[f"itemList{i}{j}"].update("")
+                window[f"itemList{i}{j}"].update(disabled = True)
+                listOfItemListCoordinates+= f"itemList{i}{j}"
+                index+=1
+                
 
     #########################################################################
     # MAIN TURN LOOP: major chunk of what happens during your turn is below #
     #########################################################################
     
     while True:
+
+        
+        itemsOwned = []
+        for iIndex,i in enumerate(gameBoard):
+            for jIndex,j in enumerate(i):
+                if j[0].occupied == True:
+                    if j[1].ownedBy == playerTurn:
+                        #if the piece holds an item
+                        if len(j[1].storedItems)  > 0:
+                            #for each item that the piece holds
+                            for heldItem in j[1].storedItems:
+                                #if the itemsOwned list is not empty
+                                if len(itemsOwned) > 0:
+                                    #run through the buttons' list of items
+                                    for itemsOwnedIterator in itemsOwned:
+                                        #if the item the piece is holding doesn't exist yet
+                                        if heldItem not in itemsOwnedIterator[1]:
+                                            clump = ( [iIndex, jIndex], heldItem)
+                                            itemsOwned.append(clump)
+                                #if it is empty, then append
+                                else:
+                                    clump = ( [iIndex, jIndex], heldItem)
+                                    itemsOwned.append(clump)
+                                
+                                    
+
+        index = 0
+        for j in range(0,15):
+            for i in range(0,3):
+                if index==len(itemsOwned):
+                    break
+                else:
+                    window[f"itemList{i}{j}"].update(itemsOwned[index][1])
+                    window[f"itemList{i}{j}"].update(disabled = False)
+                    index+=1
+                
+        
         #turn the lasers on and kill what needs to be killed
         laserCheck(window, gameBoard)
 
@@ -6887,7 +6945,7 @@ def movePiece(playerTurn, window, gameBoard):
         #turn off all highlighting on all pieces (safety net in case any errant highlighting remains)
         highlightValidDistance(gameBoard, window, (0,0),turnOff = True)
 
-        
+
         #flag for keeping track of pieces that were teleported
         if pieceTeleported == True:
             a = findCurrentTurnPiece(window, gameBoard)
@@ -6909,11 +6967,11 @@ def movePiece(playerTurn, window, gameBoard):
         usedItem = False
 
 
-        #disable buttons
+        #enable buttons
         window["exit"].update(disabled=False)
         window["examineItem"].update(disabled=False)
         window["cheetz"].update(disabled=False)
-        
+        window["Read Items"].update(disabled=False)
         window.refresh()
 
         #update whose turn it is
@@ -6933,9 +6991,9 @@ def movePiece(playerTurn, window, gameBoard):
         # check to see if this is your second [or higher] turn (you don't get to choose a new piece).  False means this isn't your second move (so if False, it's your first turn)
         if repeatRestrictor[0] == False:
 
-            ###########################
-            #FIRST PIECE PICKED HERE  #
-            ###########################
+###########################
+#FIRST PIECE PICKED HERE  #
+###########################
             
             # This is your initial selection option for choosing a piece or clicking an option
             event = window.read()
@@ -6976,7 +7034,9 @@ def movePiece(playerTurn, window, gameBoard):
                 window["information"].update(
                     f"What do you want to examine?", text_color="red"
                 )
+                disableEverything(window)
                 event = window.read()
+                disableEverything(window, turnOn = True)
                 window["information"].update(text_color="white")
                 # if no pieces exist here:
                 if gameBoard[event[0][0]][event[0][1]][0].occupied == False:
@@ -7142,11 +7202,52 @@ def movePiece(playerTurn, window, gameBoard):
                 window.enable()
         if endReadItems == True:
             continue
+
+
+        #lookhere
+        try:
+            if event[0][0] in listOfItemListCoordinates:
+                #myText =f"Event 0 is {event[0]}"
+                #sg.popup(myText,keep_on_top = True)
+                itemSelected = window[f"{event[0]}"].GetText()
+                foundItems = False
+                #sg.popup(f"if BUTTON PRESSED. GOOD. {myText}", keep_on_top = True)
+                for i in gameBoard:
+                    for j in i:
+                        if j[0].occupied and j[1].ownedBy == playerTurn and len(j[1].storedItems) > 0:
+                            if itemSelected in j[1].storedItems:
+                                j[0].highlight = True
+                                foundItems = True
+                                
+                if foundItems == True:
+                    displayBoard(window, gameBoard)
+                    window.refresh()
+                    sg.popup("The following highlighted pieces have the item you selected.", keep_on_top = True)
+                    #disable the items button because it'll cause errors otherwise
+                    for j in range(0,15):
+                        for i in range(0,3):
+                            window[f"itemList{i}{j}"].update(disabled = True)
+                    highlightValidDistance(gameBoard, window, (0,0),turnOff = True)
+                    event = window.read()
+                    displayBoard(window, gameBoard)
+                    window.refresh()
+        except:
+            #sg.popup(f"Error occurred, input is: {event}", keep_on_top = True)
+            #print( sys.exc_info())
+            #print('Error opening %s: %s' % (value.filename, value.strerror))
+            pass
+
         
         #disable the exit and cheetz buttons to avoid issues
         window["exit"].update(disabled=True)
         window["cheetz"].update(disabled=True)
+        window["Read Items"].update(disabled=True)
 
+        #disable the item lookup buttons when selecting a piece
+        for j in range(0,15):
+            for i in range(0,3):
+                window[f"itemList{i}{j}"].update(disabled = True)
+                    
         
 ##############################################################
 #  Assuming a window tile was clicked for the start location #
@@ -7159,7 +7260,7 @@ def movePiece(playerTurn, window, gameBoard):
                 sg.popup("An error occurred during piece selection.  Please try again.",keep_on_top = True)
                 continue
         except:
-            sg.popup("An exception error has occurred during piece selection.  Attempting to recover.  Please try again. (chances are a button was pressed instead of a tile; let the programmer know what button if you can)",keep_on_top = True)
+            sg.popup("An exception occurred because you hit an unexpected button.  Don't do that.  Recovering...",keep_on_top = True)
             continue
 
             
@@ -8461,14 +8562,23 @@ def begin():
             )
         ],
     ]
-    #item info is in this frame
-    frame_layout = [
+
+    #top_right_frame = [[ sg.T("Text", size = (45,22),key = "itemsCollection", font = "Cambria 14")] ]
+    top_right_frame = [  [ sg.Button("",key = f"itemList{i}{j}",disabled = True, size = (15,1)) for i in range(0,3)]for j in range(0,15)  ]
+    #lookhere
+    top_inner_frame = [
         [sg.Image("images/up.png", key="turn", visible=True)],
         [
             sg.T(f"Player:", font="Cambria 30", pad=(4, 4)),
             sg.T(f"", key="playerTurn", font="Cambria 30", pad=(4, 4)),
         ],
         [sg.T(f" " * 50, key="information", size=(25, 3), font="Cambria 30")],
+
+        ]
+    
+    #item info is in this frame
+    frame_layout = [
+        [sg.Frame("Main stats", top_inner_frame), sg.Frame("Items Held By Your Pieces", top_right_frame)],
         [sg.Frame("Elevation Info",frame_elevation), sg.Frame("Item Info",frame_itemInfo), sg.Frame("Pieces Remaining", frame_remaining) ],
         [sg.Frame("Current Turn", frame_turnsPassed), sg.Frame("Item Orb Forecast (expected number of orbs that will spawn after your turn ends):",frame_itemOrbForecast, title_color = "Silver",font = "Cambria, 15")],
         [
@@ -8481,6 +8591,9 @@ def begin():
         ],
         
     ]
+
+    
+        
 
     layout = [
         [

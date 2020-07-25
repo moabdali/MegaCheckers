@@ -1,5 +1,8 @@
 ChangeLog
 
+v.0.9.107 July 25, 2020
+	Fixed a huge error in getCross (for detecting empty spaces - used to see if only the center was empty instead of the surrounding spaces...  surprised I missed this).  Changed item orb and trap orb pictures.  Added a menu select for items.
+
 v.0.9.106 July 24, 2020
 	Added Wololo Row, Added wololo column (steal enemy pieces).  Added highlighting and animations to wololo radial (and the new wololos).
  
