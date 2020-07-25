@@ -237,6 +237,12 @@ Player two's worm hole? {self.wormHole2}
                 keep_on_top=True,
             )
             return f"This is an item orb tile with an elevation of {self.tileHeight}"
+        elif self.tileType == "mystery box":
+            sg.popup(
+                f"This is mystery box tile!  A random effect (can be bad or good) will occur when you step here.  It has an elevation of {self.tileHeight}",
+                keep_on_top=True,
+            )
+            return f"This is mystery box tile!  A random effect (can be bad or good) will occur when you step here.  It has an elevation of {self.tileHeight}"
 
 
 def getColumn(location, gameBoard, grow=False):
@@ -6900,7 +6906,11 @@ def movePiece(playerTurn, window, gameBoard):
     
     while True:
 
-        
+        #####################################################################################################
+        #                                                                                                   #
+        #  This little section populates the button list of items on the right side of the game board       #
+        #                                                                                                   #
+        #####################################################################################################
         itemsOwned = []
         for iIndex,i in enumerate(gameBoard):
             for jIndex,j in enumerate(i):
@@ -6913,12 +6923,17 @@ def movePiece(playerTurn, window, gameBoard):
                                 #if the itemsOwned list is not empty
                                 if len(itemsOwned) > 0:
                                     #run through the buttons' list of items
+                                    heldItemCheck = False
                                     for itemsOwnedIterator in itemsOwned:
-                                        #if the item the piece is holding doesn't exist yet
-                                        if heldItem not in itemsOwnedIterator[1]:
-                                            clump = ( [iIndex, jIndex], heldItem)
-                                            itemsOwned.append(clump)
-                                #if it is empty, then append
+                                        #if the item the piece is holding is already in the list, break while making note that a break happened
+                                        if heldItem in itemsOwnedIterator[1]:
+                                            heldItemCheck = True
+                                            break
+                                    #if a break didn't happen, then that means the item doesn't exist in the button list, so go ahead and add it
+                                    if heldItemCheck == False:
+                                        clump = ( [iIndex, jIndex], heldItem)
+                                        itemsOwned.append(clump)
+                                #if it is empty, then append (since this is the first item)
                                 else:
                                     clump = ( [iIndex, jIndex], heldItem)
                                     itemsOwned.append(clump)
@@ -7329,13 +7344,8 @@ def movePiece(playerTurn, window, gameBoard):
                 sg.popup("An error has occurred while determining last known location of a move again piece.  Please try again.", keep_on_top=True)
                 repeatRestrictor = False
                 continue
-            
         
         window["examineItem"].update(disabled=True)
-
-
-        
-        #sg.popup(f"DEBUG:3  Event is {event}",keep_on_top = True)
 
 
 
@@ -8309,6 +8319,8 @@ def updateToolTips(window, gameBoard,playerTurn):
                 elif playerTurn == 2:
                     if jData[0].tileType in ("itemOrb", "trap orb 0", "trap orb 1"):
                         tileType += "\nThis tile will give you an item if you land on it!\n(Or on rare occasions, it might actually be a trap orb and blow you up)\n\n"
+                if jData[0].tileType == "mystery box":
+                    tileType+= "\n A random event will occur when you step on this tile (can be bad or good)!\n\n"
                 tileHeight = f"Tile Height: {gameBoard[iIndex][j][0].tileHeight}"+"\n"
                 if gameBoard[iIndex][j][0].horiLaser or gameBoard[iIndex][j][0].vertLaser or gameBoard[iIndex][j][0].crossLaser:
                     specialConditions += "Being lasered\n"

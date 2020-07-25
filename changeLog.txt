@@ -1,5 +1,7 @@
 ChangeLog
 
+v.0.9.108 July 25, 2020
+	Mystery Box tooltip updated.  Made menu select not show duplicates of the same item.
 v.0.9.107 July 25, 2020
 	Fixed a huge error in getCross (for detecting empty spaces - used to see if only the center was empty instead of the surrounding spaces...  surprised I missed this).  Changed item orb and trap orb pictures.  Added a menu select for items.
 
