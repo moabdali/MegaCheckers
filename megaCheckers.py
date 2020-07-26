@@ -35,8 +35,8 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[rows - i - 1][j][1].avatar = "default"
 
  ###### DELETE ME ##########
-##    for i in range(2):
-##       for j in range(columns):
+    for i in range(2):
+       for j in range(columns):
 ##           #middle row generator
 ##           rows = 6
 ##           gameBoard[rows - i - 1][j][0] = Tile(occupied=True)
@@ -69,8 +69,10 @@ def initializeField(columns, rows, window, gameBoard):
 ##           gameBoard[i][j][1].storedItems.append("trip mine column")
 ##           gameBoard[i][j][1].storedItems.append("shuffle all")
 ##           gameBoard[9][0][1].storedItems.append("purity tile")
-           #gameBoard[i][j][1].berzerkMeatCount = 3
-           #gameBoard[i][j][1].activeBuffs.append("round earth theory")
+           gameBoard[i][j][1].storedItems.append("laser row")
+           gameBoard[i][j][1].storedItems.append("shuffle all")
+           gameBoard[i][j][1].storedItems.append("Energy Forcefield")
+           gameBoard[i][j][1].activeBuffs.append("round earth theory")
 ##           
 ##
 ##           #the middle row
@@ -485,10 +487,14 @@ def deathCheck(window, gameBoard, move=False):
         for j in i:
             # if a regular mine or laser was stepped on
             if (j[0].occupied == True) and (j[0].tileType == "mine" or (j[0].vertLaser == True or j[0].horiLaser == True or j[0].crossLaser == True) ):
-
+                death = forcefieldCheck(window, gameBoard, endLocation = j ,danger ="both")
+                #if you didn't die, then start looking in a different direction
+                if death == False:
+                    break
+                #sg.popup(f"FFT: {j[1].forceFieldTurn}", keep_on_top = True)
                 if j[1].forceFieldTurn == PublicStats.turnCount:
                     j[0].tileType = "default"
-                    sg.popup("Forcefield saved you",keep_on_top=True)
+                    #sg.popup("Forcefield saved you",keep_on_top=True)
                 else:
 
                     j[0].tileType = "exploding"
@@ -501,6 +507,7 @@ def deathCheck(window, gameBoard, move=False):
                     j[0].tileType = "default"
                     displayBoard(window, gameBoard)
                     window.refresh()
+                    #sg.popup("A piece died!", keep_on_top=True)
                     sg.popup("A piece died!", keep_on_top=True)
                     return "death"
 
@@ -512,10 +519,10 @@ def deathCheck(window, gameBoard, move=False):
                 if "forceField" in j[1].activeBuffs:
                     j[1].activeBuffs.remove("forcefield")
                     playsound("sounds/grenade.mp3", block = False)
-                    sg.popup(
-                        "You were protected from certain death by your forcefield",
-                        keep_on_top=True,
-                    )
+                    #sg.popup(
+                    #    "You were protected from certain death by your forcefield",
+                    #    keep_on_top=True,
+                    #)
                     j[0].tileType = "default"
                 else:
                     j[0].tileType = "exploding"
@@ -536,10 +543,10 @@ def deathCheck(window, gameBoard, move=False):
             elif j[0].occupied == True and ((j[0].tileType == "trap orb 0")):
                 if "forceField" in j[1].activeBuffs:
                     j[1].activeBuffs.remove("forecefield")
-                    sg.popup(
-                        "You were protected from certain death by your forcefield",
-                        keep_on_top=True,
-                    )
+                    #sg.popup(
+                    #    "You were protected from certain death by your forcefield",
+                    #    keep_on_top=True,
+                    #)
                     j[0].tileType = "default"
                 else:
                     j[0].tileType = "exploding"
@@ -592,25 +599,13 @@ def laserCheck(window, gameBoard, resetOnly = False):
                         #if there is a piece where the laser is burning
                         if gameBoard[indexI][left][0].occupied == True:
                             
-                            if "Energy Forcefield" in gameBoard[indexI][left][1].activeBuffs:
-                                sg.popup("A forcefield activated to protect this piece.", keep_on_top = True)
-                                gameBoard[indexI][left][1].activeBuffs.remove("Energy Forcefield")
-                                gameBoard[indexI][left][1].forceFieldTurn = PublicStats.turnCount
-                                forceFieldLeftStop = True
-                                break
-                            elif gameBoard[indexI][left][1].forceFieldTurn == PublicStats.turnCount:
-                                sg.popup("A forcefield is continuing to protect a piece until the end of the turn", keep_on_top = True)
 
-
-
-##                            #forcefield check
-##                            location = (indexI,left)
-##                            forceFieldCheck = forcefieldCheck(window, gameBoard, location, location)
-##                            #sg.popup(f"Force field check is {forceFieldCheck}")
-##                            if forceFieldCheck == True:
-##                                sg.popup("Survived a laser",keep_on_top=True)
-##                                break
+                            #enemyOnly, both, alliesOnly
                             
+                            death = forcefieldCheck(window, gameBoard, endLocation = gameBoard[indexI][left] ,danger ="both")
+                            #if you didn't die, then start looking in a different direction
+                            if death == False:
+                                break
 
 
 
@@ -661,14 +656,10 @@ def laserCheck(window, gameBoard, resetOnly = False):
                         if gameBoard[indexI][right][0].occupied == True:
 
 
-                            if "Energy Forcefield" in gameBoard[indexI][right][1].activeBuffs:
-                                sg.popup("A forcefield activated to protect this piece.", keep_on_top = True)
-                                gameBoard[indexI][right][1].activeBuffs.remove("Energy Forcefield")
-                                gameBoard[indexI][right][1].forceFieldTurn = PublicStats.turnCount
-                                forceFieldRightStop = True
+                            death = forcefieldCheck(window, gameBoard, endLocation = gameBoard[indexI][right] ,danger ="both")
+                            #if you didn't die, then start looking in a different direction
+                            if death == False:
                                 break
-                            elif gameBoard[indexI][right][1].forceFieldTurn == PublicStats.turnCount:
-                                sg.popup("A forcefield is continuing to protect a piece until the end of the turn", keep_on_top = True)
 
                                 
 
@@ -722,14 +713,10 @@ def laserCheck(window, gameBoard, resetOnly = False):
                         up-=1
                         if gameBoard[up][indexJ][0].occupied == True:
                             
-                            if "Energy Forcefield" in gameBoard[up][indexJ][1].activeBuffs:
-                                sg.popup("A forcefield activated to protect this piece.", keep_on_top = True)
-                                gameBoard[up][indexJ][1].activeBuffs.remove("Energy Forcefield")
-                                gameBoard[up][indexJ][1].forceFieldTurn = PublicStats.turnCount
-                                forceFieldUpStop = True
+                            death = forcefieldCheck(window, gameBoard, endLocation = gameBoard[up][indexJ] ,danger ="both")
+                            #if you didn't die, then start looking in a different direction
+                            if death == False:
                                 break
-                            elif gameBoard[up][indexJ][1].forceFieldTurn == PublicStats.turnCount:
-                                sg.popup("A forcefield is continuing to protect a piece until the end of the turn", keep_on_top = True)
                             
                             else:
                                 
@@ -780,14 +767,10 @@ def laserCheck(window, gameBoard, resetOnly = False):
 
 
 
-                            if "Energy Forcefield" in gameBoard[down][indexJ][1].activeBuffs:
-                                sg.popup("A forcefield activated to protect this piece.", keep_on_top = True)
-                                gameBoard[down][IndexJ][1].activeBuffs.remove("Energy Forcefield")
-                                gameBoard[down][indexJ][1].forceFieldTurn = PublicStats.turnCount
-                                forceFieldDownStop = True
+                            death = forcefieldCheck(window, gameBoard, endLocation = gameBoard[down][indexJ] ,danger ="both")
+                            #if you didn't die, then start looking in a different direction
+                            if death == False:
                                 break
-                            elif gameBoard[down][indexJ][1].forceFieldTurn == PublicStats.turnCount:
-                                sg.popup("A forcefield is continuing to protect a piece until the end of the turn", keep_on_top = True)
 
                                 
                             
@@ -1158,6 +1141,10 @@ def displayBoard(window, gameBoard):
                     if "Energy Forcefield" in g.activeBuffs:
                         forcefield = Image.open("images/forcefield.png").convert("RGBA")
                         avatar.paste(forcefield, (0, 0), forcefield)
+                        
+                    if g.forceFieldTurn == PublicStats.turnCount:
+                        forcefieldBig = Image.open("images/forcefieldBig.png").convert("RGBA")
+                        avatar.paste(forcefieldBig, (0, 0), forcefieldBig)
 
                     if "trip mine" in g.activeDebuffs:
                         tripmine = Image.open("images/tripmine.png").convert("RGBA")
@@ -5611,27 +5598,70 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                     sg.popup("You slammed into the outer wall.",keep_on_top = True)
                     return
 
-
-def forcefieldCheck(window, gameBoard, startLocation = 0, endLocation = 0):
-    g = gameBoard[endLocation[0]][endLocation[1]]
-    gs = gameBoard[startLocation[0]][startLocation[1]]
-    if g[0].horiLaser or g[0].vertLaser or g[0].crossLaser or g[0].tileType == "mine":
+#enemyOnly, both, alliesOnly
+#death = forcefieldCheck(window, gameBoard, endLocation = ,danger =""
+def forcefieldCheck(window, gameBoard, startLocation = 0, endLocation = 0, danger = "both"):
+    g = endLocation
+    #gs = gameBoard[startLocation[0]][startLocation[1]]
+    #if g[0].horiLaser or g[0].vertLaser or g[0].crossLaser or g[0].tileType == "mine":
     #if g[0].horiLaser or g[0].vertLaser or g[0].crossLaser or g[0].tileType == "mine" or (g[0].occupied == True and g[1].ownedBy != playerTurn and "dead man's trigger" in g[0].activeBuffsList):
-        
-        if "Energy Forcefield" in g[1].activeBuffs:
+    playerTurn = 0
+    enemyTurn = 0
+    if PublicStats.turnCount%2 == 0:
+        playerTurn = 2
+        enemyTurn = 1
+    elif PublicStats.turnCount%2!=0:
+        playerTurn = 1
+        enemyTurn = 2
+
+    
+    #only dangerous to the enemy
+
+    #if there's a piece, and we're only hitting enemies, and the piece is an enemy:
+    if g[0].occupied == True and danger == "enemyOnly" and g[1].playerTurn == enemyTurn:
+        if g[1].forceFieldTurn == PublicStats.turnCount:
+            #sg.popup("A forcefield is still active until the end of this turn.  It has saved you again.",keep_on_top=True)
+            return False
+        elif "Energy Forcefield" in g[1].activeBuffs:
             g[1].forceFieldTurn = PublicStats.turnCount
             g[1].activeBuffs.remove("Energy Forcefield")
-            sg.popup("The forcefield activated and will protect you from energy until the end of this turn",keep_on_top=True)
-            return True
-        elif g[1].forceFieldTurn == PublicStats.turnCount:
-            sg.popup("A forcefield is still active until the end of this turn.  It has saved you again.",keep_on_top=True)
-            return True
+            #sg.popup("The forcefield activated and will protect you from energy until the end of this turn",keep_on_top=True)
+            return False
         else:
             #DEATH
-            return False
+            return True
+        
+    #dangerous to both
 
+    #if there's a piece
+    elif g[0].occupied == True and danger == "both":
+        if g[1].forceFieldTurn == PublicStats.turnCount:
+            #sg.popup("A forcefield is still active until the end of this turn.  It has saved you again.",keep_on_top=True)
+            return False
+        elif "Energy Forcefield" in g[1].activeBuffs:
+            g[1].forceFieldTurn = PublicStats.turnCount
+            g[1].activeBuffs.remove("Energy Forcefield")
+            #sg.popup("The forcefield activated and will protect you from energy until the end of this turn",keep_on_top=True)
+            return False
+        else:
+            #DEATH
+            return True    
+
+    #dangerous only to yourself
+    elif g[0].occupied == True and g[1].playerTurn == playerTurn and danger == "alliesOnly":
+        if g[1].forceFieldTurn == PublicStats.turnCount:
+            #sg.popup("A forcefield is still active until the end of this turn.  It has saved you again.",keep_on_top=True)
+            return False
+        elif "Energy Forcefield" in g[1].activeBuffs:
+            g[1].forceFieldTurn = PublicStats.turnCount
+            g[1].activeBuffs.remove("Energy Forcefield")
+            #sg.popup("The forcefield activated and will protect you from energy until the end of this turn",keep_on_top=True)
+            return False
+        else:
+            #DEATH
+            return True
     else:
-        return False
+        return True
     
 def secretAgentCheck(window, gameBoard, startLocation, endLocation, playerTurn):
     
@@ -7121,7 +7151,9 @@ def movePiece(playerTurn, window, gameBoard):
                 window[f"itemList{i}{j}"].update(disabled = True)
                 listOfItemListCoordinates+= f"itemList{i}{j}"
                 index+=1
-                
+    #turn the lasers on and kill what needs to be killed
+    laserCheck(window, gameBoard)
+            
 
     #########################################################################
     # MAIN TURN LOOP: major chunk of what happens during your turn is below #
@@ -8058,10 +8090,10 @@ def movePiece(playerTurn, window, gameBoard):
                     
                     
                     #secretAgent check
-                    usedShield = forcefieldCheck(window, gameBoard, startLocation, endLocation)
-                    if usedShield == True:
-                        sg.popup("A shield was used",keep_on_top = True)
-                    secretAgentCheck(window, gameBoard, startLocation, endLocation, playerTurn)
+                    #usedShield = forcefieldCheck(window, gameBoard, startLocation, endLocation)
+                    #if usedShield == True:
+                    #    sg.popup("A shield was used",keep_on_top = True)
+                    #secretAgentCheck(window, gameBoard, startLocation, endLocation, playerTurn)
 
 
 

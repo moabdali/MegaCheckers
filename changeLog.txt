@@ -1,4 +1,6 @@
 ChangeLog
+v.0.9.110 July 26, 2020
+	Better forcefield - laser interactions.  Forcefields now glow brighter and larger when triggered by an effect.
 
 v.0.9.109 July 25, 2020
 	Added long explanations to item explanations on the main screen.  Reduced text on some tooltips as a result.  Renamed feral buff to "berzerk" to match the power's name.  Made a bunch of center-justifications to windows (including main window).  Made the exit screen text much larger and readable. 
