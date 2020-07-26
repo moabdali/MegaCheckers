@@ -1,5 +1,8 @@
 ChangeLog
 
+v.0.9.112 July 26, 2020
+	Invert Elevation All added to items list.  Added explanations.  Added placeholders in list for invert elevation CRR.
+
 v.0.9.111 July 26, 2020
 	Increased item explanation page to 80 items.  Full collection at the moment.
 

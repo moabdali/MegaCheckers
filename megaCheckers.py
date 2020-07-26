@@ -1353,6 +1353,10 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
         "haphazard airstrike",
         "haymaker",
         "heir",
+        "invert elevation all",
+        #"invert elevation column",
+        #"invert elevation radial",
+        #"invert elevation row",
         "jump proof",
         "jumpoline",#20
         "laser column",
@@ -1646,19 +1650,29 @@ def useItems(gameBoard, x, y, window):
             gameBoard[x][y][1].storedItems.remove("suicide bomb row")
             # for each item inside the specific gameBoard row
             for j in gameBoard[x]:
-                if isinstance(j[1], Piece):
-                    if "Energy Forcefield" in j[1].activeBuffs:
-                        sg.popup("Your shield activated and protected you from damage.", keep_on_top = True)
-                        j[1].activeBuffs.remove("Energy Forcefield")
+                if j[0].occupied == True:
+                    death = forcefieldCheck(window, gameBoard, endLocation = j ,danger ="both")
+                    #if you didn't die, then start looking in a different direction
+                    if death == False:
                         continue
-                    if j[1].forceFieldTurn == PublicStats.turnCount:
-                        sg.popup("Your shield continues to protect you.",keep_on_top = True)
-                        continue
+
+
+
+                    #if it doesn't have a forcefield
                     else:
-                        # set the tile to be empty
+                        
                         j[0].occupied = False
                         j[1] = 0
-                        j[0].tileType = "default"
+                        tileBackup = j[0].tileType
+                        if tileBackup in ("player1default", "player2default"):
+                            tileBackup = "default"
+                        j[0].tileType = "exploding"
+                        displayBoard(window, gameBoard)
+                        window.refresh()
+                        j[0].tileType = tileBackup
+                        displayBoard(window, gameBoard)
+                        window.refresh()
+
 
 # auto win
         elif str.find(i, "auto win") >= 0:
@@ -1902,9 +1916,6 @@ def useItems(gameBoard, x, y, window):
 #invert elevation all
         elif str.find(i, "invert elevation all") >= 0:
             itemsMenu.close()
-##            highlightValidDistance(gameBoard, window, startLocation, actionType = "all", reachType = "invert elevation all" )
-##            displayBoard(window, gameBoard)
-##            window.refresh()
             yesno = sg.popup_yes_no("Do you want to invert all the heights of tiles on the field to their opposites? (low -> high, high -> low, neutral height tiles will be unaffected)",keep_on_top=True)
             if yesno == "No":
                 continue
@@ -3285,120 +3296,77 @@ def useItems(gameBoard, x, y, window):
 
 # suicide bomb column
         elif str.find(i, "suicide bomb column") >= 0:
+            itemsMenu.close()
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "allHurt", reachType = "column")
+            displayBoard(window, gameBoard)
+            window.refresh()
+            yesno = sg.popup_yes_no("Use?",keep_on_top=True)
+            if yesno == "No":
+                continue
             gameBoard[x][y][1].storedItems.remove("suicide bomb column")
             # for each item inside the specific gameBoard row
             for j in gameBoard:
-                if isinstance(j[y][1], Piece):
-                    if "Energy Forcefield" in j[1][y].activeBuffs:
-                        sg.popup("Your shield activated and protected you from damage.", keep_on_top = True)
-                        j[1].forceFieldTurn = PublicStats.turnCount
-                        j[1].activeBuffs.remove("Energy Forcefield")
-                        continue
-                    if j[1].forceFieldTurn == PublicStats.turnCount:
-                        sg.popup("Your shield continues to protect you.",keep_on_top = True)
+                if j[y][0].occupied == True:
+                    death = forcefieldCheck(window, gameBoard, endLocation = j[y] ,danger ="both")
+                    #if you didn't die, then start looking in a different direction
+                    if death == False:
                         continue
 
+                    #if it doesn't have a forcefield
                     else:
-                        # set the tile to be empty
+                        
                         j[y][0].occupied = False
                         j[y][1] = 0
-                        j[y][0].tileType = "default"
+                        tileBackup = j[y][0].tileType
+                        if tileBackup in ("player1default", "player2default"):
+                            tileBackup = "default"
+                        j[y][0].tileType = "exploding"
+                        displayBoard(window, gameBoard)
+                        window.refresh()
+                        j[y][0].tileType = tileBackup
+                        displayBoard(window, gameBoard)
+                        window.refresh()
+                
 
 # suicide bomb radial
         elif str.find(i, "suicide bomb radial") >= 0:
-            j = gameBoard[x][y]
-            j[1].storedItems.remove("suicide bomb radial")
+            itemsMenu.close()
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "allHurt", reachType = "radial")
+            displayBoard(window, gameBoard)
+            window.refresh()
+            yesno = sg.popup_yes_no("Use?",keep_on_top=True)
+            if yesno == "No":
+                continue
+            
+            gameBoard[x][y][1].storedItems.remove("suicide bomb radial")
             validTargets = getRadial((x, y), gameBoard)
 
             for i in validTargets:
                 x = i[0]
                 y = i[1]
-                j = gameBoard[x][y]
                 
-                destroyedCheck = False
-                if j[0].tileType in ("damaged",
-                                "destroyed",
-                                "damaged1",
-                                "damaged2",
-                                "damaged3",
-                                "damaged4",
-                                "damaged5",
-                                "damaged6",
-                                "damaged7",
-                                "damaged8"):
-                    destroyedCheck = True
-                    backupTileType = j[0].tileType
-                if isinstance(j[1], Piece):
-                    if "Energy Forcefield" in j[1].activeBuffs:
-                        sg.popup("Your shield activated and protected you from damage.", keep_on_top = True)
-                        validTargets.remove( (x,y) )
-                        j[1].forceFieldTurn = PublicStats.turnCount
-                        j[1].activeBuffs.remove("Energy Forcefield")
-                        continue
-                    
-                    elif j[1].forceFieldTurn == PublicStats.turnCount:
-                        validTargets.remove( (x,y) )
-                        sg.popup("Your shield continues to protect you.",keep_on_top = True)
+                
+                j = gameBoard[x][y]
+                if j[0].occupied == True:
+                    death = forcefieldCheck(window, gameBoard, endLocation = j ,danger ="both")
+                    #if you didn't die, then start looking in a different direction
+                    if death == False:
                         continue
 
+                    #if it doesn't have a forcefield
                     else:
-                        # set the tile to be empty
-                        if destroyedCheck == False:
-                            j[0].occupied = False
-                            j[1] = 0
-
-        
-
-            for i in validTargets:
-                
-                x = i[0]
-                y = i[1]
-                j = gameBoard[x][y]
-                j[0].occupied = False
-                j[0].tileType = "exploding"
-                
-            displayBoard(window, gameBoard)
-            window.refresh()
-            sleep(.3)
-
-            for i in validTargets:
-                x = i[0]
-                y = i[1]
-
-                j = gameBoard[x][y]
-                j[0].occupied = False
-                if destroyedCheck == False:
-                    j[0].tileType = "default"
-                else:
-                    j[0].tileTpe = backupTileType
-            displayBoard(window, gameBoard)
-            window.refresh()
-            sleep(.3)
-                
-            for i in validTargets:
-                x = i[0]
-                y = i[1]
-                j = gameBoard[x][y]
-                j[0].occupied = False
-                j[0].tileType = "exploding"
-                displayBoard(window, gameBoard)
-                
-            displayBoard(window, gameBoard)
-            window.refresh()
-            sleep(.3)
-
-            for i in validTargets:
-                x = i[0]
-                y = i[1]
-
-                j = gameBoard[x][y]
-                if destroyedCheck == False:
-                    j[0].tileType = "default"
-                else:
-                    j[0].tileType = backupTileType
-            displayBoard(window, gameBoard)
-            window.refresh
-            sleep(.3)
+                        
+                        j[0].occupied = False
+                        j[1] = 0
+                        tileBackup = j[0].tileType
+                        if tileBackup in ("player1default", "player2default"):
+                            tileBackup = "default"
+                        j[0].tileType = "exploding"
+                        displayBoard(window, gameBoard)
+                        window.refresh()
+                        j[0].tileType = tileBackup
+                        displayBoard(window, gameBoard)
+                        window.refresh()
                         
 
 # napalm row
@@ -5769,6 +5737,8 @@ def itemExplanation(i):
             explanation = "Unleash a strong punch that sends a piece flying."
         elif i == "heir":
             explanation = "You're going to have a great heir day, luck is in the heir!  For all of your allied pieces are going to give you their items."
+        elif i == "invert elevation":
+            explanation = "Change the elevations to their opposite but equal level.  -2 sunken tiles become +2 elevated.  -1 becomes +1.  0 remains neutral. And so on."
         elif i == "jump proof":
             explanation = "Your piece dons a dapper hard hat, naturally making you immune to being jumped on.  It does not provide any other forms of protection."
         elif i == "jumpoline":
@@ -7032,6 +7002,8 @@ def longExplanation(window, itemName):
             explanation = "Wind up a really strong punch, and let the piece next to you have it!  Wait... pieces don't even have hands... how do...  nevermind, let's not worry about that. The punch will not harm the piece (which can be friend or foe) directly, but will send them flying in the direction you punched them.  They will be affected by bombs or lasers or such in the way, but cannot pick up item orbs (nor trap orbs).  If they crash into a piece, both pieces will be stunned.  Pieces flung into a hole die instantly."
         elif itemName == "heir":
             explanation = "Per your royal birthright (or more accurately, because you found and activated an heir item), you can demand all allied pieces to bequeath you their items.  Enemy pieces don't believe in your claim of royalty, so they are unaffected."
+        elif itemName in ("invert elevation all","invert elevation row","invert elevation column","invert elevation radial"):
+            explanation = "All of the tiles on the board reach their opposite heights. -1 becomes +1, +1 becomes -1, +2 becomes -2, -2 becomes +2.  0/neutral elevation remains the same.  Destroyed or damaged floor tiles remain in the state that they are, but will respawn in the changed height."
         elif itemName == "jump proof":
             explanation = "Per OSHA standards, you don a hard hat.  The hard hat somehow makes you immune to damage from multi-ton pieces jumping on you, so enemies can't use their default attack on you anymore (berzerk pieces have to kill with a jump first, so even though they eat you, they can't kill you since they can't start with a jump kill).  Other modes of attack such as bombs or fire or knocking you into a hole still kill you."
         elif itemName == "jumpoline":
@@ -7132,8 +7104,6 @@ def movePiece(playerTurn, window, gameBoard):
                 j[1].currentTurnPiece = False
                 
     index = 0
-    #lookhere
-
     listOfItemListCoordinates = []
     for j in range(0,15):
             for i in range(0,3):
@@ -7396,7 +7366,7 @@ def movePiece(playerTurn, window, gameBoard):
                         layout2+= [ [sg.Button("Page 1", font = "Cambria 20"),sg.Button("Page 2", font = "Cambria 20",disabled = True),sg.Button("Page 3", font = "Cambria 20",disabled = True)] ]
 
                 
-                #frame6 = sg.Frame("",frame6Layout)
+               
                 window.disable()
 
 
