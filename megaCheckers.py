@@ -893,14 +893,8 @@ def avatarFunction(window, avatar, gameBoard, i,j):
     im_file = BytesIO()
     avatar.save(im_file, format="png")
 
-    
-
-        
     im_bytes = im_file.getvalue()
     avatar = base64.b64encode(im_bytes)
-
-    
-
     window[i, j].update(image_data=avatar)
     
 #display the board (update what the tiles/pieces should look like)
@@ -1003,28 +997,27 @@ def displayBoard(window, gameBoard):
                     
                     #if there's a recall waiting
                     if gameBoard[i][j][0].recallTurn != False:
-                        #avatar = PublicPNGList[18].convert("RGBA")
                         window[i, j].update(image_filename="images/recall.png")
                         
                     #if the mouse is here
                     if gameBoard[i][j][0].orbEater == True:
-                        #window[i, j].update(image_filename = "images\orb eater.png")
                         avatarFunction(window, PublicPNGList[10], gameBoard, i, j)
                     if gameBoard[i][j][0].secretAgent != False:
                         avatarFunction(window, PublicPNGList[11], gameBoard, i, j)
                     if gameBoard[i][j][0].purityTile != False:
                         avatarFunction(window, PublicPNGList[12], gameBoard, i, j)
                     continue
+                
                 #7 itemOrb
                 if gameBoard[i][j][0].tileType == "itemOrb":
                     avatarFunction(window, PublicPNGList[7], gameBoard, i, j)
 
-   
                     #if the mouse is here
                     if gameBoard[i][j][0].orbEater == True:
                         window[i, j].update(image_data=PublicPNGList[10])
                     
                     continue
+                
                 #1 destroyed
                 if gameBoard[i][j][0].tileType == "destroyed":
                     gameBoard[i][j][0].tileHeight = -2
@@ -1032,6 +1025,7 @@ def displayBoard(window, gameBoard):
                     avatarFunction(window, PublicPNGList[1], gameBoard, i, j)
                     #window[i, j].update(image_data=PublicPNGList[1])
                     continue
+                
                 #2 mine
                 if gameBoard[i][j][0].tileType == "mine":
                     avatarFunction(window, PublicPNGList[2], gameBoard, i, j)
@@ -1044,7 +1038,6 @@ def displayBoard(window, gameBoard):
                     "trap orb 2",
                 ]:
                     avatarFunction(window, PublicPNGList[8], gameBoard, i, j)
-                    #window[i, j].update(image_data=PublicPNGList[8])
                     #if the mouse is here
                     if gameBoard[i][j][0].orbEater == True:
                         cleanTile(gameBoard[i][j][0])
@@ -1056,14 +1049,11 @@ def displayBoard(window, gameBoard):
                 
                 #3 horiLaserTripod
                 if gameBoard[i][j][0].tileType == "horiLaserTripod":
-                    #avatar = PublicPNGList[3].convert("RGBA")
                     avatarFunction(window, PublicPNGList[3], gameBoard, i, j)
-                    #window[i, j].update(image_data= PublicPNGList[3])
                     continue
 
                 if gameBoard[i][j][0].tileType == "vertLaserTripod":
                     avatarFunction(window, PublicPNGList[9], gameBoard, i, j)
-                    #window[i, j].update(image_data= PublicPNGList[9])
                     continue
                 if gameBoard[i][j][0].tileType in ("player1default","player2default"):
                     gameBoard[i][j][0].tileType = "default"
@@ -7392,15 +7382,15 @@ def movePiece(playerTurn, window, gameBoard):
                         frame8Layout+= [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images\\{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
                     elif iIndex in range (64,72):
                         frame9Layout+= [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images\\{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
-                    #elif iIndex in range (72,80):
-                        #frame10Layout+= [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images\\{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
-                    if iIndex== 65:
+                    elif iIndex in range (72,80):
+                        frame10Layout+= [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images\\{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
+                    if iIndex== 79:
                         frame6 = sg.Frame("",frame6Layout)
                         frame7 = sg.Frame("",frame7Layout)
                         frame8 = sg.Frame("",frame8Layout)
                         frame9 = sg.Frame("",frame9Layout)
-                        #frame10 = sg.Frame("",frame5Layout)
-                        layout2 = [ [frame00],[frame6,frame7,frame8,frame9,] ]
+                        frame10 = sg.Frame("",frame10Layout)
+                        layout2 = [ [frame00],[frame6,frame7,frame8,frame9,frame10] ]
                         #disable page 3 temporarily
                         #layout2+= [ [sg.Button("Page 1", font = "Cambria 20"),sg.Button("Page 2", font = "Cambria 20",disabled = True),sg.Button("Page 3", font = "Cambria 20")] ]
                         layout2+= [ [sg.Button("Page 1", font = "Cambria 20"),sg.Button("Page 2", font = "Cambria 20",disabled = True),sg.Button("Page 3", font = "Cambria 20",disabled = True)] ]
@@ -7435,7 +7425,7 @@ def movePiece(playerTurn, window, gameBoard):
                         #reveal page 1
                         readItemWindow.UnHide()
                         #if page 2 was created, hide it
-                        if wind2Finalize == True:
+                        if win2Finalize == True:
                             readItemWindow2.Hide()
                         #set the open page to 1
                         lastOpenPage = 1
