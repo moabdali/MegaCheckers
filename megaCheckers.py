@@ -496,7 +496,7 @@ def deathCheck(window, gameBoard, move=False):
                     j[0].tileType = "default"
                     #sg.popup("Forcefield saved you",keep_on_top=True)
                 else:
-
+                    owner = j[1].ownedBy
                     j[0].tileType = "exploding"
                     j[1] = 0
                     j[0].occupied = False
@@ -508,7 +508,7 @@ def deathCheck(window, gameBoard, move=False):
                     displayBoard(window, gameBoard)
                     window.refresh()
                     #sg.popup("A piece died!", keep_on_top=True)
-                    sg.popup("A piece died!", keep_on_top=True)
+                    sg.popup(f"A piece owned by player {owner} died to a hazard!", keep_on_top=True)
                     return "death"
 
             # if a trap belonging to your enemy was set
@@ -516,13 +516,12 @@ def deathCheck(window, gameBoard, move=False):
                 (j[0].tileType == "trap orb 1" and j[1].ownedBy != 1)
                 or (j[0].tileType == "trap orb 2" and j[1].ownedBy != 2)
             ):
-                if "forceField" in j[1].activeBuffs:
-                    j[1].activeBuffs.remove("forcefield")
-                    playsound("sounds/grenade.mp3", block = False)
-                    #sg.popup(
-                    #    "You were protected from certain death by your forcefield",
-                    #    keep_on_top=True,
-                    #)
+                death = forcefieldCheck(window, gameBoard, endLocation = j ,danger ="both")
+                #if you didn't die, then start looking in a different direction
+                if death == False:
+                    break
+                #sg.popup(f"FFT: {j[1].forceFieldTurn}", keep_on_top = True)
+                if j[1].forceFieldTurn == PublicStats.turnCount:
                     j[0].tileType = "default"
                 else:
                     j[0].tileType = "exploding"
@@ -536,17 +535,17 @@ def deathCheck(window, gameBoard, move=False):
                     displayBoard(window, gameBoard)
                     window.refresh()
                     
-                    sg.popup("A piece died!", keep_on_top=True)
+                    sg.popup("A piece died to a player-set trap orb!", keep_on_top=True)
                     return "death"
 
             # if a neutral trap was stepped on
             elif j[0].occupied == True and ((j[0].tileType == "trap orb 0")):
-                if "forceField" in j[1].activeBuffs:
-                    j[1].activeBuffs.remove("forecefield")
-                    #sg.popup(
-                    #    "You were protected from certain death by your forcefield",
-                    #    keep_on_top=True,
-                    #)
+                death = forcefieldCheck(window, gameBoard, endLocation = j ,danger ="both")
+                #if you didn't die, then start looking in a different direction
+                if death == False:
+                    break
+                #sg.popup(f"FFT: {j[1].forceFieldTurn}", keep_on_top = True)
+                if j[1].forceFieldTurn == PublicStats.turnCount:
                     j[0].tileType = "default"
                 else:
                     j[0].tileType = "exploding"
@@ -559,9 +558,32 @@ def deathCheck(window, gameBoard, move=False):
                     displayBoard(window, gameBoard)
                     window.refresh()
                     playsound("sounds/grenade.mp3", block = False)
-                    sg.popup("A piece died!", keep_on_top=True)
+                    sg.popup("A piece died to a neutral trap orb!", keep_on_top=True)
                     return "death"
             # do something for holes
+            elif j[0].occupied == True and  j[0].tileType in(
+                        "damaged",
+                        "destroyed",
+                        "damaged1",
+                        "damaged2",
+                        "damaged3",
+                        "damaged4",
+                        "damaged5",
+                        "damaged6",
+                        "damaged7",
+                        "damaged8"
+                        ):
+                    tileBackup = j[0].tileType
+                    j[0].occupied = False
+                    displayBoard(window, gameBoard)
+                    window.refresh()
+                    sleep(1)
+                    j[0].tileType = tileBackup
+                    displayBoard(window, gameBoard)
+                    window.refresh()
+                    playsound("sounds/fall.wav", block = False)
+                    sg.popup("A piece fell to its demise in the void!", keep_on_top=True)
+                    return "death"
 
 def laserCheck(window, gameBoard, resetOnly = False):
     rows = len(gameBoard)
@@ -611,7 +633,7 @@ def laserCheck(window, gameBoard, resetOnly = False):
 
                             #if it doesn't have a forcefield
                             else:
-                                
+                                owner = gameBoard[indexI][left][1].ownedBy
                                 gameBoard[indexI][left][0].occupied = False
                                 gameBoard[indexI][left][1] = 0
                                 #gameBoard[indexI][left][0].horiLaser = False
@@ -623,7 +645,7 @@ def laserCheck(window, gameBoard, resetOnly = False):
                                 window.refresh()
 
                                 gameBoard[indexI][left][0].tileType = tileBackup
-                                sg.popup("The laser killed a piece",keep_on_top=True)
+                                sg.popup(f"The laser killed a piece owned by player {owner}.",keep_on_top=True)
 
                                 if gameBoard[indexI][left][0].tileType == "horiLaserTripod":
                                     gameBoard[indexI][left][0].horiLaser = False
@@ -665,7 +687,7 @@ def laserCheck(window, gameBoard, resetOnly = False):
 
                             #if there isn't a forcefield on the piece
                             else:
-                                
+                                owner = gameBoard[indexI][right][1].ownedBy
                                 gameBoard[indexI][right][0].occupied = False
                                 gameBoard[indexI][right][1] = 0
                                 #gameBoard[indexI][right][0].horiLaser = False
@@ -677,7 +699,7 @@ def laserCheck(window, gameBoard, resetOnly = False):
                                 window.refresh()
 
                                 gameBoard[indexI][right][0].tileType = tileBackup
-                                sg.popup("The laser killed a piece",keep_on_top=True)
+                                sg.popup(f"The laser killed a piece owned by player {owner}.",keep_on_top=True)
                                 if gameBoard[indexI][right][0].tileType == "horiLaserTripod":
                                     gameBoard[indexI][right][0].horiLaser = False
                                 else:
@@ -719,7 +741,7 @@ def laserCheck(window, gameBoard, resetOnly = False):
                                 break
                             
                             else:
-                                
+                                owner = gameBoard[up][indexJ][1].ownedBy
                                 gameBoard[up][indexJ][0].occupied = False
                                 gameBoard[up][indexJ][1] = 0
                                 #gameBoard[up][indexJ][0].horiLaser = False
@@ -731,7 +753,7 @@ def laserCheck(window, gameBoard, resetOnly = False):
                                 window.refresh()
 
                                 gameBoard[up][indexJ][0].tileType = tileBackup
-                                sg.popup("The laser killed a piece",keep_on_top=True)
+                                sg.popup(f"The laser killed a piece owned by player {owner}.",keep_on_top=True)
 
                                 
                                 if gameBoard[up][indexJ][0].tileType in( "horiLaserTripod" , "vertLaserTripod"):
@@ -777,7 +799,7 @@ def laserCheck(window, gameBoard, resetOnly = False):
 
                             #if there isn't a forcefield on the piece
                             else:
-                                
+                                owner = gameBoard[down][indexJ][1].ownedBy
                                 gameBoard[down][indexJ][0].occupied = False
                                 gameBoard[down][indexJ][1] = 0
                                 #gameBoard[down][indexJ][0].horiLaser = False
@@ -789,7 +811,7 @@ def laserCheck(window, gameBoard, resetOnly = False):
                                 window.refresh()
 
                                 gameBoard[down][indexJ][0].tileType = tileBackup
-                                sg.popup("The laser killed a piece",keep_on_top=True)
+                                sg.popup(f"The laser killed a piece owned by player {owner}.",keep_on_top=True)
                                 if gameBoard[down][indexJ][0].tileType in ( "horiLaserTripod" , "vertLaserTripod"):
                                     gameBoard[down][indexJ][0].vertLaser = False
                                     gameBoard[down][indexJ][0].horiLaser = False
@@ -1371,7 +1393,7 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
         "napalm column",#30
         "napalm radial",
         "napalm row",
-        "orbEater",
+        "orb eater",
         "place mine",
         "purify column",
         "purify radial",
@@ -1632,7 +1654,7 @@ def useItems(gameBoard, x, y, window):
 
         itemsMenu.close()
         
-#all, allHurt, enemiesHurtOnly, alliesHelpedOnly, allOccupiedNeutral, alliesHurtOnly
+#all, allHurt, enemyHurtOnly, alliesHelpedOnly, allOccupiedNeutral, alliesHurtOnly
 #def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk", reachType = "cross", turnOff = False):
         
 # suicidebomb row
@@ -2010,7 +2032,7 @@ def useItems(gameBoard, x, y, window):
 # steal items column
         elif str.find(i, "steal items column") >= 0:
             itemsMenu.close()
-            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemiesHurtOnly", reachType = "column" )
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "column" )
             displayBoard(window, gameBoard)
             window.refresh()
             yesno = sg.popup_yes_no("Use?",keep_on_top=True)
@@ -2036,7 +2058,7 @@ def useItems(gameBoard, x, y, window):
 # steal items row
         elif str.find(i, "steal items row") >= 0:
             itemsMenu.close()
-            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemiesHurtOnly", reachType = "row" )
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "row" )
             displayBoard(window, gameBoard)
             window.refresh()
             yesno = sg.popup_yes_no("Use?",keep_on_top=True)
@@ -2061,7 +2083,7 @@ def useItems(gameBoard, x, y, window):
 # steal items radial
         elif str.find(i, "steal items radial") >= 0:
             itemsMenu.close()
-            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemiesHurtOnly", reachType = "radial" )
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "radial" )
             displayBoard(window, gameBoard)
             window.refresh()
             yesno = sg.popup_yes_no("Use?",keep_on_top=True)
@@ -2092,7 +2114,7 @@ def useItems(gameBoard, x, y, window):
 # steal powers column
         elif str.find(i, "steal powers column") >= 0:
             itemsMenu.close()
-            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemiesHurtOnly", reachType = "column" )
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "column" )
             displayBoard(window, gameBoard)
             window.refresh()
             yesno = sg.popup_yes_no("Use?",keep_on_top=True)
@@ -2119,7 +2141,7 @@ def useItems(gameBoard, x, y, window):
 # steal powers row
         elif str.find(i, "steal powers row") >= 0:
             itemsMenu.close()
-            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemiesHurtOnly", reachType = "row" )
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "row" )
             displayBoard(window, gameBoard)
             window.refresh()
             yesno = sg.popup_yes_no("Use?",keep_on_top=True)
@@ -2145,7 +2167,7 @@ def useItems(gameBoard, x, y, window):
 # steal powers radial
         elif str.find(i, "steal powers radial") >= 0:
             itemsMenu.close()
-            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemiesHurtOnly", reachType = "radial" )
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "radial" )
             displayBoard(window, gameBoard)
             window.refresh()
             yesno = sg.popup_yes_no("Use?",keep_on_top=True)
@@ -3224,7 +3246,7 @@ def useItems(gameBoard, x, y, window):
 # trip mine radial
         elif str.find(i, "trip mine radial") >= 0:
             itemsMenu.close()
-            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemiesHurtOnly", reachType = "radial")
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "radial")
             displayBoard(window, gameBoard)
             window.refresh()
             yesno = sg.popup_yes_no("Use?",keep_on_top=True)
@@ -3248,7 +3270,7 @@ def useItems(gameBoard, x, y, window):
 # trip mine row
         elif str.find(i, "trip mine row") >= 0:
             itemsMenu.close()
-            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemiesHurtOnly", reachType = "row")
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "row")
             displayBoard(window, gameBoard)
             window.refresh()
             yesno = sg.popup_yes_no("Use?",keep_on_top=True)
@@ -3273,7 +3295,7 @@ def useItems(gameBoard, x, y, window):
 # trip mine column
         elif str.find(i, "trip mine column") >= 0:
             itemsMenu.close()
-            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemiesHurtOnly", reachType = "column")
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "column")
             displayBoard(window, gameBoard)
             window.refresh()
             yesno = sg.popup_yes_no("Use?",keep_on_top=True)
@@ -3373,7 +3395,7 @@ def useItems(gameBoard, x, y, window):
         elif str.find(i, "napalm row") >= 0:
 
             itemsMenu.close()
-            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemiesHurtOnly", reachType = "row")
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "row")
             displayBoard(window, gameBoard)
             window.refresh()
             yesno = sg.popup_yes_no("Use?",keep_on_top=True)
@@ -3383,113 +3405,137 @@ def useItems(gameBoard, x, y, window):
             gameBoard[x][y][1].storedItems.remove("napalm row")
             # for each column inside the row
             for j in gameBoard[x]:
-                if isinstance(j[1], Piece):
+                
 
                     # if there is a piece
-                    if j[0].occupied == True:
+                
+                    #sg.popup(f"TEST", keep_on_top = True)        
+                    if j[0].occupied == True and j[1].ownedBy == enemyTurn:
+                        death = forcefieldCheck(window, gameBoard, endLocation = j ,danger ="enemyHurtOnly")
+                        #if you didn't die, then start looking in a different direction
+                        if death == False:
+                            continue
 
-                        # if it's the enemy's piece
-                        if j[1].ownedBy != playerTurn:
-                            # test for forcefield
-                            if "Energy Forcefield" in j[1].activeBuffs:
-                                backupTile = j[0].tileType
-                                j[0].tileType = "exploding"
-                                displayBoard(window, gameBoard)
-                                window.refresh()
-                                sleep(1)
-                                j[0].tileType = backupTile
-                                j[1].activeBuffs.remove("Energy Forcefield")
-                                j[1].forceFieldTurn = PublicStats.turnCount
-                                sg.popup("A piece was protected by a force field.", keep_on_top = True)
-                                continue
-                            if j[1].forceFieldTurn == PublicStats.turnCount:
-                                backupTile = j[0].tileType
-                                j[0].tileType = "exploding"
-                                displayBoard(window, gameBoard)
-                                window.refresh()
-                                sleep(1)
-                                j[0].tileType = backupTile
-                                sg.popup("A piece was protected by a force field.", keep_on_top = True)
-                                continue
-                            # if no forcefield, kill
-                            else:
-
-                                j[0].occupied = False
-                                j[1] = 0
-                                j[0].tileType = "exploding"
-                                displayBoard(window, gameBoard)
-                                window.refresh()
-                                sleep(1)
-                                j[0].tileType = "destroyed"
-                                continue
-                    # if there isn't a piece
-                    else:
-                        formerTileType = j[0].tileType
-                        j[0].tileType = "exploding"
-                        displayBoard(window, gameBoard)
-                        window.refresh()
-                        sleep(1)
-
-                        j[0].tileType = formerTileType
-                        displayBoard(window, gameBoard)
-                        window.refresh()
-                        sleep(1)
+                        #if it doesn't have a forcefield
+                        else:
+                            
+                            j[0].occupied = False
+                            j[1] = 0
+                            tileBackup = j[0].tileType
+                            if tileBackup in ("player1default", "player2default"):
+                                tileBackup = "default"
+                            j[0].tileType = "exploding"
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            j[0].tileType = "default"
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            j[0].tileType = "exploding"
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            j[0].tileType = "default"
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            j[0].tileType = "exploding"
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            sleep(.3)
+                            j[0].tileType = "destroyed"
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+##                        # if it's the enemy's piece
+##                        if j[1].ownedBy != playerTurn:
+##                            # test for forcefield
+##                            if "Energy Forcefield" in j[1].activeBuffs:
+##                                backupTile = j[0].tileType
+##                                j[0].tileType = "exploding"
+##                                displayBoard(window, gameBoard)
+##                                window.refresh()
+##                                sleep(1)
+##                                j[0].tileType = backupTile
+##                                j[1].activeBuffs.remove("Energy Forcefield")
+##                                j[1].forceFieldTurn = PublicStats.turnCount
+##                                sg.popup("A piece was protected by a force field.", keep_on_top = True)
+##                                continue
+##                            if j[1].forceFieldTurn == PublicStats.turnCount:
+##                                backupTile = j[0].tileType
+##                                j[0].tileType = "exploding"
+##                                displayBoard(window, gameBoard)
+##                                window.refresh()
+##                                sleep(1)
+##                                j[0].tileType = backupTile
+##                                sg.popup("A piece was protected by a force field.", keep_on_top = True)
+##                                continue
+##                            # if no forcefield, kill
+##                            else:
+##
+##                                j[0].occupied = False
+##                                j[1] = 0
+##                                j[0].tileType = "exploding"
+##                                displayBoard(window, gameBoard)
+##                                window.refresh()
+##                                sleep(1)
+##                                j[0].tileType = "destroyed"
+##                                continue
+##                    # if there isn't a piece
+##                    else:
+##                        formerTileType = j[0].tileType
+##                        j[0].tileType = "exploding"
+##                        displayBoard(window, gameBoard)
+##                        window.refresh()
+##                        sleep(1)
+##
+##                        j[0].tileType = formerTileType
+##                        displayBoard(window, gameBoard)
+##                        window.refresh()
+##                        sleep(1)
 
 # napalm column 
         elif str.find(i, "napalm column") >= 0:
+            itemsMenu.close()
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "column")
+            displayBoard(window, gameBoard)
+            window.refresh()
+            yesno = sg.popup_yes_no("Use?",keep_on_top=True)
+            if yesno == "No":
+                continue
             gameBoard[x][y][1].storedItems.remove("napalm column")
             # for each item inside the specific gameBoard row
             for j in gameBoard:
-                if isinstance(j[y][1], Piece):
+                if j[y][0].occupied == True and j[y][1].ownedBy == enemyTurn:
+                        death = forcefieldCheck(window, gameBoard, endLocation = j[y] ,danger ="enemyHurtOnly")
+                        #if you didn't die, then start looking in a different direction
+                        if death == False:
+                            continue
 
-                    # if there is a piece
-                    if j[y][0].occupied == True:
+                        #if it doesn't have a forcefield
+                        else:
+                            
+                            j[y][0].occupied = False
+                            j[y][1] = 0
+                            tileBackup = j[y][0].tileType
+                            if tileBackup in ("player1default", "player2default"):
+                                tileBackup = "default"
+                            j[y][0].tileType = "exploding"
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            j[y][0].tileType = "default"
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            j[y][0].tileType = "exploding"
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            j[y][0].tileType = "default"
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            j[y][0].tileType = "exploding"
+                            displayBoard(window, gameBoard)
+                            window.refresh()
+                            sleep(.3)
+                            j[y][0].tileType = "destroyed"
+                            displayBoard(window, gameBoard)
+                            window.refresh()
 
-                        # if it's the enemy's piece
-                        if j[y][1].ownedBy != playerTurn:
-                            # test for forcefield
-                            if "Energy Forcefield" in j[y][1].activeBuffs:
-                                backupTile = gameBoard[j][y][0].tileType
-                                j[y][0].tileType = "exploding"
-                                displayBoard(window, gameBoard)
-                                window.refresh()
-                                sleep(1)
-                                j[y][0].tileType = backupTile
-                                j[y][1].activeBuffs.remove("Energy Forcefield")
-                                j[y][1].forceFieldTurn = PublicStats.turnCount
-                                sg.popup("A piece was protected by a force field.", keep_on_top = True)
-                                continue
-                            if j[y][1].forceFieldTurn == PublicStats.turnCount:
-                                backupTile = j[y][0].tileType
-                                j[y][0].tileType = "exploding"
-                                displayBoard(window, gameBoard)
-                                window.refresh()
-                                sleep(1)
-                                j[y][0].tileType = backupTile
-                                sg.popup("A piece was protected by a force field.", keep_on_top = True)
-                                continue
-                            # if no forcefield, kill
-                            else:
-                                j[y][0].occupied = False
-                                j[y][1] = 0
-                                j[y][0].tileType = "exploding"
-                                displayBoard(window, gameBoard)
-                                window.refresh()
-                                sleep(1)
-                                j[y][0].tileType = "destroyed"
-                                continue
-                    # if there isn't a piece
-                    else:
-                        formerTileType = gameBoard[x][y][0].tileType
-                        gameBoard[x][y][0].tileType = "exploding"
-                        displayBoard(window, gameBoard)
-                        window.refresh()
-                        sleep(1)
-
-                        gameBoard[x][y][0].tileType = formerTileType
-                        displayBoard(window, gameBoard)
-                        window.refresh()
-                        sleep(1)
 
 # napalm Radial
         elif str.find(i, "napalm radial") >= 0:
@@ -3917,7 +3963,7 @@ def useItems(gameBoard, x, y, window):
             event = window.read()
             if (event[0][0], event[0][1]) in validLocations:
 
-                pm(window, f"mine placed at {event[0][0],event[0][1]}")
+                pm(window, f"Mine placed.")
                 gameBoard[event[0][0]][event[0][1]][0].tileType = "mine"
                 gameBoard[x][y][1].storedItems.remove("place mine")
                 displayBoard(window, gameBoard)
@@ -4129,7 +4175,7 @@ def useItems(gameBoard, x, y, window):
                                 gameBoard[s1][s2][1] = 0
                                 gameBoard[s1][s2][0].tileType = "default"
                                 gameBoard[s1][s2][0].occupied = False
-                                
+                                playsound("sounds/fall.wav", block = False)
                                 pm(
                                     window,
                                     "Brutal!  You just pushed that piece into the void.",
@@ -4222,6 +4268,7 @@ def useItems(gameBoard, x, y, window):
                                 gameBoard[s1][s2][1] = 0
                                 gameBoard[s1][s2][0].tileType = "default"
                                 gameBoard[s1][s2][0].occupied = False
+                                playsound("sounds/fall.wav", block = False)
                                 pm(
                                     window,
                                     "Brutal!  You just pushed that piece into the void.",
@@ -4320,6 +4367,7 @@ def useItems(gameBoard, x, y, window):
                                 gameBoard[s1][s2][1] = 0
                                 gameBoard[s1][s2][0].tileType = "default"
                                 gameBoard[s1][s2][0].occupied = False
+                                playsound("sounds/fall.wav", block = False)
                                 pm(
                                     window,
                                     "Brutal!  You just pushed that piece into the void.",
@@ -4412,6 +4460,7 @@ def useItems(gameBoard, x, y, window):
                                 gameBoard[s1][s2][1] = 0
                                 gameBoard[s1][s2][0].tileType = "default"
                                 gameBoard[s1][s2][0].occupied = False
+                                playsound("sounds/fall.wav", block = False)
                                 pm(
                                     window,
                                     "Brutal!  You just pushed that piece into the void.",
@@ -4476,7 +4525,7 @@ def useItems(gameBoard, x, y, window):
 
             
             itemsMenu.close()
-            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemiesHurtOnly", reachType = "radial")
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "radial")
             displayBoard(window, gameBoard)
             window.refresh()
             yesno = sg.popup_yes_no("Use?",keep_on_top=True)
@@ -4527,7 +4576,7 @@ def useItems(gameBoard, x, y, window):
 
             
             itemsMenu.close()
-            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemiesHurtOnly", reachType = "row")
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "row")
             displayBoard(window, gameBoard)
             window.refresh()
             yesno = sg.popup_yes_no("Use?",keep_on_top=True)
@@ -4574,7 +4623,7 @@ def useItems(gameBoard, x, y, window):
 
             
             itemsMenu.close()
-            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemiesHurtOnly", reachType = "column")
+            highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "column")
             displayBoard(window, gameBoard)
             window.refresh()
             yesno = sg.popup_yes_no("Use?",keep_on_top=True)
@@ -4978,6 +5027,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             j[0].occupied = False
                             j[0].tileType = "default"
                             j[1] = 0
+                            playsound("sounds/fall.wav", block = False)
                             sg.popup("Oh no!  Your bowling ball fell into the void!",keep_on_top = True)
                             #curRow +=1
                             return
@@ -5153,6 +5203,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             j[0].occupied = False
                             j[0].tileType = "default"
                             j[1] = 0
+                            playsound("sounds/fall.wav", block = False)
                             sg.popup("Oh no!  Your bowling ball fell into the void!",keep_on_top = True)
                             #curRow -=1
                             return
@@ -5321,6 +5372,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             j[0].occupied = False
                             j[0].tileType = "default"
                             j[1] = 0
+                            playsound("sounds/fall.wav", block = False)
                             sg.popup("Oh no!  Your bowling ball fell into the void!",keep_on_top = True)
                             #curCol -=1
                             return
@@ -5488,6 +5540,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             j[0].occupied = False
                             j[0].tileType = "default"
                             j[1] = 0
+                            playsound("sounds/fall.wav", block = False)
                             sg.popup("Oh no!  Your bowling ball fell into the void!",keep_on_top = True)
                             #curCol +=1
                             return
@@ -5576,7 +5629,7 @@ def forcefieldCheck(window, gameBoard, startLocation = 0, endLocation = 0, dange
     #only dangerous to the enemy
 
     #if there's a piece, and we're only hitting enemies, and the piece is an enemy:
-    if g[0].occupied == True and danger == "enemyOnly" and g[1].playerTurn == enemyTurn:
+    if g[0].occupied == True and (danger == "enemyOnly" or danger == "enemyHurtOnly")and g[1].ownedBy == enemyTurn:
         if g[1].forceFieldTurn == PublicStats.turnCount:
             #sg.popup("A forcefield is still active until the end of this turn.  It has saved you again.",keep_on_top=True)
             return False
@@ -5606,7 +5659,7 @@ def forcefieldCheck(window, gameBoard, startLocation = 0, endLocation = 0, dange
             return True    
 
     #dangerous only to yourself
-    elif g[0].occupied == True and g[1].playerTurn == playerTurn and danger == "alliesOnly":
+    elif g[0].occupied == True and g[1].ownedBy == playerTurn and (danger == "alliesOnly" or danger == "alliesHurtOnly"):
         if g[1].forceFieldTurn == PublicStats.turnCount:
             #sg.popup("A forcefield is still active until the end of this turn.  It has saved you again.",keep_on_top=True)
             return False
@@ -6062,18 +6115,18 @@ def roundEarthTheoryFunction(gameBoard,startLocation,endLocation,columns,rows):
     #sg.popup("Checking round earth theory!", keep_on_top=True)
    
     if startLocation[0] == endLocation[0] and startLocation[1] == columns-1 and endLocation[1] == 0:
-            #sg.popup("Your piece rolled around to the other side!1",keep_on_top=True)
-            sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+            #sg.popup("Your piece is attempting to roll to the other side!1",keep_on_top=True)
+            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
             return True
     #trying to go down right
     elif startLocation[0] == endLocation[0]-1 and startLocation[1] == columns -1 and endLocation[1] == 0 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-        #sg.popup("Your piece rolled around to the other side!2",keep_on_top=True)
-        sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+        #sg.popup("Your piece is attempting to roll to the other side!2",keep_on_top=True)
+        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
         return True
     #trying to go up right
     elif startLocation[0] == endLocation[0]+1 and startLocation[1] == columns -1 and endLocation[1] == 0 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-        #sg.popup("Your piece rolled around to the other side!3",keep_on_top=True)
-        sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+        #sg.popup("Your piece is attempting to roll to the other side!3",keep_on_top=True)
+        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
         return True
     
 
@@ -6081,35 +6134,35 @@ def roundEarthTheoryFunction(gameBoard,startLocation,endLocation,columns,rows):
     #try to go straight left to straight right
     if startLocation[0] == endLocation[0] and startLocation[1] == 0 and endLocation[1] == columns -1:
             #sg.popup("Your piece rolled around to the other side4!",keep_on_top=True)
-            sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
             return True
     #trying to go down right
     elif startLocation[0] == endLocation[0]-1 and startLocation[1] == 0  and endLocation[1] == columns -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-        #sg.popup("Your piece rolled around to the other side!5", keep_on_top=True)
-        sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+        #sg.popup("Your piece is attempting to roll to the other side!5", keep_on_top=True)
+        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
         return True
     #trying to go up right
     elif startLocation[0] == endLocation[0]+1 and startLocation[1] == 0 and endLocation[1] == columns -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-        #sg.popup("Your piece rolled around to the other side!6", keep_on_top=True)
-        sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+        #sg.popup("Your piece is attempting to roll to the other side!6", keep_on_top=True)
+        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
         return True
 
         
 #trying to go from up to down
     #try to go straight up to straight down
     if startLocation[1] == endLocation[1] and startLocation[0] == 0 and endLocation[0] == rows -1:
-            #sg.popup("Your piece rolled around to the other side!7", keep_on_top=True)
-            sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+            #sg.popup("Your piece is attempting to roll to the other side!7", keep_on_top=True)
+            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
             return True
     #trying to go up right
     elif startLocation[0] == 0 and startLocation[1] == (endLocation[1] +1) and endLocation[0] == rows -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-        #sg.popup("Your piece rolled around to the other side!8", keep_on_top=True)
-        sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+        #sg.popup("Your piece is attempting to roll to the other side!8", keep_on_top=True)
+        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
         return True
     #trying to go up left
     elif startLocation[1] == endLocation[1]-1 and startLocation[0] == 0 and endLocation[0] == rows -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-        #sg.popup("Your piece rolled around to the other side!9", keep_on_top=True)
-        sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+        #sg.popup("Your piece is attempting to roll to the other side!9", keep_on_top=True)
+        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
         return True
 
 #in case of error, below is
@@ -6118,18 +6171,18 @@ def roundEarthTheoryFunction(gameBoard,startLocation,endLocation,columns,rows):
 #trying to go from down to up
     #try to go straight down to straight up
     if startLocation[1] == endLocation[1] and startLocation[0] == rows-1 and endLocation[0] == 0:
-            #sg.popup("Your piece rolled around to the other side!10", keep_on_top=True)
-            sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+            #sg.popup("Your piece is attempting to roll to the other side!10", keep_on_top=True)
+            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
             return True
     #trying to go down right
     elif startLocation[0] == rows-1 and startLocation[1] == (endLocation[1] +1) and endLocation[0] == 0 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-        #sg.popup("Your piece rolled around to the other side!11", keep_on_top=True)
-        sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+        #sg.popup("Your piece is attempting to roll to the other side!11", keep_on_top=True)
+        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
         return True
     #trying to go down left
     elif startLocation[1] == endLocation[1]-1 and startLocation[0] == 0 and endLocation[0] == rows-1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-        #sg.popup("Your piece rolled around to the other side!12", keep_on_top=True)
-        sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+        #sg.popup("Your piece is attempting to roll to the other side!12", keep_on_top=True)
+        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
         return True
     
 
@@ -6137,23 +6190,23 @@ def roundEarthTheoryFunction(gameBoard,startLocation,endLocation,columns,rows):
     if "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
         #upleft
         if startLocation[0] == 0 and startLocation[1] == 0 and endLocation[0] == rows-1 and endLocation[1] == columns-1:
-            #sg.popup("Your piece rolled around to the other side!13", keep_on_top=True)
-            sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+            #sg.popup("Your piece is attempting to roll to the other side!13", keep_on_top=True)
+            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
             return True
         #upright
         if startLocation[0] == 0 and startLocation[1] == columns-1 and endLocation[0] == rows-1 and endLocation[1] == 0:
-            #sg.popup("Your piece rolled around to the other side!14", keep_on_top=True)
-            sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+            #sg.popup("Your piece is attempting to roll to the other side!14", keep_on_top=True)
+            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
             return True
         #downleft
         if startLocation[0] == rows-1 and startLocation[1] == 0 and endLocation[0] == 0 and endLocation[1] == columns-1:
-            #sg.popup("Your piece rolled around to the other side!15", keep_on_top=True)
-            sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+            #sg.popup("Your piece is attempting to roll to the other side!15", keep_on_top=True)
+            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
             return True
         #downright
         if startLocation[0] == rows-1 and startLocation[1] == columns-1 and endLocation[0] == 0 and endLocation[1] == 0:
-            #sg.popup("Your piece rolled around to the other side!16", keep_on_top=True)
-            sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+            #sg.popup("Your piece is attempting to roll to the other side!16", keep_on_top=True)
+            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
             return True
         else:
             return False
@@ -6586,11 +6639,11 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
 ##
 ##    #trying to go down right
 ##    elif startLocation[0] == endLocation[0]-1 and startLocation[1] == columns -1 and endLocation[1] == 0 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-##        sg.popup("Your piece rolled around to the other side!",keep_on_top=True)
+##        sg.popup("Your piece is attempting to roll to the other side!",keep_on_top=True)
 ##        return True
 ##    #trying to go up right
 ##    elif startLocation[0] == endLocation[0]+1 and startLocation[1] == columns -1 and endLocation[1] == 0 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-##        sg.popup("Your piece rolled around to the other side!",keep_on_top=True)
+##        sg.popup("Your piece is attempting to roll to the other side!",keep_on_top=True)
 ##        return True
     
 
@@ -6598,15 +6651,15 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
 ##    #try to go straight left to straight right
 ##    if startLocation[0] == endLocation[0]:
 ##        if startLocation[1] == 0 and endLocation[1] == columns -1:
-##            sg.popup("Your piece rolled around to the other side!",keep_on_top=True)
+##            sg.popup("Your piece is attempting to roll to the other side!",keep_on_top=True)
 ##            return True
 ##    #trying to go down right
 ##    elif startLocation[0] == endLocation[0]-1 and startLocation[1] == 0  and endLocation[1] == columns -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-##        sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+##        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
 ##        return True
 ##    #trying to go up right
 ##    elif startLocation[0] == endLocation[0]+1 and startLocation[1] == 0 and endLocation[1] == columns -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-##        sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+##        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
 ##        return True
 ##
 ##        
@@ -6614,34 +6667,34 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
 ##    #try to go straight up to straight down
 ##    if startLocation[1] == endLocation[1]:
 ##        if startLocation[0] == 0 and endLocation[0] == rows -1:
-##            sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+##            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
 ##            return True
 ##    #trying to go up right
 ##    elif startLocation[0] == 0 and startLocation[1] == (endLocation[1] +1) and endLocation[0] == rows -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-##        sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+##        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
 ##        return True
 ##    #trying to go up right
 ##    elif startLocation[1] == endLocation[1]-1 and startLocation[0] == 0 and endLocation[0] == rows -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-##        sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+##        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
 ##        return True
 ##
 ###diagonals (only works with diagonal enabled
 ##    if "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
 ##        #upleft
 ##        if startLocation[0] == 0 and startLocation[1] == 0 and endLocation[0] == rows-1 and endLocation[1] == columns-1:
-##            sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+##            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
 ##            return True
 ##        #upright
 ##        if startLocation[0] == 0 and startLocation[1] == columns-1 and endLocation[0] == rows-1 and endLocation[1] == 0:
-##            sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+##            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
 ##            return True
 ##        #downleft
 ##        if startLocation[0] == rows-1 and startLocation[1] == 0 and endLocation[0] == 0 and endLocation[1] == columns-1:
-##            sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+##            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
 ##            return True
 ##        #downright
 ##        if startLocation[0] == rows-1 and startLocation[1] == columns-1 and endLocation[0] == 0 and endLocation[1] == 0:
-##            sg.popup("Your piece rolled around to the other side!", keep_on_top=True)
+##            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
 ##            return True
 ##    else:
 ##        return False
@@ -6831,7 +6884,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
 
 
         
-    if actionType == "enemiesHurtOnly":
+    if actionType == "enemyHurtOnly":
         if reachType == "row":
             validLocations = getRow(location, gameBoard)
             for i in validLocations:
@@ -7022,8 +7075,8 @@ def longExplanation(window, itemName):
             explanation = "Place a mysterious ? next to you.  Any piece that touches it has a random effect applied to them.  There are quite s few effects that can occur.  Some of them include: getting your piece purified of negative effects, getting multiple item orbs, having your items stolen, getting blown up.  You will be told what effect happens when it does."
         elif itemName in ("napalm column", "napalm radial","napalm row"):
             explanation = "Fire off flames and fuel at enemy pieces in range. The pieces burn very hot and leave holes in the ground.  Allied pieces and tiles not occupied by enemies are unaffected."
-        elif itemName == "orbEater":
-            explanation = "Spawn an orbEater (which is totally not just a mouse) in an empty spot.  These will walk around randomly and eat item orbs and trap orbs that are adjacent to them.  Legends say that they should not be allowed to eat too many orbs lest terrible things happen... but they're just legends... right?"
+        elif itemName == "orb eater":
+            explanation = "Spawn an orb eater (which is totally not just a mouse) in an empty spot.  These will walk around randomly and eat item orbs and trap orbs that are adjacent to them.  Legends say that they should not be allowed to eat too many orbs lest terrible things happen... but they're just legends... right?"
         elif itemName == "place mine":
             explanation = "Place an explosive on an adjacent empty tile.  Anyone stepping on this tile will explode.  The bomb is not concealed whatsoever."
         elif itemName in ("purify column","purify radial","purify row"):
@@ -7991,8 +8044,9 @@ def movePiece(playerTurn, window, gameBoard):
                     "damaged8"
                 ]:
                     playsound("sounds/wrong.wav",block=False) 
-                    window["information"].update(f"Can't move here!")
-                    pm(window, "Can't move here!")
+                    window["information"].update(f"Can't move here!  The floor is missing/damaged.")
+                    pm(window, "Can't move here!  The floor is missing/damaged.")
+                    sg.popup("Can't move here!  The floor is missing/damaged.", keep_on_top = True)
                     window.refresh()
                     sleep(.3)
                     continue
@@ -8034,6 +8088,7 @@ def movePiece(playerTurn, window, gameBoard):
                         endLocation = jumpoline(window, gameBoard, (endLocation[0],endLocation[1]), playerTurn)
                         sg.popup("Bounced to a new spot!",keep_on_top = True)
                         pm(window,"Bounced to a new spot!")
+                        
   
                     # copy the actual piece object over from the old address to the new one (deepcopy needed?)
                     gameBoard[endLocation[0]][endLocation[1]][1] = gameBoard[startLocation[0]][startLocation[1]][1]
@@ -8047,13 +8102,6 @@ def movePiece(playerTurn, window, gameBoard):
                     gameBoard[startLocation[0]][startLocation[1]][1] = 0
 
 
-                    
-                    
-                    #secretAgent check
-                    #usedShield = forcefieldCheck(window, gameBoard, startLocation, endLocation)
-                    #if usedShield == True:
-                    #    sg.popup("A shield was used",keep_on_top = True)
-                    #secretAgentCheck(window, gameBoard, startLocation, endLocation, playerTurn)
 
 
 
@@ -8069,7 +8117,9 @@ def movePiece(playerTurn, window, gameBoard):
                                 debuffsCleaned += debuffs+"\n"
                         sg.popup(f"All negative effects on this piece have been cleared:\n {debuffsCleaned}",keep_on_top = True)
                         gameBoard[endLocation[0]][endLocation[1]][1].activeDebuffs.clear()
-                        
+
+
+                    #item dump
                     if gameBoard[endLocation[0]][endLocation[1]][0].tileType == "itemDump":
                         if g.horiLaser == True or g.vertLaser == True or g.crossLaser == True:
 
