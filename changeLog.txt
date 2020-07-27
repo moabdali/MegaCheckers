@@ -1,5 +1,11 @@
 ChangeLog
 
+v.0.9.114 July 26, 2020
+	Added some laser noises.  Corrected an interaction error between vertical and horizontal lasers (rightward lasers used to overlap turrets due to a missing check).
+
+v.0.9.113 July 26, 2020
+	Added some better forcefield interaction and animations for napalm CRR.  Fixed orbeater mismatches.  Added some interactions for holes in the ground (and added fall sounds).
+
 v.0.9.112 July 26, 2020
 	Invert Elevation All added to items list.  Added explanations.  Added placeholders in list for invert elevation CRR.
 

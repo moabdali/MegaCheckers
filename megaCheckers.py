@@ -650,6 +650,10 @@ def laserCheck(window, gameBoard, resetOnly = False):
                                 if gameBoard[indexI][left][0].tileType == "horiLaserTripod":
                                     gameBoard[indexI][left][0].horiLaser = False
                                 else:
+                                    #laser sound
+                                    choice = random.choice( [1,2] )
+                                    if choice == 1:
+                                        playsound("sounds/laser.mp3", block = False)
                                     gameBoard[indexI][left][0].horiLaser = True
                                 window.refresh()
                         #if there isn't a piece there
@@ -662,6 +666,11 @@ def laserCheck(window, gameBoard, resetOnly = False):
                                 gameBoard[indexI][left][0].crossLaser = False
                                                                         
                             else:
+                                
+                                #laser sound
+                                choice = random.choice( [1,2] )
+                                if choice == 1:
+                                    playsound("sounds/laser.mp3", block = False)
                                 gameBoard[indexI][left][0].horiLaser = True
                                 if gameBoard[indexI][left][0].vertLaser == True:
                                     gameBoard[indexI][left][0].crossLaser = True
@@ -700,9 +709,13 @@ def laserCheck(window, gameBoard, resetOnly = False):
 
                                 gameBoard[indexI][right][0].tileType = tileBackup
                                 sg.popup(f"The laser killed a piece owned by player {owner}.",keep_on_top=True)
-                                if gameBoard[indexI][right][0].tileType == "horiLaserTripod":
+                                if gameBoard[indexI][right][0].tileType in ("horiLaserTripod","vertLaserTripod"):
                                     gameBoard[indexI][right][0].horiLaser = False
                                 else:
+                                    #laser sound
+                                    choice = random.choice( [1,2] )
+                                    if choice == 1:
+                                        playsound("sounds/laser.mp3", block = False)
                                     gameBoard[indexI][right][0].horiLaser = True
                                 displayBoard(window, gameBoard)
                                 window.refresh()
@@ -713,6 +726,10 @@ def laserCheck(window, gameBoard, resetOnly = False):
                                 gameBoard[indexI][right][0].vertLaser = False
                                 gameBoard[indexI][right][0].crossLaser = False
                             else:
+                                #laser sound
+                                choice = random.choice( [1,2] )
+                                if choice == 1:
+                                    playsound("sounds/laser.mp3", block = False)
                                 gameBoard[indexI][right][0].horiLaser = True
                                 if gameBoard[indexI][left][0].vertLaser == True:
                                     gameBoard[indexI][left][0].crossLaser = True
@@ -761,7 +778,10 @@ def laserCheck(window, gameBoard, resetOnly = False):
                                     gameBoard[up][indexJ][0].horiLaser = False
                                     gameBoard[up][indexJ][0].crossLaser = False
                                 else:
-                                    
+                                    #laser sound
+                                    choice = random.choice( [1,2] )
+                                    if choice == 1:
+                                        playsound("sounds/laser.mp3", block = False)
                                     gameBoard[up][indexJ][0].vertLaser = True
                                     
                                 displayBoard(window, gameBoard)
@@ -773,6 +793,10 @@ def laserCheck(window, gameBoard, resetOnly = False):
                                 gameBoard[up][indexJ][0].horiLaser = False
                                 gameBoard[up][indexJ][0].crossLaser = False
                             else:
+                                #laser sound
+                                choice = random.choice( [1,2] )
+                                if choice == 1:
+                                    playsound("sounds/laser.mp3", block = False)
                                 gameBoard[up][indexJ][0].vertLaser = True
                                 if gameBoard[up][indexJ][0].horiLaser == True:
                                     gameBoard[up][indexJ][0].crossLaser = True
@@ -817,6 +841,10 @@ def laserCheck(window, gameBoard, resetOnly = False):
                                     gameBoard[down][indexJ][0].horiLaser = False
                                     gameBoard[down][indexJ][0].crossLaser = False
                                 else:
+                                    #laser sound
+                                    choice = random.choice( [1,2] )
+                                    if choice == 1:
+                                        playsound("sounds/laser.mp3", block = False)
                                     gameBoard[down][indexJ][0].vertLaser = True
                                 displayBoard(window, gameBoard)
                                 window.refresh()
@@ -825,6 +853,10 @@ def laserCheck(window, gameBoard, resetOnly = False):
                             if gameBoard[down][indexJ][0].tileType in ("horiLaserTripod" , "vertLaserTripod"):
                                 gameBoard[down][indexJ][0].vertLaser = False
                             else:
+                                #laser sound
+                                choice = random.choice( [1,2] )
+                                if choice == 1:
+                                    playsound("sounds/laser.mp3", block = False)
                                 gameBoard[down][indexJ][0].vertLaser = True
                                 if gameBoard[up][indexJ][0].horiLaser == True:
                                     gameBoard[up][indexJ][0].crossLaser = True
