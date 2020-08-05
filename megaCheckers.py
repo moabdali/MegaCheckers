@@ -8,8 +8,6 @@ from PIL import Image
 from io import BytesIO
 import base64
 from playsound import playsound
-import pyautogui
-
 import sys
 
 PublicPNGList = []     
@@ -69,7 +67,7 @@ def initializeField(columns, rows, window, gameBoard):
 ##           gameBoard[i][j][1].storedItems.append("trip mine column")
 ##           gameBoard[i][j][1].storedItems.append("shuffle all")
 ##           gameBoard[9][0][1].storedItems.append("purity tile")
-           gameBoard[i][j][1].storedItems.append("laser row")
+           gameBoard[i][j][1].storedItems.append("orb eater")
            gameBoard[i][j][1].storedItems.append("shuffle all")
            gameBoard[i][j][1].storedItems.append("Energy Forcefield")
            gameBoard[i][j][1].activeBuffs.append("round earth theory")
@@ -147,6 +145,7 @@ class Piece:
         self.stickyTimeBomb = False
         self.berzerkMeatCount = False
         self.berzerkAttacksLeft = False
+        self.pieceLevel = 1
     def determineAvatar(self):
         pass
 
@@ -1387,7 +1386,7 @@ def emptySpots(gameBoard,trueEmpty = False):
 
 # the item list
 def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getItemsList = False):
-    # items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
+    # ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
     items = [
         "auto win",
         "bernie sanders",
@@ -4896,26 +4895,37 @@ def useItems(gameBoard, x, y, window):
             return
         
 def orbEater(gameBoard):
+    # all existing mice appended to this list
     listOfMice = []
+    # where the mouse may visit next turn
     legalLocations = []
+    # for future use; to get feral mouse
     orbsEaten = 0
+
+    #for every tile in the game, see if there is a mouse there, and if so
+    #store it into listOfMice
     for iIndex,i in enumerate(gameBoard):
         for jIndex, j in enumerate(i):
             if j[0].orbEater == True:
                 listOfMice.append( (iIndex,jIndex) )
+
+    # for each mouse
     for i in listOfMice:
         ateOrb = False
         legalLocations.clear()
-        legalLocations = getCross(i,gameBoard) #dang it, TJ!
+        legalLocations = getCross(i,gameBoard) 
         
         random.shuffle(legalLocations)
+        #if the mouse started the turn on a tile, let him eat the item orb
         if gameBoard[i[0]][i[1]][0].tileType in ( "itemOrb", "trap Orb 1", "trap Orb 2", "trap Orb 0"):
             #sg.popup("Orbeater was blessed with an orb!")
             gameBoard[i[0]][i[1]][0].tileType = "default"
             #make orbeater fat
             continue
+        
+        #for each shuffled location that the mouse can move to
         for j in legalLocations:
-
+            #i refers to mice location, j refers to a adjacent location
             #eat an orb
             if gameBoard[j[0]][j[1]][0].tileType in ( "itemOrb", "trap Orb 1", "trap Orb 2", "trap Orb 0"):
                 gameBoard[i[0]][i[1]][0].orbEater = False
@@ -4925,20 +4935,56 @@ def orbEater(gameBoard):
                 
                 orbsEaten+=1
                 ateOrb = True
+                #finish working on the current mouse
                 break
             
         #if there wasn't a nearby orb, go somewhere else, if possible
+##        if ateOrb == False:
+##            random.shuffle(legalLocations)
+##            for j in legalLocations:
+##                if gameBoard[j[0]][j[1]][0].tileType == "default" and gameBoard[j[0]][j[1]][0].occupied == False:
+##                    gameBoard[i[0]][i[1]][0].orbEater = False
+##                    gameBoard[j[0]][j[1]][0].tileType = "default"
+##                    gameBoard[j[0]][j[1]][0].orbEater = True
+##                    break
+##                else:
+##                    continue
+        # if didn't eat orb yet, sniff for nearby food
         if ateOrb == False:
-            random.shuffle(legalLocations)
-            for j in legalLocations:
-                if gameBoard[j[0]][j[1]][0].tileType == "default" and gameBoard[j[0]][j[1]][0].occupied == False:
-                    gameBoard[i[0]][i[1]][0].orbEater = False
-                    gameBoard[j[0]][j[1]][0].tileType = "default"
-                    gameBoard[j[0]][j[1]][0].orbEater = True
+            secondaryLocation = []
+            sniffedOrb = False
+            for location in legalLocations:
+                secondaryLocation.clear()
+                secondaryLocation = getCross(location, gameBoard)
+                random.shuffle(secondaryLocation)
+                for secondaryCoordinates in secondaryLocation:
+                    #if the random secondary location has food
+                    if gameBoard[secondaryCoordinates[0]][secondaryCoordinates[1]][0].tileType in ( "itemOrb", "trap Orb 1", "trap Orb 2", "trap Orb 0") and gameBoard[location[0]][location[1]][0].orbEater!= True and gameBoard[location[0]][location[1]][0].tileType == "default":
+                        gameBoard[i[0]][i[1]][0].orbEater = False
+                        #gameBoard[location[0]][location[1]][0].tileType = "default"
+                        gameBoard[location[0]][location[1]][0].orbEater = True
+                        sg.popup(f"Sniffing food at {secondaryCoordinates[0]},{secondaryCoordinates[1]}", keep_on_top = True)
+                        sniffedOrb = True
+                        break
+
+                #if the mouse successfully sniffed food, and moved, exit so he doesn't duplicate
+                if sniffedOrb == True:
                     break
-                else:
-                    continue
-        
+                    
+                    
+        if ateOrb == False and sniffedOrb == False:
+            legalLocations = getCross(i,gameBoard)
+            random.shuffle(legalLocations)
+            for locations in legalLocations:
+                if gameBoard[locations[0]][locations[1]][0].tileType == "default" and gameBoard[locations[0]][locations[1]][0].occupied == False and gameBoard[locations[0]][locations[1]][0].orbEater!=True:
+                    gameBoard[i[0]][i[1]][0].orbEater = False
+                    gameBoard[locations[0]][locations[1]][0].tileType = "default"
+                    gameBoard[locations[0]][locations[1]][0].orbEater = True
+                    
+                    break
+                
+
+                
     return orbsEaten
 
 def bowlingBallFunction(window,gameBoard,location,direction):
@@ -8358,7 +8404,7 @@ def movePiece(playerTurn, window, gameBoard):
                             ].tileType = "default"
                             break
                     if gameBoard[endLocation[0]][endLocation[1]][0].orbEater == True:
-                        sg.popup("You monster!  You killed an orb eater!")
+                        sg.popup("You monster!  You killed an orb eater!",keep_on_top=True)
                         gameBoard[endLocation[0]][endLocation[1]][0].orbEater = False
 
                      

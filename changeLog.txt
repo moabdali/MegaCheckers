@@ -1,5 +1,7 @@
 ChangeLog
 
+v.0.9.115 August 5, 2020
+	Added some better mouse logic.  Can now sniff sniff the cheese from afar.
 v.0.9.114 July 26, 2020
 	Added some laser noises.  Corrected an interaction error between vertical and horizontal lasers (rightward lasers used to overlap turrets due to a missing check).
 
