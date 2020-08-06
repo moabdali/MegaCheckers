@@ -8,6 +8,8 @@ from PIL import Image
 from io import BytesIO
 import base64
 from playsound import playsound
+import pyautogui
+
 import sys
 
 PublicPNGList = []     
@@ -18,7 +20,7 @@ def initializeField(columns, rows, window, gameBoard):
     for i in range(2):
         for j in range(columns):
             gameBoard[i][j][0] = Tile(occupied=True)
-            piece = Piece(playerTurn=1)
+            piece = Piece(playerTurn=2)
             gameBoard[i][j][1] = piece
             gameBoard[i][j][1].location = (i, j)
             gameBoard[i][j][0].tileType = "player1default"
@@ -26,7 +28,7 @@ def initializeField(columns, rows, window, gameBoard):
     for i in range(2):
         for j in range(columns):
             gameBoard[rows - i - 1][j][0] = Tile(occupied=True)
-            piece = Piece(playerTurn=2)
+            piece = Piece(playerTurn=1)
             gameBoard[rows - i - 1][j][1] = piece
             gameBoard[rows - i - 1][j][1].location = (rows - i - 1, j)
             gameBoard[rows - i - 1][j][0].tileType = "player2default"
@@ -67,7 +69,7 @@ def initializeField(columns, rows, window, gameBoard):
 ##           gameBoard[i][j][1].storedItems.append("trip mine column")
 ##           gameBoard[i][j][1].storedItems.append("shuffle all")
 ##           gameBoard[9][0][1].storedItems.append("purity tile")
-           gameBoard[i][j][1].storedItems.append("orb eater")
+           gameBoard[i][j][1].storedItems.append("laser row")
            gameBoard[i][j][1].storedItems.append("shuffle all")
            gameBoard[i][j][1].storedItems.append("Energy Forcefield")
            gameBoard[i][j][1].activeBuffs.append("round earth theory")
@@ -373,11 +375,43 @@ def countPieces(gameBoard, window):
                 elif j[1].ownedBy == 2:
                     player2count += 1
     if player1count == 0:
-        sg.popup("Player one loses",keep_on_top=True)
-        raise SystemExit
-    elif player2count == 0:
-        sg.popup("player two loses",keep_on_top=True)
-        raise SystemExit
+        #sg.popup("Player one loses",keep_on_top=True)
+        gameOverLayout = [
+            [sg.T("Congrats to our winner, Player Two")],
+            [sg.Button("New Game")],
+            [sg.Button("Quit")]
+            ]
+        window.disable()
+        gameOverWindow = sg.Window("Game Over",gameOverLayout,element_justification = "center", keep_on_top = True)
+        event = gameOverWindow.read()
+        if "New Game" in event:
+            window.enable()
+            gameOverWindow.close()
+            begin()
+        else:
+            gameOverWindow.close()
+            window.close()
+            raise SystemExit
+    if player2count == 0:
+        #sg.popup("Player one loses",keep_on_top=True)
+        gameOverLayout = [
+            [sg.T("Congrats to our winner, Player One")],
+            [sg.Button("New game")],
+            [sg.Button("Quit")]
+            ]
+        window.disable()
+        gameOverWindow = sg.Window("Game Over",gameOverLayout,element_justification = "center",keep_on_top = True)
+        event = gameOverWindow.read()
+        if "New Game" in event:
+            window.enable()
+            gameOverWindow.close()
+            begin()
+        else:
+            gameOverWindow.close()
+            window.close()
+            raise SystemExit
+
+        
     window["player1piececount"].update(f"Player 1 controls: {player1count}\n")
     window["player2piececount"].update(f"Player 2 controls: {player2count}\n")
     window.refresh()
@@ -584,9 +618,11 @@ def deathCheck(window, gameBoard, move=False):
                     sg.popup("A piece fell to its demise in the void!", keep_on_top=True)
                     return "death"
 
-def laserCheck(window, gameBoard, resetOnly = False):
+def laserCheck(window, gameBoard, resetOnly = False, laserSoundCheck = False):
     rows = len(gameBoard)
     columns = len(gameBoard[0])
+    killedPiecesPlayer1 = 0
+    killedPiecesPlayer2 = 0
     #turn off all lasers
     for i in gameBoard:
         for j in i:
@@ -650,9 +686,8 @@ def laserCheck(window, gameBoard, resetOnly = False):
                                     gameBoard[indexI][left][0].horiLaser = False
                                 else:
                                     #laser sound
-                                    choice = random.choice( [1,2] )
-                                    if choice == 1:
-                                        playsound("sounds/laser.mp3", block = False)
+                                    #if laserSoundCheck == True:
+                                    #    playsound("sounds/laser.mp3", block = False)
                                     gameBoard[indexI][left][0].horiLaser = True
                                 window.refresh()
                         #if there isn't a piece there
@@ -667,9 +702,8 @@ def laserCheck(window, gameBoard, resetOnly = False):
                             else:
                                 
                                 #laser sound
-                                choice = random.choice( [1,2] )
-                                if choice == 1:
-                                    playsound("sounds/laser.mp3", block = False)
+                                #if laserSoundCheck == True:
+                                #        playsound("sounds/laser.mp3", block = False)
                                 gameBoard[indexI][left][0].horiLaser = True
                                 if gameBoard[indexI][left][0].vertLaser == True:
                                     gameBoard[indexI][left][0].crossLaser = True
@@ -712,9 +746,8 @@ def laserCheck(window, gameBoard, resetOnly = False):
                                     gameBoard[indexI][right][0].horiLaser = False
                                 else:
                                     #laser sound
-                                    choice = random.choice( [1,2] )
-                                    if choice == 1:
-                                        playsound("sounds/laser.mp3", block = False)
+                                    #if laserSoundCheck == True:
+                                    #    playsound("sounds/laser.mp3", block = False)
                                     gameBoard[indexI][right][0].horiLaser = True
                                 displayBoard(window, gameBoard)
                                 window.refresh()
@@ -726,9 +759,8 @@ def laserCheck(window, gameBoard, resetOnly = False):
                                 gameBoard[indexI][right][0].crossLaser = False
                             else:
                                 #laser sound
-                                choice = random.choice( [1,2] )
-                                if choice == 1:
-                                    playsound("sounds/laser.mp3", block = False)
+                                #if laserSoundCheck == True:
+                                #        playsound("sounds/laser.mp3", block = False)
                                 gameBoard[indexI][right][0].horiLaser = True
                                 if gameBoard[indexI][left][0].vertLaser == True:
                                     gameBoard[indexI][left][0].crossLaser = True
@@ -778,9 +810,8 @@ def laserCheck(window, gameBoard, resetOnly = False):
                                     gameBoard[up][indexJ][0].crossLaser = False
                                 else:
                                     #laser sound
-                                    choice = random.choice( [1,2] )
-                                    if choice == 1:
-                                        playsound("sounds/laser.mp3", block = False)
+                                    #if laserSoundCheck == True:
+                                    #    playsound("sounds/laser.mp3", block = False)
                                     gameBoard[up][indexJ][0].vertLaser = True
                                     
                                 displayBoard(window, gameBoard)
@@ -793,9 +824,8 @@ def laserCheck(window, gameBoard, resetOnly = False):
                                 gameBoard[up][indexJ][0].crossLaser = False
                             else:
                                 #laser sound
-                                choice = random.choice( [1,2] )
-                                if choice == 1:
-                                    playsound("sounds/laser.mp3", block = False)
+                                #if laserSoundCheck == True:
+                                #        playsound("sounds/laser.mp3", block = False)
                                 gameBoard[up][indexJ][0].vertLaser = True
                                 if gameBoard[up][indexJ][0].horiLaser == True:
                                     gameBoard[up][indexJ][0].crossLaser = True
@@ -841,9 +871,8 @@ def laserCheck(window, gameBoard, resetOnly = False):
                                     gameBoard[down][indexJ][0].crossLaser = False
                                 else:
                                     #laser sound
-                                    choice = random.choice( [1,2] )
-                                    if choice == 1:
-                                        playsound("sounds/laser.mp3", block = False)
+                                    #if laserSoundCheck == True:
+                                    #    playsound("sounds/laser.mp3", block = False)
                                     gameBoard[down][indexJ][0].vertLaser = True
                                 displayBoard(window, gameBoard)
                                 window.refresh()
@@ -853,9 +882,8 @@ def laserCheck(window, gameBoard, resetOnly = False):
                                 gameBoard[down][indexJ][0].vertLaser = False
                             else:
                                 #laser sound
-                                choice = random.choice( [1,2] )
-                                if choice == 1:
-                                    playsound("sounds/laser.mp3", block = False)
+                                #if laserSoundCheck == True:
+                                #        playsound("sounds/laser.mp3", block = False)
                                 gameBoard[down][indexJ][0].vertLaser = True
                                 if gameBoard[up][indexJ][0].horiLaser == True:
                                     gameBoard[up][indexJ][0].crossLaser = True
@@ -1386,7 +1414,7 @@ def emptySpots(gameBoard,trueEmpty = False):
 
 # the item list
 def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getItemsList = False):
-    # ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
+    # items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
     items = [
         "auto win",
         "bernie sanders",
@@ -4908,7 +4936,7 @@ def orbEater(gameBoard):
         for jIndex, j in enumerate(i):
             if j[0].orbEater == True:
                 listOfMice.append( (iIndex,jIndex) )
-
+    random.shuffle(listOfMice)
     # for each mouse
     for i in listOfMice:
         ateOrb = False
@@ -4963,7 +4991,7 @@ def orbEater(gameBoard):
                         gameBoard[i[0]][i[1]][0].orbEater = False
                         #gameBoard[location[0]][location[1]][0].tileType = "default"
                         gameBoard[location[0]][location[1]][0].orbEater = True
-                        sg.popup(f"Sniffing food at {secondaryCoordinates[0]},{secondaryCoordinates[1]}", keep_on_top = True)
+                        #sg.popup(f"Sniffing food at {secondaryCoordinates[0]},{secondaryCoordinates[1]}", keep_on_top = True)
                         sniffedOrb = True
                         break
 
@@ -8404,7 +8432,7 @@ def movePiece(playerTurn, window, gameBoard):
                             ].tileType = "default"
                             break
                     if gameBoard[endLocation[0]][endLocation[1]][0].orbEater == True:
-                        sg.popup("You monster!  You killed an orb eater!",keep_on_top=True)
+                        sg.popup("You monster!  You killed an orb eater!",keep_on_top = True)
                         gameBoard[endLocation[0]][endLocation[1]][0].orbEater = False
 
                      
@@ -9116,7 +9144,9 @@ def begin():
 
             orbsEaten = orbEater(gameBoard)    
             resetMoveAgain(gameBoard)
-            laserCheck(window, gameBoard)
+            laserSoundCheck = True
+            laserCheck(window, gameBoard, laserSoundCheck = True)
+            laserSoundCheck = False
             if orbsEaten > 0:
                 pm(window, f"Orbs eaten by the orb eaters: {orbsEaten}")
                 fileNum = random.randint(1,4)
@@ -9167,7 +9197,9 @@ def begin():
             if PublicStats.spookyHand == True:
                 spookyHand(window,gameBoard)
             orbsEaten = orbEater(gameBoard)
-            laserCheck(window, gameBoard)    
+            laserSoundCheck = True
+            laserCheck(window, gameBoard, laserSoundCheck = True)
+            laserSoundCheck = False
             resetMoveAgain(gameBoard)
             if orbsEaten > 0:
                 pm(window, f"Orbs eaten by the orb eaters: {orbsEaten}")
