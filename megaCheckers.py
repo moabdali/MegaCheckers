@@ -9,7 +9,6 @@ from io import BytesIO
 import base64
 from playsound import playsound
 import pyautogui
-
 import sys
 
 PublicPNGList = []     
@@ -108,6 +107,7 @@ def initializeField(columns, rows, window, gameBoard):
 ####### END DELETE ME###########
 
 
+    
 class PublicStats:
     turnCount = 1
     cycle = 0
@@ -939,6 +939,7 @@ def publicPNGloader():
         "highlightBrown", #38
         "vampiricism", #39
         "grapple icon", #40
+        "AI bomb", #41
         ]):
 
         myImage = Image.open(f"images/{i}.png").convert("RGBA")
@@ -1042,6 +1043,10 @@ def displayBoard(window, gameBoard):
             if gameBoard[i][j][0].tileType == "damaged":
                 cleanTile(gameBoard[i][j][0])
                 avatarFunction(window, PublicPNGList[31], gameBoard, i, j)
+                continue
+            if gameBoard[i][j][0].tileType == "AI bomb":
+                cleanTile(gameBoard[i][j][0])
+                avatarFunction(window, PublicPNGList[41], gameBoard, i, j)
                 continue
             #snake
             if gameBoard[i][j][0].snake == True:
@@ -1416,6 +1421,7 @@ def emptySpots(gameBoard,trueEmpty = False):
 def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getItemsList = False):
     # items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
     items = [
+        "AI bomb",
         "auto win",
         "bernie sanders",
         "berzerk",
@@ -1498,8 +1504,8 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
         "warp",
         "wololo column",
         "wololo radial",
-        "wololo row",
-        "worm hole",#80
+        "wololo row",#80
+        "worm hole",
     ]
     if introOnly == True:
         return random.choice(items)
@@ -4723,6 +4729,21 @@ def useItems(gameBoard, x, y, window):
             displayBoard(window, gameBoard)
             window.refresh()
 
+# AI bomb
+        elif str.find(i, "AI bomb") >= 0:
+            itemsMenu.close()
+            emptyList = emptySpots(gameBoard, True)
+            if len(emptyList) == 0:
+                sg.popup("There's no empty space for the AI bomb.  Aborting.", keep_on_top = True)
+                continue
+            else:
+                bombLocation = random.choice(emptyList)
+                x1 = bombLocation[0]
+                y1 = bombLocation[1]
+                gameBoard[x1][y1][0].tileType = "AI bomb"
+                sg.popup("An AI bomb was airdropped onto the field. It'll walk around and may explode randomly by any player piece.", keep_on_top = True)
+                continue
+                
             
 
 # haphazard airstrike
@@ -6214,6 +6235,58 @@ def itemExplanation(i):
 ##        sg.popup("After a piece uses recall, it creates an unbreakable bond with the tile it cast it on and gets a snapshot of how it is in that exact moment.  In 10 turns, the piece will, no matter what, return to that tile in the state that it was at, even if it died.  If the tile is moved by any items before the recall occurs, the piece will appear in the location the tile was moved to.", keep_on_top = True)
 
 
+
+def AIbomb(window,gameBoard):
+    explodeChance = random.randint(0,100)
+    bombLocations = []
+    emptyTiles = []
+    for rIndex,rows in enumerate(gameBoard):
+        for cIndex,columns in enumerate(rows):
+            if columns[0].tileType == "AI bomb":
+                bombLocations.append( (rIndex,cIndex) )
+                #sg.popup("Debug: found a bomb", keep_on_top = True)
+    for location in bombLocations:
+        
+        adjacentTiles = getCross(location, gameBoard)
+        for i in adjacentTiles:
+            if gameBoard[i[0]][i[1]][0].occupied == True:
+                #sg.popup("Debug: found a rrigger point", keep_on_top = True)
+                if explodeChance > 80:
+                    explodeMe = getRadial(location, gameBoard)
+                    sg.popup("The AI bomb has been set off!", keep_on_top = True)
+                    for j in explodeMe:
+                        g = gameBoard[j[0]][j[1]]
+                        if g[0].occupied == True:
+                            if g[1].forceFieldTurn == PublicStats.turnCount:
+                                continue
+                            elif "Energy Forcefield" in g[1].activeBuffs:
+                                g[1].activeBuffs.remove("Energy Forcefield")
+                                g[1].forceFieldTurn = PublicStats.turnCount
+                                continue
+                        g[0].tileType = "exploding"
+                        displayBoard(window,gameBoard)
+                        window.refresh()
+                        g[0].occupied = False
+                        g[1] = 0
+                        g[0].tileType = "destroyed"
+                        displayBoard(window,gameBoard)
+                        window.refresh()
+                    break
+            emptyTiles.clear()
+            emptyTiles = getCross(location, gameBoard, trueEmpty = True)
+            if len(emptyTiles) == 0:
+                continue
+            goToLocation = random.choice(emptyTiles)
+            x1 = location[0]
+            y1 = location[1]
+            x2 = goToLocation[0]
+            y2 = goToLocation[1]
+            gameBoard[x1][y1][0].tileType = "default"
+            gameBoard[x2][y2][0].tileType = "AI bomb"
+            displayBoard(window, gameBoard)
+            window.refresh()
+            break
+            
 def roundEarthTheoryFunction(gameBoard,startLocation,endLocation,columns,rows):
 #trying to go from right side to left side
     #try to go straight right to straight left
@@ -9113,7 +9186,7 @@ def begin():
 
             #check for sticky bombs
             stickyTimeBomb(window,gameBoard)
-            
+            AIbomb(window,gameBoard)
                 
             for i in gameBoard:
                 x += 1
@@ -9172,7 +9245,7 @@ def begin():
 
             #check for sticky time bomb
             stickyTimeBomb(window,gameBoard)
-            
+            AIbomb(window,gameBoard)
             
             for i in gameBoard:
                 x += 1
