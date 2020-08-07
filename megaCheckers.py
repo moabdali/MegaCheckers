@@ -8,7 +8,6 @@ from PIL import Image
 from io import BytesIO
 import base64
 from playsound import playsound
-import pyautogui
 import sys
 
 PublicPNGList = []     
@@ -5736,6 +5735,32 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                     sg.popup("You slammed into the outer wall.",keep_on_top = True)
                     return
 
+
+def damageCheck(window, gameBoard, tileCheck):
+    x = tileCheck[0]
+    y = tileCheck[1]
+    g = gameBoard[x][y]
+    if g[0].occupied == True:
+        if g[1].forceFieldTurn == PublicStats.turnCount:
+            return
+        if "Energy Forcefield" in g[1].activeBuffs:
+            g[1].activeBuffs.remove("Energy Forcefield")
+            g[1].forceFieldTurn = PublicStats.turnCount
+            displayBoard(window, gameBoard)
+            window.refresh()
+            return
+    
+    g[0].tileType = "exploding"
+    displayBoard(window,gameBoard)
+    window.refresh()
+    g[0].occupied = False
+    g[1] = 0
+    g[0].tileType = "destroyed"
+    displayBoard(window,gameBoard)
+    window.refresh()
+    return
+
+
 #enemyOnly, both, alliesOnly
 #death = forcefieldCheck(window, gameBoard, endLocation = ,danger =""
 def forcefieldCheck(window, gameBoard, startLocation = 0, endLocation = 0, danger = "both"):
@@ -5889,6 +5914,8 @@ def findCurrentTurnPiece(window, gameBoard, reset = False):
 def itemExplanation(i):
         if i == "auto win":
             explanation = "CONGRATULATIONS! THIS IS THE MOST POWERFUL ITEM IN THE GAME!  AS SOON AS YOU ACTIVATE THIS, YOU WILL WIN\nin 100 turns."
+        elif i == "AI bomb":
+            explanation = "Drop in a walking bomb that has a chance of exploding if it is next to any piece."
         elif i == "bowling ball":
             explanation = "Lose all buffs, debuffs and items, but become an angry, powerful bowling ball."
         elif i == "berzerk":
@@ -6255,22 +6282,23 @@ def AIbomb(window,gameBoard):
                     explodeMe = getRadial(location, gameBoard)
                     sg.popup("The AI bomb has been set off!", keep_on_top = True)
                     for j in explodeMe:
-                        g = gameBoard[j[0]][j[1]]
-                        if g[0].occupied == True:
-                            if g[1].forceFieldTurn == PublicStats.turnCount:
-                                continue
-                            elif "Energy Forcefield" in g[1].activeBuffs:
-                                g[1].activeBuffs.remove("Energy Forcefield")
-                                g[1].forceFieldTurn = PublicStats.turnCount
-                                continue
-                        g[0].tileType = "exploding"
-                        displayBoard(window,gameBoard)
-                        window.refresh()
-                        g[0].occupied = False
-                        g[1] = 0
-                        g[0].tileType = "destroyed"
-                        displayBoard(window,gameBoard)
-                        window.refresh()
+                        damageCheck(window, gameBoard, j)
+##                        g = gameBoard[j[0]][j[1]]
+##                        if g[0].occupied == True:
+##                            if g[1].forceFieldTurn == PublicStats.turnCount:
+##                                continue
+##                            elif "Energy Forcefield" in g[1].activeBuffs:
+##                                g[1].activeBuffs.remove("Energy Forcefield")
+##                                g[1].forceFieldTurn = PublicStats.turnCount
+##                                continue
+##                        g[0].tileType = "exploding"
+##                        displayBoard(window,gameBoard)
+##                        window.refresh()
+##                        g[0].occupied = False
+##                        g[1] = 0
+##                        g[0].tileType = "destroyed"
+##                        displayBoard(window,gameBoard)
+##                        window.refresh()
                     break
             emptyTiles.clear()
             emptyTiles = getCross(location, gameBoard, trueEmpty = True)
@@ -7204,6 +7232,8 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
 def longExplanation(window, itemName):
         if itemName == "auto win":
             explanation = "This amazing item is the most powerful and coveted in this game.  By using the auto win, you automatically win the game!*\n\n\nin 100 turns."
+        elif itemName == "AI bomb":
+            explanation = "Summon a bomb onto a random empty tile.  For each piece next to the bomb, there's a 20% chance that the bomb will expode, removing everything in a 3x3 square centered on itself.  The bomb randomly walks to a neighboing empty square between turns.  Jumping on it kills it."
         elif itemName == "bernie sanders":
             explanation = "Every piece on the field gets hit by a 100% tax rate. Bernie then uses the power of socialism and wealth redistribution to randomly reassign the items to any pieces on the field that can pick up items."
         elif itemName == "berzerk":
