@@ -9727,9 +9727,7 @@ def main():
 ##        popupItemExplanation()
 ##        main()
 
-# delete me after debug
-#begin()
-# delete me
+
 
 
 
