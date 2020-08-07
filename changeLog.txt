@@ -1,5 +1,8 @@
 ChangeLog
-v.0.9.115 August 6, 2020
+v.0.9.117 August 7, 2020
+	Added a better hit detection for shield checking (to reuse code).  DamageCheck can be used to see whether a piece is protected from explosions.
+
+v.0.9.116 August 6, 2020
 	Added an AI bomb that walks around and explodes at random if it is near a player.
 
 v.0.9.115 August 5, 2020
