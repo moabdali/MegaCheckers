@@ -1,4 +1,8 @@
 ChangeLog
+
+v.0.9.118 August 7, 2020
+	Added a "small pictures" mode that allows for janky play on smaller screens.  The main focus of the game is getting the regular version to work,
+so not much support will be given for 'small mode' until normal mode is completed.  But at least people with nonstandard screens can enjoy it.
 v.0.9.117 August 7, 2020
 	Added a better hit detection for shield checking (to reuse code).  DamageCheck can be used to see whether a piece is protected from explosions.
 

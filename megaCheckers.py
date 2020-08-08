@@ -9,6 +9,8 @@ from io import BytesIO
 import base64
 from playsound import playsound
 import sys
+import shutil
+import os
 
 PublicPNGList = []     
 
@@ -33,8 +35,8 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[rows - i - 1][j][1].avatar = "default"
 
  ###### DELETE ME ##########
-    for i in range(2):
-       for j in range(columns):
+##    for i in range(2):
+##       for j in range(columns):
 ##           #middle row generator
 ##           rows = 6
 ##           gameBoard[rows - i - 1][j][0] = Tile(occupied=True)
@@ -67,10 +69,10 @@ def initializeField(columns, rows, window, gameBoard):
 ##           gameBoard[i][j][1].storedItems.append("trip mine column")
 ##           gameBoard[i][j][1].storedItems.append("shuffle all")
 ##           gameBoard[9][0][1].storedItems.append("purity tile")
-           gameBoard[i][j][1].storedItems.append("laser row")
-           gameBoard[i][j][1].storedItems.append("shuffle all")
-           gameBoard[i][j][1].storedItems.append("Energy Forcefield")
-           gameBoard[i][j][1].activeBuffs.append("round earth theory")
+##           gameBoard[i][j][1].storedItems.append("laser row")
+##           gameBoard[i][j][1].storedItems.append("shuffle all")
+##           gameBoard[i][j][1].storedItems.append("Energy Forcefield")
+##           gameBoard[i][j][1].activeBuffs.append("round earth theory")
 ##           
 ##
 ##           #the middle row
@@ -118,6 +120,7 @@ class PublicStats:
     recallCount = 0
     playerAutoWin = 0
     playerAutoWinTurn = False
+    screenSize = "normal"
     def getOrbCount(self):
         cycle = PublicStats.turnCount % 11
         return PublicStats.orbCycleList[cycle]
@@ -386,7 +389,7 @@ def countPieces(gameBoard, window):
         if "New Game" in event:
             window.enable()
             gameOverWindow.close()
-            begin()
+            begin(PublicStats.screenSize)
         else:
             gameOverWindow.close()
             window.close()
@@ -404,7 +407,7 @@ def countPieces(gameBoard, window):
         if "New Game" in event:
             window.enable()
             gameOverWindow.close()
-            begin()
+            begin(PublicStats.screenSize)
         else:
             gameOverWindow.close()
             window.close()
@@ -6019,7 +6022,7 @@ def itemExplanation(i):
         elif i == "warp" :
             explanation = "Your piece is randomly whisked away to an empty spot in the field. Where you end up is completely random, so don't bother whining about \n'boo hoo how come I always end up in the worst position possible everytime I use this item', because that's your fault for being unlucky."
         elif i in ("wololo radial", "wololo column", "wololo row"):
-            explanation = "Your piece uses the ancient incantatation of the ancient Ayoh Eetoo religion, which convinces all in-range pieces that hear the word of truth to join your \nside.  It somehow changes their color to match your team's color, too.  Weird how that works."
+            explanation = "Your piece uses the ancient incantation of the ancient Ayoh Eetoo religion, which convinces all in-range pieces that hear the word of truth to join your \nside.  It somehow changes their color to match your team's color, too.  Weird how that works."
         elif i == "worm hole":
             explanation = "Set up a worm hole at an adjacent tile.  As long as your pieces are not on the warp tile, you can use your move to teleport to that worm hole from anywhere."
         elif i == "vampiricism":
@@ -6134,7 +6137,7 @@ def itemExplanation(i):
 ##        elif i == "warp" :
 ##            explanation = "Your piece is randomly whisked away to an empty spot in the field. Where you end up is completely random, so don't bother whining about \n'boo hoo how come I always end up in the worst position possible everytime I use this item', because that's your fault for being unlucky."
 ##        elif i in ("wololo radial", "wololo column", "wololo row"):
-##            explanation = "Your piece uses the ancient incantatation of the ancient Ayoh Eetoo religion, which convinces all in-range pieces that hear the word of truth to join your \nside.  It somehow changes their color to match your team's color, too.  Weird how that works."
+##            explanation = "Your piece uses the ancient incantation of the ancient Ayoh Eetoo religion, which convinces all in-range pieces that hear the word of truth to join your \nside.  It somehow changes their color to match your team's color, too.  Weird how that works."
 ##        elif i == "worm hole":
 ##            explanation = "Set up a worm hole at an adjacent tile.  As long as your pieces are not on the warp tile, you can use your move to teleport to that worm hole from anywhere."
 ##        elif i == "vampiricism":
@@ -9021,15 +9024,37 @@ def itemOrbForecast(window):
     window[f"Orb{index}"].update(f"{PublicStats.orbCycleList[index]}",text_color = ("orange"), font = "Cambria 30")
 
         
-def begin():
+def begin(screenSize):
 
     # variables
     columns = 10
     rows = 10
     gameBoard = []
+    
+    #safety measure in case the screensize wasn't saved properly
+    if screenSize not in ("normal","small"):
+        screenSize = PublicStats.screenSize
+        if screenSize not in ("normal","small"):
+            screenSize = "normal"
 
+    workingDirectoryName = os.getcwd()
+    #print(f"{workingDirectoryName}\images\\")
+    if screenSize == "normal":
+        buttonSize = (75,75)
+        if os.path.exists(f"{workingDirectoryName}\images"):
+            shutil.rmtree(f"{workingDirectoryName}\images")
+            
+        shutil.copytree(workingDirectoryName+"\imagesNormal", workingDirectoryName+"\images")
+    else:
+        buttonSize = (40,40)
+        sg.popup("Note that this mode is a backup mode designed for rarer laptops that don't have normal 1900x1080 resolutions. Enough development time does not exist for focused changes to this mode, so things may look weird.  I recommend you get a normal sized monitor in order to enjoy the game properly.",keep_on_top = True)
+        if os.path.exists(f"{workingDirectoryName}\images"):
+            shutil.rmtree(f"{workingDirectoryName}\images")
+        shutil.copytree(workingDirectoryName+"\imagesSmall", workingDirectoryName+"\images")
 
-    buttonSize = (75,75)
+    PublicPNGList.clear()
+    publicPNGloader()
+    
     # window 
     frame_main = [
         [
@@ -9092,7 +9117,7 @@ def begin():
     top_right_frame = [  [ sg.Button("",key = f"itemList{i}{j}",disabled = True, size = (15,1)) for i in range(0,3)]for j in range(0,15)  ]
     #lookhere
     top_inner_frame = [
-        [sg.Image("images/up.png", key="turn", visible=True)],
+        [sg.Image("images/down.png", key="turn", visible=True)],
         [
             sg.T(f"Player:", font="Cambria 30", pad=(4, 4)),
             sg.T(f"", key="playerTurn", font="Cambria 30", pad=(4, 4)),
@@ -9207,7 +9232,7 @@ def begin():
         # end player one's turn, begin player two's turn, switch players
         if playerTurn == 1:
             
-            window["turn"].update(filename="images/down.png")
+            window["turn"].update(filename="images/up.png")
             window['turnspassed'].update(f"{PublicStats.turnCount:>3}")
             itemOrbForecast(window)
             #check for recalled pieces
@@ -9261,7 +9286,7 @@ def begin():
             
         # end player two's turn, begin player one's turn
         else:
-            window["turn"].update(filename="images/up.png")
+            window["turn"].update(filename="images/down.png")
             window['turnspassed'].update(f"{PublicStats.turnCount:>3}")
             itemOrbForecast(window)
             
@@ -9680,10 +9705,16 @@ def popupItemExplanation():
     
 
 def main():
+    workingDirectoryName = os.getcwd()
+    if os.path.exists(f"{workingDirectoryName}\images"):
+        shutil.rmtree(f"{workingDirectoryName}\images")
+    shutil.copytree(workingDirectoryName+"\imagesNormal", workingDirectoryName+"\images")
+
     publicPNGloader()
     introLayout = [[sg.Text("Mega\nCheckers", font="Cambria 100", justification = "center")]]
     frame_1 = [
-        [sg.Button("Begin game", button_color = ("black","green"),key="begin", size = (20,5))],
+        [sg.Button("Begin game (normal size)", button_color = ("black","green"),key="beginNormal", size = (20,5))],
+        [sg.Button("Begin game (small size)", button_color = ("black","green"),key="beginSmall", size = (20,5))],
         [sg.Button("How to play", key="tutorial", size = (20,2))],
         #[sg.Button("Read about items", size = (20,2))]
     ]
@@ -9692,11 +9723,12 @@ def main():
         [sg.T(f"",key="itemName",text_color = "blue",font = "Cambria, 40",size = (20,1))],
         #address of item picture
         [sg.Image("",size=(400,400),key="itemPic"),],
-        [sg.T(f"(No description)",key = "itemDescription",size = (75,7),font = "Cambria 20")]
+        [sg.T(f"(No description)",key = "itemDescription",size = (100,7),font = "Cambria 20")]
         ]
     introLayout += [[sg.Frame("Choose an option", frame_1, key="options"),sg.Frame("Items Spotlight:",frame_2,key="itemBlurb", element_justification = "center")]]
     introWindow = sg.Window("MegaCheckers", introLayout, element_justification = "center").finalize()
-    introWindow.disappear()
+    #introWindow.disappear()
+    introWindow.Maximize()
     while True:
         
             itemName = pickUpItemOrb(introOnly = True)
@@ -9708,7 +9740,7 @@ def main():
             description = itemExplanation(itemName)
             
             introWindow["itemDescription"].update(description)
-            introWindow.reappear()
+            #introWindow.reappear()
             
             
             break
@@ -9719,9 +9751,14 @@ def main():
     if event[0] == "tutorial":
         introWindow.close()
         tutorial()
-    if event[0] == "begin":
+    if event[0] == "beginNormal":
+        PublicStats.screenSize = "normal"
         introWindow.close()
-        begin()
+        begin("normal")
+    if event[0] == "beginSmall":
+        PublicStats.screenSize = "small"
+        introWindow.close()
+        begin("small")
 ##    if event[0] == "Read about items":
 ##        introWindow.close()
 ##        popupItemExplanation()
