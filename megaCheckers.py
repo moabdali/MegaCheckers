@@ -1432,8 +1432,8 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
         "canyon radial",
         "canyon row",
         "care package drop",
-        "charity",
-        "dead man's trigger",#10
+        "charity",#10
+        "dead man's trigger",
         "dump items", 
         "elevate tile",
         "Energy Forcefield",
@@ -1442,12 +1442,12 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
         "haphazard airstrike",
         "haymaker",
         "heir",
-        "invert elevation all",
+        "invert elevation all",#20
         #"invert elevation column",
         #"invert elevation radial",
         #"invert elevation row",
         "jump proof",
-        "jumpoline",#20
+        "jumpoline",
         "laser column",
         "laser row",
         "magnet",
@@ -1455,9 +1455,9 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
         "move diagonal",
         "mutual treason column",
         "mutual treason radial",
-        "mutual treason row",
+        "mutual treason row",#30
         "mystery box",
-        "napalm column",#30
+        "napalm column",
         "napalm radial",
         "napalm row",
         "orb eater",
@@ -1465,9 +1465,9 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
         "purify column",
         "purify radial",
         "purify row",
-        "purity tile",
+        "purity tile",#40
         "recall",
-        "reproduce",#40
+        "reproduce",
         "round earth theory",
         "secretAgent",
         "seismic activity",
@@ -1475,19 +1475,19 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
         "shuffle column",
         "shuffle item orbs",
         "shuffle radial",
-        "shuffle row",
+        "shuffle row",#50
         "sink tile",
-        "smart bombs",#50
+        "smart bombs",
         "snake tunneling",
         "spooky hand",
-        "steal items column",#50
+        "steal items column",
         "steal items radial",
         "steal items row",
         "steal powers column",
         "steal powers radial",
-        "steal powers row",
+        "steal powers row",#60
         "sticky time bomb",
-        "study column",#60
+        "study column",
         "study radial",
         "study row",
         "suicide bomb column",
@@ -1495,9 +1495,9 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
         "suicide bomb row",
         "teach column",
         "teach radial",
-        "teach row",
+        "teach row",#70
         "trap orb",
-        "trip mine column",#70
+        "trip mine column",
         "trip mine radial",
         "trip mine row",
         "trump",
@@ -1505,8 +1505,8 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
         "vile radial",
         "warp",
         "wololo column",
-        "wololo radial",
-        "wololo row",#80
+        "wololo radial",#80
+        "wololo row",
         "worm hole",
     ]
     if introOnly == True:
@@ -7578,8 +7578,11 @@ def movePiece(playerTurn, window, gameBoard):
                 frame8Layout = []
                 frame9Layout = []
                 frame10Layout = []
+                frame11Layout = []
                 frame0Layout = [  [ sg.Button( i, key = f"key{i}", font = "Cambria 30") for i in string.ascii_uppercase] ]
                 frame00Layout = [  [ sg.Button( i, key = f"key{i}", font = "Cambria 30") for i in string.ascii_uppercase] ]
+
+                frame000Layout = [  [ sg.Button( i, key = f"key{i}", font = "Cambria 30") for i in string.ascii_uppercase] ]
 
                 
                 for iIndex,i in enumerate(itemsList):
@@ -7596,6 +7599,7 @@ def movePiece(playerTurn, window, gameBoard):
                     if iIndex == 40:
                         frame0 = sg.Frame("",frame0Layout)
                         frame00 = sg.Frame("", frame00Layout)
+                        frame000 = sg.Frame("", frame000Layout)
                         frame1 = sg.Frame("",frame1Layout)
                         frame2 = sg.Frame("",frame2Layout)
                         frame3 = sg.Frame("",frame3Layout)
@@ -7604,9 +7608,9 @@ def movePiece(playerTurn, window, gameBoard):
                         layout = [ [frame0],[frame1,frame2,frame3,frame4,frame5] ]
 
 
-                        #disable page 3 temporarily
+                        #Page 1's layout
                         #layout+= [ [sg.Button("Page 1", font = "Cambria 20",disabled = True),sg.Button("Page 2", font = "Cambria 20"),sg.Button("Page 3", font = "Cambria 20")] ]
-                        layout+= [ [sg.Button("Page 1", font = "Cambria 20",disabled = True),sg.Button("Page 2", font = "Cambria 20"),sg.Button("Page 3", font = "Cambria 20", disabled = True)] ]
+                        layout+= [ [sg.Button("Page 1", font = "Cambria 20",disabled = True),sg.Button("Page 2", font = "Cambria 20",disabled = False),sg.Button("Page 3", font = "Cambria 20", disabled = False)] ]
 
 
                     if iIndex in range(40,48):
@@ -7619,24 +7623,31 @@ def movePiece(playerTurn, window, gameBoard):
                         frame9Layout+= [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images\\{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
                     elif iIndex in range (72,80):
                         frame10Layout+= [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images\\{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
-                    if iIndex== 79:
+                    if iIndex== 80:
                         frame6 = sg.Frame("",frame6Layout)
                         frame7 = sg.Frame("",frame7Layout)
                         frame8 = sg.Frame("",frame8Layout)
                         frame9 = sg.Frame("",frame9Layout)
                         frame10 = sg.Frame("",frame10Layout)
                         layout2 = [ [frame00],[frame6,frame7,frame8,frame9,frame10] ]
-                        #disable page 3 temporarily
+                        #page 2's layout
                         #layout2+= [ [sg.Button("Page 1", font = "Cambria 20"),sg.Button("Page 2", font = "Cambria 20",disabled = True),sg.Button("Page 3", font = "Cambria 20")] ]
-                        layout2+= [ [sg.Button("Page 1", font = "Cambria 20"),sg.Button("Page 2", font = "Cambria 20",disabled = True),sg.Button("Page 3", font = "Cambria 20",disabled = True)] ]
-
-                
+                        layout2+= [ [sg.Button("Page 1", font = "Cambria 20", disabled = False),sg.Button("Page 2", font = "Cambria 20",disabled = True),sg.Button("Page 3", font = "Cambria 20",disabled = False)] ]
+                    if iIndex in range(80,81):
+                        frame11Layout += [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images\\{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
+                    if iIndex == 81:
+                        
+                        frame11 = sg.Frame("",frame11Layout)
+                        #page 3's layout
+                        layout3 = [ [frame000],[frame11] ]
+                        layout3+= [ [sg.Button("Page 1", font = "Cambria 20",disabled = False),sg.Button("Page 2", font = "Cambria 20",disabled=True),sg.Button("Page 3", font = "Cambria 20", disabled = True)] ]
                
                 window.disable()
 
 
 
                 #ITEM READ WINDOWS MADE HERE
+                readItemWindow3 = sg.Window("Item Guide: ", layout3,keep_on_top = True, size = (1920,1080), element_justification="center")
                 readItemWindow2 = sg.Window("Item Guide: ", layout2,keep_on_top = True, size = (1920,1080), element_justification="center")
                 
                 readItemWindow = sg.Window("Item Guide: ", layout,keep_on_top = True, size = (1920,1080), element_justification="center")
@@ -7646,6 +7657,7 @@ def movePiece(playerTurn, window, gameBoard):
                 #We need to finalize it later in the code, but only once.  So the flag will have to be used to avoid multiple
                 #finalizes.
                 win2Finalize = False
+                win3Finalize = False
                 
                 while True:
                     #if page 1 is open, read from page 1
@@ -7654,6 +7666,8 @@ def movePiece(playerTurn, window, gameBoard):
                     #if page 2 is open, read from page 2
                     elif lastOpenPage == 2:
                         event = readItemWindow2.read()
+                    elif lastOpenPage == 3:
+                        event = readItemWindow3.read()
 
                     #if you choose something to open page 1
                     if event[0] in ("Page 1", "keyA", "keyB", "keyC", "keyD", "keyE", "keyF", "keyG", "keyH", "keyI", "keyJ", "keyK", "keyL", "keyM", "keyN", "keyO", "keyP", "keyR") :
@@ -7662,14 +7676,18 @@ def movePiece(playerTurn, window, gameBoard):
                         #if page 2 was created, hide it
                         if win2Finalize == True:
                             readItemWindow2.Hide()
+                        if win3Finalize == True:
+                            readItemWindow2.Hide()
                         #set the open page to 1
                         lastOpenPage = 1
                         continue
                     #if you choose something to open page 2
-                    if event[0] in ("Page 2", "keyS", "keyT", "keyU", "keyV", "keyW", "keyX", "keyY", "keyZ"):
+                    if event[0] in ("Page 2", "keyS", "keyT", "keyU"):
                         if win2Finalize == False:
                             readItemWindow2.finalize()
                             win2Finalize = True
+                        if win3Finalize == True:
+                            readItemWindow3.Hide()
                         #show page 2, hide page 1
                         readItemWindow2.UnHide()
                         readItemWindow.Hide()
@@ -7677,12 +7695,18 @@ def movePiece(playerTurn, window, gameBoard):
                         lastOpenPage = 2
                         continue
                     
+                    
                      #placeholder comment below for if a page 3 is ever needed
-##                    if "Page 3" in event:
-##                        readItemWindow.Hide()
-##                        readItemWindow2.Hide()
-##                        #readItemWindow3.UnHide()
-##                        continue
+                    if event[0] in ("keyV", "keyW", "keyX", "keyY", "keyZ","Page 3"):
+                        readItemWindow.Hide()
+                        if win2Finalize == True:
+                            readItemWindow2.Hide()
+                        if win3Finalize == False:
+                            readItemWindow3.finalize()
+                            win3Finalize = True    
+                        readItemWindow3.UnHide()
+                        lastOpenPage = 3
+                        continue
 
                     #if you hit X, close the readitems
                     if None in event:
@@ -7727,6 +7751,9 @@ def movePiece(playerTurn, window, gameBoard):
                         if win2Finalize == True:
                             if lastOpenPage == 2:
                                 readItemWindow2.UnHide()
+                        if win3Finalize == True:
+                            if lastOpenPage == 3:
+                                readItemWindow3.UnHide()
                         if event1[0] == None or event1[0] == "OK":
                             clickedItemWindow.close()
                         window.enable()
