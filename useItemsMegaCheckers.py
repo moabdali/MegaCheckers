@@ -16,95 +16,100 @@ import os
 from itemExplanationMegaCheckers import *
 from displayBoardMegaCheckers import *
 
-# the item list
+#########################################################################################
+# FUNCTION: PICK UP ITEM ORB: the item list; it contains a list of the names of every   #
+# single item, and allows it to spawn upon picking up an item orb.  If it's not in the  #
+# list, the item cannot be spawned (even with cheats).  So make sure any items that are #
+# added are added to this list.                                                         #
+#########################################################################################
 def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getItemsList = False):
     # items = ["suicideBomb Row","Energy Forcefield","suicideBomb Column","Haphazard Airstrike","suicideBomb Radial","jumpProof","smartBombs"]
     items = [
-        "AI bomb",
-        "auto win",
-        "bernie sanders",
-        "berzerk",
-        "bowling ball",
-        "canyon column",
+        "AI bomb", #walking bomb
+        "auto win", #win in 50 turns
+        "bernie sanders", #redistribute inactive items
+        "berzerk", #if you kill a piece, go again. But die if you haven't eaten lately
+        "bowling ball", #out of control bowling ball
+        "canyon column", #create a trench
         "canyon radial",
         "canyon row",
-        "care package drop",
-        "charity",#10
-        "dead man's trigger",
-        "dump items", 
-        "elevate tile",
-        "Energy Forcefield",
-        "floor restore",
-        "grappling hook",
-        "haphazard airstrike",
-        "haymaker",
-        "heir",
-        "invert elevation all",#20
+        "care package drop", #drop item orbs near an opponent
+        "charity",#10 Give an opponent a piece
+        "dead man's trigger", #if your piece is jumped on, the enemy dies, too
+        "dump items", #dump your items anywhere on the field
+        "elevate tile", #raise a tile
+        "Energy Forcefield", #create a defensive shield on your piece
+        "floor restore", #restore all tiles
+        "grappling hook", #hook your way up a tall tile
+        "haphazard airstrike", #indiscriminately bomb the playing field
+        "haymaker", #punch a piece away
+        "heir", #forcefully take all of your allied pieces' powers
+        "invert elevation all",#20 lower tall tiles, raise low tiles
         "invert elevation column",
         "invert elevation radial",
         "invert elevation row",
-        "jump proof",
-        "jumpoline",
-        "laser column",
+        "jump proof", #piece cannot be jumped on
+        "jumpoline", #jump onto this tile in order to be bounced elsewhere
+        "laser column", #create a laser that burns all units in range
         "laser row",
-        "magnet",
-        "move again",
-        "move diagonal",#30
-        "mutual treason column",
+        "magnet", #"suck in" all nearby pieces
+        "move again", #get an extra move with this piece
+        "move diagonal",#30 move diagonally
+        "mutual treason column", #swap ownership of all pieces in range
         "mutual treason radial",
         "mutual treason row",
-        "mystery box",
-        "napalm column",
+        "mystery box", # a mystery effect occurs
+        "napalm column", #burn all enemy pieces in range, the floor melts away
         "napalm radial",
         "napalm row",
-        "orb eater",
-        "place mine",
-        "purify column",#40
+        "orb eater", # summon a mouse that eats orbs
+        "place mine", # drop a mine
+        "purify column",#40 remove all negative effects from your pieces in range
         "purify radial",
         "purify row",
-        "purity tile",
-        "recall",
-        "reproduce",
-        "round earth theory",
-        "secretAgent",
-        "seismic activity",
-        "shuffle all",
+        "purity tile", # create a reusable tile that heals any piece that steps on it
+        "recall", # return a piece to the condition it was in at the time of use, in 10 turns
+        "reproduce", # create a brand new piece next to the current piece
+        "round earth theory", # ignore boundaries of the playing field - loop around
+        "secretAgent", #steals your enemy's items and gives them to you
+        "seismic activity", #earthquake that randomly changes the elevation of the tiles
+        "shuffle all", #move tiles around randomly
         "shuffle column",#50
-        "shuffle item orbs",
+        "shuffle item orbs", #move item orbs around randomly
         "shuffle radial",
         "shuffle row",
-        "sink tile",
-        "smart bombs",
-        "snake tunneling",
-        "spooky hand",
-        "steal items column",
+        "sink tile", # lower the tile
+        "smart bombs", # shoot the playing field with no threat of damage to your pieces
+        "snake tunneling", # a snake randomly moves nearby tiles up randomly; killing enemies
+        "spooky hand", #a scary hand that will stay resident under the field and kidnap enemies
+        "steal items column", #steal items from the enemy
         "steal items radial",
         "steal items row",#60
-        "steal powers column",
+        "steal powers column", #steal activated powers from the enemies
         "steal powers radial",
         "steal powers row",
-        "sticky time bomb",
-        "study column",
+        "sticky time bomb", #attach a time bomb to any piece, it will blow up in a few turns
+        "study column", #copy powers from your allies
         "study radial",
         "study row",
-        "suicide bomb column",
+        "suicide bomb column", #kill yourself and your enemies
         "suicide bomb radial",
         "suicide bomb row",#70
-        "teach column",
+        "teach column", #copy powers TO your allies
         "teach radial",
         "teach row",
-        "trap orb",
-        "trip mine column",
+        "trap orb", #set a trap that blows up your enemy if they step on it.  Looks like an item orb
+        "trip mine column", #set a mine on your enemies.  If they move, they die.
         "trip mine radial",
         "trip mine row",
-        "trump",
-        "vampiricism",
-        "vile radial",#80
-        "warp",
-        "wololo column",
+        "trump", #build a wall (raise the tiles)
+        "vampiricism", #steal powers from your enemy
+        "vile radial",#80 enemy can't activate items
+        "warp", #teleport randomly
+        "wololo column", #steal enemy pieces
         "wololo radial",
         "wololo row",
-        "worm hole",
+        "worm hole", #set a  worm hole; any of YOUR pieces can jump straight to it as long as it's not occupied
     ]
     if introOnly == True:
         return random.choice(items)
@@ -118,7 +123,6 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
     #modifies your avatar to signify the player is holding an item(s)
     gameBoard[x][y][1].avatar = f"player{playerOwned}stored"
     explanation = itemExplanation(randItem)
-    #randItemName = randItem.center(35)
     youFoundA = "You found a".center(len(randItem*2))
     pickupFrame = [ [sg.Image(f"images/{randItem}.png",tooltip = explanation) ],
         [sg.T(youFoundA, font = "Cambria 30")],
@@ -130,8 +134,9 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
     pickUpLayout = [
             [sg.Frame("GET ITEM", pickupFrame,element_justification = "center")]
         ]
-    #window.disable()
-    window.Hide()
+    window.disable()
+
+    #list of cutesy ways to say OK (feel free to add more)
     affirmativeList = ("Sweet", "Nice!", "Thanks", "Woot!", "Ok", "K.", "I see...", "Neat.")
     randomChoice = random.choice(affirmativeList)
     
@@ -143,7 +148,7 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
     
     if a[0] == "Affirmative":
         pickUpWindow.close()
-    window.UnHide()
+    window.enable()
     
     
     #sg.PopupAnimated(f"images/{randItem}.png",no_titlebar = False, font = "cambria 20",message = f"Picked up an item orb containing \n[{randItemName}]!")
