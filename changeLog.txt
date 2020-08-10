@@ -1,5 +1,11 @@
 ChangeLog
 
+
+v. 1.0.0 August 10, 2020
+	Game is finally reasonably acceptable for public use/viewing.  The files have been split up from a single 10,000 line behemoth into
+(as of now) 7 files.  A separate "movePiece" file is expected to be added in a future release to reduce the size of the main file even further.
+As of now it has a LOT of dependencies, so it will have to wait a little while.  
+
 v.0.9.119 August 8, 2020
 	Added a page 3 for the items. 
 
