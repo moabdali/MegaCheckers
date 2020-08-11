@@ -1,4 +1,4 @@
-# imported by displayBoardMegaCheckers -> useItemsMegaCheckers -> megaCheckers
+# imported by highlightsAndDistancesMegaCheckers -> displayBoardMegaCheckers -> useItemsMegaCheckers -> megaCheckers
 
 #relies on: PIL for Image
 from PIL import Image

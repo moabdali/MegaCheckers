@@ -8,7 +8,6 @@ from PIL import Image
 from io import BytesIO
 import base64
 from playsound import playsound
-from publicObjectsMegaCheckers import *
 from highlightsAndDistancesMegaCheckers import *
 
 

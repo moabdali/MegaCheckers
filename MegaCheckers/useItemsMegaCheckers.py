@@ -716,7 +716,7 @@ def useItems(gameBoard, x, y, window):
                 [ sg.T(f"The wall can be built in either your row or your column.  The wall will raise all existing tiles in range, but will not repair any broken tiles.  Any pieces that are on the tiles will not be affected other than being elevated.") ],
                 [ sg.Button(f"Build Row Wall",key = "row wall"), sg.Button(f"Build Column Wall", key = "column wall"),sg.Button("Cancel")]
                 ]
-            wallWindow = sg.Window("Do you want to build a wall?", wallWindowLayout)
+            wallWindow = sg.Window("Do you want to build a wall?", wallWindowLayout, keep_on_top = True)
             while True:
                 event = wallWindow.read()
                 if event[0] == "Cancel":

@@ -2,8 +2,46 @@
 
 import PySimpleGUI as sg
 from playsound import playsound
+import random
+from useItemsMegaCheckers import *
 
+def AIbomb(window,gameBoard):
+    explodeChance = random.randint(0,100)
+    bombLocations = []
+    emptyTiles = []
+    for rIndex,rows in enumerate(gameBoard):
+        for cIndex,columns in enumerate(rows):
+            if columns[0].tileType == "AI bomb":
+                bombLocations.append( (rIndex,cIndex) )
+                #sg.popup("Debug: found a bomb", keep_on_top = True)
+    for location in bombLocations:
+        
+        adjacentTiles = getCross(location, gameBoard)
+        for i in adjacentTiles:
+            if gameBoard[i[0]][i[1]][0].occupied == True:
+                #sg.popup("Debug: found a rrigger point", keep_on_top = True)
+                if explodeChance > 80:
+                    explodeMe = getRadial(location, gameBoard)
+                    sg.popup("The AI bomb has been set off!", keep_on_top = True)
+                    for j in explodeMe:
+                        damageCheck(window, gameBoard, j)
+                    break
+            emptyTiles.clear()
+            emptyTiles = getCross(location, gameBoard, trueEmpty = True)
+            if len(emptyTiles) == 0:
+                continue
+            goToLocation = random.choice(emptyTiles)
+            x1 = location[0]
+            y1 = location[1]
+            x2 = goToLocation[0]
+            y2 = goToLocation[1]
+            gameBoard[x1][y1][0].tileType = "default"
+            gameBoard[x2][y2][0].tileType = "AI bomb"
+            displayBoard(window, gameBoard)
+            window.refresh()
+            break
 
+        
 def berzerkFunction(window, gameBoard, playerTurn):
     for i in gameBoard:
         for j in i:

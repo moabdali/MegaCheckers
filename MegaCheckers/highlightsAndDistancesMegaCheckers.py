@@ -1,5 +1,5 @@
 # imported by displayBoardMegaCheckers -> useItemsMegaCheckers -> megaCheckers
-
+from publicObjectsMegaCheckers import *
 
 # see if any pieces are sitting on death spots
 def deathCheck(window, gameBoard, move=False):
