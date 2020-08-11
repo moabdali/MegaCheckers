@@ -47,10 +47,10 @@ def gamePlay(playerTurn, window, gameBoard):
     
 # generate item orbs
 def createOrbs(window, gameBoard):
-    dangerTurn = 40
-    #dangerTurn = 1
+    #dangerturn = the turn when item orbs might spawn as trap orbs instead
+    DANGERTURN = 40
     emptySpots = 0
-    if PublicStats.turnCount == dangerTurn:
+    if PublicStats.turnCount == DANGERTURN:
         sg.popup(
             "Warning: TRAP ORBS disguised as ITEM ORBS may spawn from now on!  They will explode if either player steps on them.",font = "Cambria 30",
             keep_on_top=True, image = "images/trapOrb.png"
@@ -67,14 +67,13 @@ def createOrbs(window, gameBoard):
     while orbsToPlace > 0:
         attempts+=1
         if attempts == 300:
-            #sg.popup("Space is at a premium for orb generation.  Aborting.",keep_on_top=True)
             return
         
         i = random.randint(0, len(gameBoard) - 1)
         j = random.randint(0, len(gameBoard[0]) - 1)
         if gameBoard[i][j][0].tileType == "default" and gameBoard[i][j][0].occupied != True and gameBoard[i][j][0].orbEater == False and gameBoard[i][j][0].wormHole1 == False and gameBoard[i][j][0].wormHole2 == False:
             orbsToPlace -= 1
-            if PublicStats.turnCount > dangerTurn:
+            if PublicStats.turnCount > DANGERTURN:
                 chanceCheck = random.randint(0, 10)
                 if chanceCheck > 7:
                     gameBoard[i][j][0].tileType = "trap orb 0"
