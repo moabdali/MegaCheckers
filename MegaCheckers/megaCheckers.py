@@ -1,4 +1,4 @@
-import PySimpleGUIWeb as sg
+import PySimpleGUI as sg
 import copy
 import math
 import random
@@ -39,9 +39,14 @@ def gamePlay(playerTurn, window, gameBoard):
     
     countPieces(gameBoard, window, PublicStats)
     createOrbs(window, gameBoard)
-    movePiece(playerTurn, window, gameBoard)
-    PublicStats.turnCount += 1
-    repairFloor(window, gameBoard)
+    giveUpFlag = movePiece(playerTurn, window, gameBoard)
+    if giveUpFlag == "give up":
+        giveUpFlag = "continue"
+        window.close()
+        main()
+    else:
+        PublicStats.turnCount += 1
+        repairFloor(window, gameBoard)
 
             
     
@@ -109,15 +114,7 @@ def tripMineCheck(window, gameBoard, x, y):
 
 
 
-def jumpoline(window, gameBoard, location, playerTurn):
-    validLocations = emptySpots(gameBoard, trueEmpty = True)
-    if len(validLocations) == 0:
-        sg.popup("Nowhere valid for you to jumpoline to. :(",keep_on_top=True)
-        return
-    choice = random.choice(validLocations)
-    x=choice[0]
-    y=choice[1]
-    return x,y
+
 
 
 
@@ -1405,7 +1402,8 @@ def begin(screenSize):
             ),
             #sg.Button("Learn about items",key="readItems",size=(40,4)),
             sg.Button("Exit", size=(20,4), key="exit"),
-            sg.Button("cheetz")
+            sg.Button("cheetz"),
+            sg.Button("Surrender")
         ]
     ]
     layout += [

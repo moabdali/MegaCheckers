@@ -124,10 +124,13 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
     gameBoard[x][y][1].avatar = f"player{playerOwned}stored"
     explanation = itemExplanation(randItem)
     youFoundA = "You found a".center(len(randItem*2))
-    pickupFrame = [ [sg.Image(f"images/{randItem}.png",tooltip = explanation) ],
+    pickupFrame = [
+        [sg.Image(f"images/{randItem}.png",tooltip = explanation) ],
+        [sg.T(explanation,visible = True,key="showExplanation")],
+        [sg.Button("Hide/Show explanations")],
         [sg.T(youFoundA, font = "Cambria 30")],
         [sg.T(randItem, font = "Cambria 50", text_color = "Blue")],
-        [sg.T("(Hover over the picture to read about the item)")],
+        #[sg.T("(Hover over the picture to read about the item)")],
         [sg.Button("          ", key = "Affirmative", font = "Cambria 30")]
                     ]
         
@@ -142,12 +145,24 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
     
     pickUpWindow = sg.Window("Get item.", pickUpLayout,keep_on_top = True).finalize()
     pickUpWindow["Affirmative"].update(randomChoice)
-    a = pickUpWindow.read()
+    
     
 
-    
-    if a[0] == "Affirmative":
-        pickUpWindow.close()
+    while True:
+        if PublicStats.showItemExplanations:
+            pickUpWindow["showExplanation"].update(visible = True)
+        else:
+            pickUpWindow["showExplanation"].update(visible = False)
+        a = pickUpWindow.read()
+        if a[0] == "Affirmative":
+            pickUpWindow.close()
+            break
+        if a[0] == "Hide/Show explanations":
+            if PublicStats.showItemExplanations:
+                PublicStats.showItemExplanations = False
+            else:
+                PublicStats.showItemExplanations = True
+                
     window.enable()
     
     

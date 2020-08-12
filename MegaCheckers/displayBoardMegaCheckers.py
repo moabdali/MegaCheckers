@@ -387,6 +387,7 @@ def disableEverything(window, turnOn = False):
         ###window["readItems"].update(disabled=True)
         window["cheetz"].update(disabled=True)
         window["Read Items"].update(disabled=True)
+        window["Surrender"].update(disabled=True)
     else:
         window["exit"].update(disabled = False)
         #window["itemButton"].update(disabled=False)
@@ -394,6 +395,7 @@ def disableEverything(window, turnOn = False):
         ###window["readItems"].update(disabled=False)
         window["cheetz"].update(disabled=False)
         window["Read Items"].update(disabled=False)
+        window["Surrender"].update(disabled=False)
         
 # print out messages to both the window and console
 def pm(window, message):

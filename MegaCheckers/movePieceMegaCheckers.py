@@ -1,7 +1,18 @@
 import random
 import string
-
+from time import sleep
 from betweenTurnFunctionsMegaCheckers import *
+
+
+def jumpoline(window, gameBoard, location, playerTurn):
+    validLocations = emptySpots(gameBoard, trueEmpty = True)
+    if len(validLocations) == 0:
+        sg.popup("Nowhere valid for you to jumpoline to. :(",keep_on_top=True)
+        return
+    choice = random.choice(validLocations)
+    x=choice[0]
+    y=choice[1]
+    return x,y
 
 
 def findCurrentTurnPiece(window, gameBoard, reset = False):
@@ -145,6 +156,7 @@ def movePiece(playerTurn, window, gameBoard):
         window["exit"].update(disabled=False)
         window["examineItem"].update(disabled=False)
         window["cheetz"].update(disabled=False)
+        window["Surrender"].update(disabled=False)
         window["Read Items"].update(disabled=False)
         window.refresh()
 
@@ -200,7 +212,19 @@ def movePiece(playerTurn, window, gameBoard):
                     raise SystemExit
                 else:
                     continue
-
+            #if surrender is clicked
+            if "Surrender" in event:
+                sleep(2)
+                a = sg.popup_yes_no(
+                    "You wanna give up?", keep_on_top=True, font = "Cambria 20"
+                )
+                pm(window, "Giving up?")
+                if a == "Yes":
+                    sg.popup("Coward.  You've lost.", keep_on_top=True, font = "Cambria 20")
+                    #window.close()
+                    return "give up"
+                else:
+                    continue
             #if player wants to examine a tile/piece
             if "examineItem" in event:
                 highlightValidDistance(gameBoard, window, (0,0),turnOff = True)
@@ -487,6 +511,7 @@ def movePiece(playerTurn, window, gameBoard):
         window["exit"].update(disabled=True)
         window["cheetz"].update(disabled=True)
         window["Read Items"].update(disabled=True)
+        window["Surrender"].update(disabled = True)
 
         #disable the item lookup buttons when selecting a piece
         for j in range(0,15):
@@ -505,7 +530,7 @@ def movePiece(playerTurn, window, gameBoard):
                 sg.popup("An error occurred during piece selection.  Please try again.",keep_on_top = True)
                 continue
         except:
-            sg.popup("An exception occurred because you hit an unexpected button.  Don't do that.  Recovering...",keep_on_top = True)
+            sg.popup(f"An exception occurred because you hit an unexpected button: {event}.  Don't do that.  Recovering...",keep_on_top = True)
             continue
 
             

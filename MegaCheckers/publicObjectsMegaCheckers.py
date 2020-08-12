@@ -19,6 +19,7 @@ class PublicStats:
     playerAutoWin = 0
     playerAutoWinTurn = False
     screenSize = "normal"
+    showItemExplanations = True
     def getOrbCount(self):
         cycle = PublicStats.turnCount % 11
         return PublicStats.orbCycleList[cycle]
