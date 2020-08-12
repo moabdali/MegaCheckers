@@ -1,6 +1,6 @@
 MegaCheckers:
 ![image](https://user-images.githubusercontent.com/64987634/89836775-15902180-db2d-11ea-80cd-c39d432bcc4d.png)
-First of, special thanks to anyone reading this, and especially a huge thank you to PySimpleGUI and the creator, Mike, for making an accessible GUI framework that anyone can use.  Without it, this game would not have been possible.  
+First off, special thanks to anyone reading this, and especially a huge thank you to PySimpleGUI and the creator, Mike, for making an accessible GUI framework that anyone can use.  Without it, this game would not have been possible.  
 
 This game is my first foray into making a full game solo that can be enjoyed for hours at a time.  While I have made a few other games,they have generally been kind of short and repetitive, or not visually appealing.  Back in college in like 2014 during my lunch breaks, I used to play a very interesting game named QuadRadius.  Unfortunately, it was a very obscure game and it was hard to find opponents.  I remember thinking "I'd love to make a game like this some day", but didn't have any GUI skills at the time - not to mention there was notime to consider making a game like that when I was doing 12-14 hour courseloads followed by working full time. 
 
