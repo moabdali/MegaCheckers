@@ -1,4 +1,4 @@
-import PySimpleGUI as sg
+import PySimpleGUIWeb as sg
 import copy
 import math
 import random
