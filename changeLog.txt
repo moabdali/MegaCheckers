@@ -1,5 +1,8 @@
 ChangeLog
 
+v. 1.0.4 August 16, 2020
+	Moved more functions around.  Todo: update the letter index scheme for the item descriptions.
+
 v. 1.0.3 August 16, 2020
 	Moved some functions around to different .py files (modules?) in order to fix "function not found" errors due to bad dependency placement.
 

@@ -14,556 +14,27 @@ import os
 from movePieceMegaCheckers import*
 
 
-def initializeField(columns, rows, window, gameBoard):
+#contains:
+# func begin: starts the game
+# func createOrbs: create orbs between turns
+# func gamePlay: the root game loop
+# func initializeField: set up the player pieces and create board
+# func itemOrbForecast: forecast how many item orbs are appearing
+# func orbEater: the "AI" for the mice that eat item orbs
+# func recallFunction: saves state of a tile and returns it to that state in X turns
+# func repairFloor: slowly repairs the ground by one phase each turn
+# func roundEarthTheory: allows applicable pieces to roll to opposite side of the field
+# func secretAgentCheck: runs the logic for the secretAgent item
+# func spookyHand: runs the logic for the spooky hand item
+# func stickyTimeBomb: runs the logic for the sticky bomb item
+# func tutorial: show the tutorial gifs
+# func popupItemExplanation: deprecated
+# func main: start the preparations for the game loop
 
-    for i in range(2):
-        for j in range(columns):
-            gameBoard[i][j][0] = Tile(occupied=True)
-            piece = Piece(playerTurn=2)
-            gameBoard[i][j][1] = piece
-            gameBoard[i][j][1].location = (i, j)
-            gameBoard[i][j][0].tileType = "player1default"
-            gameBoard[i][j][1].avatar = "default"
-    for i in range(2):
-        for j in range(columns):
-            gameBoard[rows - i - 1][j][0] = Tile(occupied=True)
-            piece = Piece(playerTurn=1)
-            gameBoard[rows - i - 1][j][1] = piece
-            gameBoard[rows - i - 1][j][1].location = (rows - i - 1, j)
-            gameBoard[rows - i - 1][j][0].tileType = "player2default"
-            gameBoard[rows - i - 1][j][1].avatar = "default"
-
-# the actual loop that is used to progress turns
-def gamePlay(playerTurn, window, gameBoard):
-
-    
-    countPieces(gameBoard, window, PublicStats)
-    createOrbs(window, gameBoard)
-    giveUpFlag = movePiece(playerTurn, window, gameBoard)
-    if giveUpFlag == "give up":
-        giveUpFlag = "continue"
-        window.close()
-        main()
-    else:
-        PublicStats.turnCount += 1
-        repairFloor(window, gameBoard)
-
-            
-    
-# generate item orbs
-def createOrbs(window, gameBoard):
-    #dangerturn = the turn when item orbs might spawn as trap orbs instead
-    DANGERTURN = 40
-    emptySpots = 0
-    if PublicStats.turnCount == DANGERTURN:
-        sg.popup(
-            "Warning: TRAP ORBS disguised as ITEM ORBS may spawn from now on!  They will explode if either player steps on them.",font = "Cambria 30",
-            keep_on_top=True, image = "images/trapOrb.png"
-        )
-    for i in gameBoard:
-        for j in i:
-            if j[0].tileType == "default" and j[0].occupied != True and j[0].orbEater == False and j[0].wormHole1 == False and j[0].wormHole2 == False:
-                emptySpots += 1
-    publicStats = PublicStats()
-    orbsToPlace = publicStats.getOrbCount()
-    if orbsToPlace > emptySpots:
-        orbsToPlace = emptySpots
-    attempts = 0
-    while orbsToPlace > 0:
-        attempts+=1
-        if attempts == 300:
-            return
-        
-        i = random.randint(0, len(gameBoard) - 1)
-        j = random.randint(0, len(gameBoard[0]) - 1)
-        if gameBoard[i][j][0].tileType == "default" and gameBoard[i][j][0].occupied != True and gameBoard[i][j][0].orbEater == False and gameBoard[i][j][0].wormHole1 == False and gameBoard[i][j][0].wormHole2 == False:
-            orbsToPlace -= 1
-            if PublicStats.turnCount > DANGERTURN:
-                chanceCheck = random.randint(0, 10)
-                if chanceCheck > 7:
-                    gameBoard[i][j][0].tileType = "trap orb 0"
-                    continue
-            gameBoard[i][j][0].tileType = "itemOrb"
-
-# check to see if a piece should die from a trip mine
-def tripMineCheck(window, gameBoard, x, y):
-    g = gameBoard[x][y]
-
-    if "trip mine" in g[1].activeDebuffs:
-
-        if "Energy Forcefield" in g[1].activeBuffs:
-            g[1].activeBuffs.remove("Energy Forcefield")
-            pm(window, "Trip mine went off!")
-            playsound("sounds/grenade.mp3", block = False)
-            sleep(1)
-            pm(window, "...But your forcefield saved you.")
-            while "trip mine" in g[1].activeBuffs:
-                g[1].activeDebuffs.remove("trip mine")
-        else:
-            g[0].occupied = False
-            g[0].tileType = "exploding"
-            displayBoard(window, gameBoard)
-            window.refresh()
-            playsound("sounds/grenade.mp3", block = False)
-            sleep(0.1)
-            g[0].tileType = "default"
-            window.refresh()
-            sg.popup("Trip mine went off!", keep_on_top=True)
-            g[1] = 0
-            return "death"
-
-
-
-
-
-
-
-
-
-
-        
-def orbEater(gameBoard):
-    # all existing mice appended to this list
-    listOfMice = []
-    # where the mouse may visit next turn
-    legalLocations = []
-    # for future use; to get feral mouse
-    orbsEaten = 0
-
-    #for every tile in the game, see if there is a mouse there, and if so
-    #store it into listOfMice
-    for iIndex,i in enumerate(gameBoard):
-        for jIndex, j in enumerate(i):
-            if j[0].orbEater == True:
-                listOfMice.append( (iIndex,jIndex) )
-    random.shuffle(listOfMice)
-    # for each mouse
-    for i in listOfMice:
-        ateOrb = False
-        legalLocations.clear()
-        legalLocations = getCross(i,gameBoard) 
-        
-        random.shuffle(legalLocations)
-        #if the mouse started the turn on a tile, let him eat the item orb
-        if gameBoard[i[0]][i[1]][0].tileType in ( "itemOrb", "trap Orb 1", "trap Orb 2", "trap Orb 0"):
-            #sg.popup("Orbeater was blessed with an orb!")
-            gameBoard[i[0]][i[1]][0].tileType = "default"
-            #make orbeater fat
-            continue
-        
-        #for each shuffled location that the mouse can move to
-        for j in legalLocations:
-            #i refers to mice location, j refers to a adjacent location
-            #eat an orb
-            if gameBoard[j[0]][j[1]][0].tileType in ( "itemOrb", "trap Orb 1", "trap Orb 2", "trap Orb 0"):
-                gameBoard[i[0]][i[1]][0].orbEater = False
-                gameBoard[j[0]][j[1]][0].tileType = "default"
-                gameBoard[j[0]][j[1]][0].orbEater = True
-                #change the picture to a fat mouse if he eats an orb; explode the mouse if it's a trap orb.  If he eats too many orbs, maybe make him crazy?
-                
-                orbsEaten+=1
-                ateOrb = True
-                #finish working on the current mouse
-                break
-            
-        #if there wasn't a nearby orb, go somewhere else, if possible
-##        if ateOrb == False:
-##            random.shuffle(legalLocations)
-##            for j in legalLocations:
-##                if gameBoard[j[0]][j[1]][0].tileType == "default" and gameBoard[j[0]][j[1]][0].occupied == False:
-##                    gameBoard[i[0]][i[1]][0].orbEater = False
-##                    gameBoard[j[0]][j[1]][0].tileType = "default"
-##                    gameBoard[j[0]][j[1]][0].orbEater = True
-##                    break
-##                else:
-##                    continue
-        # if didn't eat orb yet, sniff for nearby food
-        if ateOrb == False:
-            secondaryLocation = []
-            sniffedOrb = False
-            for location in legalLocations:
-                secondaryLocation.clear()
-                secondaryLocation = getCross(location, gameBoard)
-                random.shuffle(secondaryLocation)
-                for secondaryCoordinates in secondaryLocation:
-                    #if the random secondary location has food
-                    if gameBoard[secondaryCoordinates[0]][secondaryCoordinates[1]][0].tileType in ( "itemOrb", "trap Orb 1", "trap Orb 2", "trap Orb 0") and gameBoard[location[0]][location[1]][0].orbEater!= True and gameBoard[location[0]][location[1]][0].tileType == "default":
-                        gameBoard[i[0]][i[1]][0].orbEater = False
-                        #gameBoard[location[0]][location[1]][0].tileType = "default"
-                        gameBoard[location[0]][location[1]][0].orbEater = True
-                        #sg.popup(f"Sniffing food at {secondaryCoordinates[0]},{secondaryCoordinates[1]}", keep_on_top = True)
-                        sniffedOrb = True
-                        break
-
-                #if the mouse successfully sniffed food, and moved, exit so he doesn't duplicate
-                if sniffedOrb == True:
-                    break
-                    
-                    
-        if ateOrb == False and sniffedOrb == False:
-            legalLocations = getCross(i,gameBoard)
-            random.shuffle(legalLocations)
-            for locations in legalLocations:
-                if gameBoard[locations[0]][locations[1]][0].tileType == "default" and gameBoard[locations[0]][locations[1]][0].occupied == False and gameBoard[locations[0]][locations[1]][0].orbEater!=True:
-                    gameBoard[i[0]][i[1]][0].orbEater = False
-                    gameBoard[locations[0]][locations[1]][0].tileType = "default"
-                    gameBoard[locations[0]][locations[1]][0].orbEater = True
-                    
-                    break
-                
-
-                
-    return orbsEaten
-
-def secretAgentCheck(window, gameBoard, startLocation, endLocation, playerTurn):
-    
-    #if there's no secretAgent
-    if gameBoard[endLocation[0]][endLocation[1]][0].secretAgent == False:
-        return
-    
-    #if the secretAgent is yours
-    if gameBoard[endLocation[0]][endLocation[1]][0].secretAgent == playerTurn:
-        #if you are not burdened (debuff that stops you from picking up items) and you're not a bowling ball and your secretAgent has items
-        if "burdened" not in gameBoard[endLocation[0]][endLocation[1]][1].activeDebuffs and len(gameBoard[endLocation[0]][endLocation[1]][0].secretAgentList)>0 and "bowling ball" not in gameBoard[endLocation[0]][endLocation[1]][1].activeBuffs:
-            #he gives you the items
-            count = 0
-            for i in gameBoard[endLocation[0]][endLocation[1]][0].secretAgentList:
-                gameBoard[endLocation[0]][endLocation[1]][1].storedItems.append(i)
-                count+=1
-            sg.popup(f"The allied secret agent gave you all the items he's stolen on your behalf. ({count} total)",keep_on_top=True)
-            pm(window, f"The allied secret agent gave you all the items he's stolen on your behalf. ({count} total)")
-            #and then erases his collection
-            gameBoard[endLocation[0]][endLocation[1]][0].secretAgentList.clear()
-        #otherwise, if he doesn't have anything, show a little message
-        elif len(gameBoard[endLocation[0]][endLocation[1]][0].secretAgentList) == 0:
-            sg.popup("This secret agent is on your side, but isn't interested in small talk.  He nods, but otherwise ignores you.  You should visit him after he steals something from your enemy.",keep_on_top=True)        
-
-    #if the secretAgent is your enemy's
-    elif gameBoard[endLocation[0]][endLocation[1]][0].secretAgent != playerTurn:
-            #if you're there
-            if gameBoard[endLocation[0]][endLocation[1]][0].occupied == True:
-                if len(gameBoard[endLocation[0]][endLocation[1]][1].storedItems) > 0:
-                    #iterate through the player's list
-                    for i in gameBoard[endLocation[0]][endLocation[1]][1].storedItems:
-                        #add them to the spy's inventory
-                        gameBoard[endLocation[0]][endLocation[1]][0].secretAgentList.append(i)
-                    #wipe out the victim's items
-                    gameBoard[endLocation[0]][endLocation[1]][1].storedItems.clear()
-                    sg.popup("The secret agent stole all your held items",keep_on_top=True)
-            else:
-                sg.popup("The secret agent sees you don't have any items, so he gives you a dirty look, but doesn't do anything else.",keep_on_top=True)
-    
-
-def repairFloor(window, gameBoard):
-    for i in gameBoard:
-        for j in i:
-            if j[0].tileType == "destroyed":
-                j[0].tileType = "damaged8"
-            elif j[0].tileType == "damaged8":
-                j[0].tileType = "damaged7"
-            elif j[0].tileType == "damaged7":
-                j[0].tileType = "damaged6"
-            elif j[0].tileType == "damaged6":
-                j[0].tileType = "damaged5"
-            elif j[0].tileType == "damaged5":
-                j[0].tileType = "damaged4"
-            elif j[0].tileType == "damaged4":
-                j[0].tileType = "damaged3"
-            elif j[0].tileType == "damaged3":
-                j[0].tileType = "damaged2"
-            elif j[0].tileType == "damaged2":
-                j[0].tileType = "damaged"
-            elif j[0].tileType == "damaged":
-                j[0].tileType = "default"
- 
-def roundEarthTheoryFunction(gameBoard,startLocation,endLocation,columns,rows):
-#trying to go from right side to left side
-    #try to go straight right to straight left
-
-    #sg.popup("Checking round earth theory!", keep_on_top=True)
-   
-    if startLocation[0] == endLocation[0] and startLocation[1] == columns-1 and endLocation[1] == 0:
-            #sg.popup("Your piece is attempting to roll to the other side!1",keep_on_top=True)
-            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
-            return True
-    #trying to go down right
-    elif startLocation[0] == endLocation[0]-1 and startLocation[1] == columns -1 and endLocation[1] == 0 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-        #sg.popup("Your piece is attempting to roll to the other side!2",keep_on_top=True)
-        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
-        return True
-    #trying to go up right
-    elif startLocation[0] == endLocation[0]+1 and startLocation[1] == columns -1 and endLocation[1] == 0 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-        #sg.popup("Your piece is attempting to roll to the other side!3",keep_on_top=True)
-        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
-        return True
-    
-
-#trying to go from left to right side
-    #try to go straight left to straight right
-    if startLocation[0] == endLocation[0] and startLocation[1] == 0 and endLocation[1] == columns -1:
-            #sg.popup("Your piece rolled around to the other side4!",keep_on_top=True)
-            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
-            return True
-    #trying to go down right
-    elif startLocation[0] == endLocation[0]-1 and startLocation[1] == 0  and endLocation[1] == columns -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-        #sg.popup("Your piece is attempting to roll to the other side!5", keep_on_top=True)
-        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
-        return True
-    #trying to go up right
-    elif startLocation[0] == endLocation[0]+1 and startLocation[1] == 0 and endLocation[1] == columns -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-        #sg.popup("Your piece is attempting to roll to the other side!6", keep_on_top=True)
-        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
-        return True
-
-        
-#trying to go from up to down
-    #try to go straight up to straight down
-    if startLocation[1] == endLocation[1] and startLocation[0] == 0 and endLocation[0] == rows -1:
-            #sg.popup("Your piece is attempting to roll to the other side!7", keep_on_top=True)
-            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
-            return True
-    #trying to go up right
-    elif startLocation[0] == 0 and startLocation[1] == (endLocation[1] +1) and endLocation[0] == rows -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-        #sg.popup("Your piece is attempting to roll to the other side!8", keep_on_top=True)
-        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
-        return True
-    #trying to go up left
-    elif startLocation[1] == endLocation[1]-1 and startLocation[0] == 0 and endLocation[0] == rows -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-        #sg.popup("Your piece is attempting to roll to the other side!9", keep_on_top=True)
-        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
-        return True
-
-#in case of error, below is
-    #if startLocation[1] == endLocation[1]:
-        #if startLocation[0] == rows-1 and endLocation[0] == 0:
-#trying to go from down to up
-    #try to go straight down to straight up
-    if startLocation[1] == endLocation[1] and startLocation[0] == rows-1 and endLocation[0] == 0:
-            #sg.popup("Your piece is attempting to roll to the other side!10", keep_on_top=True)
-            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
-            return True
-    #trying to go down right
-    elif startLocation[0] == rows-1 and startLocation[1] == (endLocation[1] +1) and endLocation[0] == 0 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-        #sg.popup("Your piece is attempting to roll to the other side!11", keep_on_top=True)
-        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
-        return True
-    #trying to go down left
-    elif startLocation[1] == endLocation[1]-1 and startLocation[0] == 0 and endLocation[0] == rows-1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-        #sg.popup("Your piece is attempting to roll to the other side!12", keep_on_top=True)
-        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
-        return True
-    
-
-#diagonals (only works with diagonal enabled
-    if "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-        #upleft
-        if startLocation[0] == 0 and startLocation[1] == 0 and endLocation[0] == rows-1 and endLocation[1] == columns-1:
-            #sg.popup("Your piece is attempting to roll to the other side!13", keep_on_top=True)
-            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
-            return True
-        #upright
-        if startLocation[0] == 0 and startLocation[1] == columns-1 and endLocation[0] == rows-1 and endLocation[1] == 0:
-            #sg.popup("Your piece is attempting to roll to the other side!14", keep_on_top=True)
-            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
-            return True
-        #downleft
-        if startLocation[0] == rows-1 and startLocation[1] == 0 and endLocation[0] == 0 and endLocation[1] == columns-1:
-            #sg.popup("Your piece is attempting to roll to the other side!15", keep_on_top=True)
-            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
-            return True
-        #downright
-        if startLocation[0] == rows-1 and startLocation[1] == columns-1 and endLocation[0] == 0 and endLocation[1] == 0:
-            #sg.popup("Your piece is attempting to roll to the other side!16", keep_on_top=True)
-            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
-            return True
-        else:
-            return False
-    else:
-        #debug
-        #sg.popup("Round earth theory failed.", keep_on_top = True)
-        return False
-
-
-
-# after your ends, get back your max "move again" turns
-def resetMoveAgain(gameBoard):
-    moveAgainCount = 0
-    for i in gameBoard:
-        for j in i:
-            moveAgainCount = 0
-            if j[0].occupied == True:
-                if len(j[1].activeBuffs) > 0:
-                    for k in j[1].activeBuffs:
-                        if k == "move again":
-                            moveAgainCount += 1
-            if j[0].occupied == True:
-                j[1].moveAgain = moveAgainCount
-
-
-
-def spookyHand(window, gameBoard):
-    PublicStats.spookyHandTurnCount -= 1
-    attempts = 50
-    if PublicStats.spookyHandTurnCount == 0:
-        while attempts > 0:
-            attempts -= 1
-            xrand = random.randint(0, len(gameBoard)-1)
-            yrand = random.randint(0, len(gameBoard[0])-1)
-
-            #only attack spaces with pieces
-            if  gameBoard[xrand][yrand][0].occupied == True:
-                nums = [1,2]
-                choice = random.choice(nums)
-                playsound(f"sounds\spookyHand{choice}.mp3", block = False)
-                gameBoard[xrand][yrand][0].tileType = "hand1"
-                displayBoard(window, gameBoard)
-                sleep(.5)
-                window.refresh()
-                
-                gameBoard[xrand][yrand][0].tileType = "hand2"
-                sleep(.5)
-                displayBoard(window, gameBoard)
-                window.refresh()
-
-                gameBoard[xrand][yrand][0].tileType = "hand3"
-                sleep(.5)
-                displayBoard(window, gameBoard)
-                window.refresh()
-
-                gameBoard[xrand][yrand][1].ownedby=3
-                displayBoard(window, gameBoard)
-                window.refresh()
-
-
-                gameBoard[xrand][yrand][0].tileType = "hand2"
-                displayBoard(window, gameBoard)
-                window.refresh()
-
-                
-                gameBoard[xrand][yrand][0].tileType = "hand1"
-                displayBoard(window, gameBoard)
-                window.refresh()
-                gameBoard[xrand][yrand][0].occupied = False
-                
-                gameBoard[xrand][yrand][0].tileType = "destroyed"
-                displayBoard(window, gameBoard)
-                window.refresh()
-
-                
-                gameBoard[xrand][yrand][1] = 0
-                gameBoard[xrand][yrand][0].occupied = False
-
-                sg.popup("The spooky hand claimed a victim; and he will return for more...",keep_on_top = True)
-
-                pm(window, "The spooky hand claimed a victim; and he will return for more...")
-
-                PublicStats.spookyHandTurnCount = random.randint(10,15)
-
-                break
-
-                
-def recallFunction(window,gameBoard):
-    for iIndex,i in enumerate(gameBoard):
-        for jIndex,j in enumerate(i):
-            
-
-            #if there's a piece at the spot we're on, see if the piece is supposed to disappear this turn
-            if j[0].occupied == True:
-                #if the recall turn count equals the current turn count, remove it
-                if j[1].recallTurn == PublicStats.turnCount:
-                    #sg.popup(f"Recall turn equals a piece match, deleting at {iIndex}{jIndex}")
-                    gameBoard[iIndex][jIndex][1] = 0
-                    gameBoard[iIndex][jIndex][0].tileType = "default"
-                    gameBoard[iIndex][jIndex][0].occupied = False
-
-            #if the recall turn count equals this turn, revert the tile to what it was (including the tile piece)        
-            if j[0].recallTurn == PublicStats.turnCount:
-                #sg.popup("Recall turn equals a tile")
-                
-                PublicStats.recallCount -=1
-                gameBoard[iIndex][jIndex] = copy.deepcopy(j[0].recallBackup)
-                
-                displayBoard(window, gameBoard)
-                sleep(.5)
-                window.refresh()
-
-                ## The following chunks of code are an animation showing the returning piece flashing so that the players know where the piece returned
-                backupRecallTileTurn = gameBoard[iIndex][jIndex][0].recallTurn
-                gameBoard[iIndex][jIndex][0].occupied = False
-                gameBoard[iIndex][jIndex][0].tileType = "default"
-                gameBoard[iIndex][jIndex][0].recallTurn = 1
-                displayBoard(window, gameBoard)
-                sleep(.5)
-                window.refresh()
-
-                ## flash the piece
-                gameBoard[iIndex][jIndex] = copy.deepcopy(j[0].recallBackup)
-                gameBoard[iIndex][jIndex][0].recallTurn = backupRecallTileTurn
-                displayBoard(window, gameBoard)
-                sleep(.5)
-                window.refresh()
-
-                #flash an empty tile with a clock
-                backupRecallTileTurn = gameBoard[iIndex][jIndex][0].recallTurn
-                gameBoard[iIndex][jIndex][0].occupied = False
-                gameBoard[iIndex][jIndex][0].tileType = "default"
-                gameBoard[iIndex][jIndex][0].recallTurn = 1
-                displayBoard(window, gameBoard)
-                sleep(.5)
-                window.refresh()
-
-                #show the piece again (and leave it this time)
-                gameBoard[iIndex][jIndex] = copy.deepcopy(j[0].recallBackup)
-                gameBoard[iIndex][jIndex][0].recallTurn = backupRecallTileTurn
-                displayBoard(window, gameBoard)
-                sleep(.5)
-                window.refresh()
-                
-                sg.popup("A piece has recalled",keep_on_top = True)
-
-
-        
-            
-def stickyTimeBomb(window,gameBoard):
-    validLocations = []
-    for iIndex,i in enumerate(gameBoard):
-        for jIndex,j in enumerate(i):
-            if j[0].occupied == True:
-                if j[1].stickyTimeBomb != False and "sticky time bomb" in j[1].activeDebuffs:
-                    if j[1].stickyTimeBomb == PublicStats.turnCount:
-                        location = (iIndex,jIndex)
-                        validLocations = getRadial(location, gameBoard)
-                        for i in validLocations:
-                            gameBoard[i[0]][i[1]][0].occupied = False
-                            cleanTile(gameBoard[i[0]][i[1]][0])
-                            gameBoard[i[0]][i[1]][1] = 0
-                            gameBoard[i[0]][i[1]][0].tileType = "exploding"
-                            displayBoard(window, gameBoard)
-                            window.refresh()
-                            sleep(.1)
-                            
-                            gameBoard[i[0]][i[1]][0].tileType = "destroyed"
-                            displayBoard(window, gameBoard)
-                            window.refresh()
-                            sleep(.1)
-                        sg.popup("The sticky time bomb went off!",keep_on_top=True)
-                        #validLocations.clear()
-                                
-def itemOrbForecast(window):
-    #print each member of the orb list (used for balancing)
-    for iIndex, i in enumerate(PublicStats.orbCycleList):
-        window[f"Orb{iIndex}"].update(i,text_color = "grey30",font = "Cambria 20")
-        
-    
-    index = (PublicStats.turnCount+1)%len(PublicStats.orbCycleList)
-    
-    if index >= len(PublicStats.orbCycleList):
-        index = 0
-    window[f"Orb{index}"].update(f"{PublicStats.orbCycleList[index]}",text_color = ("orange"), font = "Cambria 30")
-
-        
+#############################
+# starts the game           #
+#############################
 def begin(screenSize):
-
     # variables
     columns = 10
     rows = 10
@@ -590,10 +61,12 @@ def begin(screenSize):
             shutil.rmtree(f"{workingDirectoryName}\images")
         shutil.copytree(workingDirectoryName+"\imagesSmall", workingDirectoryName+"\images")
 
+    # safety clear in case the PNG still has data left over from a previous game or something
     PublicPNGList.clear()
+    #loads .png files from harddrive to RAM; lowers the disk usage
     publicPNGloader()
     
-    # window 
+    # create the main window 
     frame_main = [
         [
             #individual squares
@@ -613,25 +86,27 @@ def begin(screenSize):
         for i in range(0, rows)
     ]
 
+    # "read about items" frame
     frame_itemInfo = [
-        #[sg.Button("Toggle Item Guide (Disabled until a future update)", size = (50,10), disabled = True)]
-
         [sg.Button("Read Items", size = (50,10))]
 
     ]
 
+    # show the elevation map legend
     frame_elevation = [
             [sg.Image(filename = "images\elevation.png", tooltip = "Each shade represents the height of a given tile.  A piece can jump down safely from any height to any tile that is lower than it.\nHowever, it cannot climb a tile that is more than one elevation unit taller.")]
 
         ]
+    # how many turns have passed
     frame_turnsPassed = [
         [sg.T(f"{1:3}",font = "Cambria, 30",text_color = "Black",key = 'turnspassed',size = (3,1))]
         ]
-
+    # how many items are expected to spawn next turn
     frame_itemOrbForecast =[
-        [sg.T(f"123:>3",key = f"Orb{i}",size = (4,1),pad = (0,0),font = "Cambria, 30", )for i in range(0,len(PublicStats.orbCycleList))]
+        [sg.T(f"xx:>3",key = f"Orb{i}",size = (4,1),pad = (0,0),font = "Cambria, 30", )for i in range(0,len(PublicStats.orbCycleList))]
     ]
-    
+
+    # how any pieces each player has remaining
     frame_remaining = [
         [
             sg.T(
@@ -651,9 +126,10 @@ def begin(screenSize):
         ],
     ]
 
-    #top_right_frame = [[ sg.T("Text", size = (45,22),key = "itemsCollection", font = "Cambria 14")] ]
+    # which items the current player has
     top_right_frame = [  [ sg.Button("",key = f"itemList{i}{j}",disabled = True, size = (15,1)) for i in range(0,3)]for j in range(0,15)  ]
-    #lookhere
+
+    # whose turn is it?
     top_inner_frame = [
         [sg.Image("images/down.png", key="turn", visible=True)],
         [
@@ -682,13 +158,12 @@ def begin(screenSize):
 
     
         
-
+    # layout of the main window
     layout = [
         [
+            # game's title
             sg.T("MegaCheckers", font="Cambria 50"),
-            #sg.Button(
-            #    "USE ITEMS", key="itemButton", image_filename="images/backpack.png"
-            #),
+            # get more information about a tile
             sg.Button(
                 "Look",
                 button_color=("Blue", "White"),
@@ -697,12 +172,17 @@ def begin(screenSize):
                 key="examineItem",
                 image_filename="images/examine.png",
             ),
-            #sg.Button("Learn about items",key="readItems",size=(40,4)),
+            #exit game
             sg.Button("Exit", size=(20,4), key="exit"),
+            # cheat in items by typing their name; consider a more fun way,
+            # maybe by changing it to a phrase related to the item than
+            # the name of the item itself.  For example, napalm might be replaced
+            # by "imfiredup" or spookyhand might be replaced by "donttouchme"
             sg.Button("cheetz"),
             sg.Button("Surrender")
         ]
     ]
+    #add the game itself
     layout += [
         [
             sg.Frame("Playing Field", frame_main),
@@ -711,7 +191,7 @@ def begin(screenSize):
             ),
         ],
     ]
-    #no_titlebar=True,
+    
     window = sg.Window(
         "MegaCheckers",
         layout,
@@ -744,19 +224,9 @@ def begin(screenSize):
     resetMoveAgain(gameBoard)
 
 
-    
-
-
-    
     #Between turns
     playerTurn = 1
-
-
-        
     
-
-        
-        
     while True:
 
         updateToolTips(window, gameBoard,playerTurn)
@@ -875,6 +345,261 @@ def begin(screenSize):
             berzerkFunction(window, gameBoard, playerTurn)
 
 
+# generate item orbs
+def createOrbs(window, gameBoard):
+    #dangerturn = the turn when item orbs might spawn as trap orbs instead
+    DANGERTURN = 40
+    emptySpots = 0
+    if PublicStats.turnCount == DANGERTURN:
+        sg.popup(
+            "Warning: TRAP ORBS disguised as ITEM ORBS may spawn from now on!  They will explode if either player steps on them.",font = "Cambria 30",
+            keep_on_top=True, image = "images/trapOrb.png"
+        )
+    for i in gameBoard:
+        for j in i:
+            if j[0].tileType == "default" and j[0].occupied != True and j[0].orbEater == False and j[0].wormHole1 == False and j[0].wormHole2 == False:
+                emptySpots += 1
+    publicStats = PublicStats()
+    orbsToPlace = publicStats.getOrbCount()
+    if orbsToPlace > emptySpots:
+        orbsToPlace = emptySpots
+    attempts = 0
+    while orbsToPlace > 0:
+        attempts+=1
+        if attempts == 300:
+            return
+        
+        i = random.randint(0, len(gameBoard) - 1)
+        j = random.randint(0, len(gameBoard[0]) - 1)
+        if gameBoard[i][j][0].tileType == "default" and gameBoard[i][j][0].occupied != True and gameBoard[i][j][0].orbEater == False and gameBoard[i][j][0].wormHole1 == False and gameBoard[i][j][0].wormHole2 == False:
+            orbsToPlace -= 1
+            if PublicStats.turnCount > DANGERTURN:
+                chanceCheck = random.randint(0, 10)
+                if chanceCheck > 7:
+                    gameBoard[i][j][0].tileType = "trap orb 0"
+                    continue
+            gameBoard[i][j][0].tileType = "itemOrb"
+
+
+# the actual loop that is used to progress turns
+def gamePlay(playerTurn, window, gameBoard):
+
+    
+    countPieces(gameBoard, window, PublicStats)
+    createOrbs(window, gameBoard)
+    giveUpFlag = movePiece(playerTurn, window, gameBoard)
+    if giveUpFlag == "give up":
+        giveUpFlag = "continue"
+        window.close()
+        main()
+    else:
+        PublicStats.turnCount += 1
+        repairFloor(window, gameBoard)
+
+def initializeField(columns, rows, window, gameBoard):
+
+    for i in range(2):
+        for j in range(columns):
+            gameBoard[i][j][0] = Tile(occupied=True)
+            piece = Piece(playerTurn=2)
+            gameBoard[i][j][1] = piece
+            gameBoard[i][j][1].location = (i, j)
+            gameBoard[i][j][0].tileType = "player1default"
+            gameBoard[i][j][1].avatar = "default"
+    for i in range(2):
+        for j in range(columns):
+            gameBoard[rows - i - 1][j][0] = Tile(occupied=True)
+            piece = Piece(playerTurn=1)
+            gameBoard[rows - i - 1][j][1] = piece
+            gameBoard[rows - i - 1][j][1].location = (rows - i - 1, j)
+            gameBoard[rows - i - 1][j][0].tileType = "player2default"
+            gameBoard[rows - i - 1][j][1].avatar = "default"           
+
+
+def itemOrbForecast(window):
+    #print each member of the orb list (used for balancing)
+    for iIndex, i in enumerate(PublicStats.orbCycleList):
+        window[f"Orb{iIndex}"].update(i,text_color = "grey30",font = "Cambria 20")
+        
+    
+    index = (PublicStats.turnCount+1)%len(PublicStats.orbCycleList)
+    
+    if index >= len(PublicStats.orbCycleList):
+        index = 0
+    window[f"Orb{index}"].update(f"{PublicStats.orbCycleList[index]}",text_color = ("orange"), font = "Cambria 30")
+
+def main():
+    workingDirectoryName = os.getcwd()
+    if os.path.exists(f"{workingDirectoryName}\images"):
+        shutil.rmtree(f"{workingDirectoryName}\images")
+    shutil.copytree(workingDirectoryName+"\imagesNormal", workingDirectoryName+"\images")
+
+    publicPNGloader()
+    introLayout = [[sg.Text("Mega\nCheckers", font="Cambria 100", justification = "center")]]
+    frame_1 = [
+        [sg.Button("Begin game (normal size)", button_color = ("black","green"),key="beginNormal", size = (20,5))],
+        [sg.Button("Begin game (small size)", button_color = ("black","green"),key="beginSmall", size = (20,5))],
+        [sg.Button("How to play", key="tutorial", size = (20,2))],
+        #[sg.Button("Read about items", size = (20,2))]
+    ]
+    frame_2 = [
+        #name of item
+        [sg.T(f"",key="itemName",text_color = "blue",font = "Cambria, 40",size = (20,1))],
+        #address of item picture
+        [sg.Image("",size=(400,400),key="itemPic"),],
+        [sg.T(f"(No description)",key = "itemDescription",size = (100,7),font = "Cambria 20")]
+        ]
+    introLayout += [[sg.Frame("Choose an option", frame_1, key="options"),sg.Frame("Items Spotlight:",frame_2,key="itemBlurb", element_justification = "center")]]
+    introWindow = sg.Window("MegaCheckers", introLayout, element_justification = "center").finalize()
+    #introWindow.disappear()
+    introWindow.Maximize()
+    while True:
+        
+            itemName = pickUpItemOrb(introOnly = True)
+            
+            introWindow["itemPic"].update(filename = f"images/{itemName}.png")
+            
+            introWindow["itemName"].update(itemName)
+            
+            description = itemExplanation(itemName)
+            
+            introWindow["itemDescription"].update(description)
+            #introWindow.reappear()
+            
+            
+            break
+        
+            sg.popup("Error in introwindow")
+            continue
+    event = introWindow.read()
+    if event[0] == "tutorial":
+        introWindow.close()
+        tutorial()
+    if event[0] == "beginNormal":
+        PublicStats.screenSize = "normal"
+        introWindow.close()
+        begin("normal")
+    if event[0] == "beginSmall":
+        PublicStats.screenSize = "small"
+        introWindow.close()
+        begin("small")
+    if event[0] in (None, sg.WIN_CLOSED):
+        quit()
+
+    
+
+
+    
+
+
+def roundEarthTheoryFunction(gameBoard,startLocation,endLocation,columns,rows):
+#trying to go from right side to left side
+    #try to go straight right to straight left
+
+    #sg.popup("Checking round earth theory!", keep_on_top=True)
+   
+    if startLocation[0] == endLocation[0] and startLocation[1] == columns-1 and endLocation[1] == 0:
+            #sg.popup("Your piece is attempting to roll to the other side!1",keep_on_top=True)
+            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
+            return True
+    #trying to go down right
+    elif startLocation[0] == endLocation[0]-1 and startLocation[1] == columns -1 and endLocation[1] == 0 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        #sg.popup("Your piece is attempting to roll to the other side!2",keep_on_top=True)
+        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
+        return True
+    #trying to go up right
+    elif startLocation[0] == endLocation[0]+1 and startLocation[1] == columns -1 and endLocation[1] == 0 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        #sg.popup("Your piece is attempting to roll to the other side!3",keep_on_top=True)
+        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
+        return True
+    
+
+#trying to go from left to right side
+    #try to go straight left to straight right
+    if startLocation[0] == endLocation[0] and startLocation[1] == 0 and endLocation[1] == columns -1:
+            #sg.popup("Your piece rolled around to the other side4!",keep_on_top=True)
+            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
+            return True
+    #trying to go down right
+    elif startLocation[0] == endLocation[0]-1 and startLocation[1] == 0  and endLocation[1] == columns -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        #sg.popup("Your piece is attempting to roll to the other side!5", keep_on_top=True)
+        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
+        return True
+    #trying to go up right
+    elif startLocation[0] == endLocation[0]+1 and startLocation[1] == 0 and endLocation[1] == columns -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        #sg.popup("Your piece is attempting to roll to the other side!6", keep_on_top=True)
+        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
+        return True
+
+        
+#trying to go from up to down
+    #try to go straight up to straight down
+    if startLocation[1] == endLocation[1] and startLocation[0] == 0 and endLocation[0] == rows -1:
+            #sg.popup("Your piece is attempting to roll to the other side!7", keep_on_top=True)
+            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
+            return True
+    #trying to go up right
+    elif startLocation[0] == 0 and startLocation[1] == (endLocation[1] +1) and endLocation[0] == rows -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        #sg.popup("Your piece is attempting to roll to the other side!8", keep_on_top=True)
+        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
+        return True
+    #trying to go up left
+    elif startLocation[1] == endLocation[1]-1 and startLocation[0] == 0 and endLocation[0] == rows -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        #sg.popup("Your piece is attempting to roll to the other side!9", keep_on_top=True)
+        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
+        return True
+
+#in case of error, below is
+    #if startLocation[1] == endLocation[1]:
+        #if startLocation[0] == rows-1 and endLocation[0] == 0:
+#trying to go from down to up
+    #try to go straight down to straight up
+    if startLocation[1] == endLocation[1] and startLocation[0] == rows-1 and endLocation[0] == 0:
+            #sg.popup("Your piece is attempting to roll to the other side!10", keep_on_top=True)
+            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
+            return True
+    #trying to go down right
+    elif startLocation[0] == rows-1 and startLocation[1] == (endLocation[1] +1) and endLocation[0] == 0 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        #sg.popup("Your piece is attempting to roll to the other side!11", keep_on_top=True)
+        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
+        return True
+    #trying to go down left
+    elif startLocation[1] == endLocation[1]-1 and startLocation[0] == 0 and endLocation[0] == rows-1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        #sg.popup("Your piece is attempting to roll to the other side!12", keep_on_top=True)
+        sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
+        return True
+    
+
+#diagonals (only works with diagonal enabled
+    if "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        #upleft
+        if startLocation[0] == 0 and startLocation[1] == 0 and endLocation[0] == rows-1 and endLocation[1] == columns-1:
+            #sg.popup("Your piece is attempting to roll to the other side!13", keep_on_top=True)
+            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
+            return True
+        #upright
+        if startLocation[0] == 0 and startLocation[1] == columns-1 and endLocation[0] == rows-1 and endLocation[1] == 0:
+            #sg.popup("Your piece is attempting to roll to the other side!14", keep_on_top=True)
+            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
+            return True
+        #downleft
+        if startLocation[0] == rows-1 and startLocation[1] == 0 and endLocation[0] == 0 and endLocation[1] == columns-1:
+            #sg.popup("Your piece is attempting to roll to the other side!15", keep_on_top=True)
+            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
+            return True
+        #downright
+        if startLocation[0] == rows-1 and startLocation[1] == columns-1 and endLocation[0] == 0 and endLocation[1] == 0:
+            #sg.popup("Your piece is attempting to roll to the other side!16", keep_on_top=True)
+            sg.popup("Your piece is attempting to roll to the other side!", keep_on_top=True)
+            return True
+        else:
+            return False
+    else:
+        #debug
+        #sg.popup("Round earth theory failed.", keep_on_top = True)
+        return False
+        
+
 def tutorial():
     frame_1 = [
         [sg.Button("Object of the game", key = "object") ],
@@ -948,80 +673,6 @@ def tutorial():
                     break
                 window2['animatedImage'].update_animation_no_buffering("gifs/itemPickup.gif", 100)
                 window2['explanationText'].update("Picking up items: simply step onto an item orb (the blue orb with the ???) to pick it up.  You will get a random item, whose name will be shown upon pickup.  You may hover over the picture to see what the item does.  Note that your piece grows dark and grows bigger when it's holding an item.", font = "Cambria 20")
-
-
-def popupItemExplanation():
-    itemsList = pickUpItemOrb(getItemsList = True)
-        
-    text = "THIS IS A TEMPORARY SOLUTION TO SHOWING ALL THE ITEMS.  IT'LL BE REPLACED BY SOMETHING PRETTIER... EVENTUALLY.\n\n\n"
-    for i in itemsList:
-        explanation = itemExplanation(i)
-        text+= f"{i}: {explanation}"
-        text+="\n\n\n"
-    sg.PopupScrolled(text)
-    
-
-def main():
-    workingDirectoryName = os.getcwd()
-    if os.path.exists(f"{workingDirectoryName}\images"):
-        shutil.rmtree(f"{workingDirectoryName}\images")
-    shutil.copytree(workingDirectoryName+"\imagesNormal", workingDirectoryName+"\images")
-
-    publicPNGloader()
-    introLayout = [[sg.Text("Mega\nCheckers", font="Cambria 100", justification = "center")]]
-    frame_1 = [
-        [sg.Button("Begin game (normal size)", button_color = ("black","green"),key="beginNormal", size = (20,5))],
-        [sg.Button("Begin game (small size)", button_color = ("black","green"),key="beginSmall", size = (20,5))],
-        [sg.Button("How to play", key="tutorial", size = (20,2))],
-        #[sg.Button("Read about items", size = (20,2))]
-    ]
-    frame_2 = [
-        #name of item
-        [sg.T(f"",key="itemName",text_color = "blue",font = "Cambria, 40",size = (20,1))],
-        #address of item picture
-        [sg.Image("",size=(400,400),key="itemPic"),],
-        [sg.T(f"(No description)",key = "itemDescription",size = (100,7),font = "Cambria 20")]
-        ]
-    introLayout += [[sg.Frame("Choose an option", frame_1, key="options"),sg.Frame("Items Spotlight:",frame_2,key="itemBlurb", element_justification = "center")]]
-    introWindow = sg.Window("MegaCheckers", introLayout, element_justification = "center").finalize()
-    #introWindow.disappear()
-    introWindow.Maximize()
-    while True:
-        
-            itemName = pickUpItemOrb(introOnly = True)
-            
-            introWindow["itemPic"].update(filename = f"images/{itemName}.png")
-            
-            introWindow["itemName"].update(itemName)
-            
-            description = itemExplanation(itemName)
-            
-            introWindow["itemDescription"].update(description)
-            #introWindow.reappear()
-            
-            
-            break
-        
-            sg.popup("Error in introwindow")
-            continue
-    event = introWindow.read()
-    if event[0] == "tutorial":
-        introWindow.close()
-        tutorial()
-    if event[0] == "beginNormal":
-        PublicStats.screenSize = "normal"
-        introWindow.close()
-        begin("normal")
-    if event[0] == "beginSmall":
-        PublicStats.screenSize = "small"
-        introWindow.close()
-        begin("small")
-    if event[0] in (None, sg.WIN_CLOSED):
-        quit()
-
-
-
-
 
 
 main()

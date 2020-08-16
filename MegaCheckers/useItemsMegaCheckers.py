@@ -169,6 +169,35 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
     #sg.PopupAnimated(f"images/{randItem}.png",no_titlebar = False, font = "cambria 20",message = f"Picked up an item orb containing \n[{randItemName}]!")
 
 
+
+# check to see if a piece should die from a trip mine
+def tripMineCheck(window, gameBoard, x, y):
+    g = gameBoard[x][y]
+
+    if "trip mine" in g[1].activeDebuffs:
+
+        if "Energy Forcefield" in g[1].activeBuffs:
+            g[1].activeBuffs.remove("Energy Forcefield")
+            pm(window, "Trip mine went off!")
+            playsound("sounds/grenade.mp3", block = False)
+            sleep(1)
+            pm(window, "...But your forcefield saved you.")
+            while "trip mine" in g[1].activeBuffs:
+                g[1].activeDebuffs.remove("trip mine")
+        else:
+            g[0].occupied = False
+            g[0].tileType = "exploding"
+            displayBoard(window, gameBoard)
+            window.refresh()
+            playsound("sounds/grenade.mp3", block = False)
+            sleep(0.1)
+            g[0].tileType = "default"
+            window.refresh()
+            sg.popup("Trip mine went off!", keep_on_top=True)
+            g[1] = 0
+            return "death"
+
+
 def updateToolTips(window, gameBoard,playerTurn):
  
     for iIndex, iData in enumerate(gameBoard):

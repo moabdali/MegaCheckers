@@ -4,6 +4,49 @@ from time import sleep
 from betweenTurnFunctionsMegaCheckers import *
 
 
+def secretAgentCheck(window, gameBoard, startLocation, endLocation, playerTurn):
+    
+    #if there's no secretAgent
+    if gameBoard[endLocation[0]][endLocation[1]][0].secretAgent == False:
+        return
+    
+    #if the secretAgent is yours
+    if gameBoard[endLocation[0]][endLocation[1]][0].secretAgent == playerTurn:
+        #if you are not burdened (debuff that stops you from picking up items) and you're not a bowling ball and your secretAgent has items
+        if "burdened" not in gameBoard[endLocation[0]][endLocation[1]][1].activeDebuffs and len(gameBoard[endLocation[0]][endLocation[1]][0].secretAgentList)>0 and "bowling ball" not in gameBoard[endLocation[0]][endLocation[1]][1].activeBuffs:
+            #he gives you the items
+            count = 0
+            for i in gameBoard[endLocation[0]][endLocation[1]][0].secretAgentList:
+                gameBoard[endLocation[0]][endLocation[1]][1].storedItems.append(i)
+                count+=1
+            sg.popup(f"The allied secret agent gave you all the items he's stolen on your behalf. ({count} total)",keep_on_top=True)
+            pm(window, f"The allied secret agent gave you all the items he's stolen on your behalf. ({count} total)")
+            #and then erases his collection
+            gameBoard[endLocation[0]][endLocation[1]][0].secretAgentList.clear()
+        #otherwise, if he doesn't have anything, show a little message
+        elif len(gameBoard[endLocation[0]][endLocation[1]][0].secretAgentList) == 0:
+            sg.popup("This secret agent is on your side, but isn't interested in small talk.  He nods, but otherwise ignores you.  You should visit him after he steals something from your enemy.",keep_on_top=True)        
+
+    #if the secretAgent is your enemy's
+    elif gameBoard[endLocation[0]][endLocation[1]][0].secretAgent != playerTurn:
+            #if you're there
+            if gameBoard[endLocation[0]][endLocation[1]][0].occupied == True:
+                if len(gameBoard[endLocation[0]][endLocation[1]][1].storedItems) > 0:
+                    #iterate through the player's list
+                    for i in gameBoard[endLocation[0]][endLocation[1]][1].storedItems:
+                        #add them to the spy's inventory
+                        gameBoard[endLocation[0]][endLocation[1]][0].secretAgentList.append(i)
+                    #wipe out the victim's items
+                    gameBoard[endLocation[0]][endLocation[1]][1].storedItems.clear()
+                    sg.popup("The secret agent stole all your held items",keep_on_top=True)
+            else:
+                sg.popup("The secret agent sees you don't have any items, so he gives you a dirty look, but doesn't do anything else.",keep_on_top=True)
+    
+
+
+
+
+
 def bowlingBallFunction(window,gameBoard,location,direction):
     sLocRow = location[0]
     sLocCol = location[1]
@@ -852,7 +895,7 @@ def movePiece(playerTurn, window, gameBoard):
 
             #if you wanna cheat
             if "cheetz" in event:
-                items = sg.popup_get_text("",keep_on_top = True)
+                items = sg.popup_get_text("Cheaters never prosper.  Except when they do.",title = "cheetz",keep_on_top = True,font="Cambria, 20")
                 itemsList = pickUpItemOrb(getItemsList = True)
                 if items not in itemsList:
                     sg.popup("BOGUS CHEETZ ATTEMPT.  GET OUTTA HERE.", keep_on_top = True)
