@@ -1,4 +1,8 @@
 ChangeLog
+
+v. 1.0.3 August 16, 2020
+	Moved some functions around to different .py files (modules?) in order to fix "function not found" errors due to bad dependency placement.
+
 v. 1.0.2 August 12, 2020
 	Added the option to hide item explanations upon pickup (and to reenable them if desired).  Added a surrender option in case you can't move (letting your opponent win). 
 

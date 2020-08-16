@@ -105,9 +105,9 @@ def longExplanation(window, itemName):
         elif itemName in ("trip mine column", "trip mine radial","trip mine row"):
             explanation = "All affected enemies in range get a motion detector mine attached to them. If they move away from the tile, they blow up.  Items that shuffle tiles around will not set off the bomb, neither will teleporting, as the mine doesn't sense motion.  Using items also won't set off the bombs.  If a piece jump kills you, it will safely destroy the bomb before it can go off, so it is safe to attack a trip mined piece."
         elif itemName == "trump":
-            explanation: "This piece makes an empty promise to create a wall, and to its own surprise, actually follows up on that promise.  You can choose between a vertical or horizontal wall; all tiles within range are raised to the maximmum height of +2."
+            explanation = "This piece makes an empty promise to create a wall, and to its own surprise, actually follows up on that promise.  You can choose between a vertical or horizontal wall; all tiles within range are raised to the maximmum height of +2."
         elif itemName == "vampiricism":
-            explanation: "Become a vampire!  Any pieces killed will have their life essence drained, allowing you to steal (most) powers from them.  You cannot absorb Bowling Ball or Berzerker powers.  Luckily, your breed of vampire is not affected in any way by sunlight.  On the downside, you can't revive victims as love slaves (they remain dead, sorry)."
+            explanation = "Become a vampire!  Any pieces killed will have their life essence drained, allowing you to steal (most) powers from them.  You cannot absorb Bowling Ball or Berzerker powers.  Luckily, your breed of vampire is not affected in any way by sunlight.  On the downside, you can't revive victims as love slaves (they remain dead, sorry)."
         elif itemName == "vile radial":
             explanation = "All affected in-range enemies are hit by a vile poison that removes all existing buffs from them."
         elif itemName == "warp":

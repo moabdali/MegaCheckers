@@ -15,6 +15,10 @@ def AIbomb(window,gameBoard):
                 bombLocations.append( (rIndex,cIndex) )
                 #sg.popup("Debug: found a bomb", keep_on_top = True)
     for location in bombLocations:
+
+        #if there is a bomb on a exploded square
+        if gameBoard[location[0]][location[1]][0].tileType == "damaged":
+            continue
         
         adjacentTiles = getCross(location, gameBoard)
         for i in adjacentTiles:

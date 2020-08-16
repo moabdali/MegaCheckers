@@ -23,6 +23,16 @@ class PublicStats:
     def getOrbCount(self):
         cycle = PublicStats.turnCount % 11
         return PublicStats.orbCycleList[cycle]
+    damagedFloor = ("damaged",
+                    "destroyed",
+                    "damaged1",
+                    "damaged2",
+                    "damaged3",
+                    "damaged4",
+                    "damaged5",
+                    "damaged6",
+                    "damaged7",
+                    "damaged8")
     
 
 class Piece:

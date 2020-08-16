@@ -126,7 +126,7 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
     youFoundA = "You found a".center(len(randItem*2))
     pickupFrame = [
         [sg.Image(f"images/{randItem}.png",tooltip = explanation) ],
-        [sg.T(explanation,visible = True,key="showExplanation")],
+        [sg.T(explanation,visible = True,key="showExplanation", font = "cambria, 15")],
         [sg.Button("Hide/Show explanations")],
         [sg.T(youFoundA, font = "Cambria 30")],
         [sg.T(randItem, font = "Cambria 50", text_color = "Blue")],
@@ -143,7 +143,7 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
     affirmativeList = ("Sweet", "Nice!", "Thanks", "Woot!", "Ok", "K.", "I see...", "Neat.")
     randomChoice = random.choice(affirmativeList)
     
-    pickUpWindow = sg.Window("Get item.", pickUpLayout,keep_on_top = True).finalize()
+    pickUpWindow = sg.Window("Get item.", pickUpLayout,keep_on_top = True, no_titlebar = True).finalize()
     pickUpWindow["Affirmative"].update(randomChoice)
     
     
@@ -1499,18 +1499,7 @@ def useItems(gameBoard, x, y, window):
             gameBoard[x][y][1].storedItems.remove("floor restore")
             for i in gameBoard:
                 for j in i:
-                    if j[0].tileType in(
-                        "damaged",
-                        "destroyed",
-                        "damaged1",
-                        "damaged2",
-                        "damaged3",
-                        "damaged4",
-                        "damaged5",
-                        "damaged6",
-                        "damaged7",
-                        "damaged8"
-                        ):
+                    if j[0].tileType in(PublicStats.damagedFloor):
                         j[0].tileType = "default"
             sg.popup("Any damaged floors are back to brand new condition",keep_on_top=True)
 
@@ -2928,18 +2917,7 @@ def useItems(gameBoard, x, y, window):
                         elif gameBoard[s1 + 1][s2][0].occupied == False:
 
                             # if the next location is a hole
-                            if gameBoard[s1 + 1][s2][0].tileType in [
-                                "damaged",
-                                "destroyed",
-                                "damaged1",
-                                "damaged2",
-                                "damaged3",
-                                "damaged4",
-                                "damaged5",
-                                "damaged6",
-                                "damaged7",
-                                "damaged8"
-                            ]:
+                            if gameBoard[s1 + 1][s2][0].tileType in [PublicStats.damagedFloor]:
                                 # kill the piece
                                 gameBoard[s1][s2][1] = 0
                                 gameBoard[s1][s2][0].tileType = "default"
@@ -3021,18 +2999,7 @@ def useItems(gameBoard, x, y, window):
                             # end laser or land mine check here
 
                             # if the next location is a hole
-                            if gameBoard[s1 - 1][s2][0].tileType in [
-                                "damaged",
-                                "destroyed",
-                                "damaged1",
-                                "damaged2",
-                                "damaged3",
-                                "damaged4",
-                                "damaged5",
-                                "damaged6",
-                                "damaged7",
-                                "damaged8"
-                            ]:
+                            if gameBoard[s1 - 1][s2][0].tileType in [PublicStats.damagedFloor]:
                                 # kill the piece
                                 gameBoard[s1][s2][1] = 0
                                 gameBoard[s1][s2][0].tileType = "default"
@@ -3120,18 +3087,7 @@ def useItems(gameBoard, x, y, window):
                             # end laser or land mine check here
 
                             # if the next location is a hole
-                            if gameBoard[s1][s2 + 1][0].tileType in [
-                                "damaged",
-                                "destroyed",
-                                "damaged1",
-                                "damaged2",
-                                "damaged3",
-                                "damaged4",
-                                "damaged5",
-                                "damaged6",
-                                "damaged7",
-                                "damaged8"
-                            ]:
+                            if gameBoard[s1][s2 + 1][0].tileType in [PublicStats.damagedFloor]:
                                 # kill the piece
                                 gameBoard[s1][s2][1] = 0
                                 gameBoard[s1][s2][0].tileType = "default"
@@ -3213,18 +3169,7 @@ def useItems(gameBoard, x, y, window):
                             # end laser or land mine check here
 
                             # if the next location is a hole
-                            if gameBoard[s1][s2 - 1][0].tileType in [
-                                "damaged",
-                                "destroyed",
-                                "damaged1",
-                                "damaged2",
-                                "damaged3",
-                                "damaged4",
-                                "damaged5",
-                                "damaged6",
-                                "damaged7",
-                                "damaged8"
-                            ]:
+                            if gameBoard[s1][s2 - 1][0].tileType in [PublicStats.damagedFloor]:
                                 # kill the piece
                                 gameBoard[s1][s2][1] = 0
                                 gameBoard[s1][s2][0].tileType = "default"
@@ -3446,8 +3391,9 @@ def useItems(gameBoard, x, y, window):
                 y1 = bombLocation[1]
                 gameBoard[x1][y1][0].tileType = "AI bomb"
                 sg.popup("An AI bomb was airdropped onto the field. It'll walk around and may explode randomly by any player piece.", keep_on_top = True)
+                gameBoard[x][y][1].storedItems.remove( "AI bomb")
                 continue
-                
+
             
 
 # haphazard airstrike

@@ -1,110 +1,6 @@
 # imported by displayBoardMegaCheckers -> useItemsMegaCheckers -> megaCheckers
 from publicObjectsMegaCheckers import *
 
-# see if any pieces are sitting on death spots
-def deathCheck(window, gameBoard, move=False):
-    for i in gameBoard:
-        for j in i:
-            # if a regular mine or laser was stepped on
-            if (j[0].occupied == True) and (j[0].tileType == "mine" or (j[0].vertLaser == True or j[0].horiLaser == True or j[0].crossLaser == True) ):
-                death = forcefieldCheck(window, gameBoard, endLocation = j ,danger ="both")
-                #if you didn't die, then start looking in a different direction
-                if death == False:
-                    break
-                #sg.popup(f"FFT: {j[1].forceFieldTurn}", keep_on_top = True)
-                if j[1].forceFieldTurn == PublicStats.turnCount:
-                    j[0].tileType = "default"
-                    #sg.popup("Forcefield saved you",keep_on_top=True)
-                else:
-                    owner = j[1].ownedBy
-                    j[0].tileType = "exploding"
-                    j[1] = 0
-                    j[0].occupied = False
-                    displayBoard(window, gameBoard)
-                    
-                    window.refresh()
-                    playsound("sounds/grenade.mp3", block = False)
-                    j[0].tileType = "default"
-                    displayBoard(window, gameBoard)
-                    window.refresh()
-                    #sg.popup("A piece died!", keep_on_top=True)
-                    sg.popup(f"A piece owned by player {owner} died to a hazard!", keep_on_top=True)
-                    return "death"
-
-            # if a trap belonging to your enemy was set
-            elif j[0].occupied == True and (
-                (j[0].tileType == "trap orb 1" and j[1].ownedBy != 1)
-                or (j[0].tileType == "trap orb 2" and j[1].ownedBy != 2)
-            ):
-                death = forcefieldCheck(window, gameBoard, endLocation = j ,danger ="both")
-                #if you didn't die, then start looking in a different direction
-                if death == False:
-                    break
-                #sg.popup(f"FFT: {j[1].forceFieldTurn}", keep_on_top = True)
-                if j[1].forceFieldTurn == PublicStats.turnCount:
-                    j[0].tileType = "default"
-                else:
-                    j[0].tileType = "exploding"
-                    j[1] = 0
-                    j[0].occupied = False
-                    displayBoard(window, gameBoard)
-                    window.refresh()
-                    playsound("sounds/grenade.mp3", block = False)
-                    sleep(1)
-                    j[0].tileType = "default"
-                    displayBoard(window, gameBoard)
-                    window.refresh()
-                    
-                    sg.popup("A piece died to a player-set trap orb!", keep_on_top=True)
-                    return "death"
-
-            # if a neutral trap was stepped on
-            elif j[0].occupied == True and ((j[0].tileType == "trap orb 0")):
-                death = forcefieldCheck(window, gameBoard, endLocation = j ,danger ="both")
-                #if you didn't die, then start looking in a different direction
-                if death == False:
-                    break
-                #sg.popup(f"FFT: {j[1].forceFieldTurn}", keep_on_top = True)
-                if j[1].forceFieldTurn == PublicStats.turnCount:
-                    j[0].tileType = "default"
-                else:
-                    j[0].tileType = "exploding"
-                    j[1] = 0
-                    j[0].occupied = False
-                    displayBoard(window, gameBoard)
-                    window.refresh()
-                    sleep(1)
-                    j[0].tileType = "default"
-                    displayBoard(window, gameBoard)
-                    window.refresh()
-                    playsound("sounds/grenade.mp3", block = False)
-                    sg.popup("A piece died to a neutral trap orb!", keep_on_top=True)
-                    return "death"
-            # do something for holes
-            elif j[0].occupied == True and  j[0].tileType in(
-                        "damaged",
-                        "destroyed",
-                        "damaged1",
-                        "damaged2",
-                        "damaged3",
-                        "damaged4",
-                        "damaged5",
-                        "damaged6",
-                        "damaged7",
-                        "damaged8"
-                        ):
-                    tileBackup = j[0].tileType
-                    j[0].occupied = False
-                    displayBoard(window, gameBoard)
-                    window.refresh()
-                    sleep(1)
-                    j[0].tileType = tileBackup
-                    displayBoard(window, gameBoard)
-                    window.refresh()
-                    playsound("sounds/fall.wav", block = False)
-                    sg.popup("A piece fell to its demise in the void!", keep_on_top=True)
-                    return "death"
-
 
 def getColumn(location, gameBoard, grow=False):
     validLocations = []
@@ -182,18 +78,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                 yi = i[1]
                 
                 #if the floor isn't gone
-                if g[xi][yi][0].tileType not in [
-                    "damaged",
-                    "destroyed",
-                    "damaged1",
-                    "damaged2",
-                    "damaged3",
-                    "damaged4",
-                    "damaged5",
-                    "damaged6",
-                    "damaged7",
-                    "damaged8"
-                ]:
+                if g[xi][yi][0].tileType not in [PublicStats.damagedFloor]:
                     if g[xi][yi][0].tileHeight-1 > g[x][y][0].tileHeight:
                         if "grappling hook" not in g[x][y][1].activeBuffs:
                             continue
@@ -610,18 +495,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
             yi = i[1]
             
             #if the floor isn't gone
-            if g[xi][yi][0].tileType not in [
-                "damaged",
-                "destroyed",
-                "damaged1",
-                "damaged2",
-                "damaged3",
-                "damaged4",
-                "damaged5",
-                "damaged6",
-                "damaged7",
-                "damaged8"
-            ]:
+            if g[xi][yi][0].tileType not in [PublicStats.damagedFloor]:
                 if g[xi][yi][0].tileHeight-1 > g[x][y][0].tileHeight:
                     if "grappling hook" not in g[x][y][1].activeBuffs:
                         continue
@@ -640,18 +514,7 @@ def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk"
                             continue
                         
             #if the floor is gone, continue
-            if g[xi][yi][0].tileType in [
-                "damaged",
-                "destroyed",
-                "damaged1",
-                "damaged2",
-                "damaged3",
-                "damaged4",
-                "damaged5",
-                "damaged6",
-                "damaged7",
-                "damaged8"
-            ]:
+            if g[xi][yi][0].tileType in [PublicStats.damagedFloor]:
                 continue
                             
             g[xi][yi][0].highlight = True

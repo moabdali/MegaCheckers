@@ -9,32 +9,7 @@ from io import BytesIO
 import base64
 from playsound import playsound
 from highlightsAndDistancesMegaCheckers import *
-
-
-def damageCheck(window, gameBoard, tileCheck):
-    x = tileCheck[0]
-    y = tileCheck[1]
-    g = gameBoard[x][y]
-    if g[0].occupied == True:
-        if g[1].forceFieldTurn == PublicStats.turnCount:
-            return
-        if "Energy Forcefield" in g[1].activeBuffs:
-            g[1].activeBuffs.remove("Energy Forcefield")
-            g[1].forceFieldTurn = PublicStats.turnCount
-            displayBoard(window, gameBoard)
-            window.refresh()
-            return
-    
-    g[0].tileType = "exploding"
-    displayBoard(window,gameBoard)
-    window.refresh()
-    g[0].occupied = False
-    g[1] = 0
-    g[0].tileType = "destroyed"
-    displayBoard(window,gameBoard)
-    window.refresh()
-    return
-
+from time import sleep
 
 #enemyOnly, both, alliesOnly
 #death = forcefieldCheck(window, gameBoard, endLocation = ,danger =""
@@ -100,6 +75,128 @@ def forcefieldCheck(window, gameBoard, startLocation = 0, endLocation = 0, dange
             return True
     else:
         return True
+    
+# see if any pieces are sitting on death spots
+def deathCheck(window, gameBoard, move=False):
+    for i in gameBoard:
+        for j in i:
+            # if a regular mine or laser was stepped on
+            if (j[0].occupied == True) and (j[0].tileType == "mine" or (j[0].vertLaser == True or j[0].horiLaser == True or j[0].crossLaser == True) ):
+                death = forcefieldCheck(window, gameBoard, endLocation = j ,danger ="both")
+                #if you didn't die, then start looking in a different direction
+                if death == False:
+                    break
+                #sg.popup(f"FFT: {j[1].forceFieldTurn}", keep_on_top = True)
+                if j[1].forceFieldTurn == PublicStats.turnCount:
+                    j[0].tileType = "default"
+                    #sg.popup("Forcefield saved you",keep_on_top=True)
+                else:
+                    owner = j[1].ownedBy
+                    j[0].tileType = "exploding"
+                    j[1] = 0
+                    j[0].occupied = False
+                    displayBoard(window, gameBoard)
+                    
+                    window.refresh()
+                    playsound("sounds/grenade.mp3", block = False)
+                    j[0].tileType = "default"
+                    displayBoard(window, gameBoard)
+                    window.refresh()
+                    #sg.popup("A piece died!", keep_on_top=True)
+                    sg.popup(f"A piece owned by player {owner} died to a hazard!", keep_on_top=True)
+                    return "death"
+
+            # if a trap belonging to your enemy was set
+            elif j[0].occupied == True and (
+                (j[0].tileType == "trap orb 1" and j[1].ownedBy != 1)
+                or (j[0].tileType == "trap orb 2" and j[1].ownedBy != 2)
+            ):
+                death = forcefieldCheck(window, gameBoard, endLocation = j ,danger ="both")
+                #if you didn't die, then start looking in a different direction
+                if death == False:
+                    break
+                #sg.popup(f"FFT: {j[1].forceFieldTurn}", keep_on_top = True)
+                if j[1].forceFieldTurn == PublicStats.turnCount:
+                    j[0].tileType = "default"
+                else:
+                    j[0].tileType = "exploding"
+                    j[1] = 0
+                    j[0].occupied = False
+                    displayBoard(window, gameBoard)
+                    window.refresh()
+                    playsound("sounds/grenade.mp3", block = False)
+                    sleep(1)
+                    j[0].tileType = "default"
+                    displayBoard(window, gameBoard)
+                    window.refresh()
+                    
+                    sg.popup("A piece died to a player-set trap orb!", keep_on_top=True)
+                    return "death"
+
+            # if a neutral trap was stepped on
+            elif j[0].occupied == True and ((j[0].tileType == "trap orb 0")):
+                death = forcefieldCheck(window, gameBoard, endLocation = j ,danger ="both")
+                #if you didn't die, then start looking in a different direction
+                if death == False:
+                    break
+                #sg.popup(f"FFT: {j[1].forceFieldTurn}", keep_on_top = True)
+                if j[1].forceFieldTurn == PublicStats.turnCount:
+                    j[0].tileType = "default"
+                else:
+                    j[0].tileType = "exploding"
+                    j[1] = 0
+                    j[0].occupied = False
+                    displayBoard(window, gameBoard)
+                    window.refresh()
+                    sleep(1)
+                    j[0].tileType = "default"
+                    displayBoard(window, gameBoard)
+                    window.refresh()
+                    playsound("sounds/grenade.mp3", block = False)
+                    sg.popup("A piece died to a neutral trap orb!", keep_on_top=True)
+                    return "death"
+            # do something for holes
+            elif j[0].occupied == True and  j[0].tileType in(PublicStats.damagedFloor):
+                    tileBackup = j[0].tileType
+                    j[0].occupied = False
+                    displayBoard(window, gameBoard)
+                    window.refresh()
+                    sleep(1)
+                    j[0].tileType = tileBackup
+                    displayBoard(window, gameBoard)
+                    window.refresh()
+                    playsound("sounds/fall.wav", block = False)
+                    sg.popup("A piece fell to its demise in the void!", keep_on_top=True)
+                    return "death"
+
+
+
+def damageCheck(window, gameBoard, tileCheck):
+    x = tileCheck[0]
+    y = tileCheck[1]
+    g = gameBoard[x][y]
+    if g[0].occupied == True:
+        if g[1].forceFieldTurn == PublicStats.turnCount:
+            return
+        if "Energy Forcefield" in g[1].activeBuffs:
+            g[1].activeBuffs.remove("Energy Forcefield")
+            g[1].forceFieldTurn = PublicStats.turnCount
+            displayBoard(window, gameBoard)
+            window.refresh()
+            return
+    
+    g[0].tileType = "exploding"
+    displayBoard(window,gameBoard)
+    window.refresh()
+    g[0].occupied = False
+    g[1] = 0
+    g[0].tileType = "destroyed"
+    displayBoard(window,gameBoard)
+    window.refresh()
+    return
+
+
+
 
     
 def laserCheck(window, gameBoard, resetOnly = False, laserSoundCheck = False):
@@ -555,7 +652,7 @@ def displayBoard(window, gameBoard):
                 
                 #1 destroyed
                 if gameBoard[i][j][0].tileType == "destroyed":
-                    gameBoard[i][j][0].tileHeight = -2
+                    gameBoard[i][j][0].tileHeight = 0
                     cleanTile(gameBoard[i][j][0])
                     avatarFunction(window, PublicPNGList[1], gameBoard, i, j)
                     #window[i, j].update(image_data=PublicPNGList[1])
