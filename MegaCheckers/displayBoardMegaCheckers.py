@@ -165,7 +165,7 @@ def deathCheck(window, gameBoard, move=False):
                     j[0].tileType = tileBackup
                     displayBoard(window, gameBoard)
                     window.refresh()
-                    playsound("sounds/fall.wav", block = False)
+                    playsound("sounds/fall.mp3", block = False)
                     sg.popup("A piece fell to its demise in the void!", keep_on_top=True)
                     return "death"
 

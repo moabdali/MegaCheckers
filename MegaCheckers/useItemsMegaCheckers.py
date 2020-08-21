@@ -383,7 +383,7 @@ def useItems(gameBoard, x, y, window):
     
     while True:
         #window.disable()
-        playsound("sounds/click2.wav",block=False)
+        playsound("sounds/click2.mp3",block=False)
         #itemsMenu.UnHide()
         event = (itemsMenu.read())
         
@@ -656,7 +656,7 @@ def useItems(gameBoard, x, y, window):
             gameBoard[x][y][1].storedItems.remove("seismic activity")
             if magnitude in (1,2,3,4):
                 raiseLower = (-1,0,0,0,0,1)
-                playsound("sounds/earthquake.wav",block=False)
+                playsound("sounds/earthquake.mp3",block=False)
                 for j in gameBoard:
                     for i in j:
                         change = random.choice(raiseLower)
@@ -668,7 +668,7 @@ def useItems(gameBoard, x, y, window):
                 sg.popup(f"A minor magnitude {magnitude} earthquake hit.",keep_on_top = True)
             if magnitude in (5,6,7,8):
                 raiseLower = (-2,-1,-1,0,0,0,0,1,1,1,2)
-                playsound("sounds/earthquake.wav",block=False)
+                playsound("sounds/earthquake.mp3",block=False)
                 for j in gameBoard:
                     for i in j:
                         change = random.choice(raiseLower)
@@ -682,7 +682,7 @@ def useItems(gameBoard, x, y, window):
                 sg.popup(f"A high magnitude {magnitude} earthquake hit.",keep_on_top = True)
             if magnitude in (9,10):
                 raiseLower = (-2,-1,1,+2)
-                playsound("sounds/earthquake.wav",block=False)
+                playsound("sounds/earthquake.mp3",block=False)
                 for j in gameBoard:
                     for i in j:
                         change = random.choice(raiseLower)
@@ -1949,7 +1949,7 @@ def useItems(gameBoard, x, y, window):
                     and "stunned" not in g[x][y][1].activeDebuffs
                 ):
                     g[ix][iy][0].tileType = "default"
-                    playsound("sounds/getItem.wav",block=False)
+                    playsound("sounds/getItem.mp3",block=False)
                     pickUpItemOrb(gameBoard, x, y, window = window)
                     pm(window, "You picked up an item")
                     displayBoard(window, gameBoard)
@@ -1999,7 +1999,7 @@ def useItems(gameBoard, x, y, window):
                             and "stunned" not in g[ix][iy][1].activeDebuffs
                         ):
                             pm(window, "An item was picked up by your piece.")
-                            playsound("sounds/getItem.wav",block=False)
+                            playsound("sounds/getItem.mp3",block=False)
                             pickUpItemOrb(gameBoard, ix, iy, window = window)
 
                         elif (
@@ -2846,7 +2846,7 @@ def useItems(gameBoard, x, y, window):
             # if the target is within range
             if event[0] in validTargets:
                 
-                playsound("sounds/punch.wav",block=False)
+                playsound("sounds/punch.mp3",block=False)
                 # s1 is the victim's start row, compare to x
                 s1 = event[0][0]
 
@@ -2907,7 +2907,7 @@ def useItems(gameBoard, x, y, window):
                                 gameBoard[s1][s2][1] = 0
                                 gameBoard[s1][s2][0].tileType = "default"
                                 gameBoard[s1][s2][0].occupied = False
-                                playsound("sounds/fall.wav", block = False)
+                                playsound("sounds/fall.mp3", block = False)
                                 pm(
                                     window,
                                     "Brutal!  You just pushed that piece into the void.",
@@ -2989,7 +2989,7 @@ def useItems(gameBoard, x, y, window):
                                 gameBoard[s1][s2][1] = 0
                                 gameBoard[s1][s2][0].tileType = "default"
                                 gameBoard[s1][s2][0].occupied = False
-                                playsound("sounds/fall.wav", block = False)
+                                playsound("sounds/fall.mp3", block = False)
                                 pm(
                                     window,
                                     "Brutal!  You just pushed that piece into the void.",
@@ -3077,7 +3077,7 @@ def useItems(gameBoard, x, y, window):
                                 gameBoard[s1][s2][1] = 0
                                 gameBoard[s1][s2][0].tileType = "default"
                                 gameBoard[s1][s2][0].occupied = False
-                                playsound("sounds/fall.wav", block = False)
+                                playsound("sounds/fall.mp3", block = False)
                                 pm(
                                     window,
                                     "Brutal!  You just pushed that piece into the void.",
@@ -3159,7 +3159,7 @@ def useItems(gameBoard, x, y, window):
                                 gameBoard[s1][s2][1] = 0
                                 gameBoard[s1][s2][0].tileType = "default"
                                 gameBoard[s1][s2][0].occupied = False
-                                playsound("sounds/fall.wav", block = False)
+                                playsound("sounds/fall.mp3", block = False)
                                 pm(
                                     window,
                                     "Brutal!  You just pushed that piece into the void.",

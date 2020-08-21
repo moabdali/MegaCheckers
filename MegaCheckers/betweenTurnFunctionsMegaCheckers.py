@@ -325,7 +325,7 @@ def berzerkFunction(window, gameBoard, playerTurn):
                     
                     sg.popup("Your berzerk piece died of hunger.  Being berzerk is energy intensive!", keep_on_top = True)
                     pm(window, "Your berzerk piece died of hunger.  Being berzerk is energy intensive!")
-                    playsound("sounds\destroy.wav",block=False)
+                    playsound("sounds\destroy.mp3",block=False)
                     j[0].occupied = False
                     #explode
 # how many pieces does each player have left?

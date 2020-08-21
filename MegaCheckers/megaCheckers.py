@@ -265,7 +265,7 @@ def begin(screenSize):
                                         "A stunned piece recovered and picked up the item orb it had landed on",
                                         keep_on_top=True,
                                     )
-                                    playsound("sounds/getItem.wav",block=False)
+                                    playsound("sounds/getItem.mp3",block=False)
                                     pickUpItemOrb(gameBoard, x, y, window = window)
                 y = -1
             playerTurn = 2
@@ -324,7 +324,7 @@ def begin(screenSize):
                                         "A stunned piece recovered and picked up the item orb it had landed on",
                                         keep_on_top=True,
                                     )
-                                    playsound("sounds/getItem.wav",block=False)
+                                    playsound("sounds/getItem.mp3",block=False)
                                     pickUpItemOrb(gameBoard, x, y, window = window)
                 y = -1
             playerTurn = 1
