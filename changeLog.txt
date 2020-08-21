@@ -1,5 +1,8 @@
 ChangeLog
 
+v. 1.0.5 August 20, 2020
+	Corrected an incompatibliity with the updated pysimplegui due to an error in MegaChecker's code that attempted to read a closed window.  This was originally suppressed by older versions of pysg, but the new version is stricter in terms of letting you get away with errors like that.  The error no longer exists in my code. 
+
 v. 1.0.4 August 16, 2020
 	Moved more functions around.  Todo: update the letter index scheme for the item descriptions.
 

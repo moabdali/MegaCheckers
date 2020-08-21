@@ -384,7 +384,9 @@ def useItems(gameBoard, x, y, window):
     while True:
         #window.disable()
         playsound("sounds/click2.wav",block=False)
-        event = (itemsMenu.read()) 
+        #itemsMenu.UnHide()
+        event = (itemsMenu.read())
+        
         try:
             i = event[0]
             for inum,idata in enumerate(gameBoard):
@@ -409,14 +411,14 @@ def useItems(gameBoard, x, y, window):
             #window.enable()
             break
 
-        itemsMenu.close()
+        itemsMenu.Hide()
         
 #all, allHurt, enemyHurtOnly, alliesHelpedOnly, allOccupiedNeutral, alliesHurtOnly
 #def highlightValidDistance(gameBoard, window, startLocation, actionType = "walk", reachType = "cross", turnOff = False):
         
 # suicidebomb row
         if str.find(i, "suicide bomb row") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             gameBoard[x][y][1].grey = False
             highlightValidDistance(gameBoard, window, startLocation, actionType = "allHurt", reachType = "row" )
             displayBoard(window, gameBoard)
@@ -455,7 +457,7 @@ def useItems(gameBoard, x, y, window):
 
 # auto win
         elif str.find(i, "auto win") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
 
             if PublicStats.playerAutoWin != 0:
                 sg.popup("Sorry buddy, someone else has already used an auto win, so you're outta luck this time", keep_on_top = True)
@@ -472,7 +474,7 @@ def useItems(gameBoard, x, y, window):
                 
 # grappling hook
         elif str.find(i, "grappling hook") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
 
             if "burdened" in gameBoard[x][y][1].activeDebuffs:
                 
@@ -487,7 +489,7 @@ def useItems(gameBoard, x, y, window):
                 
 # canyon row
         elif str.find(i, "canyon row") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             gameBoard[x][y][1].grey = False
             highlightValidDistance(gameBoard, window, startLocation, actionType = "all", reachType = "row" )
             displayBoard(window, gameBoard)
@@ -504,7 +506,7 @@ def useItems(gameBoard, x, y, window):
 
 # canyon column
         elif str.find(i, "canyon column") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             gameBoard[x][y][1].grey = False
             highlightValidDistance(gameBoard, window, startLocation, actionType = "all", reachType = "column" )
             displayBoard(window, gameBoard)
@@ -521,7 +523,7 @@ def useItems(gameBoard, x, y, window):
 
 #canyon radial
         elif str.find(i, "canyon radial") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             gameBoard[x][y][1].grey = False
             highlightValidDistance(gameBoard, window, startLocation, actionType = "all", reachType = "radial" )
             displayBoard(window, gameBoard)
@@ -542,7 +544,7 @@ def useItems(gameBoard, x, y, window):
             
 #elevate tile
         elif str.find(i, "elevate tile") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             yesno = sg.popup_yes_no("Elevate the tile you're on?",keep_on_top=True)
             if yesno == "No":
                 continue
@@ -580,7 +582,7 @@ def useItems(gameBoard, x, y, window):
 
 #sink tile
         elif str.find(i, "sink tile") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             yesno = sg.popup_yes_no("Lower the tile you're on?",keep_on_top=True)
             if yesno == "No":
                 continue
@@ -629,7 +631,7 @@ def useItems(gameBoard, x, y, window):
 
 #sink tile
         elif str.find(i, "sink tile") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             yesno = sg.popup_yes_no("Sink this tile?",keep_on_top=True)
             if yesno == "No":
                 continue
@@ -646,7 +648,7 @@ def useItems(gameBoard, x, y, window):
                 continue
 #seismic activity
         elif str.find(i, "seismic activity") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             yesno = sg.popup_yes_no("Induce an earthquake?  This will cause random elevation changes to the field.  Pieces will not be harmed.",keep_on_top=True)
             if yesno == "No":
                 continue
@@ -694,7 +696,7 @@ def useItems(gameBoard, x, y, window):
 
 #invert elevation all
         elif str.find(i, "invert elevation all") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             yesno = sg.popup_yes_no("Do you want to invert all the heights of tiles on the field to their opposites? (low -> high, high -> low, neutral height tiles will be unaffected)",keep_on_top=True)
             if yesno == "No":
                 continue
@@ -708,7 +710,7 @@ def useItems(gameBoard, x, y, window):
 
 #invert elevation column
         elif str.find(i, "invert elevation column") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             yesno = sg.popup_yes_no("Do you want to invert all the heights of tiles in this column to their opposites? (low -> high, high -> low, neutral height tiles will be unaffected)",keep_on_top=True)
             if yesno == "No":
                 continue
@@ -721,7 +723,7 @@ def useItems(gameBoard, x, y, window):
             
 #invert elevation row
         elif str.find(i, "invert elevation row") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             yesno = sg.popup_yes_no("Do you want to invert all the heights of tiles in this row to their opposites? (low -> high, high -> low, neutral height tiles will be unaffected)",keep_on_top=True)
             if yesno == "No":
                 continue
@@ -734,7 +736,7 @@ def useItems(gameBoard, x, y, window):
 
 #invert elevation radial
         elif str.find(i, "invert elevation radial") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             yesno = sg.popup_yes_no("Do you want to invert all the heights of tiles in this row to their opposites? (low -> high, high -> low, neutral height tiles will be unaffected)",keep_on_top=True)
             if yesno == "No":
                 continue
@@ -751,7 +753,7 @@ def useItems(gameBoard, x, y, window):
             
 #trump
         elif str.find(i, "trump") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             yesno = sg.popup_yes_no("Do you want to build a wall and make your opponent pay for it?* (*The wall is free and no one will actually pay for it)",keep_on_top=True)
             if yesno == "No":
                 continue
@@ -787,7 +789,7 @@ def useItems(gameBoard, x, y, window):
 
 #shuffle all
         elif str.find(i, "shuffle all") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             yesno = sg.popup_yes_no("Ya sure you want to shuffle the entire field around?",keep_on_top=True)
             if yesno == "No":
                 continue
@@ -831,7 +833,7 @@ def useItems(gameBoard, x, y, window):
             
 # steal items column
         elif str.find(i, "steal items column") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "column" )
             displayBoard(window, gameBoard)
             window.refresh()
@@ -857,7 +859,7 @@ def useItems(gameBoard, x, y, window):
 
 # steal items row
         elif str.find(i, "steal items row") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "row" )
             displayBoard(window, gameBoard)
             window.refresh()
@@ -882,7 +884,7 @@ def useItems(gameBoard, x, y, window):
 
 # steal items radial
         elif str.find(i, "steal items radial") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "radial" )
             displayBoard(window, gameBoard)
             window.refresh()
@@ -912,7 +914,7 @@ def useItems(gameBoard, x, y, window):
             gameBoard[x][y][1].storedItems.remove("steal items radial")
 # steal powers column
         elif str.find(i, "steal powers column") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "column" )
             displayBoard(window, gameBoard)
             window.refresh()
@@ -939,7 +941,7 @@ def useItems(gameBoard, x, y, window):
 
 # steal powers row
         elif str.find(i, "steal powers row") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "row" )
             displayBoard(window, gameBoard)
             window.refresh()
@@ -965,7 +967,7 @@ def useItems(gameBoard, x, y, window):
 
 # steal powers radial
         elif str.find(i, "steal powers radial") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "radial" )
             displayBoard(window, gameBoard)
             window.refresh()
@@ -997,7 +999,7 @@ def useItems(gameBoard, x, y, window):
 
 # teach column
         elif str.find(i, "teach column") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             highlightValidDistance(gameBoard, window, startLocation, actionType = "all", reachType = "column" )
             displayBoard(window, gameBoard)
             window.refresh()
@@ -1041,7 +1043,7 @@ def useItems(gameBoard, x, y, window):
             pm(window,f"Taught buffs to {taughtPieces} piece(s).")
 # heir            
         elif str.find(i, "heir") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             highlightValidDistance(gameBoard, window, startLocation, actionType = "alliesHurtOnly", reachType = "all" )
             displayBoard(window, gameBoard)
             window.refresh()
@@ -1071,7 +1073,7 @@ def useItems(gameBoard, x, y, window):
 
 #vampiricism
         elif str.find(i, "vampiricism") >= 0:
-                itemsMenu.close()
+                itemsMenu.Hide()
                 yesno = sg.popup_yes_no("Use?",keep_on_top=True)
                 if yesno == "Apply the vampricism buff to yourself?  (Jump killing an enemy allows you to steal (most) powers from them)":
                     continue
@@ -1083,7 +1085,7 @@ def useItems(gameBoard, x, y, window):
             
 #bernie sanders   
         elif str.find(i, "bernie sanders") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             highlightValidDistance(gameBoard, window, startLocation, actionType = "allOccupiedNeutral", reachType = "all" )
             displayBoard(window, gameBoard)
             window.refresh()
@@ -1124,7 +1126,7 @@ def useItems(gameBoard, x, y, window):
 
 # care package drop
         elif str.find(i, "care package drop") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             sg.popup("Choose an enemy to center the item airdrop on",keep_on_top=True)
 
             event = window.read()
@@ -1165,7 +1167,7 @@ def useItems(gameBoard, x, y, window):
     
 # dump items
         elif str.find(i, "dump items") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             if len(gameBoard[x][y][1].storedItems) < 2:
                 sg.popup("There won't be any items to dump.  Canceling.",keep_on_top=True)
                 continue
@@ -1196,7 +1198,7 @@ def useItems(gameBoard, x, y, window):
             #updateToolTips(window, gameBoard, playerTurn)
 # charity            
         elif str.find(i, "charity") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             validLocations = emptySpots(gameBoard)
             if len(validLocations) < 1:
                 sg.popup("There's no space to gift an extra piece to your opponent.",keep_on_top=True)
@@ -1241,7 +1243,7 @@ def useItems(gameBoard, x, y, window):
 
 # teach radial
         elif str.find(i, "teach radial") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             gameBoard[x][y][1].grey = False
             #if there is fewer than one item in the list
             if len(gameBoard[x][y][1].activeBuffs) < 1:
@@ -1283,7 +1285,7 @@ def useItems(gameBoard, x, y, window):
 
 #study column           
         elif str.find(i, "study column") >= 0:            
-            itemsMenu.close()
+            itemsMenu.Hide()
             gameBoard[x][y][1].grey = False
             if "inert" in gameBoard[x][y][1].activeDebuffs:
                 sg.popup("This piece is inert and can't learn anything",keep_on_top=True)
@@ -1318,7 +1320,7 @@ def useItems(gameBoard, x, y, window):
 
 # study radial
         elif str.find(i, "study radial") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             highlightValidDistance(gameBoard, window, startLocation, actionType = "alliesHelpedOnly", reachType = "radial" )
             displayBoard(window, gameBoard)
             window.refresh()
@@ -1360,7 +1362,7 @@ def useItems(gameBoard, x, y, window):
             
 #study row            
         elif str.find(i, "study row") >= 0:            
-            itemsMenu.close()
+            itemsMenu.Hide()
             gameBoard[x][y][1].grey = False
             if "inert" in gameBoard[x][y][1].activeDebuffs:
                 sg.popup("This piece is inert and can't learn anything",keep_on_top=True)
@@ -1395,7 +1397,7 @@ def useItems(gameBoard, x, y, window):
             
 # teach row
         elif str.find(i, "teach row") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
 
 
             highlightValidDistance(gameBoard, window, startLocation, actionType = "alliesHelpedOnly", reachType = "row" )
@@ -1442,14 +1444,14 @@ def useItems(gameBoard, x, y, window):
             
 # deadman's trigger                        
         elif str.find(i,"dead man's trigger") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             gameBoard[x][y][1].storedItems.remove("dead man's trigger")
             gameBoard[x][y][1].activeBuffs.append("dead man's trigger")
             sg.popup("This piece has applied a dead man's trigger to itself.  If he is jumped by an enemy, they will die as well.",keep_on_top=True)
 
 # mutual treason row  
         elif str.find(i,"mutual treason row") >=0 or str.find(i,"mutual treason column")>=0 or str.find(i,"mutual treason radial")>=0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             validList = []
             if i == "mutual treason row":
                 validList = getRow(location, gameBoard)
@@ -1472,7 +1474,7 @@ def useItems(gameBoard, x, y, window):
             sg.popup("All affected pieces have changed their allegiances",keep_on_top=True)
 # jumpoline
         elif str.find(i,"jumpoline") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             validTargets = getCross((x, y), gameBoard, trueEmpty = True)
             pm(window, "Pick an adjacent location to place the jumpoline.")
             event = window.read()
@@ -1497,7 +1499,7 @@ def useItems(gameBoard, x, y, window):
 
 # mystery box
         elif str.find(i,"mystery box") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             validTargets = getCross((x, y), gameBoard, trueEmpty = True)
             pm(window, "Pick an adjacent location to place the mystery box.")
             event = window.read()
@@ -1524,7 +1526,7 @@ def useItems(gameBoard, x, y, window):
             
 # floor restore            
         elif str.find(i,"floor restore") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             gameBoard[x][y][1].storedItems.remove("floor restore")
             for i in gameBoard:
                 for j in i:
@@ -1534,7 +1536,7 @@ def useItems(gameBoard, x, y, window):
 
 # secretAgent          
         elif str.find(i,"secretAgent") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             validTargets = getCross((x, y), gameBoard, trueEmpty = True)
             
             pm(window, "Pick an adjacent location to place the secretAgent.")
@@ -1561,7 +1563,7 @@ def useItems(gameBoard, x, y, window):
                 break
 # purity tile
         elif str.find(i,"purity tile") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             validTargets = getCross((x, y), gameBoard, trueEmpty = True)
             
             startLocation = (x,y)
@@ -1603,7 +1605,7 @@ def useItems(gameBoard, x, y, window):
             
 # reproduce            
         elif str.find(i,"reproduce") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             validTargets = getCross((x, y), gameBoard)
             pm(window, "Pick an adjacent location for your baby to be spawned. You can only spawn on empty spots.")
             event = window.read()
@@ -1656,7 +1658,7 @@ def useItems(gameBoard, x, y, window):
             
 # laser row            
         elif str.find(i, "laser row") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             validTargets = getCross((x, y), gameBoard)
             pm(window, "Where do you want to deploy the laser emitter?  Pick an empty spot that is either one space up/down/left/right")
             event = window.read()
@@ -1684,7 +1686,7 @@ def useItems(gameBoard, x, y, window):
 # worm hole
         elif str.find(i, "worm hole") >= 0:
             g = gameBoard
-            itemsMenu.close()
+            itemsMenu.Hide()
             emptyList = getCross((x,y),gameBoard, trueEmpty = True)
             pm(window, "Choose an empty cross spot to deploy the wormhole")
             event = window.read()
@@ -1720,7 +1722,7 @@ def useItems(gameBoard, x, y, window):
                     
 # orb eater            
         elif str.find(i, "orb eater") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             emptyList = emptySpots(gameBoard)
             pm(window, "Where do you want to deliver the orb eater to?")
             event = window.read()
@@ -1741,7 +1743,7 @@ def useItems(gameBoard, x, y, window):
                 continue
 # warp            
         elif str.find(i, "warp") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             emptyList = emptySpots(gameBoard)
             g = gameBoard[x][y]
             if len(emptyList)>0:
@@ -1776,7 +1778,7 @@ def useItems(gameBoard, x, y, window):
             
 # round earth theory        
         elif str.find(i, "round earth theory") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             pm(window,"This piece can now 'wrap' around the edges of the map to appear on the opposite side.")
             gameBoard[x][y][1].storedItems.remove("round earth theory")
             gameBoard[x][y][1].activeBuffs.append("round earth theory")
@@ -1784,7 +1786,7 @@ def useItems(gameBoard, x, y, window):
             
 # laser column            
         elif str.find(i, "laser column") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             validTargets = getCross((x, y), gameBoard)
             pm(window, "Where do you want to deploy the laser emitter?  Pick an empty spot that is either one space up/down/left/right.  Careful - you can be burned by your own laser.")
             event = window.read()
@@ -1812,7 +1814,7 @@ def useItems(gameBoard, x, y, window):
 
 # spooky hand       
         elif str.find(i, "spooky hand") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             gameBoard[x][y][1].storedItems.remove("spooky hand")
             sg.popup("A spooky hand has gone under the field.  When will he strike?  Nobody knows...", keep_on_top = True)
             pm(window,"A spooky hand has gone under the field.  When will he strike?  Nobody knows...")
@@ -1823,7 +1825,7 @@ def useItems(gameBoard, x, y, window):
         elif str.find(i, "bowling ball") >= 0:
             
             yesno = sg.popup_yes_no("Warning: using bowling ball will make your piece permanently transform into a rabid bowling ball, and will lose all items and effects. Are you sure you want to use this?",keep_on_top=True)
-            itemsMenu.close()
+            itemsMenu.Hide()
             if yesno == "Yes":
                 gameBoard[x][y][1].storedItems.remove("bowling ball")
                 gameBoard[x][y][1].activeDebuffs.clear()
@@ -1835,7 +1837,7 @@ def useItems(gameBoard, x, y, window):
                 break
 # shuffle item orbs             
         elif str.find(i, "shuffle item orbs") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             gameBoard[x][y][1].storedItems.remove("shuffle item orbs")
             
             orbList = []
@@ -1884,7 +1886,7 @@ def useItems(gameBoard, x, y, window):
 # magnet            
         elif str.find(i, "magnet") >= 0:
             gameBoard[x][y][1].storedItems.remove("magnet")
-            itemsMenu.close()
+            itemsMenu.Hide()
             g = gameBoard
             playerTurn = gameBoard[x][y][1].ownedBy
             innerRadial = getRadial(location, gameBoard)
@@ -2032,7 +2034,7 @@ def useItems(gameBoard, x, y, window):
 
 # trip mine radial
         elif str.find(i, "trip mine radial") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "radial")
             displayBoard(window, gameBoard)
             window.refresh()
@@ -2056,7 +2058,7 @@ def useItems(gameBoard, x, y, window):
 
 # trip mine row
         elif str.find(i, "trip mine row") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "row")
             displayBoard(window, gameBoard)
             window.refresh()
@@ -2081,7 +2083,7 @@ def useItems(gameBoard, x, y, window):
 
 # trip mine column
         elif str.find(i, "trip mine column") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "column")
             displayBoard(window, gameBoard)
             window.refresh()
@@ -2105,7 +2107,7 @@ def useItems(gameBoard, x, y, window):
 
 # suicide bomb column
         elif str.find(i, "suicide bomb column") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             highlightValidDistance(gameBoard, window, startLocation, actionType = "allHurt", reachType = "column")
             displayBoard(window, gameBoard)
             window.refresh()
@@ -2139,7 +2141,7 @@ def useItems(gameBoard, x, y, window):
 
 # suicide bomb radial
         elif str.find(i, "suicide bomb radial") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             highlightValidDistance(gameBoard, window, startLocation, actionType = "allHurt", reachType = "radial")
             displayBoard(window, gameBoard)
             window.refresh()
@@ -2181,7 +2183,7 @@ def useItems(gameBoard, x, y, window):
 # napalm row
         elif str.find(i, "napalm row") >= 0:
 
-            itemsMenu.close()
+            itemsMenu.Hide()
             highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "row")
             displayBoard(window, gameBoard)
             window.refresh()
@@ -2230,56 +2232,10 @@ def useItems(gameBoard, x, y, window):
                             j[0].tileType = "destroyed"
                             displayBoard(window, gameBoard)
                             window.refresh()
-##                        # if it's the enemy's piece
-##                        if j[1].ownedBy != playerTurn:
-##                            # test for forcefield
-##                            if "Energy Forcefield" in j[1].activeBuffs:
-##                                backupTile = j[0].tileType
-##                                j[0].tileType = "exploding"
-##                                displayBoard(window, gameBoard)
-##                                window.refresh()
-##                                sleep(1)
-##                                j[0].tileType = backupTile
-##                                j[1].activeBuffs.remove("Energy Forcefield")
-##                                j[1].forceFieldTurn = PublicStats.turnCount
-##                                sg.popup("A piece was protected by a force field.", keep_on_top = True)
-##                                continue
-##                            if j[1].forceFieldTurn == PublicStats.turnCount:
-##                                backupTile = j[0].tileType
-##                                j[0].tileType = "exploding"
-##                                displayBoard(window, gameBoard)
-##                                window.refresh()
-##                                sleep(1)
-##                                j[0].tileType = backupTile
-##                                sg.popup("A piece was protected by a force field.", keep_on_top = True)
-##                                continue
-##                            # if no forcefield, kill
-##                            else:
-##
-##                                j[0].occupied = False
-##                                j[1] = 0
-##                                j[0].tileType = "exploding"
-##                                displayBoard(window, gameBoard)
-##                                window.refresh()
-##                                sleep(1)
-##                                j[0].tileType = "destroyed"
-##                                continue
-##                    # if there isn't a piece
-##                    else:
-##                        formerTileType = j[0].tileType
-##                        j[0].tileType = "exploding"
-##                        displayBoard(window, gameBoard)
-##                        window.refresh()
-##                        sleep(1)
-##
-##                        j[0].tileType = formerTileType
-##                        displayBoard(window, gameBoard)
-##                        window.refresh()
-##                        sleep(1)
 
 # napalm column 
         elif str.find(i, "napalm column") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "column")
             displayBoard(window, gameBoard)
             window.refresh()
@@ -2381,7 +2337,7 @@ def useItems(gameBoard, x, y, window):
 
 # shuffle column
         elif str.find(i, "shuffle column") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             g = gameBoard
             if g[x][y][1].grey == True:
                 g[x][y][1].currentTurnPiece = True
@@ -2429,7 +2385,7 @@ def useItems(gameBoard, x, y, window):
 
 # shuffle row
         elif str.find(i, "shuffle row") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             g = gameBoard
             if g[x][y][1].grey == True:
                 g[x][y][1].currentTurnPiece = True
@@ -2474,7 +2430,7 @@ def useItems(gameBoard, x, y, window):
 
 # berzerk
         elif str.find(i, "berzerk") >= 0:
-            itemsMenu.close
+            itemsMenu.Hide()
             yesno = sg.popup_yes_no("Using this item will make this piece go berzerk and allow it to eat enemies and allies alike, enraging it and allowing it to attack again after each kill (up to three times per turn), but at the cost of dying if it goes any turns without eating (it stores leftovers from each enemy killed so it can eat on subsequent turns without attacking). Use?",keep_on_top=True)
             if yesno == "No":
                 continue
@@ -2486,7 +2442,7 @@ def useItems(gameBoard, x, y, window):
             
 # shuffle radial
         elif str.find(i, "shuffle radial") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             g = gameBoard
             if g[x][y][1].grey == True:
                 g[x][y][1].currentTurnPiece = True
@@ -2536,7 +2492,7 @@ def useItems(gameBoard, x, y, window):
 # purify column
         elif str.find(i, "purify column") >= 0:
 
-            itemsMenu.close()
+            itemsMenu.Hide()
             highlightValidDistance(gameBoard, window, startLocation, actionType = "alliesHelpedOnly", reachType = "column")
             displayBoard(window, gameBoard)
             window.refresh()
@@ -2603,7 +2559,7 @@ def useItems(gameBoard, x, y, window):
 # purify row
         elif str.find(i, "purify row") >= 0:
 
-            itemsMenu.close()
+            itemsMenu.Hide()
             highlightValidDistance(gameBoard, window, startLocation, actionType = "alliesHelpedOnly", reachType = "row")
             displayBoard(window, gameBoard)
             window.refresh()
@@ -2668,7 +2624,7 @@ def useItems(gameBoard, x, y, window):
 # purify radial
         elif str.find(i, "purify radial") >= 0:
 
-            itemsMenu.close()
+            itemsMenu.Hide()
             highlightValidDistance(gameBoard, window, startLocation, actionType = "alliesHelpedOnly", reachType = "radial")
             displayBoard(window, gameBoard)
             window.refresh()
@@ -2742,7 +2698,7 @@ def useItems(gameBoard, x, y, window):
 
 # place mine
         elif str.find(i, "place mine") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             validLocations = getRadial(location, gameBoard)
             validLocations = filterEmpty(gameBoard, validLocations)
 
@@ -2762,7 +2718,7 @@ def useItems(gameBoard, x, y, window):
             
 # sticky time bomb
         elif str.find(i, "sticky time bomb") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             validLocations = getCross(location, gameBoard, includeSelf = True)
             turnsToArm = 5
             pm(window, "What piece would you like to attach the bomb to?")
@@ -2793,7 +2749,7 @@ def useItems(gameBoard, x, y, window):
             
 # trap orb
         elif str.find(i, "trap orb") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             validLocations = getRadial(location, gameBoard)
             validLocations = filterEmpty(gameBoard, validLocations)
 
@@ -2818,7 +2774,7 @@ def useItems(gameBoard, x, y, window):
             gameBoard[x][y][1].storedItems.remove("vile radial")
             validSpots = getRadial((x, y), gameBoard)
             abolishCheck = False
-            itemsMenu.close()
+            itemsMenu.Hide()
             for i in validSpots:
 
                 g = gameBoard[i[0]][i[1]]
@@ -2882,7 +2838,7 @@ def useItems(gameBoard, x, y, window):
 
 # haymaker
         elif str.find(i, "haymaker") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             validTargets = getCross((x, y), gameBoard)
             pm(window, "Pick a target that is within range.")
             event = window.read()
@@ -2898,7 +2854,7 @@ def useItems(gameBoard, x, y, window):
                 s2 = event[0][1]
                 if gameBoard[s1][s2][0].occupied == False:
                     pm(window, "There's no one to punch at that location!")
-                    itemsMenu.close()
+                    itemsMenu.Hide()
                     return
 
                 gameBoard[x][y][1].storedItems.remove("haymaker")
@@ -3267,7 +3223,7 @@ def useItems(gameBoard, x, y, window):
         elif str.find(i, "wololo radial") >= 0:
 
             
-            itemsMenu.close()
+            itemsMenu.Hide()
             highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "radial")
             displayBoard(window, gameBoard)
             window.refresh()
@@ -3318,7 +3274,7 @@ def useItems(gameBoard, x, y, window):
         elif str.find(i, "wololo row") >= 0:
 
             
-            itemsMenu.close()
+            itemsMenu.Hide()
             highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "row")
             displayBoard(window, gameBoard)
             window.refresh()
@@ -3365,7 +3321,7 @@ def useItems(gameBoard, x, y, window):
         elif str.find(i, "wololo column") >= 0:
 
             
-            itemsMenu.close()
+            itemsMenu.Hide()
             highlightValidDistance(gameBoard, window, startLocation, actionType = "enemyHurtOnly", reachType = "column")
             displayBoard(window, gameBoard)
             window.refresh()
@@ -3409,7 +3365,7 @@ def useItems(gameBoard, x, y, window):
 
 # AI bomb
         elif str.find(i, "AI bomb") >= 0:
-            itemsMenu.close()
+            itemsMenu.Hide()
             emptyList = emptySpots(gameBoard, True)
             if len(emptyList) == 0:
                 sg.popup("There's no empty space for the AI bomb.  Aborting.", keep_on_top = True)
@@ -3430,7 +3386,7 @@ def useItems(gameBoard, x, y, window):
 
             gameBoard[x][y][1].storedItems.remove("haphazard airstrike")
             i = 5
-            itemsMenu.close()
+            itemsMenu.Hide()
             while i > 0:
                 i -= 1
 
@@ -3483,7 +3439,7 @@ def useItems(gameBoard, x, y, window):
             attempts = 0
             gameBoard[x][y][1].storedItems.remove("smart bombs")
             i = 3
-            itemsMenu.close()
+            itemsMenu.Hide()
             while i > 0:
                 i -= 1
                 # a check to make sure the plane doesn't get stuck in a pseudo infinite loop in case of special scenarios where pretty much the entire field is full of allied squares
@@ -3498,7 +3454,7 @@ def useItems(gameBoard, x, y, window):
                         "The plane had trouble finding targets, so it flew away early.",
                     )
                     if itemsMenu:
-                        itemsMenu.close()
+                        itemsMenu.Hide()
                     break
 
                 # generate a random target location on the field
@@ -3564,7 +3520,7 @@ def useItems(gameBoard, x, y, window):
 # snake tunneling
         elif str.find(i, "snake tunneling") >= 0:
             gameBoard[x][y][1].storedItems.remove("snake tunneling")
-            itemsMenu.close()
+            itemsMenu.Hide()
             i = 10
             lastSpace = (x, y)
             while i > 0:
@@ -3617,6 +3573,7 @@ def useItems(gameBoard, x, y, window):
         # after using the menu, close it
         if itemsMenu:
             itemsMenu.close()
+            return
         
         if event[0] == "CANCEL":
             itemsMenu.close()
