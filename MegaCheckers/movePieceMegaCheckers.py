@@ -373,7 +373,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
 
                             #j is now pointing to the destination
                             j = gameBoard[curRow][curCol]
-                            #explode the mine
+                            
                             j[0].tileType = "exploding"
                             displayBoard(window, gameBoard)
                             window.refresh()
@@ -387,6 +387,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                        
                             #sleep(1)
                             displayBoard(window, gameBoard)
+                            resetBowlMovement(gameBoard)
                             window.refresh()
                             curRow -=1
                             return
@@ -442,7 +443,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j[0].occupied = True
                                 j[1] = copy.deepcopy(tempCopy[1])
 
-                           
+                                
                                 #sleep(1)
                                 displayBoard(window, gameBoard)
                                 window.refresh()
@@ -1288,6 +1289,7 @@ def movePiece(playerTurn, window, gameBoard):
             #if you pick a direction, go to the function
             if event[0] in ("Up", "Down", "Left", "Right"):
                 bowlingBallFunction(window,gameBoard,location,event[0])
+                resetBowlMovement(gameBoard)
                 #turn ends when bowling ball is moved
                 return
             #otherwise catch all for errors - start this part of the turn over

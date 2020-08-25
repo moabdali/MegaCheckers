@@ -1,5 +1,8 @@
 ChangeLog
 
+v. 1.0.9 August 25, 2020
+	Finished bowling ball animation; correctly "wobbles" now.
+
 v. 1.0.8 August 25, 2020
 	Fixed some file access issues for linux (used \\ instead of /), hopefully makes linux compatible.  Also added some bowling ball animation fixes, but still needs some more fine tuning. 
 
