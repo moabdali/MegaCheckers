@@ -46,6 +46,11 @@ def secretAgentCheck(window, gameBoard, startLocation, endLocation, playerTurn):
 
 
 
+def resetBowlMovement(gameBoard):
+    for rows in gameBoard:
+        for columns in rows:
+            if columns[0].occupied:
+                columns[1].bowlMotion = False
 
 def bowlingBallFunction(window,gameBoard,location,direction):
     sLocRow = location[0]
@@ -57,6 +62,9 @@ def bowlingBallFunction(window,gameBoard,location,direction):
     gameBoard[sLocRow][sLocCol][1].activeDebuffs.clear()
     gameBoard[sLocRow][sLocCol][1].activeBuffs.clear()
     gameBoard[sLocRow][sLocCol][1].activeBuffs.append("bowling ball")
+
+    # set bowling ball to have movement animation (rolls around)
+    gameBoard[sLocRow][sLocCol][1].bowlMotion = True
     
     if direction == "Down":
         for eachRow in gameBoard:
@@ -175,6 +183,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             j[1].activeDebuffs.append("stunned")
                             k[1].activeDebuffs.append("stunned")
                             displayBoard(window, gameBoard)
+                            resetBowlMovement(gameBoard)
                             window.refresh()
                             sleep(1)
                             return
@@ -199,7 +208,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
 
                             #j is now pointing to the destination
                             j = gameBoard[curRow][curCol]
-                            #explode the mine
+                            #explode the enemy
                             j[0].tileType = "exploding"
                             displayBoard(window, gameBoard)
                             window.refresh()
@@ -210,9 +219,8 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             j[0].occupied = True
                             j[1] = copy.deepcopy(tempCopy[1])
 
-                            
-                            #sleep(1)
                             displayBoard(window, gameBoard)
+                            resetBowlMovement(gameBoard)
                             window.refresh()
                             curRow +=1
                             return
@@ -222,7 +230,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                     
 
                     sg.popup("You slammed into the outer wall.",keep_on_top = True)
-                    
+                    resetBowlMovement(gameBoard)
                     return
                     
     if direction == "Up":
@@ -340,6 +348,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             j[1].activeDebuffs.append("stunned")
                             k[1].activeDebuffs.append("stunned")
                             displayBoard(window, gameBoard)
+                            resetBowlMovement(gameBoard)
                             window.refresh()
                             sleep(1)
                             return
@@ -384,6 +393,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                 #else if out of bounds
                 else:
                     sg.popup("You slammed into the outer wall.",keep_on_top = True)
+                    resetBowlMovement(gameBoard)
                     
                     return
 
@@ -498,6 +508,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                         if j[1].ownedBy == k[1].ownedBy:
                             j[1].activeDebuffs.append("stunned")
                             k[1].activeDebuffs.append("stunned")
+                            resetBowlMovement(gameBoard)
                             displayBoard(window, gameBoard)
                             window.refresh()
                             sleep(1)
@@ -545,6 +556,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                 else:
                     
                     sg.popup("Slammed into wall!",keep_on_top=True)
+                    resetBowlMovement(gameBoard)
                     return
     if direction == "Right":
         while True:
@@ -658,6 +670,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             j[1].activeDebuffs.append("stunned")
                             k[1].activeDebuffs.append("stunned")
                             displayBoard(window, gameBoard)
+                            resetBowlMovement(gameBoard)
                             window.refresh()
                             sleep(1)
                             return
@@ -704,6 +717,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                 else:
 
                     sg.popup("You slammed into the outer wall.",keep_on_top = True)
+                    resetBowlMovement(gameBoard)
                     return
 
 
@@ -998,15 +1012,15 @@ def movePiece(playerTurn, window, gameBoard):
                 
                 for iIndex,i in enumerate(itemsList):
                     if iIndex < 8:
-                        frame1Layout+= [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images\\{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
+                        frame1Layout+= [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images/{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
                     elif iIndex in range (8,16):
-                        frame2Layout+= [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images\\{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
+                        frame2Layout+= [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images/{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
                     elif iIndex in range (16,24):
-                        frame3Layout+= [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images\\{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
+                        frame3Layout+= [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images/{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
                     elif iIndex in range (24,32):
-                        frame4Layout+= [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images\\{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
+                        frame4Layout+= [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images/{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
                     elif iIndex in range (32,40):
-                        frame5Layout+= [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images\\{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
+                        frame5Layout+= [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images/{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
                     if iIndex == 40:
                         frame0 = sg.Frame("",frame0Layout)
                         frame00 = sg.Frame("", frame00Layout)
@@ -1025,15 +1039,15 @@ def movePiece(playerTurn, window, gameBoard):
 
 
                     if iIndex in range(40,48):
-                        frame6Layout+= [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images\\{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
+                        frame6Layout+= [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images/{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
                     elif iIndex in range (48,56):
-                        frame7Layout+= [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images\\{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
+                        frame7Layout+= [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images/{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
                     elif iIndex in range (56,64):
-                        frame8Layout+= [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images\\{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
+                        frame8Layout+= [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images/{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
                     elif iIndex in range (64,72):
-                        frame9Layout+= [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images\\{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
+                        frame9Layout+= [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images/{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
                     elif iIndex in range (72,80):
-                        frame10Layout+= [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images\\{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
+                        frame10Layout+= [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images/{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
                     if iIndex== 80:
                         frame6 = sg.Frame("",frame6Layout)
                         frame7 = sg.Frame("",frame7Layout)
@@ -1045,7 +1059,7 @@ def movePiece(playerTurn, window, gameBoard):
                         #layout2+= [ [sg.Button("Page 1", font = "Cambria 20"),sg.Button("Page 2", font = "Cambria 20",disabled = True),sg.Button("Page 3", font = "Cambria 20")] ]
                         layout2+= [ [sg.Button("Page 1", font = "Cambria 20", disabled = False),sg.Button("Page 2", font = "Cambria 20",disabled = True),sg.Button("Page 3", font = "Cambria 20",disabled = False)] ]
                     if iIndex in range(80,84):
-                        frame11Layout += [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images\\{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
+                        frame11Layout += [[sg.Button(i, size = (30,10),image_size=(300, 100),key = f"{i}",image_filename = f"images/{i}.png",font="Arial 20",button_color=("pink", "grey"))]]
                     if iIndex == 84:
                         
                         frame11 = sg.Frame("",frame11Layout)
@@ -1149,7 +1163,7 @@ def movePiece(playerTurn, window, gameBoard):
                         #layout for the item description; add gifs when possible
                         clickedItemLayout = [
                             [ sg.T(event[0], font = "cambria 30", justification = "center", size = (50,1), text_color = "Red")],
-                            [ sg.Image(filename = f"images//{event[0]}.png")],
+                            [ sg.Image(filename = f"images/{event[0]}.png")],
                             [ sg.T(longExplanation(window,event[0]),font = "cambria 20", justification = "center", size = (50,15))],
                             [ sg.Button("OK", size = (20,10))]
                             ]

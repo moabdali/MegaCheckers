@@ -297,7 +297,6 @@ def useItems(gameBoard, x, y, window):
         #send out the item's name to get an explanation
         explanation = itemExplanation(i)
 
-
         if itemsLength < 5:
             listData += [
                 [
@@ -436,8 +435,6 @@ def useItems(gameBoard, x, y, window):
                     #if you didn't die, then start looking in a different direction
                     if death == False:
                         continue
-
-
 
                     #if it doesn't have a forcefield
                     else:

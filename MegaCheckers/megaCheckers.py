@@ -50,16 +50,16 @@ def begin(screenSize):
     #print(f"{workingDirectoryName}\images\\")
     if screenSize == "normal":
         buttonSize = (75,75)
-        if os.path.exists(f"{workingDirectoryName}\images"):
-            shutil.rmtree(f"{workingDirectoryName}\images")
+        if os.path.exists(f"{workingDirectoryName}/images"):
+            shutil.rmtree(f"{workingDirectoryName}/images")
             
-        shutil.copytree(workingDirectoryName+"\imagesNormal", workingDirectoryName+"\images")
+        shutil.copytree(workingDirectoryName+"/imagesNormal", workingDirectoryName+"/images")
     else:
         buttonSize = (40,40)
         sg.popup("Note that this mode is a backup mode designed for rarer laptops that don't have normal 1900x1080 resolutions. Enough development time does not exist for focused changes to this mode, so things may look weird.  I recommend you get a normal sized monitor in order to enjoy the game properly.",keep_on_top = True)
-        if os.path.exists(f"{workingDirectoryName}\images"):
-            shutil.rmtree(f"{workingDirectoryName}\images")
-        shutil.copytree(workingDirectoryName+"\imagesSmall", workingDirectoryName+"\images")
+        if os.path.exists(f"{workingDirectoryName}/images"):
+            shutil.rmtree(f"{workingDirectoryName}/images")
+        shutil.copytree(workingDirectoryName+"/imagesSmall", workingDirectoryName+"/images")
 
     # safety clear in case the PNG still has data left over from a previous game or something
     PublicPNGList.clear()
@@ -94,7 +94,7 @@ def begin(screenSize):
 
     # show the elevation map legend
     frame_elevation = [
-            [sg.Image(filename = "images\elevation.png", tooltip = "Each shade represents the height of a given tile.  A piece can jump down safely from any height to any tile that is lower than it.\nHowever, it cannot climb a tile that is more than one elevation unit taller.")]
+            [sg.Image(filename = "images/elevation.png", tooltip = "Each shade represents the height of a given tile.  A piece can jump down safely from any height to any tile that is lower than it.\nHowever, it cannot climb a tile that is more than one elevation unit taller.")]
 
         ]
     # how many turns have passed
@@ -406,6 +406,7 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[i][j][1].location = (i, j)
             gameBoard[i][j][0].tileType = "player1default"
             gameBoard[i][j][1].avatar = "default"
+            
     for i in range(2):
         for j in range(columns):
             gameBoard[rows - i - 1][j][0] = Tile(occupied=True)
@@ -414,7 +415,7 @@ def initializeField(columns, rows, window, gameBoard):
             gameBoard[rows - i - 1][j][1].location = (rows - i - 1, j)
             gameBoard[rows - i - 1][j][0].tileType = "player2default"
             gameBoard[rows - i - 1][j][1].avatar = "default"           
-
+            
 
 def itemOrbForecast(window):
     #print each member of the orb list (used for balancing)
@@ -430,9 +431,9 @@ def itemOrbForecast(window):
 
 def main():
     workingDirectoryName = os.getcwd()
-    if os.path.exists(f"{workingDirectoryName}\images"):
-        shutil.rmtree(f"{workingDirectoryName}\images")
-    shutil.copytree(workingDirectoryName+"\imagesNormal", workingDirectoryName+"\images")
+    if os.path.exists(f"{workingDirectoryName}/images"):
+        shutil.rmtree(f"{workingDirectoryName}/images")
+    shutil.copytree(workingDirectoryName+"/imagesNormal", workingDirectoryName+"/images")
 
     publicPNGloader()
     introLayout = [[sg.Text("Mega\nCheckers", font="Cambria 100", justification = "center")]]

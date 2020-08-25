@@ -29,7 +29,7 @@ def orbEater(gameBoard):
         
         random.shuffle(legalLocations)
         #if the mouse started the turn on a tile, let him eat the item orb
-        if gameBoard[i[0]][i[1]][0].tileType in ( "itemOrb", "trap Orb 1", "trap Orb 2", "trap Orb 0"):
+        if gameBoard[i[0]][i[1]][0].tileType in ( "itemOrb", "trap orb 1", "trap orb 2", "trap orb 0"):
             #sg.popup("Orbeater was blessed with an orb!")
             gameBoard[i[0]][i[1]][0].tileType = "default"
             #make orbeater fat
@@ -39,7 +39,7 @@ def orbEater(gameBoard):
         for j in legalLocations:
             #i refers to mice location, j refers to a adjacent location
             #eat an orb
-            if gameBoard[j[0]][j[1]][0].tileType in ( "itemOrb", "trap Orb 1", "trap Orb 2", "trap Orb 0"):
+            if gameBoard[j[0]][j[1]][0].tileType in ( "itemOrb", "trap orb 1", "trap orb 2", "trap orb 0"):
                 gameBoard[i[0]][i[1]][0].orbEater = False
                 gameBoard[j[0]][j[1]][0].tileType = "default"
                 gameBoard[j[0]][j[1]][0].orbEater = True
@@ -60,7 +60,7 @@ def orbEater(gameBoard):
                 random.shuffle(secondaryLocation)
                 for secondaryCoordinates in secondaryLocation:
                     #if the random secondary location has food
-                    if gameBoard[secondaryCoordinates[0]][secondaryCoordinates[1]][0].tileType in ( "itemOrb", "trap Orb 1", "trap Orb 2", "trap Orb 0") and gameBoard[location[0]][location[1]][0].orbEater!= True and gameBoard[location[0]][location[1]][0].tileType == "default":
+                    if gameBoard[secondaryCoordinates[0]][secondaryCoordinates[1]][0].tileType in ( "itemOrb", "trap orb 1", "trap orb 2", "trap orb 0") and gameBoard[location[0]][location[1]][0].orbEater!= True and gameBoard[location[0]][location[1]][0].tileType == "default":
                         gameBoard[i[0]][i[1]][0].orbEater = False
                         #gameBoard[location[0]][location[1]][0].tileType = "default"
                         gameBoard[location[0]][location[1]][0].orbEater = True

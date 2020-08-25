@@ -58,7 +58,14 @@ class Piece:
         self.stickyTimeBomb = False
         self.berzerkMeatCount = False
         self.berzerkAttacksLeft = False
+        # helper variable for keeping track of whether the ball
+        # is in motion and needs a rotating movement animation
+        self.bowlMotion = False
+        self.bowlOrientation = 1
+
+        # future implementation; pieces can upgrade their levels
         self.pieceLevel = 1
+        self.pieceExp = 0
     def determineAvatar(self):
         pass
 

@@ -1,5 +1,11 @@
 ChangeLog
 
+v. 1.0.8 August 25, 2020
+	Fixed some file access issues for linux (used \\ instead of /), hopefully makes linux compatible.  Also added some bowling ball animation fixes, but still needs some more fine tuning. 
+
+v. 1.0.7 August 24, 2020
+	Orb eaters now eat trap orbs as well (needs custom animation).  Added some 'future use code/images' for rolling the bowling ball around (unfortunately it currently moves the balls around (in place) even if the ball should be static - so the animations are disabled for now.
+
 v. 1.0.6 August 20, 2020
 	Normalized the volume of sounds.  No more extra loud crunching noises when killing enemies!  Finally changed the place holder for berzerk item.
 

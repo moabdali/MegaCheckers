@@ -527,13 +527,13 @@ def avatarFunction(window, avatar, gameBoard, i,j):
     
 #display the board (update what the tiles/pieces should look like)
 def displayBoard(window, gameBoard):
-
+    
+    ## NOTE:  If you see something like "#7 itemOrb", it means the 7th element of the
+    ## PublicPNGList is, for example, a memory loaded copy of itemOrb.png
+    
     for i in range(len(gameBoard)):
         for j in range(len(gameBoard[0])):
             # unoccupied spaces
-
-            
-            
             if gameBoard[i][j][0].horiLaser == True and gameBoard[i][j][0].vertLaser == False:
                 window[i, j].update(image_filename="images/horiLaserBeam.png")
                 continue
@@ -603,7 +603,6 @@ def displayBoard(window, gameBoard):
             if gameBoard[i][j][0].tileType == "vile":
                 avatar = (PublicPNGList[35]).convert("RGBA")
                 avatarFunction(window, avatar, gameBoard, i, j)
-                #window[i, j].update(image_filename="images/vile.png")
                 continue
             if gameBoard[i][j][0].wormHole1 == True:
 
@@ -661,7 +660,6 @@ def displayBoard(window, gameBoard):
                 #2 mine
                 if gameBoard[i][j][0].tileType == "mine":
                     avatarFunction(window, PublicPNGList[2], gameBoard, i, j)
-                    #window[i, j].update(image_data=PublicPNGList[2])
                     continue
                 #8 trapOrb
                 if gameBoard[i][j][0].tileType in [
@@ -673,8 +671,12 @@ def displayBoard(window, gameBoard):
                     #if the mouse is here
                     if gameBoard[i][j][0].orbEater == True:
                         cleanTile(gameBoard[i][j][0])
+                        gameBoard[i][j][0].tileType = "exploding"
+                        playsound("sounds/grenade.mp3", block = False)
+                        avatarFunction(window, PublicPNGList[23], gameBoard, i, j)
+                        gameBoard[i][j][0].orbEater = True
+                        sg.popup("The orb eater ate a trap orb.  Luckily they enjoy the spicy blasts.",keep_on_top = True)
                         avatarFunction(window, PublicPNGList[10], gameBoard, i, j)
-                        #window[i, j].update(image_data=PublicPNGList[10])
                     continue
                 if gameBoard[i][j][0].tileType in ["hand1","hand2","hand3"]:
                     pass
@@ -707,7 +709,13 @@ def displayBoard(window, gameBoard):
                     
                         
                     if "bowling ball" in g.activeBuffs:
-                        avatar = Image.open(f"images/bowling ball {g.ownedBy}.png").convert("RGBA")
+                        if g.bowlMotion == True:
+                            if g.bowlOrientation == 1:
+                                g.bowlOrientation = 2
+                            else:
+                                g.bowlOrientation = 1
+                        #avatar = Image.open(f"images/bowling ball {g.ownedBy}{orientation_of_ball}.png").convert("RGBA")
+                        avatar = Image.open(f"images/bowling ball {g.ownedBy}{g.bowlOrientation}.png").convert("RGBA")
                         im_file = BytesIO()
                         avatar.save(im_file, format="png")
                         im_bytes = im_file.getvalue()
@@ -720,20 +728,37 @@ def displayBoard(window, gameBoard):
                     if g.ownedBy == 1:
                         #4 p1
                         avatar = (PublicPNGList[4]).convert("RGBA")
+                    
                     if g.ownedBy == 2:
                         #5 p2
                         avatar = (PublicPNGList[5]).convert("RGBA")
                     
 
                     # set the meat of the piece
-                    #6 items
+                    
                     if len(g.storedItems) > 0:
+                        if g.ownedBy == 1:
+                            #6 items
+                            donut1 = Image.open("images/donut1.png").convert("RGBA")
+                            avatar.paste(donut1, (0, 0), donut1)
+    
                         
-                        items = (PublicPNGList[6]).convert("RGBA")
-                        avatar.paste(items, (0, 0), items)
-                    else:
-                        donut = Image.open("images/donut.png").convert("RGBA")
-                        avatar.paste(donut, (0, 0), donut)
+                            
+                        elif g.ownedBy == 2:
+                            donut2 = Image.open("images/donut2.png").convert("RGBA")
+                            avatar.paste(donut2, (0, 0), donut2)
+                            
+##                    if len(g.storedItems) > 0:
+##                        
+##                        items = (PublicPNGList[6]).convert("RGBA")
+##                        avatar.paste(items, (0, 0), items)
+##                    else:
+##                        if g.ownedBy == 1:
+##                            donut1 = Image.open("images/donut1.png").convert("RGBA")
+##                            avatar.paste(donut1, (0, 0), donut1)
+##                        elif g.ownedBy == 2:
+##                            donut2 = Image.open("images/donut2.png").convert("RGBA")
+##                            avatar.paste(donut2, (0, 0), donut2)
 
                     if "jump proof" in g.activeBuffs:
 
@@ -751,9 +776,6 @@ def displayBoard(window, gameBoard):
                         vampiricism = (PublicPNGList[39]).convert("RGBA")
                         avatar.paste(vampiricism, (0, 0), vampiricism)
                         avatarFunction(window, avatar, gameBoard, i, j)
-                
-                        #jumpProof = Image.open("images/jumpProof.png").convert("RGBA")
-                        #avatar.paste(jumpProof, (0, 0), jumpProof)
                     
                     if "dead man's trigger" in g.activeBuffs:
                         deadmanstrigger = Image.open("images/deadmanstrigger.png").convert("RGBA")
@@ -763,7 +785,8 @@ def displayBoard(window, gameBoard):
                     if "Energy Forcefield" in g.activeBuffs:
                         forcefield = Image.open("images/forcefield.png").convert("RGBA")
                         avatar.paste(forcefield, (0, 0), forcefield)
-                        
+
+                    # if the forcefield was activated earlier this turn
                     if g.forceFieldTurn == PublicStats.turnCount:
                         forcefieldBig = Image.open("images/forcefieldBig.png").convert("RGBA")
                         avatar.paste(forcefieldBig, (0, 0), forcefieldBig)
@@ -771,11 +794,13 @@ def displayBoard(window, gameBoard):
                     if "trip mine" in g.activeDebuffs:
                         tripmine = Image.open("images/tripmine.png").convert("RGBA")
                         avatar.paste(tripmine, (0, 0), tripmine)
+                        
                     # if the piece is stunned
                     if "stunned" in g.activeDebuffs:
                         stunned = Image.open("images/stunned.png").convert("RGBA")
                         avatar.paste(stunned, (0, 0), stunned)
 
+                    # neat animation for getting purified
                     if "purified2" in g.activeBuffs:
                         purified2 = Image.open("images/purified2.png").convert("RGBA")
                         avatar.paste(purified2, (0, 0), purified2)
@@ -805,6 +830,7 @@ def displayBoard(window, gameBoard):
                         stepMax = Image.open("images/moveAgainMax.png").convert("RGBA")
                         avatar.paste(stepMax, (0, 0), stepMax)
 
+                    # berzerk meat counter
                     if g.berzerkMeatCount == 1:
                         meat1 = Image.open("images/meat1.png").convert("RGBA")
                         avatar.paste(meat1, (0, 0), meat1)
@@ -822,20 +848,17 @@ def displayBoard(window, gameBoard):
                     # if it's supposed to be highlighted... then highlight it
                     if g.grey == True:
                         grey = (PublicPNGList[34]).convert("RGBA")
-##                        grey = Image.open("images/highlight.png").convert("RGBA")
                         avatar = Image.blend(grey, avatar, 0.50)
                         
                     
-
+                    # neat animation for spooky hand
                     if gameBoard[i][j][0].tileType == "hand1":
                         hand1 = Image.open("images/hand1.png").convert("RGBA")
                         avatar.paste(hand1, (0, 0), hand1)
-                        
-                    if gameBoard[i][j][0].tileType == "hand2":
+                    elif gameBoard[i][j][0].tileType == "hand2":
                         hand2 = Image.open("images/hand2.png").convert("RGBA")
                         avatar.paste(hand2, (0, 0), hand2)
-                        
-                    if gameBoard[i][j][0].tileType == "hand3":
+                    elif gameBoard[i][j][0].tileType == "hand3":
                         hand3 = Image.open("images/hand3.png").convert("RGBA")
                         avatar.paste(hand3, (0, 0), hand3)
                         
@@ -887,7 +910,6 @@ def displayBoard(window, gameBoard):
                 avatar = Image.blend(green, avatar, 0.50)
                 
             if gameBoard[i][j][0].highlightBrown == True:
-                #sg.popup("Brown activated")
                 brown = (PublicPNGList[38]).convert("RGBA")
                 #grey = Image.open("images/highlightBlue.png").convert("RGBA")
                 avatar = Image.blend(brown, avatar, 0.50)
