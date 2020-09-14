@@ -1,5 +1,8 @@
 ChangeLog
 
+v. 1.0.10 September 14, 2020
+	Spooky hand text updated (using a second spooky hand delays the current hand), removed redundant copy of pysimplegui, "heir" item now properly gets consumed when used.
+
 v. 1.0.9 August 25, 2020
 	Finished bowling ball animation; correctly "wobbles" now.
 

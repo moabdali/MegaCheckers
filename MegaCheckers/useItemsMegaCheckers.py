@@ -1064,7 +1064,8 @@ def useItems(gameBoard, x, y, window):
             if itemsCount > 0:
                 sg.popup(f"You've inherited {itemsCount} items from your allies.  Don't get yourself killed, now.",keep_on_top = True)
                 pm(window,f"You've inherited {itemsCount} items from your allies.  Don't get yourself killed, now.")
-                
+
+            gameBoard[x][y][1].storedItems.remove("heir")
             updateToolTips(window, gameBoard, playerTurn)
             sleep(2)
 
@@ -1813,6 +1814,10 @@ def useItems(gameBoard, x, y, window):
         elif str.find(i, "spooky hand") >= 0:
             itemsMenu.Hide()
             gameBoard[x][y][1].storedItems.remove("spooky hand")
+            if PublicStats.spookyHand == True:
+                PublicStats.spookyHandTurnCount += 3
+                sg.popup("This item has delayed the arrival of the spooky hand by a few turns.", keep_on_top = True)
+                continue
             sg.popup("A spooky hand has gone under the field.  When will he strike?  Nobody knows...", keep_on_top = True)
             pm(window,"A spooky hand has gone under the field.  When will he strike?  Nobody knows...")
             sleep(1)
