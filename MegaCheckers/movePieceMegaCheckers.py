@@ -797,7 +797,7 @@ def roundEarthTheoryFunction(gameBoard,startLocation,endLocation,columns,rows):
         #sg.popup("Your piece rolled around to the other side!",keep_on_top = True)
         return True
     
-#diagonals (only works with diagonal enabled
+#diagonals (only works with diagonal enabled) REVIEW NOTE - this may be redundant...
     if "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
         #upleft
         if startLocation[0] == 0 and startLocation[1] == 0 and endLocation[0] == rows-1 and endLocation[1] == columns-1:
