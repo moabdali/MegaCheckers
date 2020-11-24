@@ -6,6 +6,13 @@ import random
 from useItemsMegaCheckers import *
 
 
+def playSoundExceptionCatcher(fileName, block = True):
+    try:
+        playSoundExceptionCatcher(fileName, block)
+    except:
+        print(".")
+
+        
 def orbEater(gameBoard):
     # all existing mice appended to this list
     listOfMice = []
@@ -224,7 +231,7 @@ def spookyHand(window, gameBoard):
             if  gameBoard[xrand][yrand][0].occupied == True:
                 nums = [1,2]
                 choice = random.choice(nums)
-                playsound(f"sounds\spookyHand{choice}.mp3", block = False)
+                playSoundExceptionCatcher(f"sounds\spookyHand{choice}.mp3", block = False)
                 gameBoard[xrand][yrand][0].tileType = "hand1"
                 displayBoard(window, gameBoard)
                 sleep(.5)
@@ -325,7 +332,7 @@ def berzerkFunction(window, gameBoard, playerTurn):
                     
                     sg.popup("Your berzerk piece died of hunger.  Being berzerk is energy intensive!", keep_on_top = True)
                     pm(window, "Your berzerk piece died of hunger.  Being berzerk is energy intensive!")
-                    playsound("sounds\destroy.mp3",block=False)
+                    playSoundExceptionCatcher("sounds\destroy.mp3",block=False)
                     j[0].occupied = False
                     #explode
 # how many pieces does each player have left?

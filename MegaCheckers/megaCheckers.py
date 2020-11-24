@@ -265,7 +265,7 @@ def begin(screenSize):
                                         "A stunned piece recovered and picked up the item orb it had landed on",
                                         keep_on_top=True,
                                     )
-                                    playsound("sounds/getItem.mp3",block=False)
+                                    playSoundExceptionCatcher("sounds/getItem.mp3",block=False)
                                     pickUpItemOrb(gameBoard, x, y, window = window)
                 y = -1
             playerTurn = 2
@@ -287,7 +287,7 @@ def begin(screenSize):
             if orbsEaten > 0:
                 pm(window, f"Orbs eaten by the orb eaters: {orbsEaten}")
                 fileNum = random.randint(1,4)
-                playsound(f"sounds/squeak{fileNum}.mp3", block = False)
+                playSoundExceptionCatcher(f"sounds/squeak{fileNum}.mp3", block = False)
             berzerkFunction(window, gameBoard, playerTurn)
 
 
@@ -324,7 +324,7 @@ def begin(screenSize):
                                         "A stunned piece recovered and picked up the item orb it had landed on",
                                         keep_on_top=True,
                                     )
-                                    playsound("sounds/getItem.mp3",block=False)
+                                    playSoundExceptionCatcher("sounds/getItem.mp3",block=False)
                                     pickUpItemOrb(gameBoard, x, y, window = window)
                 y = -1
             playerTurn = 1
@@ -341,9 +341,15 @@ def begin(screenSize):
             if orbsEaten > 0:
                 pm(window, f"Orbs eaten by the orb eaters: {orbsEaten}")
                 fileNum = random.randint(1,4)
-                playsound(f"sounds/squeak{fileNum}.mp3", block = False)
+                playSoundExceptionCatcher(f"sounds/squeak{fileNum}.mp3", block = False)
             berzerkFunction(window, gameBoard, playerTurn)
 
+
+def playSoundExceptionCatcherExceptionCatcher(fileName, block = False):
+    try:
+        playSoundExceptionCatcher(fileName, block = False)
+    except:
+        print(".")
 
 # generate item orbs
 def createOrbs(window, gameBoard):

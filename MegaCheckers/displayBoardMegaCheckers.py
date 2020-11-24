@@ -75,7 +75,14 @@ def forcefieldCheck(window, gameBoard, startLocation = 0, endLocation = 0, dange
             return True
     else:
         return True
-    
+
+def playSoundExceptionCatcher(fileName, block = True):
+    try:
+        playSoundExceptionCatcher(fileName, block)
+    except:
+        print("Sound exception")
+
+        
 # see if any pieces are sitting on death spots
 def deathCheck(window, gameBoard, move=False):
     for i in gameBoard:
@@ -98,7 +105,7 @@ def deathCheck(window, gameBoard, move=False):
                     displayBoard(window, gameBoard)
                     
                     window.refresh()
-                    playsound("sounds/grenade.mp3", block = False)
+                    playSoundExceptionCatcher("sounds/grenade.mp3", block = False)
                     j[0].tileType = "default"
                     displayBoard(window, gameBoard)
                     window.refresh()
@@ -124,7 +131,7 @@ def deathCheck(window, gameBoard, move=False):
                     j[0].occupied = False
                     displayBoard(window, gameBoard)
                     window.refresh()
-                    playsound("sounds/grenade.mp3", block = False)
+                    playSoundExceptionCatcher("sounds/grenade.mp3", block = False)
                     sleep(1)
                     j[0].tileType = "default"
                     displayBoard(window, gameBoard)
@@ -152,7 +159,7 @@ def deathCheck(window, gameBoard, move=False):
                     j[0].tileType = "default"
                     displayBoard(window, gameBoard)
                     window.refresh()
-                    playsound("sounds/grenade.mp3", block = False)
+                    playSoundExceptionCatcher("sounds/grenade.mp3", block = False)
                     sg.popup("A piece died to a neutral trap orb!", keep_on_top=True)
                     return "death"
             # do something for holes
@@ -165,7 +172,7 @@ def deathCheck(window, gameBoard, move=False):
                     j[0].tileType = tileBackup
                     displayBoard(window, gameBoard)
                     window.refresh()
-                    playsound("sounds/fall.mp3", block = False)
+                    playSoundExceptionCatcher("sounds/fall.mp3", block = False)
                     sg.popup("A piece fell to its demise in the void!", keep_on_top=True)
                     return "death"
 
@@ -268,7 +275,7 @@ def laserCheck(window, gameBoard, resetOnly = False, laserSoundCheck = False):
                                 else:
                                     #laser sound
                                     #if laserSoundCheck == True:
-                                    #    playsound("sounds/laser.mp3", block = False)
+                                    #    playSoundExceptionCatcher("sounds/laser.mp3", block = False)
                                     gameBoard[indexI][left][0].horiLaser = True
                                 window.refresh()
                         #if there isn't a piece there
@@ -284,7 +291,7 @@ def laserCheck(window, gameBoard, resetOnly = False, laserSoundCheck = False):
                                 
                                 #laser sound
                                 #if laserSoundCheck == True:
-                                #        playsound("sounds/laser.mp3", block = False)
+                                #        playSoundExceptionCatcher("sounds/laser.mp3", block = False)
                                 gameBoard[indexI][left][0].horiLaser = True
                                 if gameBoard[indexI][left][0].vertLaser == True:
                                     gameBoard[indexI][left][0].crossLaser = True
@@ -328,7 +335,7 @@ def laserCheck(window, gameBoard, resetOnly = False, laserSoundCheck = False):
                                 else:
                                     #laser sound
                                     #if laserSoundCheck == True:
-                                    #    playsound("sounds/laser.mp3", block = False)
+                                    #    playSoundExceptionCatcher("sounds/laser.mp3", block = False)
                                     gameBoard[indexI][right][0].horiLaser = True
                                 displayBoard(window, gameBoard)
                                 window.refresh()
@@ -341,7 +348,7 @@ def laserCheck(window, gameBoard, resetOnly = False, laserSoundCheck = False):
                             else:
                                 #laser sound
                                 #if laserSoundCheck == True:
-                                #        playsound("sounds/laser.mp3", block = False)
+                                #        playSoundExceptionCatcher("sounds/laser.mp3", block = False)
                                 gameBoard[indexI][right][0].horiLaser = True
                                 if gameBoard[indexI][left][0].vertLaser == True:
                                     gameBoard[indexI][left][0].crossLaser = True
@@ -392,7 +399,7 @@ def laserCheck(window, gameBoard, resetOnly = False, laserSoundCheck = False):
                                 else:
                                     #laser sound
                                     #if laserSoundCheck == True:
-                                    #    playsound("sounds/laser.mp3", block = False)
+                                    #    playSoundExceptionCatcher("sounds/laser.mp3", block = False)
                                     gameBoard[up][indexJ][0].vertLaser = True
                                     
                                 displayBoard(window, gameBoard)
@@ -406,7 +413,7 @@ def laserCheck(window, gameBoard, resetOnly = False, laserSoundCheck = False):
                             else:
                                 #laser sound
                                 #if laserSoundCheck == True:
-                                #        playsound("sounds/laser.mp3", block = False)
+                                #        playSoundExceptionCatcher("sounds/laser.mp3", block = False)
                                 gameBoard[up][indexJ][0].vertLaser = True
                                 if gameBoard[up][indexJ][0].horiLaser == True:
                                     gameBoard[up][indexJ][0].crossLaser = True
@@ -453,7 +460,7 @@ def laserCheck(window, gameBoard, resetOnly = False, laserSoundCheck = False):
                                 else:
                                     #laser sound
                                     #if laserSoundCheck == True:
-                                    #    playsound("sounds/laser.mp3", block = False)
+                                    #    playSoundExceptionCatcher("sounds/laser.mp3", block = False)
                                     gameBoard[down][indexJ][0].vertLaser = True
                                 displayBoard(window, gameBoard)
                                 window.refresh()
@@ -464,7 +471,7 @@ def laserCheck(window, gameBoard, resetOnly = False, laserSoundCheck = False):
                             else:
                                 #laser sound
                                 #if laserSoundCheck == True:
-                                #        playsound("sounds/laser.mp3", block = False)
+                                #        playSoundExceptionCatcher("sounds/laser.mp3", block = False)
                                 gameBoard[down][indexJ][0].vertLaser = True
                                 if gameBoard[up][indexJ][0].horiLaser == True:
                                     gameBoard[up][indexJ][0].crossLaser = True
@@ -672,7 +679,7 @@ def displayBoard(window, gameBoard):
                     if gameBoard[i][j][0].orbEater == True:
                         cleanTile(gameBoard[i][j][0])
                         gameBoard[i][j][0].tileType = "exploding"
-                        playsound("sounds/grenade.mp3", block = False)
+                        playSoundExceptionCatcher("sounds/grenade.mp3", block = False)
                         avatarFunction(window, PublicPNGList[23], gameBoard, i, j)
                         gameBoard[i][j][0].orbEater = True
                         sg.popup("The orb eater ate a trap orb.  Luckily they enjoy the spicy blasts.",keep_on_top = True)
