@@ -13,7 +13,7 @@ def longExplanation(window, itemName):
         elif itemName == "berzerk":
             explanation = "Your piece gains the berzerk buff, which is actually more like a mix of a buff and a debuff - a berzerk piece can eat both ally and enemy alike, and if it eats anyone, it gets to immediately move again.  If that move results in eating someone, it gets to go a third time.  Each time it eats someone, it gains a stack of meat.  At the beginning of each turn, the feral piece eats one of its stored meats.  If it has no meat to eat, it dies."
         elif itemName == "bowling ball":
-            explanation = "Easily one of the most powerful powerful powers in the game.  The piece using this item turns into a bowling ball, stripping it of all other buffs, debuffs and held items.  Instead of normal movement options, this piece will get a menu that allows it to head up//down//left//right.  It will angrily fling itself in the direction chosen until it crashes into a piece or a wall or falls into a damaged tile.  While it is rolling, it is immune to most forms of damage, including mines and lasers.  Crashing into an enemy causes the enemy to die, and for the bowling ball to stop.  Hitting an allied piece causes it to become stunned. Item orbs and trap orbs get destroyed without affecting a moving bowling ball.  Damaged and destroyed floors will instantly remove the bowling ball from the game, so watch out!  THE BOWLING BALL IS NOT IMMUNE WHILE NOT MOVING AND CAN BE EASILY DESTROYED BY ANY METHOD OF DESTRUCTION, INCLUDING BEING JUMPED!" 
+            explanation = "Easily one of the most powerful powers in the game.  The piece using this item turns into a bowling ball, stripping it of all other buffs, debuffs and held items.  Instead of normal movement options, this piece will get a menu that allows it to head up//down//left//right.  It will angrily fling itself in the direction chosen until it crashes into a piece or a wall or falls into a damaged tile.  While it is rolling, it is immune to most forms of damage, including mines and lasers.  Crashing into an enemy causes the enemy to die, and for the bowling ball to stop.  Hitting an allied piece causes it to become stunned. Item orbs and trap orbs get destroyed without affecting a moving bowling ball.  Damaged and destroyed floors will instantly remove the bowling ball from the game, so watch out!  THE BOWLING BALL IS NOT IMMUNE WHILE NOT MOVING AND CAN BE EASILY DESTROYED BY ANY METHOD OF DESTRUCTION, INCLUDING BEING JUMPED!" 
         elif itemName in ("canyon column","canyon radial","canyon row"):
             explanation = "All affect tiles get lowered to -2 elevation.  Damaged/missing tiles remain damaged or destroyed, but will be lowered when they respawn like normal.  Pieces are not affected when they are lowered (aside for potentially being unable to climb back out).  Trip mines do not go off, as it is the tile moving, not the piece."
         elif itemName == "care package drop":
@@ -129,6 +129,8 @@ def itemExplanation(i):
             explanation = "Drop in a walking bomb that has a chance of exploding if it is next to any piece."
         elif i == "bowling ball":
             explanation = "Lose all buffs, debuffs and items, but become an angry, powerful bowling ball."
+        elif i == "bernie sanders":
+            explanation = "Taxes all pieces on the field and gathers up all of your unactivated items and all of your opponent's unactivated items.  Shuffles the items around and randomly redistributes the wealth \namong all pieces that are capable of receiving items.  DO YOU FEEL THE BURN?  If so... that might be a napalm row...  uh oh."
         elif i == "berzerk":
             explanation = "RIP AND TEAR!  KILL ENEMY. EAT ENEMY! MOVE AGAIN!  EAT! THREE TIMES! STORE MEAT. DIE IF GO HUNGRY!"
         elif i in ("canyon row","canyon column","canyon radial"):
@@ -155,7 +157,7 @@ def itemExplanation(i):
             explanation = "Unleash a strong punch that sends a piece flying."
         elif i == "heir":
             explanation = "You're going to have a great heir day, luck is in the heir!  For all of your allied pieces are going to give you their items."
-        elif i == "invert elevation":
+        elif i in ("invert elevation all","invert elevation column","invert elevation radial","invert elevation row"):
             explanation = "Change the elevations to their opposite but equal level.  -2 sunken tiles become +2 elevated.  -1 becomes +1.  0 remains neutral. And so on."
         elif i == "jump proof":
             explanation = "Your piece dons a dapper hard hat, naturally making you immune to being jumped on.  It does not provide any other forms of protection."
@@ -195,7 +197,7 @@ def itemExplanation(i):
             explanation = "Induce an earthquake.  A random magnitude earthquake will occur: the higher the magnitude, the more drastically the field will be altered.  Random elevations and depressions will occur throughout the field.  Surprisingly, no pieces will be harmed."
         elif i == "round earth theory":
             explanation = "The scientists called us insane, but thanks to the power of pseudoscience, you prove the earth is totally round, so if you can totally wrap around the playing field.  \nThat is, if you wanted to, you can move from the right edge of the map straight to the left edge.  Or from the top straight to the bottom.  Pac man style."
-        elif i in ("shuffle column", "shuffle radial", "shuffle row"):
+        elif i in ("shuffle column", "shuffle radial", "shuffle row","shuffle all"):
             explanation = "All tiles in the affected area get shuffled around randomly."
         elif i == "shuffle item orbs":
             explanation = "All item orbs (and trap orbs) get removed from the field and then are randomly redistributed on empty spots of the field."
@@ -235,241 +237,9 @@ def itemExplanation(i):
             explanation = "Set up a worm hole at an adjacent tile.  As long as your pieces are not on the warp tile, you can use your move to teleport to that worm hole from anywhere."
         elif i == "vampiricism":
             explanation = "Pounce and feed on a piece's essence, gaining its power.  Sorry, the piece doesn't come back from the dead as your lover, nor do you get to sparkle in the sun.  Well, you do, because you're made of metal, but whatever."
-        elif i == "bernie sanders":
-            explanation = "Taxes all pieces on the field and gathers up all of your unactivated items and all of your opponent's unactivated items.  Shuffles the items around and randomly redistributes the wealth \namong all pieces that are capable of receiving items.  DO YOU FEEL THE BURN?  If so... that might be a napalm row...  uh oh."
+        
         else:
-            explanation = "no explanation supplied... yet"
+            explanation = f"no explanation supplied for {i}... yet"
 
         return explanation
-
-##        if i == "auto win":
-##            explanation = "CONGRATULATIONS! THIS IS THE MOST POWERFUL ITEM IN THE GAME!  AS SOON AS YOU ACTIVATE THIS, YOU WILL WIN\nin 100 turns."
-##        elif i == "bowling ball":
-##            explanation = "Your piece loses all of its powers and negative effects... but becomes a crazy bowling ball on a rampage."
-##        elif i == "berzerk":
-##            explanation = "MUST RIP AND TEAR!  BERZERK MAKE PIECE GO ANGRY.  PIECE GO HUNGRY.  PIECE EAT ENEMY AND FOE ALIKE! IF PIECE EAT A PIECE, PIECE MOVE AGAIN!  \nIF PIECE EAT AGAIN ON THIS BONUS MOVE, THEN PIECE GO AGAIN ONE MORE TIME!  THAT THREE TIME MAX!  PIECE MUST EAT MEAT FROM DEAD ENEMY EVERY TURN!  \nPIECE STORE MEAT FROM EACH KILL!  IF PIECE HAVE NO MEAT STORED TO EAT, PIECE DIE!  PIECE NO LIKE DIE UNLESS HE MAKE OTHERS DIE!"
-##        elif i in ("canyon row","canyon column","canyon radial"):
-##            explanation = "Dig a canyon that lowers all the pieces in the affected area.  The tiles are only lowered; the pieces on the tiles are not affected in any way."
-##        elif i == "care package drop":
-##            explanation = "A plane drops off some item orbs near the selected opponent"
-##        elif i == "charity":
-##            explanation = "Gift your opponent a brand new piece.  How charitable!"
-##        elif i == "dead man's trigger":
-##            explanation = "Strap a bomb to yourself and activate the trigger.  If you die, you release the trigger, and the enemy that jumped on you dies as well."
-##        elif i == "dump items":
-##            explanation = "After activating this item, your other unused items clump together into a giant item orb and then get dumped on any empty tile on the field.  \nAny piece that is capable of picking up items - including your enemy's pieces - can then grab this wad of powers."
-##        elif i == "elevate tile":
-##            explanation = "Spontaneously cause the tile that you're standing on to rise up to a chosen height.  Let the other pieces know you are above them, in more ways than one."
-##        elif i == "Energy Forcefield":
-##            explanation = "A forcefield that will protect you from an explosion or energy attack; the shield remains active for one turn, shielding you from further explosions."
-##        elif i == "floor restore":
-##            explanation = "Repair all damaged/missing floor tiles and replace them with pristine ones."
-##        elif i == "grappling hook":
-##            explanation = "Use a grappling hook to climb the tallest of tiles with barely any effort.  Be a ninja!  Or Batman.  Or nerd with a hook-on-a-rope.  Whatever."
-##        elif i == "haphazard airstrike":
-##            explanation = "Call in an airstrike from an underfunded army.  The plane doesn't have targeting systems installed, so it will carpet bomb the field at random."
-##        elif i == "haymaker":
-##            explanation = "Unleash a strong punch that sends a piece flying."
-##        elif i == "heir":
-##            explanation = "Looks like you're going to have a good heir day!  There is luck in the heir today!  Because this item lets you grab every single item that your allies carry onto this specific piece.  Become an army of one!"
-##        elif i == "jump proof":
-##            explanation = "Your piece dons a dapper hard hat, naturally making you immune to being jumped on.  It does not provide any other forms of protection."
-##        elif i == "jumpoline":
-##            explanation = "Spawns a jumpoline, which is what they used to call those devices consisting of a piece of taut, strong fabric stretched between a steel frame using many \ncoiled springs, at least until your mom jumped on one.  If a piece belonging to either player jumps onto a jumpoline, they'll be tossed to another random empty square."
-##        elif i in ("laser column","laser row"):
-##            explanation = "Place a laser turret that will shoot out an infinite range beam that'll destroy any pieces it hits (including your own).  Laser turrets are immune to other \nlaser turrets, but are affected by pieces and other items."
-##        elif i == "magnet":
-##            explanation = "Uses Science (tm) to create a powerful magnet that pulls in nearby lightweight objects, then proceeds to pull in slightly farther items if there is room to pull them in."
-##        elif i == "move again":
-##            explanation = "Activate this to gain the move again shoes, which allow this piece to permanently move twice in one turn. This effect stacks if it uses multiple move agains."
-##        elif i == "move diagonal":
-##            explanation = "Activate this piece to gain a cool diagonal arrows logo, which allow this piece to permanently move diagonal (while still having access to normal movement)"
-##        elif i == "secretAgent":
-##            explanation = "Activate this to reveal a secret agent in a neighboring square.  This creepy guy will steal items from your opponents if they visit his square, and will give those items to you if you visit him."
-##        elif i in ("mutual treason column", "mutual treason row", "mutual treason radial"):
-##            explanation = "You and your opponent both utilize some excellent propoganda... any affected pieces permanently switch their allegiances."
-##        elif i == "mystery box":
-##            explanation = "Summon a mysterious box.  A random effect will occur for any piece that steps in, from gaining items, getting buffs, being cleansed, losing buffs, getting a\n random negative effect, or even spontaneously exploding!"
-##        elif i in ("napalm radial", "napalm column", "napalm row"):
-##            explanation = "Fire off a stream of fire and sticky substances at your opponents.  Any opponent hit by it will burn to a crisp and leave a hole in the ground.  Allies are unaffected thanks to your sweet aiming skills."
-##        elif i == "orb eater":
-##            explanation = "Summon a hungry orb eater (totally not a mouse) on any empty spot in the field.  It will move around in between turns and eat up any item orbs it finds. Legend has \nit that you shouldn't let an orb eater eat too many..."
-##        elif i == "shuffle all":
-##            explanation = "MASS HYSTERIA ENSUES.  Shuffle everything on the board."
-##        elif i == "place mine":
-##            explanation = "Place a mine down on an adjacent square.  Any player stepping on it goes boom."
-##        elif i in ("purify radial", "purify column", "purify row"):
-##            explanation = "Clear out all negative effects from all of your allies within range.  Who needs a medical degree when you have this?!"
-##        elif i == "purity tile":
-##            explanation = "Step into this tile to remove all negative effects from your piece.  Rinse, lather, repeat. (I mean, you can if you want, but you'd just be wasting your time if you're already purified, y'know?)"
-##        elif i == "recall":
-##            explanation = "at the earlier time no matter what.  Activate this and your tile will be marked with a recall logo, which in 10 turns will whisk you back to the exact snapshot you were at the earlier time no matter what.\n Activate this and your tile will be marked with a recall logo, which in 10 turns will whisk you back to the exact snapshot you were"
-##        elif i == "reproduce":
-##            explanation = "Use this to create a baby piece within range.  It will be a brand new simple piece.  How do non-sentient pieces have babies?  Life... uh... finds a way."
-##        elif i == "seismic activity":
-##            explanation = "Induce an earthquake.  A random magnitude earthquake will occur: the higher the magnitude, the more drastically the field will be altered.  Random elevations and depressions will occur throughout the field.  Surprisingly, no pieces will be harmed."
-##        elif i == "round earth theory":
-##            explanation = "The scientists called us insane, but thanks to the power of pseudoscience, you prove the earth is totally round, so if you can totally wrap around the playing field.  \nThat is, if you wanted to, you can move from the right edge of the map straight to the left edge.  Or from the top straight to the bottom.  Pac man style."
-##        elif i in ("shuffle column", "shuffle radial", "shuffle row"):
-##            explanation = "All tiles in the affected area get shuffled around randomly."
-##        elif i == "shuffle item orbs":
-##            explanation = "All item orbs (and trap orbs) get removed from the field and then are randomly redistributed on empty spots of the field."
-##        elif i == "sink tile":
-##            explanation = "Use sheer will to lower the tile to a chosen elevation."
-##        elif i == "smart bombs":
-##            explanation = "A well funded military sends in a precision bomber to shoot bombs on the field and will make sure to avoid hitting your pieces."
-##        elif i == "snake tunneling":
-##            explanation = "A robotic snake starts digging around from the summoning point.  It burrows around and pushes the ground up (to an elevation of 2), killing enemies but sparing your pieces."
-##        elif i == "spooky hand":
-##            explanation = "A scary hand that will periodically grab a random piece from the field, permanently removing it from play.  \nAfter claiming a victim, it takes its time doing whatever it is that spooky hands do, before looking for a new victim."
-##        elif i in ("steal items column","steal items radial","steal items row"):
-##            explanation = "Steal all unactivated items from all enemies in range.  POSSESSION IS 9/10 OF THE LAW, YO!"
-##        elif i in ("steal powers column","steal powers radial","steal powers row"):
-##            explanation = "Steal (almost) all active buffs from all enemies in range.  Finders keepers! (exceptions exist for some buffs, such as bowling ball)"
-##        elif i == "sticky time bomb":
-##            explanation = "Attach a bomb to any in-range piece (including your own).  After five turns, it explodes, killing all surrounding pieces."
-##        elif i in ("study column", "study row", "study radial"):
-##            explanation = "Copy any activated buffs from your in-range allies (aside for special cases such as recall and bowling ball)"
-##        elif i in ("suicide bomb column", "suicide bomb row", "suicide bomb radial"):
-##            explanation = "Kills every piece within range - yours and your enemy's.  Terrorism is not cool, but I guess it's ok if non-sentient pieces do it to each other."
-##        elif i in ("teach column", "teach radial", "teach row"):
-##            explanation = "Become a master tutor and teach your in-range allies whatever buffs you have."
-##        elif i == "trap orb":
-##            explanation = "Put a bomb disguised as an item orb that will explode on your enemy if they touch it.  The trap orb looks exactly like a normal item orb, \nso there's no way to tell it apart.  However, your pieces will be aware that it's a trap and will be unaffected by them (stepping on them leaves the trap as-is so that your opponent still has a shot at getting tricked by it"
-##        elif i in ("trip mine radial", "trip mine row", "trip mine column"):
-##            explanation = "Set up a bomb on all in-range enemies that can detect when the piece moves.  Upon moving, the piece will trigger the bomb, causing it to explode upon finishing its action.  \nA piece that has a trip mine set up on it can still use most items (including teleporting items) safely without setting the bomb off. However, items that are linked to moving will still set it off."
-##        elif i == ("trump"):
-##            explanation = "We're gonna build a great wall, a wall greater than what the enemy team ever built, and we're gonna make them pay for it!  The wall will be built by taking all of the affected tiles and raising them to max height.  The wall can either be built as a row or a column."
-##        elif i in ("vile radial", "vile column", "vile row"):
-##            explanation = "Apply the 'vile' debuff to all enemies within range. This nasty effect stops affected pieces from being able to apply buffs to themselves.  \nThey can still pick up any items normally, and use items that don't apply positive effects to themselves."
-##        elif i == "warp" :
-##            explanation = "Your piece is randomly whisked away to an empty spot in the field. Where you end up is completely random, so don't bother whining about \n'boo hoo how come I always end up in the worst position possible everytime I use this item', because that's your fault for being unlucky."
-##        elif i in ("wololo radial", "wololo column", "wololo row"):
-##            explanation = "Your piece uses the ancient incantation of the ancient Ayoh Eetoo religion, which convinces all in-range pieces that hear the word of truth to join your \nside.  It somehow changes their color to match your team's color, too.  Weird how that works."
-##        elif i == "worm hole":
-##            explanation = "Set up a worm hole at an adjacent tile.  As long as your pieces are not on the warp tile, you can use your move to teleport to that worm hole from anywhere."
-##        elif i == "vampiricism":
-##            explanation = "Pounce and feed on a piece's essence, gaining its power.  Sorry, the piece doesn't come back from the dead as your lover, nor do you get to sparkle in the sun.  Well, you do, because you're made of metal, but whatever."
-##        elif i == "bernie sanders":
-##            explanation = "Taxes all pieces on the field and gathers up all of your unactivated items and all of your opponent's unactivated items.  Shuffles the items around and randomly redistributes the wealth \namong all pieces that are capable of receiving items.  DO YOU FEEL THE BURN?  If so... that might be a napalm row...  uh oh."
-##        else:
-##            #z = "images/default.png"
-##            explanation = "no explanation supplied... yet"
-##
-##        return explanation
-     
-##    if itemName == "orb eater":
-##        if introOnly:
-##            return "A mouse spawns.  After each player's turn, the mouse will eat a close by item orb or trap orb that he finds.  If he doesn't find one, he will walk in a random direction."
-##        sg.popup("A mouse spawns.  After each player's turn, the mouse will eat a close by item orb or trap orb that he finds.  If he doesn't find one, he will walk in a random direction.", keep_on_top = True)
-##    elif itemName == "laser row":
-##        if introOnly:
-##            return "Set up a laser emitter.  The laser will shoot all the way left and right, destroying any pieces it finds.  It does not affect item orbs or other non-player entities. It will not affect any other laser emitters."
-##        sg.popup("Set up a laser emitter.  The laser will shoot all the way left and right, destroying any pieces it finds.  It does not affect item orbs or other non-player entities. It will not affect any other laser emitters.", keep_on_top = True)
-##    elif itemName == "magnet":
-##        if introOnly:
-##            return"Suck in any adjacent item orbs or bombs.  Afterwards, it'll suck in anything in the 4x4 square that is surrounding the adjacent 3x3 into the 3x3 if there is space."
-##        sg.popup("Suck in any adjacent item orbs or bombs.  Afterwards, it'll suck in anything in the 4x4 square that is surrounding the adjacent 3x3 into the 3x3 if there is space.", keep_on_top = True)
-##    elif itemName == "trap orb":
-##        if introOnly:
-##            return "An explosive trap designed to look like an item orb.  They are indistinguishable.  Luckily, your traps will not affect you."
-##        sg.popup("An explosive trap designed to look like an item orb.  They are indistinguishable.  Luckily, your traps will not affect you.", keep_on_top = True)
-##    elif itemName == "place mine":
-##        if introOnly:
-##            return "Place a mine next to you.  If either player steps on it, BOOM."
-##        sg.popup("Place a mine next to you.  If either player steps on it, BOOM.", keep_on_top = True)
-##    elif itemName ==  "move again":
-##        if introOnly:
-##            return "After you activate this permanent buff, your piece will get to move again after moving."
-##        sg.popup("After you activate this permanent buff, your piece will get to move again after moving.", keep_on_top = True)
-##    elif itemName ==  "suicide bomb row":
-##        if introOnly:
-##            return "Blow yourself up, killing everyone in the same row as you - including your allies."
-##        sg.popup("Blow yourself up, killing everyone in the same row as you - including your allies.", keep_on_top = True)
-##    elif itemName == "Energy Forcefield":
-##        if introOnly:
-##            return "After activating it, you'll be surrounded by a forcefield. Protects you one time from most energy/explosive type attacks. It has no effect against modifiers, or against blunt attacks such as being jumped on or crushed, and will not protect you if the floor disappears."
-##        sg.popup("After activating it, you'll be surrounded by a forcefield. Protects you one time from most energy/explosive type attacks. It has no effect against modifiers, or against blunt attacks such as being jumped on or crushed, and will not protect you if the floor disappears.", keep_on_top = True)
-##    elif itemName == "suicide bomb column":
-##        if introOnly:
-##            return "Blow yourself up, killing everyone in the column."
-##        sg.popup("Blow yourself up, killing everyone in the column.", keep_on_top = True)
-##    elif itemName == "haphazard airstrike":
-##        if introOnly:
-##            return "Call in an airstrike from a poorly funded army.  The plane cannot aim and will blow holes into the ground randomly, killing anything that was on the tile, including the floor itself"
-##        sg.popup("Call in an airstrike from a poorly funded army.  The plane cannot aim and will blow holes into the ground randomly, killing anything that was on the tile, including the floor itself", keep_on_top = True)
-##    elif itemName == "suicide bomb radial":
-##        if introOnly:
-##            return "Blow yourself up, killing you and anyone or anything next to you."
-##        sg.popup("Blow yourself up, killing you and anyone or anything next to you.", keep_on_top = True)
-##    elif itemName == "jump proof":
-##        if introOnly:
-##            return "Enemies cannot jump on you.  You may still be affected by anything else."
-##        sg.popup("Enemies cannot jump on you.  You may still be affected by anything else.", keep_on_top = True)
-##    elif itemName == "smart bombs":
-##        if introOnly:
-##            return "Call in an airstrike conducted by a sophisticated bomber. It will not hurt any of your pieces.  Leaves holes in the ground, destroying its targets."
-##        sg.popup("Call in an airstrike conducted by a sophisticated bomber. It will not hurt any of your pieces.  Leaves holes in the ground, destroying its targets.", keep_on_top = True)
-##    elif itemName == "move diagonal":
-##        if introOnly:
-##            return "After activating this buff, in addition to your usual spots, your piece can move to diagonal locations."
-##        sg.popup("After activating this buff, in addition to your usual spots, your piece can move to diagonal locations.", keep_on_top = True)
-##    elif itemName == "trip mine radial":
-##        if introOnly:
-##            return "Set mines on all surrounding enemies.  If they move, they blow up.  They can still safely use items that don't require them to move.  Teleporting is not considered moving."
-##        sg.popup("Set mines on all surrounding enemies.  If they move, they blow up.  They can still safely use items that don't require them to move.  Teleporting is not considered moving.", keep_on_top = True)
-##    elif itemName == "purify radial":
-##        if introOnly:
-##            return "Remove all negative effects from surrounding allies."
-##        sg.popup("Remove all negative effects from surrounding allies.", keep_on_top = True)
-##    elif itemName == "napalm radial":
-##        if introOnly:
-##            return"Set all enemies in the surrounding area on fire.  This kills them and burns a hole in the ground."
-##        sg.popup("Set all enemies in the surrounding area on fire.  This kills them and burns a hole in the ground.", keep_on_top = True)
-##    elif itemName == "vile radial":
-##        if introOnly:
-##            return "Remove all beneficial powers that your surrounding enemies possess."
-##        sg.popup("Remove all beneficial powers that your surrounding enemies possess.", keep_on_top = True)
-##    elif itemName == "haymaker":
-##        if introOnly:
-##            return "Punch an adjacent piece really hard.  The flying piece will keep going until it either slams into a piece/wall and stuns itself and the piece it collided into, or if it dies by moving into a danger location (laser beam/hole/mine/etc).  The piece will not be able to pick up any items as it passes over. "
-##        sg.popup("Punch an adjacent piece really hard.  The flying piece will keep going until it either slams into a piece/wall and stuns itself and the piece it collided into, or if it dies by moving into a danger location (laser beam/hole/mine/etc).  The piece will not be able to pick up any items as it passes over. ", keep_on_top = True)
-##    elif itemName == "bowling ball":
-##        if introOnly:
-##            return"Turn your piece into a berzerk bowling ball.  The bowling ball loses all effects that it has (positive and negative).  It can no longer pick up any items.  It no longer has access to normal movement.  Instead, if you select it, it will only allow you to choose a direction.  The bowling bar will fly toward that direction with sheer rage and be unaffected by most negative effects, including bombs or mines.  It can still die by falling into holes.  It will continue going in a given direction until it slams into a wall or a piece.  If it hits a piece, it stuns allies and kills the enemy."
-##        sg.popup("Turn your piece into a berzerk bowling ball.  The bowling ball loses all effects that it has (positive and negative).  It can no longer pick up any items.  It no longer has access to normal movement.  Instead, if you select it, it will only allow you to choose a direction.  The bowling bar will fly toward that direction with sheer rage and be unaffected by most negative effects, including bombs or mines.  It can still die by falling into holes.  It will continue going in a given direction until it slams into a wall or a piece.  If it hits a piece, it stuns allies and kills the enemy.", keep_on_top = True)
-##    elif itemName == "laser column":
-##        if introOnly:
-##            return "Set up a laser emitter.  The laser will shoot all the way up and down, destroying any pieces it finds.  It does not affect item orbs or other non-player entities and will not affect any other laser emitters."
-##        sg.popup("Set up a laser emitter.  The laser will shoot all the way up and down, destroying any pieces it finds.  It does not affect item orbs or other non-player entities and will not affect any other laser emitters.", keep_on_top = True)
-##    elif itemName == "shuffle column":
-##        if introOnly:
-##            return "Shuffle everything in the column randomly.  This does not set off tripmines as the pieces themselves are not actually moving - the tiles are, along with their tripmines."
-##        sg.popup("Shuffle everything in the column randomly.  This does not set off tripmines as the pieces themselves are not actually moving - the tiles are, along with their tripmines.", keep_on_top = True)
-##    elif itemName == "shuffle radial":
-##        if introOnly:
-##            return "Shuffle everything in the surrounding randomly.  This does not set off tripmines as the pieces themselves are not actually moving - the tiles are, along with their tripmines."
-##        sg.popup("Shuffle everything in the surrounding randomly.  This does not set off tripmines as the pieces themselves are not actually moving - the tiles are, along with their tripmines.", keep_on_top = True)
-##    elif itemName == "spooky hand":
-##        if introOnly:
-##            return "After using this, a creepy hand will lurk under the playing field for the rest of the game.  Once every handful (see what I did there?) of turns, it'll pop up and abduct one piece from either player, taking the floor with it."
-##        sg.popup("After using this, a creepy hand will lurk under the playing field for the rest of the game.  Once every handful (see what I did there?) of turns, it'll pop up and abduct one piece from either player, taking the floor with it.", keep_on_top = True)
-##    elif itemName == "reproduce":
-##        if introOnly:
-##            return "Your piece spawns a cute baby.  The baby is a generic piece that has no powerups and is just like any other normal piece."
-##        sg.popup("Your piece spawns a cute baby.  The baby is a generic piece that has no powerups and is just like any other normal piece.", keep_on_top = True)
-##    elif itemName == "worm hole":
-##        if introOnly:
-##            return "Choose an empty location.  A worm hole replaces the tile.  As long as no on is on that tile, any of your pieces can teleport to there from anywhere."
-##        sg.popup("Choose an empty location.  A worm hole replaces the tile.  As long as no on is on that tile, any of your pieces can teleport to there from anywhere.", keep_on_top = True)
-##    elif itemName == "warp":
-##        if introOnly:
-##            return "Your piece is randomly whisked away to an empty location.  Careful, it can make you end up in enemy territory... or just move you one space away... or anything in between."
-##        sg.popup("Your piece is randomly whisked away to an empty location.  Careful, it can make you end up in enemy territory... or just move you one space away... or anything in between.", keep_on_top = True)
-##    elif itemName == "recall":
-##        if introOnly:
-##            return "After a piece uses recall, it creates an unbreakable bond with the tile it cast it on and gets a snapshot of how it is in that exact moment.  In 10 turns, the piece will, no matter what, return to that tile in the state that it was at, even if it died.  If the tile is moved by any items before the recall occurs, the piece will appear in the location the tile was moved to."
-##
-##        sg.popup("After a piece uses recall, it creates an unbreakable bond with the tile it cast it on and gets a snapshot of how it is in that exact moment.  In 10 turns, the piece will, no matter what, return to that tile in the state that it was at, even if it died.  If the tile is moved by any items before the recall occurs, the piece will appear in the location the tile was moved to.", keep_on_top = True)
-
 

@@ -195,7 +195,7 @@ def begin(screenSize):
     window = sg.Window(
         "MegaCheckers",
         layout,
-        no_titlebar=True,
+        #no_titlebar=True,
         keep_on_top = True,
         disable_close=False,
         finalize = True,
@@ -345,11 +345,12 @@ def begin(screenSize):
             berzerkFunction(window, gameBoard, playerTurn)
 
 
-def playSoundExceptionCatcherExceptionCatcher(fileName, block = False):
+def playSoundExceptionCatcher(fileName, block = True):
     try:
-        playSoundExceptionCatcher(fileName, block = False)
+        playsound(fileName, block)
     except:
         print(".")
+
 
 # generate item orbs
 def createOrbs(window, gameBoard):

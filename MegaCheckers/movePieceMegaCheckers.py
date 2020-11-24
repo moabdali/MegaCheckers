@@ -4,6 +4,16 @@ from time import sleep
 from betweenTurnFunctionsMegaCheckers import *
 
 
+
+def playSoundExceptionCatcher(fileName, block = True):
+    try:
+        playsound(fileName, block)
+    except:
+        print(".")
+
+
+        
+
 def secretAgentCheck(window, gameBoard, startLocation, endLocation, playerTurn):
     
     #if there's no secretAgent
@@ -107,7 +117,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j[0].tileType = "exploding"
                                 displayBoard(window, gameBoard)
                                 window.refresh()
-                                playsound("sounds/grenade.mp3", block = False)
+                                playSoundExceptionCatcher("sounds/grenade.mp3", block = False)
 
                                 #occupy it with the bowling ball
                                 j[0].tileType = "default"
@@ -162,7 +172,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             j[0].occupied = False
                             j[0].tileType = "default"
                             j[1] = 0
-                            playsound("sounds/fall.mp3", block = False)
+                            playSoundExceptionCatcher("sounds/fall.mp3", block = False)
                             sg.popup("Oh no!  Your bowling ball fell into the void!",keep_on_top = True)
                             #curRow +=1
                             return
@@ -212,7 +222,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             j[0].tileType = "exploding"
                             displayBoard(window, gameBoard)
                             window.refresh()
-                            playsound("sounds/grenade.mp3", block = False)
+                            playSoundExceptionCatcher("sounds/grenade.mp3", block = False)
 
                             #occupy it with the bowling ball
                             j[0].tileType = "default"
@@ -274,7 +284,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j[0].tileType = "exploding"
                                 displayBoard(window, gameBoard)
                                 window.refresh()
-                                playsound("sounds/grenade.mp3", block = False)
+                                playSoundExceptionCatcher("sounds/grenade.mp3", block = False)
 
                                 #occupy it with the bowling ball
                                 j[0].tileType = "default"
@@ -328,7 +338,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             j[0].occupied = False
                             j[0].tileType = "default"
                             j[1] = 0
-                            playsound("sounds/fall.mp3", block = False)
+                            playSoundExceptionCatcher("sounds/fall.mp3", block = False)
                             sg.popup("Oh no!  Your bowling ball fell into the void!",keep_on_top = True)
                             #curRow -=1
                             return
@@ -377,7 +387,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             j[0].tileType = "exploding"
                             displayBoard(window, gameBoard)
                             window.refresh()
-                            playsound("sounds/grenade.mp3", block = False)
+                            playSoundExceptionCatcher("sounds/grenade.mp3", block = False)
 
                             #occupy it with the bowling ball
                             j[0].tileType = "default"
@@ -436,7 +446,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j[0].tileType = "exploding"
                                 displayBoard(window, gameBoard)
                                 window.refresh()
-                                playsound("sounds/grenade.mp3", block = False)
+                                playSoundExceptionCatcher("sounds/grenade.mp3", block = False)
 
                                 #occupy it with the bowling ball
                                 j[0].tileType = "default"
@@ -490,7 +500,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             j[0].occupied = False
                             j[0].tileType = "default"
                             j[1] = 0
-                            playsound("sounds/fall.mp3", block = False)
+                            playSoundExceptionCatcher("sounds/fall.mp3", block = False)
                             sg.popup("Oh no!  Your bowling ball fell into the void!",keep_on_top = True)
                             #curCol -=1
                             return
@@ -539,7 +549,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             j[0].tileType = "exploding"
                             displayBoard(window, gameBoard)
                             window.refresh()
-                            playsound("sounds/grenade.mp3", block = False)
+                            playSoundExceptionCatcher("sounds/grenade.mp3", block = False)
 
                             #occupy it with the bowling ball
                             j[0].tileType = "default"
@@ -597,7 +607,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                                 j[0].tileType = "exploding"
                                 displayBoard(window, gameBoard)
                                 window.refresh()
-                                playsound("sounds/grenade.mp3", block = False)
+                                playSoundExceptionCatcher("sounds/grenade.mp3", block = False)
 
                                 #occupy it with the bowling ball
                                 j[0].tileType = "default"
@@ -650,7 +660,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             j[0].occupied = False
                             j[0].tileType = "default"
                             j[1] = 0
-                            playsound("sounds/fall.mp3", block = False)
+                            playSoundExceptionCatcher("sounds/fall.mp3", block = False)
                             sg.popup("Oh no!  Your bowling ball fell into the void!",keep_on_top = True)
                             #curCol +=1
                             return
@@ -700,7 +710,7 @@ def bowlingBallFunction(window,gameBoard,location,direction):
                             j[0].tileType = "exploding"
                             displayBoard(window, gameBoard)
                             window.refresh()
-                            playsound("sounds/grenade.mp3", block = False)
+                            playSoundExceptionCatcher("sounds/grenade.mp3", block = False)
 
                             #occupy it with the bowling ball
                             j[0].tileType = "default"
@@ -723,7 +733,90 @@ def bowlingBallFunction(window,gameBoard,location,direction):
 
 
 
+def roundEarthTheoryFunction(gameBoard,startLocation,endLocation,columns,rows):
+#trying to go from right side to left side
+    #try to go straight right to straight left
+    print("Using round earth theory!")
+    if startLocation[0] == endLocation[0]:
+        if startLocation[1] == columns-1 and endLocation[1] == 0:
+            #sg.popup("Your piece rolled around to the other side!",keep_on_top = True)
+            return True
+    #trying to go down right
+    elif startLocation[0] == endLocation[0]-1 and startLocation[1] == columns -1 and endLocation[1] == 0 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        #sg.popup("Your piece rolled around to the other side!",keep_on_top = True)
+        return True
+    #trying to go up right
+    elif startLocation[0] == endLocation[0]+1 and startLocation[1] == columns -1 and endLocation[1] == 0 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        #sg.popup("Your piece rolled around to the other side!",keep_on_top = True)
+        return True
     
+
+#trying to go from left to right side
+    #try to go straight left to straight right
+    if startLocation[0] == endLocation[0]:
+        if startLocation[1] == 0 and endLocation[1] == columns -1:
+            #sg.popup("Your piece rolled around to the other side!",keep_on_top = True)
+            return True
+    #trying to go down right
+    elif startLocation[0] == endLocation[0]-1 and startLocation[1] == 0  and endLocation[1] == columns -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        #sg.popup("Your piece rolled around to the other side!",keep_on_top = True)
+        return True
+    #trying to go up right
+    elif startLocation[0] == endLocation[0]+1 and startLocation[1] == 0 and endLocation[1] == columns -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        #sg.popup("Your piece rolled around to the other side!",keep_on_top = True)
+        return True
+
+        
+#trying to go from up to down
+    #try to go straight up to straight down
+    if startLocation[1] == endLocation[1]:
+        if startLocation[0] == 0 and endLocation[0] == rows -1:
+            #sg.popup("Your piece rolled around to the other side!",keep_on_top = True)
+            return True
+    #trying to go up right
+    elif startLocation[0] == 0 and startLocation[1] == (endLocation[1] +1) and endLocation[0] == rows -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        #sg.popup("Your piece rolled around to the other side!",keep_on_top = True)
+        return True
+    #trying to go up right
+    elif startLocation[1] == endLocation[1]-1 and startLocation[0] == 0 and endLocation[0] == rows -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        #sg.popup("Your piece rolled around to the other side!",keep_on_top = True)
+        return True
+
+#trying to go from down to up
+    #try to go straight down to straight up
+    if startLocation[1] == endLocation[1]:
+        if startLocation[0] == rows-1 and endLocation[0] == 0:
+            #sg.popup("Your piece rolled around to the other side!",keep_on_top = True)
+            return True
+    #trying to go up right
+    elif endLocation[0] == 0 and endLocation[1] == (startLocation[1] +1) and startLocation[0] == rows -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        #sg.popup("Your piece rolled around to the other side!",keep_on_top = True)
+        return True
+    #trying to go up right
+    elif endLocation[1] == startLocation[1]-1 and endLocation[0] == 0 and startLocation[0] == rows -1 and "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        #sg.popup("Your piece rolled around to the other side!",keep_on_top = True)
+        return True
+    
+#diagonals (only works with diagonal enabled
+    if "move diagonal" in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
+        #upleft
+        if startLocation[0] == 0 and startLocation[1] == 0 and endLocation[0] == rows-1 and endLocation[1] == columns-1:
+            #sg.popup("Your piece rolled around to the other side!",keep_on_top = True)
+            return True
+        #upright
+        if startLocation[0] == 0 and startLocation[1] == columns-1 and endLocation[0] == rows-1 and endLocation[1] == 0:
+            #sg.popup("Your piece rolled around to the other side!",keep_on_top = True)
+            return True
+        #downleft
+        if startLocation[0] == rows-1 and startLocation[1] == 0 and endLocation[0] == 0 and endLocation[1] == columns-1:
+            #sg.popup("Your piece rolled around to the other side!",keep_on_top = True)
+            return True
+        #downright
+        if startLocation[0] == rows-1 and startLocation[1] == columns-1 and endLocation[0] == 0 and endLocation[1] == 0:
+            #sg.popup("Your piece rolled around to the other side!",keep_on_top = True)
+            return True
+    else:
+        return False    
 
 
 
@@ -1279,7 +1372,7 @@ def movePiece(playerTurn, window, gameBoard):
                 [sg.Button("Down",image_filename = "images/bowlingDown.png", size = (55,4),pad = (0,0))],
                 [sg.Button("Cancel", size = (19,1),pad = (0,0))]
                 ]
-            playsound("sounds/select.mp3",block = False)
+            playSoundExceptionCatcher("sounds/select.mp3",block = False)
             window.disable()
             bowlingMenu = sg.Window("Direction",bowlingLayout,keep_on_top=True)
             event = bowlingMenu.read()
@@ -1331,7 +1424,7 @@ def movePiece(playerTurn, window, gameBoard):
 #if it's the same piece they moved earlier, make it grey.  If the piece isn't there, find it using the currentTurnPiece function
         if (repeatRestrictor[0] == True) and (startLocation == repeatRestrictor[1])and ( gameBoard[startLocation[0]][startLocation[1]][0].occupied == True and gameBoard[startLocation[0]][startLocation[1]][1].currentTurnPiece == True):
             try:
-                playsound("sounds/select.mp3",block=False)
+                playSoundExceptionCatcher("sounds/select.mp3",block=False)
                 gameBoard[startLocation[0]][startLocation[1]][1].grey = True
                 gameBoard[startLocation[0]][startLocation[1]][1].currentTurnPiece = True
             except:
@@ -1352,7 +1445,7 @@ def movePiece(playerTurn, window, gameBoard):
             
             repeatRestrictor[1] = startLocation
             displayBoard(window, gameBoard)
-            playsound("sounds/select.mp3",block=False)
+            playSoundExceptionCatcher("sounds/select.mp3",block=False)
             gameBoard[startLocation[0]][startLocation[1]][1].grey = True
             gameBoard[startLocation[0]][startLocation[1]][1].currentTurnPiece = True
             
@@ -1361,12 +1454,12 @@ def movePiece(playerTurn, window, gameBoard):
         if repeatRestrictor[0] == False:
             #sg.popup(f"DEBUG: Assuming first turn, Event is {event}",keep_on_top = True)
             startLocation = event[0]
-            playsound("sounds/select.mp3",block=False)
+            playSoundExceptionCatcher("sounds/select.mp3",block=False)
             startLocationBackup = startLocation
 
         #if the second turn did happen
         elif repeatRestrictor[0] == True:
-            playsound("sounds/select.mp3",block=False)
+            playSoundExceptionCatcher("sounds/select.mp3",block=False)
             #sg.popup(f"DEBUG: Assuming repeat turn, repeatRestriction is {repeatRestrictor[1]}",keep_on_top = True)
             startLocation = repeatRestrictor[1]
             startLocationBackup = startLocation
@@ -1406,7 +1499,7 @@ def movePiece(playerTurn, window, gameBoard):
             window["information"].update(
                 f"You can't interact directly with unoccupied spaces."
             )
-            playsound("sounds/wrong.mp3",block=False) 
+            playSoundExceptionCatcher("sounds/wrong.mp3",block=False) 
             pm(window, f"You can't interact directly with unoccupied spaces.")
             window.refresh()
             sleep(0.25)
@@ -1425,7 +1518,7 @@ def movePiece(playerTurn, window, gameBoard):
                 playerTurn == gameBoard[startLocation[0]][startLocation[1]][1].ownedBy
                 and "stunned" in gameBoard[startLocation[0]][startLocation[1]][1].activeDebuffs
             ):
-                playsound("sounds/wrong.mp3",block=False) 
+                playSoundExceptionCatcher("sounds/wrong.mp3",block=False) 
                 window["information"].update(
                     f"You cannot use a stunned/sleeping piece."
                 )
@@ -1441,7 +1534,7 @@ def movePiece(playerTurn, window, gameBoard):
                 #and len(gameBoard[event[0][0]][event[0][1]][1].storedItems) > 0
                 and len(gameBoard[startLocation[0]][startLocation[1]][1].storedItems)
             ):
-                playsound("sounds/select.mp3",block=False)
+                playSoundExceptionCatcher("sounds/select.mp3",block=False)
                 window["information"].update(
                     f"Selection made. Pick a destination.\nOR CLICK THE PIECE AGAIN TO SEE AVAILABLE ITEMS."
                 )
@@ -1455,7 +1548,7 @@ def movePiece(playerTurn, window, gameBoard):
             # if the piece doesn't belong to you
             #elif playerTurn != gameBoard[event[0][0]][event[0][1]][1].ownedBy:
             elif playerTurn != gameBoard[startLocation[0]][startLocation[1]].ownedBy:
-                playsound("sounds/wrong.mp3",block=False) 
+                playSoundExceptionCatcher("sounds/wrong.mp3",block=False) 
                 window["information"].update(f"That's not your piece...")
                 pm(window, f"That's not your piece...")
                 window["information"].update(text_color="red")
@@ -1465,7 +1558,7 @@ def movePiece(playerTurn, window, gameBoard):
             
             # if the piece belongs to you but doesn't have items
             else:
-                playsound("sounds/select.mp3",block=False)
+                playSoundExceptionCatcher("sounds/select.mp3",block=False)
                 window["information"].update(f"Selection made, pick a destination.")
                 pm(window, f"Selection made, pick a destination.")
 
@@ -1481,7 +1574,7 @@ def movePiece(playerTurn, window, gameBoard):
         window.refresh()
 
         if gameBoard[startLocation[0]][startLocation[1]][1] != 0 and gameBoard[startLocation[0]][startLocation[1]][1].ownedBy != playerTurn:
-            playsound("sounds/wrong.mp3",block=False) 
+            playSoundExceptionCatcher("sounds/wrong.mp3",block=False) 
             window["information"].update(f"That's not your piece...")
             pm(window, f"That's not your piece...")
             window["information"].update(text_color="red")
@@ -1552,7 +1645,7 @@ def movePiece(playerTurn, window, gameBoard):
                 if repeatRestrictor[0] == False:
                     gameBoard[startLocation[0]][startLocation[1]][1].currentTurnPiece = False
                 pm(window, "There are no items on this piece.")
-                playsound("sounds/wrong.mp3",block=False) 
+                playSoundExceptionCatcher("sounds/wrong.mp3",block=False) 
                 sleep(.4)
                 continue
             # shouldn't get to here
@@ -1564,7 +1657,7 @@ def movePiece(playerTurn, window, gameBoard):
         if gameBoard[startLocation[0]][startLocation[1]][0].occupied == False:
             if repeatRestrictor[0] == False:
                 gameBoard[startLocation[0]][startLocation[1]][1].currentTurnPiece = False
-            playsound("sounds/wrong.mp3",block=False) 
+            playSoundExceptionCatcher("sounds/wrong.mp3",block=False) 
             pm(window, f"Nothing exists on the initial square!")
             window.refresh
             continue
@@ -1581,7 +1674,7 @@ def movePiece(playerTurn, window, gameBoard):
         
         #if your start location contains no pieces
         if gameBoard[startLocation[0]][startLocation[1]][0].occupied == False:
-            playsound("sounds/wrong.mp3",block=False) 
+            playSoundExceptionCatcher("sounds/wrong.mp3",block=False) 
             window["information"].update(f"Nothing here to move!")
             pm(window, "Nothing here to move!")
             window.refresh
@@ -1662,7 +1755,7 @@ def movePiece(playerTurn, window, gameBoard):
                         )
                         > gameBoard[startLocation[0]][startLocation[1]][1].distanceMax
                     ) and diagonalCheck == False:
-                        playsound("sounds/wrong.mp3",block=False) 
+                        playSoundExceptionCatcher("sounds/wrong.mp3",block=False) 
                         window["information"].update(
                             f"That location is too far for you to move to!"
                         )
@@ -1679,7 +1772,7 @@ def movePiece(playerTurn, window, gameBoard):
 
                 #tile height gate (stops you from moving if the elevation is too high)
                 if (gameBoard[startLocation[0]][startLocation[1]][0].tileHeight+1 < gameBoard[endLocation[0]][endLocation[1]][0].tileHeight) and ("grappling hook" not in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs) and wormHole == False:
-                    playsound("sounds/wrong.mp3",block=False) 
+                    playSoundExceptionCatcher("sounds/wrong.mp3",block=False) 
                     sg.popup("The tile you're trying to get to is too high",keep_on_top = True)
                     pm(window,"The tile you're trying to get to is too high")
                     continue
@@ -1694,7 +1787,7 @@ def movePiece(playerTurn, window, gameBoard):
                 # if the landing spot is an item Orb:
                 if gameBoard[endLocation[0]][endLocation[1]][0].tileType == "itemOrb":
 
-                    playsound("sounds/getItem.mp3",block=False)
+                    playSoundExceptionCatcher("sounds/getItem.mp3",block=False)
                     pickUpItemOrb(gameBoard, startLocation[0], startLocation[1], window = window)
                     pm(window, "Picked up an item")
                     pickedUpItem = True
@@ -1702,7 +1795,7 @@ def movePiece(playerTurn, window, gameBoard):
                     
                 # if the landing spot is missing or still damaged
                 if gameBoard[endLocation[0]][endLocation[1]][0].tileType in [PublicStats.damagedFloor]:
-                    playsound("sounds/wrong.mp3",block=False) 
+                    playSoundExceptionCatcher("sounds/wrong.mp3",block=False) 
                     window["information"].update(f"Can't move here!  The floor is missing/damaged.")
                     pm(window, "Can't move here!  The floor is missing/damaged.")
                     sg.popup("Can't move here!  The floor is missing/damaged.", keep_on_top = True)
@@ -1736,7 +1829,7 @@ def movePiece(playerTurn, window, gameBoard):
                             ].tileType = "exploding"
                             displayBoard(window, gameBoard)
                             window.refresh()
-                            playsound("sounds/grenade.mp3", block = False)
+                            playSoundExceptionCatcher("sounds/grenade.mp3", block = False)
                             sg.popup("Burned to a crisp by the laser", keep_on_top=True)
                             gameBoard[endLocation[0]][endLocation[1]][
                                 0
@@ -1795,7 +1888,7 @@ def movePiece(playerTurn, window, gameBoard):
                             ].tileType = "exploding"
                             displayBoard(window, gameBoard)
                             window.refresh()
-                            playsound("sounds/grenade.mp3", block = False)
+                            playSoundExceptionCatcher("sounds/grenade.mp3", block = False)
                             sg.popup("Burned to a crisp by the laser", keep_on_top=True)
                             gameBoard[endLocation[0]][endLocation[1]][
                                 0
@@ -1833,7 +1926,7 @@ def movePiece(playerTurn, window, gameBoard):
 ##                            ].tileType = "exploding"
 ##                            displayBoard(window, gameBoard)
 ##                            window.refresh()
-##                            playsound("sounds/grenade.mp3", block = False)
+##                            playSoundExceptionCatcher("sounds/grenade.mp3", block = False)
 ##                            sg.popup("Burned to a crisp by the laser", keep_on_top=True)
 ##                            return
                             
@@ -1861,7 +1954,7 @@ def movePiece(playerTurn, window, gameBoard):
                             ].tileType = "exploding"
                             displayBoard(window, gameBoard)
                             window.refresh()
-                            playsound("sounds/grenade.mp3", block = False)
+                            playSoundExceptionCatcher("sounds/grenade.mp3", block = False)
                             sg.popup("Burned to a crisp by the laser", keep_on_top=True)
                             gameBoard[endLocation[0]][endLocation[1]][
                                 0
@@ -1872,7 +1965,7 @@ def movePiece(playerTurn, window, gameBoard):
                         if randomEvent == "getItems":
                             #get three items
                             for i in range(1,4):
-                                playsound("sounds/getItem.mp3",block=False)
+                                playSoundExceptionCatcher("sounds/getItem.mp3",block=False)
                                 pickUpItemOrb(gameBoard, endLocation[0], endLocation[1], window = window)
                         elif randomEvent == "lose items":
                             gameBoard[endLocation[0]][endLocation[1]][1].storedItems.clear()
@@ -1895,7 +1988,7 @@ def movePiece(playerTurn, window, gameBoard):
                             gameBoard[endLocation[0]][endLocation[1]][0].tileType = "exploding"
                             displayBoard(window, gameBoard)
                             window.refresh()
-                            playsound("sounds/grenade.mp3", block = False)
+                            playSoundExceptionCatcher("sounds/grenade.mp3", block = False)
                             sg.popup("The mystery box has killed ya!  Get wrecked.", keep_on_top=True)
                             gameBoard[endLocation[0]][endLocation[1]][0].tileType = "mystery box"
                             return
@@ -1953,7 +2046,7 @@ def movePiece(playerTurn, window, gameBoard):
                                 1
                             ].activeBuffs.remove("Energy Forcefield")
                             pm(window, "Trip mine went off!")
-                            playsound("sounds/grenade.mp3", block = False)
+                            playSoundExceptionCatcher("sounds/grenade.mp3", block = False)
                             sleep(1)
                             pm(window, "...But your forcefield saved you.")
                             while (
@@ -1977,7 +2070,7 @@ def movePiece(playerTurn, window, gameBoard):
                             ].tileType = "exploding"
                             displayBoard(window, gameBoard)
                             window.refresh()
-                            playsound("sounds/grenade.mp3", block = False)
+                            playSoundExceptionCatcher("sounds/grenade.mp3", block = False)
                             sg.popup("Trip mine went off!", keep_on_top=True)
                             gameBoard[endLocation[0]][endLocation[1]][
                                 0
@@ -1989,7 +2082,7 @@ def movePiece(playerTurn, window, gameBoard):
 
                      
 
-                    playsound("sounds/thump.mp3",block=False)    
+                    playSoundExceptionCatcher("sounds/thump.mp3",block=False)    
                     pm(window, f"Player {playerTurn} moved successfully.")
                     #gameBoard[endLocation[0]][endLocation[1]][1].currentTurnPiece = False
                     window.refresh
@@ -2036,7 +2129,7 @@ def movePiece(playerTurn, window, gameBoard):
 
                 # killing own piece (illegal)
                 elif gameBoard[endLocation[0]][endLocation[1]][1].ownedBy == playerTurn and "berzerk" not in gameBoard[startLocation[0]][startLocation[1]][1].activeBuffs:
-                    playsound("sounds/wrong.mp3",block=False) 
+                    playSoundExceptionCatcher("sounds/wrong.mp3",block=False) 
                     pm(window, "You can't jumpkill your own piece.")
                     window.refresh
                     continue
@@ -2048,7 +2141,7 @@ def movePiece(playerTurn, window, gameBoard):
                         "jump proof"
                         in gameBoard[endLocation[0]][endLocation[1]][1].activeBuffs
                     ):
-                        playsound("sounds/wrong.mp3",block=False) 
+                        playSoundExceptionCatcher("sounds/wrong.mp3",block=False) 
                         pm(window, "No!  This opponent is jump proof!")
                         window.refresh()
                         sleep(1)
@@ -2079,7 +2172,7 @@ def movePiece(playerTurn, window, gameBoard):
                                 powersList += f"{buffs}\n"
                                 stealPowersCount +=1
                         if stealPowersCount > 0:
-                            playsound("sounds/vampire.mp3",block=False)
+                            playSoundExceptionCatcher("sounds/vampire.mp3",block=False)
                             sg.popup(f"You stole {stealPowersCount} powers from the victim: \n{powersList}", keep_on_top = True)
                             pm(window,f"You stole {stealPowersCount} powers from the victim: \n{powersList}")
                                 
@@ -2130,7 +2223,7 @@ def movePiece(playerTurn, window, gameBoard):
                                 1
                             ].activeBuffs.remove("Energy Forcefield")
                             pm(window, "Trip mine went off!")
-                            playsound("sounds/grenade.mp3", block = False)
+                            playSoundExceptionCatcher("sounds/grenade.mp3", block = False)
                             sleep(1)
                             pm(window, "...But your forcefield saved you.")
                             while (
@@ -2154,14 +2247,14 @@ def movePiece(playerTurn, window, gameBoard):
                             ].tileType = "exploding"
                             displayBoard(window, gameBoard)
                             window.refresh()
-                            playsound("sounds/grenade.mp3", block = False)
+                            playSoundExceptionCatcher("sounds/grenade.mp3", block = False)
                             sg.popup("Trip mine went off!", keep_on_top=True)
                             gameBoard[endLocation[0]][endLocation[1]][
                                 0
                             ].tileType = "default"
                             break
                     if "berzerk" in gameBoard[endLocation[0]][endLocation[1]][1].activeBuffs:
-                        playsound("sounds/destroy.mp3",block=False)
+                        playSoundExceptionCatcher("sounds/destroy.mp3",block=False)
                         pm(window, f"THE BEZERKER KILLED A PIECE AND ENRAGED!  IT HAS EATEN PART OF THE VICTIM AND IS STORING THE REST FOR LATER!")
                         displayBoard(window, gameBoard)
                         window.refresh()
@@ -2183,7 +2276,7 @@ def movePiece(playerTurn, window, gameBoard):
 
 
                     else:
-                        playsound("sounds/destroy.mp3",block=False)
+                        playSoundExceptionCatcher("sounds/destroy.mp3",block=False)
                         window["information"].update(f"Jumpkilled an enemy piece!")
                         pm(window, "Jumpkilled an enemy piece!")
 
@@ -2217,7 +2310,7 @@ def movePiece(playerTurn, window, gameBoard):
                     return 2
             
             else:
-                playsound("sounds/wrong.mp3",block=False) 
+                playSoundExceptionCatcher("sounds/wrong.mp3",block=False) 
                 window["information"].update(f"That's not your piece!")
                 pm(window, "That's not your piece!")
                 sleep(.3)

@@ -1,6 +1,9 @@
 ChangeLog
 
-v. 1.1 November 30, 2020
+v. 1.1.1 November 24, 2020
+	Fixed the missing round earth theory function.  Added more playsound error handling.
+
+v. 1.1.0 November 23, 2020
 	Added an exception handler function for handling playsound module memory leaks.  This greatly increases stability of the game. 
 
 v. 1.0.10 September 14, 2020

@@ -78,9 +78,9 @@ def forcefieldCheck(window, gameBoard, startLocation = 0, endLocation = 0, dange
 
 def playSoundExceptionCatcher(fileName, block = True):
     try:
-        playSoundExceptionCatcher(fileName, block)
+        playsound(fileName, block)
     except:
-        print("Sound exception")
+        print(".")
 
         
 # see if any pieces are sitting on death spots

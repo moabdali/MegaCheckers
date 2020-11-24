@@ -8,7 +8,7 @@ from useItemsMegaCheckers import *
 
 def playSoundExceptionCatcher(fileName, block = True):
     try:
-        playSoundExceptionCatcher(fileName, block)
+        playsound(fileName, block)
     except:
         print(".")
 
@@ -153,6 +153,8 @@ def recallFunction(window,gameBoard):
                 
                 sg.popup("A piece has recalled",keep_on_top = True)
 
+
+#the floor repairs itself a little each turn
 def repairFloor(window, gameBoard):
     for i in gameBoard:
         for j in i:
@@ -190,7 +192,7 @@ def resetMoveAgain(gameBoard):
                 j[1].moveAgain = moveAgainCount                
 
 
-
+# function for lowering the timer on the time bomb
 def stickyTimeBomb(window,gameBoard):
     validLocations = []
     for iIndex,i in enumerate(gameBoard):
@@ -217,7 +219,7 @@ def stickyTimeBomb(window,gameBoard):
                         #validLocations.clear()
 
                         
-
+# reduce the timer on the spooky hand, if it exists
 def spookyHand(window, gameBoard):
     PublicStats.spookyHandTurnCount -= 1
     attempts = 50
@@ -279,7 +281,7 @@ def spookyHand(window, gameBoard):
                 break
 
 
-
+# the namesake of the AI bomb
 def AIbomb(window,gameBoard):
     explodeChance = random.randint(0,100)
     bombLocations = []
@@ -320,7 +322,7 @@ def AIbomb(window,gameBoard):
             window.refresh()
             break
 
-        
+# if a berzerk piece exists, it must lower its food count        
 def berzerkFunction(window, gameBoard, playerTurn):
     for i in gameBoard:
         for j in i:
@@ -335,6 +337,7 @@ def berzerkFunction(window, gameBoard, playerTurn):
                     playSoundExceptionCatcher("sounds\destroy.mp3",block=False)
                     j[0].occupied = False
                     #explode
+                    
 # how many pieces does each player have left?
 def countPieces(gameBoard, window,PublicStats):
     player1count = 0

@@ -171,7 +171,7 @@ def pickUpItemOrb(gameBoard=0, x=0, y=0, introOnly = False, window = None, getIt
 
 def playSoundExceptionCatcher(fileName, block = False):
     try:
-        playSound(fileName, block)
+        playsound(fileName, block)
     except:
         print(".")
 
