@@ -35,9 +35,10 @@ from movePieceMegaCheckers import*
 # starts the game           #
 #############################
 def begin(screenSize):
-    # variables
+    
     columns = 10
     rows = 10
+    # list of rows
     gameBoard = []
     
     #safety measure in case the screensize wasn't saved properly
@@ -223,6 +224,8 @@ def begin(screenSize):
     
     resetMoveAgain(gameBoard)
 
+    sg.popup("""QUICK GUIDE:\n- Starting out, pieces can move up, down, left, right\n- Pick up items by stepping on them\n- Kill enemies by stepping on them or using items\n- Use items by double clicking your piece\n""", keep_on_top = True, title = "Quick Start")
+
 
     #Between turns
     playerTurn = 1
@@ -265,7 +268,7 @@ def begin(screenSize):
                                         "A stunned piece recovered and picked up the item orb it had landed on",
                                         keep_on_top=True,
                                     )
-                                    playSoundExceptionCatcher("sounds/getItem.mp3",block=False)
+                                    playSoundExceptionCatcher("sounds/getItem.wav",block=False)
                                     pickUpItemOrb(gameBoard, x, y, window = window)
                 y = -1
             playerTurn = 2
@@ -287,7 +290,7 @@ def begin(screenSize):
             if orbsEaten > 0:
                 pm(window, f"Orbs eaten by the orb eaters: {orbsEaten}")
                 fileNum = random.randint(1,4)
-                playSoundExceptionCatcher(f"sounds/squeak{fileNum}.mp3", block = False)
+                playSoundExceptionCatcher(f"sounds/squeak{fileNum}.wav", block = False)
             berzerkFunction(window, gameBoard, playerTurn)
 
 
@@ -324,7 +327,7 @@ def begin(screenSize):
                                         "A stunned piece recovered and picked up the item orb it had landed on",
                                         keep_on_top=True,
                                     )
-                                    playSoundExceptionCatcher("sounds/getItem.mp3",block=False)
+                                    playSoundExceptionCatcher("sounds/getItem.wav",block=False)
                                     pickUpItemOrb(gameBoard, x, y, window = window)
                 y = -1
             playerTurn = 1
@@ -341,10 +344,11 @@ def begin(screenSize):
             if orbsEaten > 0:
                 pm(window, f"Orbs eaten by the orb eaters: {orbsEaten}")
                 fileNum = random.randint(1,4)
-                playSoundExceptionCatcher(f"sounds/squeak{fileNum}.mp3", block = False)
+                playSoundExceptionCatcher(f"sounds/squeak{fileNum}.wav", block = False)
             berzerkFunction(window, gameBoard, playerTurn)
 
 
+# neat little function I made to get around the glitchy module - instead of a memory leak error, it just skips it
 def playSoundExceptionCatcher(fileName, block = True):
     try:
         playsound(fileName, block)

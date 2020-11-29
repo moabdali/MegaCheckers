@@ -184,7 +184,7 @@ def tripMineCheck(window, gameBoard, x, y):
         if "Energy Forcefield" in g[1].activeBuffs:
             g[1].activeBuffs.remove("Energy Forcefield")
             pm(window, "Trip mine went off!")
-            playSoundExceptionCatcher("sounds/grenade.mp3", block = False)
+            playSoundExceptionCatcher("sounds/grenade.wav", block = False)
             sleep(1)
             pm(window, "...But your forcefield saved you.")
             while "trip mine" in g[1].activeBuffs:
@@ -194,7 +194,7 @@ def tripMineCheck(window, gameBoard, x, y):
             g[0].tileType = "exploding"
             displayBoard(window, gameBoard)
             window.refresh()
-            playSoundExceptionCatcher("sounds/grenade.mp3", block = False)
+            playSoundExceptionCatcher("sounds/grenade.wav", block = False)
             sleep(0.1)
             g[0].tileType = "default"
             window.refresh()
@@ -387,7 +387,7 @@ def useItems(gameBoard, x, y, window):
     
     while True:
         #window.disable()
-        playSoundExceptionCatcher("sounds/click2.mp3",block=False)
+        playSoundExceptionCatcher("sounds/click2.wav",block=False)
         #itemsMenu.UnHide()
         event = (itemsMenu.read())
         
@@ -500,7 +500,7 @@ def useItems(gameBoard, x, y, window):
             if yesno == "No":
                 continue
             gameBoard[x][y][1].storedItems.remove("canyon row")
-            playSoundExceptionCatcher("sounds/building.mp3",block=False)
+            playSoundExceptionCatcher("sounds/building.wav",block=False)
             for i in gameBoard[x]:
                 i[0].tileHeight = -2
             sg.popup("A canyon row was created.", keep_on_top = True)
@@ -517,7 +517,7 @@ def useItems(gameBoard, x, y, window):
             if yesno == "No":
                 continue
             gameBoard[x][y][1].storedItems.remove("canyon column")
-            playSoundExceptionCatcher("sounds/building.mp3",block=False)
+            playSoundExceptionCatcher("sounds/building.wav",block=False)
             for i in gameBoard:
                 i[y][0].tileHeight = -2
             sg.popup("A canyon column was created.", keep_on_top = True)
@@ -534,7 +534,7 @@ def useItems(gameBoard, x, y, window):
             if yesno == "No":
                 continue
             gameBoard[x][y][1].storedItems.remove("canyon radial")
-            playSoundExceptionCatcher("sounds/building.mp3",block=False)
+            playSoundExceptionCatcher("sounds/building.wav",block=False)
             validLocations = getRadial(location, gameBoard)
             for i in validLocations:
                 ix = i[0]
@@ -658,7 +658,7 @@ def useItems(gameBoard, x, y, window):
             gameBoard[x][y][1].storedItems.remove("seismic activity")
             if magnitude in (1,2,3,4):
                 raiseLower = (-1,0,0,0,0,1)
-                playSoundExceptionCatcher("sounds/earthquake.mp3",block=False)
+                playSoundExceptionCatcher("sounds/earthquake.wav",block=False)
                 for j in gameBoard:
                     for i in j:
                         change = random.choice(raiseLower)
@@ -670,7 +670,7 @@ def useItems(gameBoard, x, y, window):
                 sg.popup(f"A minor magnitude {magnitude} earthquake hit.",keep_on_top = True)
             if magnitude in (5,6,7,8):
                 raiseLower = (-2,-1,-1,0,0,0,0,1,1,1,2)
-                playSoundExceptionCatcher("sounds/earthquake.mp3",block=False)
+                playSoundExceptionCatcher("sounds/earthquake.wav",block=False)
                 for j in gameBoard:
                     for i in j:
                         change = random.choice(raiseLower)
@@ -684,7 +684,7 @@ def useItems(gameBoard, x, y, window):
                 sg.popup(f"A high magnitude {magnitude} earthquake hit.",keep_on_top = True)
             if magnitude in (9,10):
                 raiseLower = (-2,-1,1,+2)
-                playSoundExceptionCatcher("sounds/earthquake.mp3",block=False)
+                playSoundExceptionCatcher("sounds/earthquake.wav",block=False)
                 for j in gameBoard:
                     for i in j:
                         change = random.choice(raiseLower)
@@ -775,7 +775,7 @@ def useItems(gameBoard, x, y, window):
                         wallWindow.close()
                         i[0].tileHeight = 2
                     gameBoard[x][y][1].storedItems.remove("trump")
-                    playSoundExceptionCatcher("sounds\\building.mp3",block = False)
+                    playSoundExceptionCatcher("sounds\\building.wav",block = False)
                     sg.popup("The wall was built with the most covfefe of engineering.  Congrats!", keep_on_top = True)
                     pm(window, "The wall was built with the most covfefe of engineering.  Congrats!")
                     break
@@ -783,7 +783,7 @@ def useItems(gameBoard, x, y, window):
                     for i in gameBoard:
                         wallWindow.close()
                         i[y][0].tileHeight = 2
-                    playSoundExceptionCatcher("sounds\\building.mp3",block = False)
+                    playSoundExceptionCatcher("sounds\\building.wav",block = False)
                     gameBoard[x][y][1].storedItems.remove("trump")
                     sg.popup("The wall was built with the most covfefe of engineering.  Congrats!", keep_on_top = True)
                     pm(window, "The wall was built with the most covfefe of engineering.  Congrats!")
@@ -853,7 +853,7 @@ def useItems(gameBoard, x, y, window):
                             namesOfStolenItems+=items+"\n"
                         i[y][1].storedItems.clear()
             if stolenItems > 0:
-                playSoundExceptionCatcher("sounds\yoink.mp3",block = False)
+                playSoundExceptionCatcher("sounds\yoink.wav",block = False)
                 sg.popup(f"You've stolen {stolenItems} items:\n"+namesOfStolenItems, keep_on_top = True)
             
             gameBoard[x][y][1].storedItems.remove("steal items column")
@@ -879,7 +879,7 @@ def useItems(gameBoard, x, y, window):
                             namesOfStolenItems+=items+"\n"
                         i[1].storedItems.clear()
             if stolenItems > 0:
-                playSoundExceptionCatcher("sounds\yoink.mp3",block = False)
+                playSoundExceptionCatcher("sounds\yoink.wav",block = False)
                 sg.popup(f"You've stolen {stolenItems} items:\n"+namesOfStolenItems, keep_on_top = True)
             
             gameBoard[x][y][1].storedItems.remove("steal items row")
@@ -910,7 +910,7 @@ def useItems(gameBoard, x, y, window):
                             namesOfStolenItems+=items+"\n"
                         g[1].storedItems.clear()
             if stolenItems > 0:
-                playSoundExceptionCatcher("sounds\yoink.mp3",block = False)
+                playSoundExceptionCatcher("sounds\yoink.wav",block = False)
                 sg.popup(f"You've stolen {stolenItems} items:\n"+namesOfStolenItems, keep_on_top = True)
             
             gameBoard[x][y][1].storedItems.remove("steal items radial")
@@ -935,7 +935,7 @@ def useItems(gameBoard, x, y, window):
                                 namesOfStolenpowers+=powers+"\n"
                         i[y][1].activeBuffs.clear()
             if stolenPowers > 0:
-                playSoundExceptionCatcher("sounds\yoink.mp3",block = False)
+                playSoundExceptionCatcher("sounds\yoink.wav",block = False)
                 sg.popup(f"You've stolen {stolenPowers} powers:\n"+namesOfStolenPowers, keep_on_top = True)
             
             gameBoard[x][y][1].storedItems.remove("steal powers column")
@@ -962,7 +962,7 @@ def useItems(gameBoard, x, y, window):
                                 namesOfStolenpowers+=powers+"\n"
                         i[1].activeBuffs.clear()
             if stolenpowers > 0:
-                playSoundExceptionCatcher("sounds\yoink.mp3",block = False)
+                playSoundExceptionCatcher("sounds\yoink.wav",block = False)
                 sg.popup(f"You've stolen {stolenpowers} powers:\n"+namesOfStolenpowers, keep_on_top = True)
             
             gameBoard[x][y][1].storedItems.remove("steal powers row")
@@ -994,7 +994,7 @@ def useItems(gameBoard, x, y, window):
                                 namesOfStolenpowers+=powers+"\n"
                         g[1].activeBuffs.clear()
             if stolenpowers > 0:
-                playSoundExceptionCatcher("sounds\yoink.mp3",block = False)
+                playSoundExceptionCatcher("sounds\yoink.wav",block = False)
                 sg.popup(f"You've stolen {stolenpowers} powers:\n"+namesOfStolenpowers, keep_on_top = True)
             
             gameBoard[x][y][1].storedItems.remove("steal powers radial")                              
@@ -1080,7 +1080,7 @@ def useItems(gameBoard, x, y, window):
                 yesno = sg.popup_yes_no("Use?",keep_on_top=True)
                 if yesno == "Apply the vampricism buff to yourself?  (Jump killing an enemy allows you to steal (most) powers from them)":
                     continue
-                playSoundExceptionCatcher("sounds/vampire.mp3",block=False)
+                playSoundExceptionCatcher("sounds/vampire.wav",block=False)
                 gameBoard[x][y][1].activeBuffs.append("vampiricism")
                 gameBoard[x][y][1].storedItems.remove("vampiricism")
                     
@@ -1734,7 +1734,7 @@ def useItems(gameBoard, x, y, window):
                     gameBoard[x][y][1].storedItems.remove("orb eater")
                     gameBoard[event[0][0]][event[0][1]][0].orbEater = True
                     fileNum = random.randint(1,4)
-                    playSoundExceptionCatcher(f"sounds/squeak{fileNum}.mp3", block = False)
+                    playSoundExceptionCatcher(f"sounds/squeak{fileNum}.wav", block = False)
                 elif gameBoard[event[0][0]][event[0][1]][0].orbEater == True:
                     sg.popup("There's already an orb eater here... get your mind out of the gutter, that's not going to happen.",keep_on_top=True)
                     pm(window, "There's already an orb eater here... get your mind out of the gutter, that's not going to happen.")
@@ -1956,7 +1956,7 @@ def useItems(gameBoard, x, y, window):
                     and "stunned" not in g[x][y][1].activeDebuffs
                 ):
                     g[ix][iy][0].tileType = "default"
-                    playSoundExceptionCatcher("sounds/getItem.mp3",block=False)
+                    playSoundExceptionCatcher("sounds/getItem.wav",block=False)
                     pickUpItemOrb(gameBoard, x, y, window = window)
                     pm(window, "You picked up an item")
                     displayBoard(window, gameBoard)
@@ -2006,7 +2006,7 @@ def useItems(gameBoard, x, y, window):
                             and "stunned" not in g[ix][iy][1].activeDebuffs
                         ):
                             pm(window, "An item was picked up by your piece.")
-                            playSoundExceptionCatcher("sounds/getItem.mp3",block=False)
+                            playSoundExceptionCatcher("sounds/getItem.wav",block=False)
                             pickUpItemOrb(gameBoard, ix, iy, window = window)
 
                         elif (
@@ -2853,7 +2853,7 @@ def useItems(gameBoard, x, y, window):
             # if the target is within range
             if event[0] in validTargets:
                 
-                playSoundExceptionCatcher("sounds/punch.mp3",block=False)
+                playSoundExceptionCatcher("sounds/punch.wav",block=False)
                 # s1 is the victim's start row, compare to x
                 s1 = event[0][0]
 
@@ -2914,7 +2914,7 @@ def useItems(gameBoard, x, y, window):
                                 gameBoard[s1][s2][1] = 0
                                 gameBoard[s1][s2][0].tileType = "default"
                                 gameBoard[s1][s2][0].occupied = False
-                                playSoundExceptionCatcher("sounds/fall.mp3", block = False)
+                                playSoundExceptionCatcher("sounds/fall.wav", block = False)
                                 pm(
                                     window,
                                     "Brutal!  You just pushed that piece into the void.",
@@ -2996,7 +2996,7 @@ def useItems(gameBoard, x, y, window):
                                 gameBoard[s1][s2][1] = 0
                                 gameBoard[s1][s2][0].tileType = "default"
                                 gameBoard[s1][s2][0].occupied = False
-                                playSoundExceptionCatcher("sounds/fall.mp3", block = False)
+                                playSoundExceptionCatcher("sounds/fall.wav", block = False)
                                 pm(
                                     window,
                                     "Brutal!  You just pushed that piece into the void.",
@@ -3084,7 +3084,7 @@ def useItems(gameBoard, x, y, window):
                                 gameBoard[s1][s2][1] = 0
                                 gameBoard[s1][s2][0].tileType = "default"
                                 gameBoard[s1][s2][0].occupied = False
-                                playSoundExceptionCatcher("sounds/fall.mp3", block = False)
+                                playSoundExceptionCatcher("sounds/fall.wav", block = False)
                                 pm(
                                     window,
                                     "Brutal!  You just pushed that piece into the void.",
@@ -3166,7 +3166,7 @@ def useItems(gameBoard, x, y, window):
                                 gameBoard[s1][s2][1] = 0
                                 gameBoard[s1][s2][0].tileType = "default"
                                 gameBoard[s1][s2][0].occupied = False
-                                playSoundExceptionCatcher("sounds/fall.mp3", block = False)
+                                playSoundExceptionCatcher("sounds/fall.wav", block = False)
                                 pm(
                                     window,
                                     "Brutal!  You just pushed that piece into the void.",

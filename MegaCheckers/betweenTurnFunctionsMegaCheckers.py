@@ -233,7 +233,7 @@ def spookyHand(window, gameBoard):
             if  gameBoard[xrand][yrand][0].occupied == True:
                 nums = [1,2]
                 choice = random.choice(nums)
-                playSoundExceptionCatcher(f"sounds\spookyHand{choice}.mp3", block = False)
+                playSoundExceptionCatcher(f"sounds\spookyHand{choice}.wav", block = False)
                 gameBoard[xrand][yrand][0].tileType = "hand1"
                 displayBoard(window, gameBoard)
                 sleep(.5)
@@ -334,7 +334,7 @@ def berzerkFunction(window, gameBoard, playerTurn):
                     
                     sg.popup("Your berzerk piece died of hunger.  Being berzerk is energy intensive!", keep_on_top = True)
                     pm(window, "Your berzerk piece died of hunger.  Being berzerk is energy intensive!")
-                    playSoundExceptionCatcher("sounds\destroy.mp3",block=False)
+                    playSoundExceptionCatcher("sounds\destroy.wav",block=False)
                     j[0].occupied = False
                     #explode
                     

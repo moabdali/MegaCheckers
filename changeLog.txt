@@ -1,5 +1,8 @@
 ChangeLog
 
+v. 1.1.2 November 28, 2020
+	Replaced mp3s with .wavs, as the memory leak was actually still occurring.  It seems as though this has fixed it... but more testing will be needed. 
+
 v. 1.1.1 November 24, 2020
 	Fixed the missing round earth theory function.  Added more playsound error handling.
 
