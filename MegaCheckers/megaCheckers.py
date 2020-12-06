@@ -224,14 +224,16 @@ def begin(screenSize):
     
     resetMoveAgain(gameBoard)
 
-    sg.popup("""QUICK GUIDE:\n- Starting out, pieces can move up, down, left, right\n- Pick up items by stepping on them\n- Kill enemies by stepping on them or using items\n- Use items by double clicking your piece\n""", keep_on_top = True, title = "Quick Start")
-
-
+    
+    #flag to show quick start once
+    showQuickStartOnce = True
     #Between turns
     playerTurn = 1
     
     while True:
-
+        if showQuickStartOnce == True:
+            sg.popup("""QUICK GUIDE:\n- Starting out, pieces can move up, down, left, right\n- Pick up items by stepping on them\n- Kill enemies by stepping on them or using items\n- Use items by double clicking your piece\n""", keep_on_top = True, title = "Quick Start")
+        showQuickStartOnce = False
         updateToolTips(window, gameBoard,playerTurn)
         itemOrbForecast(window)
         
