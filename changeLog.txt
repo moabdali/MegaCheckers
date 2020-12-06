@@ -1,5 +1,8 @@
 ChangeLog
 
+v. 1.1.2b December 6, 2020
+	Testing .gitignore to see if I can ignore pycache from commits
+
 v. 1.1.2 November 28, 2020
 	Replaced mp3s with .wavs, as the memory leak was actually still occurring.  It seems as though this has fixed it... but more testing will be needed. 
 
