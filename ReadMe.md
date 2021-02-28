@@ -6,6 +6,6 @@ The game is essentially checkers with weapons.  It's based on Quadradius (I'm un
 
 Simply click a piece and you get an indicator showing where they can move to.  Click again to show all items collected by that piece; use an item from the resulting menu by clicking on it and following the directions.  
 
-The game is mostly self explanatory except for one special condition: the floor height can change throughout the game.  Your pieces can safely jump down from any height to any lower height.  You can only climb up to one unit higher, though (unless you have special climbing/teleporting powers).  Height is represented by colors - the whiter a tile is, the higher up it is.  You can tell the height of a tile by looking at the "height indicator" in the info section.
+The game is mostly self explanatory except for one special condition: the floor height can change throughout the game.  Your pieces can safely jump down from any height to any lower height.  You can only climb up to one unit higher, though (unless you have special climbing/teleporting powers).  Height is represented by colors - the whiter a tile is, the higher up it is.  You can tell the height of a tile by looking at the "elevation info" in the info section.
 
 Good luck, have fun!
