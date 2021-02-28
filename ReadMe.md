@@ -2,7 +2,7 @@ MegaCheckers:
 ![image](https://user-images.githubusercontent.com/64987634/89836775-15902180-db2d-11ea-80cd-c39d432bcc4d.png)
 First off, special thanks to anyone reading this, and especially a huge thank you to PySimpleGUI and the creator, Mike, for making an accessible GUI framework that anyone can use.   Without it, this game would not have been possible. (And thanks to the peeps that tested it for me, namely chawha and jle and victeur, and Kris for some of the sprites)  
 
-The game is essentially checkers with weapons.  It's based on Quadradius (I'm unaffiliated with them), a great game you should also check out.  The objective of the game is to get rid off all of your opponent's pieces.  If the enemy has no pieces, you win.  To do this, you can either jump on the enemy pieces or use items to destroy them or even recruit them to your own team!
+The game is essentially checkers with weapons.  It's based on Quadradius (I'm unaffiliated with them), a great game you should also check out.  The objective of the game is to get rid of all of your opponent's pieces.  If the enemy has no pieces, you win.  To do this, you can either jump on the enemy pieces or use items to destroy them or even recruit them to your own team!
 
 Simply click a piece and you get an indicator showing where they can move to.  Click again to show all items collected by that piece; use an item from the resulting menu by clicking on it and following the directions.  
 
