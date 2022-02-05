@@ -1,0 +1,83 @@
+Feb 4, 2022
+
+- begun a huge refactoring of the game that uses more functions, modules, and classes
+- currently runs a very mediocre framework of sorts that has the ability to move
+	pieces around on an ascii board, and lets you teleport pieces around with some
+	very minimal validation                  
+
+Here's what I have implemented so far:
+	main.py:
+		the main page of the game.  The goal is to keep this page super short
+		and abuse the heck out of functions and classes to achieve this goal
+		(and of course lots of modules).  Currently imports global_data, tile,
+		piece, board, move_piece, PySimpleGUI (third party module).
+
+		makes some aliases for some of the files (I avoided doing "from X import Y"
+		type imports because this causes some interesting errors regarding scope).
+		
+		creates a new gameboard through a function call via the board module
+
+		created a temporary section for debugging tests.  So far ran tests that
+		confirm that the board can be displayed, that pieces can be shown (just 
+		ownership of pieces for now), that the tile height can be shown, and that
+		pieces can move with some validation (see the pieces section below for more
+		info)
+
+	global_data.py:
+		stores universally accessed info such as size of playing field, whose turn
+		it is, how many turns have elapsd, the item spawn cycle, and various types
+		of counters.  Most modules should be relying on this file to be imported.
+		Intentionally avoids importing anything.  If it does require something to
+		be imported, I'm going to have to really look into where I made a mistake.
+
+	tile.py
+		these are the squares of the board.  The tiles will hold properties such as
+		a height (from -3 to +3, with a default of 0), a damage level (if it's at
+		all damaged, your pieces will not be allowed to stand on it.  Technically
+		tiles are either "damaged" or "not damaged", but because there's a number
+		of turns that elapses between when the tile is completely destroyed and
+		when it begins healing up, I've put in multiple "damaged" states that it
+		cycles through while repairing.  There are various mentions of different
+		modifiers that the tiles can have aside for default, including lasers (and
+		their directions), worms holes, and other item-related statuses.
+
+	piece.py
+		these are the actual player pieces.  The piece class will be put atop a
+		tile and will keep track of its location, type of piece (pieces can get
+		different modifications), owner of said piece, items held by the piece,
+		buffs and debuffs applied to the piece, and some functions for helping
+		to remove items/buffs/debuffs.  There's also a self-description function.
+		Currently doesn't import anything.
+	
+	board.py
+		imports global_data, tile and piece.  This is the actual board logic.
+		Has a function for initializing the board, displaying it, and as a
+		debugging tool, has a function for describing each and every tile.
+
+	move_piece.py
+		imports global data and board.  Allows player to try to move a piece.  It
+		will validate whether a given move is legal or not based on (at the moment)
+		whether you're trying to select an empty square, select an opponent's piece,
+		selecting your own piece (this is legal), and where you're trying to move
+		it to (onto your own piece, enemy piece, tile that is too high, damaged
+		tile, etc).  Will add more features over time, such as distance check, warp
+		check, item modifier check (such as the ability to treat the field as a
+		Pac-Man style 'wrap around' world, or the ability to move two spaces in one
+		turn).  Currently the tests do not care about distance checks or damaged 
+		tiles, so you can jump to your heart's content as long as you don't break 
+		any of the other rules mentioned so far. This will likely be the largest
+		modules when completed as it requires the most logic of any other aspect
+		of the game
+	
+	highlights_and_distances.py
+		Not quite ready yet in the current state.  Borrowed a bunch of code from
+		my existing implementation of the game.  Since there's no true GUI yet, I
+		can't show colors... not to mention that I don't have distance limitations
+		programmed yet anyway (nor items at all) in the current iteration of this
+		game, so it's kind of pointless to worry about that right now.  This will
+		be a "way in the future" project.  Oh right, the purpose of this module:
+		simply said, it'll be used to denote the distances that you can do stuff,
+		whether it be how far a weapon can hit, how far you can move, or what
+		pieces get affected by an item (and the distance associated with it).
+	
+		
