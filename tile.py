@@ -1,4 +1,6 @@
 from piece import piece
+import global_data
+import PySimpleGUI as sg
 
 class tile():
     def __init__(self, x = 0, y = 0):
@@ -50,7 +52,7 @@ class tile():
         self.highlight_green = False #green
         self.highlight_brown = False #brown
         
-    def print_info(self):
+    def print_info(self, detailed_info = False):
 
         print("Location: ", self.start_location)
         print("Tile type: ", self.tile_type)
@@ -63,10 +65,12 @@ class tile():
             print("No piece here (unoccupied)")
             if self.occupied:
                 print("!!!!  Unoccupied, but flagged as occupied !!!!")
-    
+        if detailed_info:
+            if self.piece:
+                self.piece.print_detailed_info()
         print("===============================================")
         
-    def describeSelf(self):
+    def print_detailed_info(self, ):
 
             if self.tile_type == "default":
                 sg.popup(
@@ -112,7 +116,7 @@ class tile():
                     keep_on_top=True,
                 )
                 return f"This tile is being repaired.  It'll be repaired in 2 turns."
-            elif self.tile_type == "damaged":
+            elif self.tile_type == "damaged1":
                 sg.popup(
                     f"This tile is almost ready!  It'll be ready on the next turn!",
                     keep_on_top=True,
@@ -124,7 +128,8 @@ class tile():
                     keep_on_top=True,
                 )
                 return f"There's an obvious booby trap on this tile.  Don't move here without protection! It has an elevation of {self.tile_height}"
-            elif self.tile_type in ["trap orb 0", "trap orb 1", "trap orb 2"]:
+            elif self.tile_type in ["trap_orb_0", "trap_orb_1", "trap_orb_2"]:
+                #intentionally misleading!  We don't want to reveal what type it is
                 sg.popup(
                     f"This is an item orb tile with an elevation of {self.tile_height}",
                     keep_on_top=True,

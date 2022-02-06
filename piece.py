@@ -1,3 +1,5 @@
+import global_data
+
 class piece():
     def __init__(self, start_location = (0,0)):
         self.x_location =               start_location[0]
@@ -18,7 +20,7 @@ class piece():
         self.sticky_time_bomb =         True
         self.berzerker_meat_count =     False
         self.berzerker_attacks_left =   False
-        
+        self.death_mark =               None
         # helper variable for keeping track of whether the ball
         # is in motion and needs a rotating movement animation
         self.bowlMotion =               False
@@ -40,14 +42,16 @@ class piece():
         if item:
             if item in self.stored_items:
                 self.stored_items.remove(item)
-    def describe_self(self, player_turn):
+    def print_detailed_info(self):
         # ownership
         print("This piece is owned by ", end = "")
-        if ( self.owned_by == player_turn ):
+        if ( self.owned_by == global_data.current_player_turn ):
             print("you.")
         else:
             print("your opponent.")
 
-
+        if self.current_turn_piece:
+            print("<<<<THIS PIECE MOVED THIS TURN.>>>>")
+        
             
     

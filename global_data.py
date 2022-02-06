@@ -1,17 +1,15 @@
 # dimensions of the playing field
-columns = 10
-rows = 10
+columns = 5
+rows = 5
 
 # whose turn it is
 current_player_turn = "player_1"
 
 # how many turns have elapsed?
-turnCount = 1
+turn_count = 1
 
 # this determines the number of item orbs that show up
-orbCycleList = [3, 0, 0, 1, 2, 1, 1, 0, 1, 0, 0]
-# index for the item cycle
-item_cycle = 0
+orb_cycle_list = [3, 0, 0, 1, 2, 1, 1, 0, 1, 0, 0]
 
 # for the spooky hand item; if spooky hand is true, then
 # the item is active; the turn counter determines when
@@ -37,7 +35,7 @@ screenSize = "normal"
 showItemExplanations = True
 
 # state of the floor
-damagedFloor = ("damaged",
+damaged_floor = (
                 "destroyed",
                 "damaged1",
                 "damaged2",
@@ -49,9 +47,9 @@ damagedFloor = ("damaged",
                 "damaged8")
 
 # how many orbs do we want to generate this turn?
-def getOrbCount(self):
-    cycle = PublicStats.turnCount % 11
-    return PublicStats.orbCycleList[cycle]
+def get_orb_generation_count():
+    item_cycle = turn_count % 11
+    return orb_cycle_list[item_cycle]
     
     
 
