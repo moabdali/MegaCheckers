@@ -3,7 +3,6 @@ import tile
 import piece
 import random
 
-
 columns =       global_data.columns
 rows =          global_data.rows
 tile =          tile.tile
@@ -12,11 +11,13 @@ piece =         piece.piece
 # the gameboard
 game_board = [[tile(r,c) for c in range(columns)] for r in range(rows)]
 
+# print information on each tile
 def print_all_tile_info(detailed_info = False):
     for row in game_board:
         for each_tile in row:
             each_tile.print_info(detailed_info)
-            
+
+# set up the board by putting pieces on opposite ends            
 def initialize_start():
     #player1
     for row in range(0,2):
@@ -25,8 +26,7 @@ def initialize_start():
             cur_piece = cur_tile.piece = piece( start_location = (row, column))
             cur_tile.occupied = True
             cur_piece.owned_by = "player_1"
-            cur_tile.tile_type = "default"
-            
+            cur_tile.tile_type = "default"  
     #player2
     for row in range(rows-1,rows-3,-1):
         for column in range(0,columns):
@@ -37,7 +37,6 @@ def initialize_start():
             cur_tile.occupied = True
             cur_piece.owned_by = "player_2"
             cur_tile.tile_type = "default"
-    
 
     #################################################################################
     #                                                                               #
@@ -47,7 +46,7 @@ def initialize_start():
     game_board[rows//2][columns//2].tile_height = 3
     game_board[0][0].tile_height = 2
 
-    #destroy random spots
+    #destroy random spots for practice
     rand_row = random.randint(0, rows-1)
     rand_col = random.randint(0, columns-1)
     random_damage = random.choice(global_data.damaged_floor)
@@ -55,6 +54,7 @@ def initialize_start():
     game_board[rand_row][rand_col].occupied = False
     return game_board
 
+# display the table in text form
 def print_ascii_table():
     print("      0      1      2      3      4      5      6      7      8      9")
     for row in range(0,rows):
@@ -152,7 +152,8 @@ reported unoccupied.  Updating status.""")
 {each_tile.piece.y_location} doesn't match the true location {row_index},{col_index}.  Updating.""")
                     each_tile.piece.x_location = row_index
                     each_tile.piece.y_location = col_index
-
+                    
+#find and list all fully empty tiles
 def find_empty_tiles():
     empty_tiles = []
     for row_index, row in enumerate(game_board):

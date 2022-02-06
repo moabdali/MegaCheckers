@@ -42,7 +42,6 @@ game_board[rows-1][columns - 1].piece.stored_items.append("Item B")
 move_piece.check_if_piece_fell()
 board.verify_location_data()
 
-
 while True:
     board.print_ascii_table()
     print(global_data.current_player_turn,"'s turn.")
@@ -68,7 +67,6 @@ while True:
     
     if not move_piece.select_piece(start_location):
         continue
-
 
     try:
         end_location.append( int(input("end row >>")) )
@@ -100,7 +98,7 @@ while True:
     
     items.generate_item_orbs()
     between_turns.repair_floor(game_board)
-    between_turns.switch_turns(game_board)
+    between_turns.switch_turns()
     between_turns.count_pieces(game_board)
     between_turns.set_current_turn_piece_to_false(game_board)
     board.verify_location_data()

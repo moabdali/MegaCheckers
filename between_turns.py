@@ -20,7 +20,11 @@ def playSoundExceptionCatcher(fileName, block = True):
     except:
         print("*")
 
-#the floor repairs itself a little each turn
+################################################################################
+# @brief repair_floor the tiles repair themselves a little each turn (1 step)
+# @param[in,out] game_board the playing field; used to see current damage and
+#                   update the damage level to the next lower step each time
+################################################################################
 def repair_floor(game_board):
     for row in game_board:
         for each_tile in row:
@@ -43,9 +47,11 @@ def repair_floor(game_board):
             elif each_tile.tile_type == "damaged1":
                 each_tile.tile_type = "default"
                 each_tile.tile_height = 0
-
-#swap turns
-def switch_turns(game_board = None):
+                
+################################################################################
+# @brief switch_turns change the current term to the opposite player's turn
+################################################################################
+def switch_turns():
     # stuff that happens between turns
     if global_data.current_player_turn == "player_1":
         global_data.current_player_turn = "player_2"
@@ -53,8 +59,11 @@ def switch_turns(game_board = None):
         global_data.current_player_turn = "player_1"
 
 
-
-# how many pieces does each player have left?
+################################################################################
+# @brief count_pieces how many pieces does each player have left? For display
+#                       and for determining if the game is over
+# @param[in] game_board we're counting the the number of pieces on the board
+################################################################################
 def count_pieces(game_board = None):
     player1count = 0
     player2count = 0
@@ -67,20 +76,32 @@ def count_pieces(game_board = None):
                     player2count += 1
     print("Player 1 pieces: ", player1count)
     print("Player 2 pieces: ", player2count)
-    if player1count == 0:
-        print("Player 2 wins.")
-        input("Hit enter to exit.")
-        raise SystemExit
-    if player2count == 0:
-        print("Player 1 wins.")
-        input("Hit enter to exit.")
-        raise SystemExit
-
-
-def set_current_turn_piece_to_false(game_board):
-    #set all the pieces to have a false current turn; this is a catch all for in
-    #case I forgot to reset it elsewhere in the game
     
+    if player1count > 0 and player2count > 0:
+        return
+    # if control reaches here, then there is at least one loser
+    
+    # technically should only be "==0", but just to be safe we'll catch
+    # negatives by using <= 0
+    elif player1count <= 0 and player2count > 0:
+        print("Player 2 wins.")
+    elif player2count <= 0 and player1count > 0:
+        print("Player 1 wins.")
+    elif (player1count <= 0 and player2count <= 0):
+        print("You both suck apparently - both players lost")
+    input("Hit enter to exit.")
+    raise SystemExit
+
+################################################################################
+# @brief set_current_turn_piece_to_false set all the pieces to have a false
+#                                           current turn; this is a catch all
+#                                           for a case where I might have
+#                                           forgotten to reset it elsewhere in
+#                                           the game
+# @param[in,out] game_board checks for pieces and then sets them as not having
+#                               made a move yet (this is a fail safe)
+################################################################################
+def set_current_turn_piece_to_false(game_board):
     for row in game_board:
         for each_tile in row:
             if each_tile.piece:

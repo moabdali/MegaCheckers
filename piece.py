@@ -1,6 +1,7 @@
 import global_data
 
 class piece():
+    
     def __init__(self, start_location = (0,0)):
         self.x_location =               start_location[0]
         self.y_location =               start_location[1]
@@ -32,16 +33,21 @@ class piece():
         
     def print_location(self):
         print(f"Location is {self.x_location}, {self.y_location}.")
+        
     def print_items(self):
         print(f"Items include {self.stored_items}")
+        
     def remove_all_buffs(self):
         self.active_buffs = []
+        
     def remove_all_debuffs(self):
         self.active_debuffs = []
-    def remove_an_item(self,item = None):
-        if item:
-            if item in self.stored_items:
-                self.stored_items.remove(item)
+        
+    def remove_an_item(self, item_chosen = None):
+        if item_chosen:
+            if item_chosen in self.stored_items:
+                self.stored_items.remove(item_chosen)
+                
     def print_detailed_info(self):
         # ownership
         print("This piece is owned by ", end = "")

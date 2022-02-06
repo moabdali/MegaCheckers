@@ -4,6 +4,7 @@ import board
 
 items = ["item A", "item B", "item C", "item D"]
 
+#generate orbs between turns (if possible)
 def generate_item_orbs():
     empty_squares = board.find_empty_tiles()
     num_orbs_to_spawn = global_data.get_orb_generation_count()
@@ -14,14 +15,17 @@ def generate_item_orbs():
         empty_squares.remove(tl)
         num_orbs_to_spawn -= 1
 
+# get a random item
 def get_item():
     return random.choice(items)
 
+# show all the items a piece holds
 def show_items(piece):
     for items in piece.stored_items:
         print(items + " ", end = "")
     print("")
 
+# allows user to cancel using an item
 def cancel_item():
     yorno  = print("Do you wish to use item?  y/n")
     #true = cancel
@@ -30,6 +34,7 @@ def cancel_item():
     #false = don't cancel
     return False
 
+# attempt to use an item
 def use_item(piece):
     
     #check if disabled (prevented from using items)

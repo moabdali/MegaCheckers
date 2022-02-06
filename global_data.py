@@ -2,6 +2,11 @@
 columns = 5
 rows = 5
 
+if columns < 3:
+    columns = 3
+if rows < 3:
+    rows = 3
+
 # whose turn it is
 current_player_turn = "player_1"
 
@@ -51,7 +56,3 @@ def get_orb_generation_count():
     item_cycle = turn_count % 11
     return orb_cycle_list[item_cycle]
     
-    
-
-    
-

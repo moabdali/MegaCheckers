@@ -168,12 +168,10 @@ def valid_move(start_location, end_location):
 ###############################################################################
 
 def move_piece(start_location, end_location):
-    
     if (valid_move(start_location, end_location)):
         start_tile, end_tile = get_start_end_coords(start_location, end_location)
         start_tile.occupied = False
         temp_piece = start_tile.piece
-        
         
         #in case the piece fell into a damaged tile
         if start_tile.piece.death_mark == "piece_fell":
@@ -203,6 +201,7 @@ def move_piece(start_location, end_location):
         return False
 
 
+# check to see if pieces are standing on an item orb 
 def check_item_pickups():
     for row in game_board:
         for each_tile in row:
@@ -217,18 +216,20 @@ def check_item_pickups():
                 print(global_data.current_player_turn+f"""'s piece picked up an
 item! ({received_item})""")
 
-#check for fall death at beginning of turn
+
+# check for fall death at beginning of turn
 def check_if_piece_fell():
     for row_index, row in enumerate(game_board):
         for col_index, each_tile in enumerate(row):
             if (each_tile.tile_type in global_data.damaged_floor):
                 if (game_board[row_index][col_index].piece):
-                    print(game_board[row_index][col_index].piece.owned_by+"""\
-'s piece fell through a damaged tile into the void.  RIP.""")
+                    print(game_board[row_index][col_index].piece.owned_by+f"""\
+'s piece at ({row_index},{col_index}) fell through a damaged tile into the void.\
+ RIP.""")
                     game_board[row_index][col_index].piece = None
                     game_board[row_index][col_index].occupied = False
 
 
-                    
+# get corresponding tiles from the starting and ending coordinates
 def get_start_end_coords(start_location, end_location):
     return game_board[start_location[0]][start_location[1]], game_board[end_location[0]][end_location[1]]

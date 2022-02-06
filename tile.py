@@ -70,7 +70,7 @@ class tile():
                 self.piece.print_detailed_info()
         print("===============================================")
         
-    def print_detailed_info(self, ):
+    def print_detailed_info(self):
 
             if self.tile_type == "default":
                 sg.popup(
