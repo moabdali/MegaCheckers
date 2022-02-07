@@ -11,6 +11,7 @@ import  PySimpleGUI as sg
 import  random
 from    playsound import playsound
 import  global_data
+import  board
 
 # playsound is an unreliable module; since sound isn't a necessity, we can
 # try/catch it easily without any downside; a period  is used for debugging
@@ -106,3 +107,15 @@ def set_current_turn_piece_to_false(game_board):
         for each_tile in row:
             if each_tile.piece:
                 each_tile.piece.current_turn_piece = False
+
+
+
+
+def reset_moves_left(gb):
+    for r_index, row in enumerate(gb):
+        for tile_index, each_tile in enumerate(row):
+            if each_tile.piece:
+                if each_tile.piece.move_distance_max > 1:
+                    print("MOVE MAX IS",  gb[r_index][tile_index].piece.move_distance_max)
+                    gb[r_index][tile_index].piece.moves_left = gb[r_index][tile_index].piece.move_distance_max
+                    print("moves left internally set to ",gb[r_index][tile_index].piece.moves_left)

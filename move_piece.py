@@ -13,6 +13,8 @@ import items
 game_board  =   board.game_board
 columns     =   global_data.columns
 rows        =   global_data.rows
+piece_teleported_this_turn = False
+piece_moved_this_turn = False
 
 
 ###############################################################################
@@ -23,6 +25,7 @@ rows        =   global_data.rows
 #                       False: player has not selected their own piece        #
 ###############################################################################
 def select_piece(start_location):
+    
     #validate that coordinates are within the playing field
     if (    start_location[0] >= rows or start_location[1] >= columns or 
             start_location[0] < 0 or start_location[1] < 0 ):
@@ -168,6 +171,7 @@ def valid_move(start_location, end_location):
 ###############################################################################
 
 def move_piece(start_location, end_location):
+    print("Attempted start and end locations: ", start_location, end_location)
     if (valid_move(start_location, end_location)):
         start_tile, end_tile = get_start_end_coords(start_location, end_location)
         start_tile.occupied = False
@@ -184,6 +188,9 @@ def move_piece(start_location, end_location):
             end_tile.piece.x_location = end_location[0]
             end_tile.piece.y_location = end_location[1]
             end_tile.occupied = True
+            end_tile.piece.moves_left -= 1
+            global_data.move_restriction = True
+            global_data.current_turn_piece_location = end_location
             return True
         #if the piece is marked for death for unknown reasons (catchall)
         else:
@@ -191,6 +198,7 @@ def move_piece(start_location, end_location):
             print("The piece died prematurely!")
             
         # True = "a move was made"
+        global_data.move_restriction = True
         print("Move was made.")
         return True
     

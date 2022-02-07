@@ -13,7 +13,7 @@ class piece():
         self.stored_items =             []
         self.owned_by =                 "neutral"
         self.grey =                     False
-        self.move_again =               0
+        self.moves_left =               1
         self.current_turn_piece =       False
         self.standing_on_self_orb =     False
         self.recall_turn =              False

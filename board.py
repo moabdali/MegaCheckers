@@ -26,7 +26,8 @@ def initialize_start():
             cur_piece = cur_tile.piece = piece( start_location = (row, column))
             cur_tile.occupied = True
             cur_piece.owned_by = "player_1"
-            cur_tile.tile_type = "default"  
+            cur_tile.tile_type = "default"
+            
     #player2
     for row in range(rows-1,rows-3,-1):
         for column in range(0,columns):
