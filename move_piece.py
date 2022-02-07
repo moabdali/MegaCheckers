@@ -238,6 +238,28 @@ def check_if_piece_fell():
                     game_board[row_index][col_index].occupied = False
 
 
+# move_again
+def move_again(end_location):
+    x = end_location[0]
+    y = end_location[1]
+    
+    if game_board[x][y].piece:
+        #make sure that piece belongs to you
+        if game_board[x][y].piece.owned_by == global_data.current_player_turn:
+            #does the piece have an item that may let it move again
+            if ("berzerker" in game_board[x][y].piece.active_buffs or
+                "move again" in game_board[x][y].piece.active_buffs):
+                #if they have more than 0 moves left
+                print(game_board[x][y].piece.moves_left)
+                if (game_board[x][y].piece.moves_left > 0):
+                    move_again_prompt = input("YOU CAN MAKE ANOTHER MOVE. Y/N")
+                    if move_again_prompt in ('Y', 'y', "yes", "Yes"):
+                        move_restriction = True
+                        global_data.current_turn_piece_location[0] = game_board[x][y].piece.x_location
+                        global_data.current_turn_piece_location[1] = game_board[x][y].piece.y_location
+                        return move_restriction, True
+    return False, False
+
 # get corresponding tiles from the starting and ending coordinates
 def get_start_end_coords(start_location, end_location):
     return game_board[start_location[0]][start_location[1]], game_board[end_location[0]][end_location[1]]
