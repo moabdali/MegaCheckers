@@ -147,7 +147,7 @@ while True:
     board.verify_location_data()
     move_piece.check_if_piece_fell()
     global_data.move_restriction = False
-    between_turns.reset_moves_left(rb)
+    between_turns.reset_moves_left(game_board)
     #################################################################################
     #                                                                               #
     #       DEBUG END MOVE TEST HERE                                                #
