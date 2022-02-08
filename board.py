@@ -93,3 +93,14 @@ def find_empty_tiles():
                 empty_tiles.append(each_tile.start_location)
 
     return empty_tiles
+
+
+#find the current turn piece (if any)
+def find_current_turn_pieces():
+    found_current_turn_pieces = []
+    for row_index, row in enumerate(game_board):
+        for col_index, each_tile in enumerate(row):
+            cur_piece = each_tile.piece
+            if cur_piece and cur_piece.current_turn_piece and cur_piece.owned_by == global_data.current_player_turn:
+                found_current_turn_pieces.append( (cur_piece.x_location, cur_piece.y_location))
+    return found_current_turn_pieces

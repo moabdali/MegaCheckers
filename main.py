@@ -126,7 +126,25 @@ while True:
     ###########
     # DEBUG: need to do something with current turn piece
     ###########
-    
+    current_pieces = board.find_current_turn_pieces()
+    if len(current_pieces) == 0:
+        print("Error occurred keeping track of current turn piece.  Ending turn.")
+        turn_end = True
+        continue
+    if len(current_pieces) == 1:
+        end_location = current_pieces[0]
+    else:
+        print("Error occurred; multiple pieces marked as moved this turn.  Pick one:")
+        for index, locations in enumerate(current_pieces):
+            print(index, locations)
+        while True:
+            chosen_option = input("Pick an option.")
+            if chosen_option >= 0 and chosen_option < len(current_pieces):
+                end_location = current_pieces(chosen_option)
+                break
+            else:
+                print("Invalid option")
+        
     move_restriction, want_to_move_again = move_piece.move_again(end_location)
     # if player confirms they wish to activate the effects of a move again,
     # then allow them to
