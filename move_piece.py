@@ -61,7 +61,8 @@ occupied status do not match.  Piece, occupied: """,
         return False
 
 
-    print("Accepted start location")
+    print("Accepted start location.")
+    start_tile.piece.print_detailed_info()
     return True
 
 
@@ -191,6 +192,8 @@ def move_piece(start_location, end_location):
             end_tile.piece.moves_left -= 1
             global_data.move_restriction = True
             global_data.current_turn_piece_location = end_location
+            end_tile.piece.current_turn_piece = True
+            print("current turn info: ", end_tile.piece.current_turn_piece)
             return True
         #if the piece is marked for death for unknown reasons (catchall)
         else:
@@ -199,7 +202,9 @@ def move_piece(start_location, end_location):
             
         # True = "a move was made"
         global_data.move_restriction = True
-        print("Move was made.")
+        if end_tile.piece:
+            end_tile.piece.current_turn_piece = True
+        print("[unique branch [suicide] ] Move was made.")
         return True
     
     #if not valid_move/you used an item/canceled movement

@@ -8,7 +8,8 @@
 #                              grouping together the functions/actions that
 #                              occur between turns
 ###############################################################################
-import  global_data
+
+import  public_vars
 from    tile import tile
 from    piece import piece
 import  board
@@ -43,6 +44,7 @@ def list_of_functions_between_turns():
 columns     =   global_data.columns
 rows        =   global_data.rows
 game_board  =   board.initialize_start()
+global_data =   public_vars.global_data()
 
     ############################################################################
     #                                                                          #
@@ -137,7 +139,11 @@ while True:
     turn_end = True
     #perform item pickups after moving
     move_piece.check_item_pickups()
-      
+    
+    #pause_me = input("Continue?")
+    #if pause_me == " ":
+    #    board.print_all_tile_info(True);
+        
     #################################################################################
     #                                                                               #
     #       DEBUG END MOVE TEST HERE                                                #

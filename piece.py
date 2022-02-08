@@ -59,5 +59,10 @@ class piece():
         if self.current_turn_piece:
             print("<<<<THIS PIECE MOVED THIS TURN.>>>>")
         
-            
+        if self.stored_items:
+            print("Items held: ")
+            for each_item in self.stored_items:
+                print(each_item)
+        else:
+            print("No items held")
     

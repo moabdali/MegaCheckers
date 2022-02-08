@@ -116,6 +116,6 @@ def reset_moves_left(gb):
         for tile_index, each_tile in enumerate(row):
             if each_tile.piece:
                 if each_tile.piece.move_distance_max > 1:
-                    print("MOVE MAX IS",  gb[r_index][tile_index].piece.move_distance_max)
+                    #print("MOVE MAX IS",  gb[r_index][tile_index].piece.move_distance_max)
                     gb[r_index][tile_index].piece.moves_left = gb[r_index][tile_index].piece.move_distance_max
-                    print("moves left internally set to ",gb[r_index][tile_index].piece.moves_left)
+                    #print("moves left internally set to ",gb[r_index][tile_index].piece.moves_left)
