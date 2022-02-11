@@ -88,6 +88,12 @@ while True:
     board.print_ascii_table()
     print(global_data.current_player_turn,"'s turn.")
     print("Turn # ", global_data.turn_count)
+
+    
+    range_object = python_distances.Range_Object((0,0), False, rows, columns, "all")
+    range_object.reset_list()
+    #python_distances.cross(range_object)
+    python_distances.print_distances(range_object)
     
     #check to make sure any wayward item orbs are picked up on a given player's
     #turn.  This normally wouldn't occur, but a shuffler item may cause this to
@@ -112,13 +118,6 @@ while True:
     else:
         start_location = global_data.current_turn_piece_location
         print("Start location for already-moved piece is", start_location)
-
-    #delete this
-    range_object = python_distances.Range_Object(start_location, False, rows, columns, "all")
-    range_object.reset_list()
-    python_distances.cross(range_object)
-    python_distances.print_distances(range_object)
-    #end delete this
     
     # if you were unable to move the piece (because you picked a bad start location)
     if not move_piece.select_piece(start_location):

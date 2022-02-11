@@ -1,4 +1,5 @@
 import global_data
+#import python_distances
 
 class piece():
     
@@ -22,6 +23,7 @@ class piece():
         self.berzerker_meat_count =     False
         self.berzerker_attacks_left =   False
         self.death_mark =               None
+        self.move_type =                "cross"
         # helper variable for keeping track of whether the ball
         # is in motion and needs a rotating movement animation
         self.bowlMotion =               False
@@ -48,6 +50,24 @@ class piece():
             if item_chosen in self.stored_items:
                 self.stored_items.remove(item_chosen)
                 
+    def process_move_type(self):
+        if "round_earth_theory" in self.active_buffs:
+            if "move_diagonal" in self.active_buffs:
+                print("round earth theory move diagonal")
+                self.move_type = "round_earth_theory_move_diagonal"
+            else:
+                print("round earth theory")
+                self.move_type = "round_earth_theory"
+        elif "move_diagonal" in self.active_buffs:
+            self.move_type = "radial"
+            print("Move diagonal available")
+            
+        else:
+            self.move_type = "cross"
+            
+            
+        
+        
     def print_detailed_info(self):
         # ownership
         print("This piece is owned by ", end = "")

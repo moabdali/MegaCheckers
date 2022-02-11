@@ -9,6 +9,7 @@
 import global_data
 import board
 import items
+import python_distances
 
 game_board  =   board.game_board
 columns     =   global_data.columns
@@ -44,6 +45,7 @@ def select_piece(start_location):
     #################################################################
     if not start_tile.piece or not start_tile.occupied:
         print("NO PIECE HERE")
+        input("")
         if start_tile.piece or start_tile.occupied:
             print("""Additionally, an error occurred where piece status and
 occupied status do not match.  Piece, occupied: """,
@@ -58,10 +60,26 @@ occupied status do not match.  Piece, occupied: """,
     #################################################################
     if not start_tile.piece.owned_by == global_data.current_player_turn:
         print("NOT YOUR PIECE")
+        input("")
         return False
 
 
     print("Accepted start location.")
+    ########################################################################
+    #distance check (be sure to look for exceptions such as warp, diagonal,
+    #and round earth theory
+    ########################################################################
+    start_tile.piece.process_move_type()
+    
+    range_object = python_distances.Range_Object(
+                            start_location,
+                            False,
+                            rows,
+                            columns,
+                            "all"
+                            )
+    python_distances.preview_range(range_object, start_tile.piece)
+    
     start_tile.piece.print_detailed_info()
     return True
 
@@ -91,7 +109,8 @@ def valid_move(start_location, end_location):
     #find the tile that corresponds to the coordinates; must be done after
     #validating the range
     start_tile, end_tile = get_start_end_coords(start_location, end_location)
-
+    start_location = (start_location[0], start_location[1])
+    end_location = (end_location[0], end_location[1])
     #check if player is double clicking the same piece to open item menu
     if start_tile is end_tile:
         #does piece actually have any items?
@@ -112,7 +131,51 @@ def valid_move(start_location, end_location):
         #return False because you didn't actually move;
         #we want to continue doing the make a move loop
         return False
+    
+    #distance check (be sure to look for exceptions such as warp, diagonal, and
+    #round earth theory
+    start_tile.piece.process_move_type()
+    if start_tile.piece.move_type == "radial":
+        print("Move diagonal available")
+        range_object = python_distances.Range_Object(
+            start_location,
+            False,
+            rows,
+            columns,
+            "all"
+            )
+        python_distances.radial(range_object)
+        python_distances.print_distances(range_object)
+        if end_location not in range_object.target_list:
+            print("Too far, not in radial!")
+            return False
 
+    #else if round earth theory
+    if start_tile.piece.move_type == "round_earth_theory":
+        print("round earth theory")
+
+    if start_tile.piece.move_type == "round_earth_theory_move_diagonal":
+        print("round earth theory plus move diagonal")
+        
+    #no modifications
+    elif start_tile.piece.move_type == "cross":
+        range_object = python_distances.Range_Object(
+            start_location,
+            False,
+            rows,
+            columns,
+            "all"
+            )
+        python_distances.cross(range_object)
+        python_distances.print_distances(range_object)
+        if end_location not in range_object.target_list:
+            print("started here: ", start_location)
+            print("trying to get here: ", end_location)
+            print("targetlist:", range_object.target_list)
+            print("Too far! (not in cross)")
+            return False
+
+    
     #if the landing tile is damaged
     if (end_tile.tile_type in global_data.damaged_floor):
         #mark the piece's STARTING point because it hasn't moved yet

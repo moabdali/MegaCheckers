@@ -4,11 +4,12 @@
 #   2022-Feb-09.....moabdali.....created initial file
 #   2022-Feb-10.....moabdali.....added vertical and horizontal checking
 #                                added textual representation of highlight map
+#                                added distance limitation for normal
+#                                      and move diagonal
 ################################################################################
 import global_data
 import board
-import os
-os.system ("color")
+
                
 game_board = board.game_board
 
@@ -55,7 +56,19 @@ class Range_Object:
         '''
         self.target_list = []
 
+# print out the board, showing what the range of the unit is
+def preview_range(range_object, start_piece):
+    
+    if start_piece.move_type == "radial":
+        radial(range_object)
+    elif start_piece.move_type == "cross":
+        cross(range_object)
+    else:
+        range_object.reset_list()
+        
+    print_distances(range_object)
 
+    
 def self_check(range_object):
     '''
     check to see if the self tile should be included; also runs a simple
@@ -123,7 +136,7 @@ def down(range_object):
         #print("Can't go down: ", test_location[0])
         pass
     else:
-        print("Testing down")
+        #print("Testing down")
         if validate_tile(range_object, test_location ):
             return test_location
         
@@ -199,7 +212,7 @@ def up_right(range_object):
     else:
         #print("Testing up right", test_location)
         if validate_tile(range_object, test_location ):
-            print("up right passed!")
+            #print("up right passed!")
             return test_location
 
 
@@ -336,17 +349,7 @@ def horizontal(range_object):
         if self_value:
             range_object.target_list.append(self_value)
 
-class color:
-   PURPLE = '\033[95m'
-   CYAN = '\033[96m'
-   DARKCYAN = '\033[36m'
-   BLUE = '\033[94m'
-   GREEN = '\033[92m'
-   YELLOW = '\033[93m'
-   RED = '\033[91m'
-   BOLD = '\033[1m'
-   UNDERLINE = '\033[4m'
-   END = '\033[0m'
+
             
 def print_distances(range_object):
     '''
@@ -368,6 +371,17 @@ def print_distances(range_object):
                     print("[[     ]]", end="")
                 elif (game_board[i][j].tile_type == "item_orb"):
                     print("[[item ]]", end="")
+                elif (game_board[i][j].tile_type in ("damaged1",
+                                                   "damaged2",
+                                                   "damaged3",
+                                                   "damaged4",
+                                                   "damaged5",
+                                                   "damaged6",
+                                                   "damaged7",
+                                                   "damaged8",
+                                                   "destroyed"
+                                                   )):
+                    print("[[dmged]]", end="")
                 else:
                     print("[[error]]", end="")
             else:

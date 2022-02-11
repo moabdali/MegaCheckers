@@ -54,6 +54,15 @@ def initialize_start():
     random_damage = random.choice(global_data.damaged_floor)
     game_board[rand_row][rand_col].tile_type = random_damage
     game_board[rand_row][rand_col].occupied = False
+    game_board[1][0].piece.active_buffs.append("move_diagonal")
+    print("Appending move_diagonal")
+    game_board[8][1].piece.active_buffs.append("move_diagonal")
+    #################################################################################
+    #                                                                               #
+    #       END DEBUG BOARD MODIFIER                                                #
+    #                                                                               #
+    #################################################################################
+    
     return game_board
 
 # display the table in text form
