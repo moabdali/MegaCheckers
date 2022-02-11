@@ -25,7 +25,7 @@ import  python_distances
 #   note that the order of functions is pretty important in some cases.  Some notable
 #   cases are: check_if_piece_fell should run before any floor repairs are done.
 #   while not as important, generation of item orbs should be done AFTER the floors
-#   get reparations done, as this improves the randomness of where they show up (more
+#   get repairs done, as this improves the randomness of where they show up (more
 #   space).  Setting the current turn to false should be done after checking to see
 #   that pieces are killed; no point in doing extra writes if they're going to die.
 #   Likewise, reset moves only after we know the piece isn't going to die.  Count pieces
@@ -54,8 +54,8 @@ game_board  =   board.initialize_start()
     ############################################################################
 # modify starting pieces
 game_board[0][0].piece.active_buffs.append("move again")
+game_board[0][0].piece.active_buffs.append("cannibalism")
 game_board[0][0].piece.move_distance_max = 3
-# game_board[rows-1][columns - 1].piece.active_buffs.append("move again")
 # end modify starting pieces
 
 # turn_end is used to see if the 'between turn' functions should be run; the while
@@ -71,19 +71,7 @@ while True:
     if turn_end == True:
         list_of_functions_between_turns()
     # denote that the turn hasn't ended    
-    turn_end = False
-
-    ## delete me ##
-    #location = [ (0,0), (0,5), (0,9), (1,1), (1,8), (5,5),(9,0), (9,5), (9,9)]
-    #location = [0,0]
-##    for i in location:
-##        range_object = python_distances.Range_Object(i, True, rows, columns, "all")
-##        range_object.reset_list()
-##        python_distances.horizontal(range_object)
-##        python_distances.print_distances(range_object)
-    
-    ## delete me ##
-    
+    turn_end = False 
     
     board.print_ascii_table()
     print(global_data.current_player_turn,"'s turn.")
@@ -182,6 +170,3 @@ while True:
     #       DEBUG END MOVE TEST HERE                                                #
     #                                                                               #
     #################################################################################
-
-
-

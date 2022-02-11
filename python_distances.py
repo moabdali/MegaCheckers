@@ -6,6 +6,7 @@
 #                                added textual representation of highlight map
 #                                added distance limitation for normal
 #                                      and move diagonal
+#   2022-Feb-11.....moabdali.....began working on selective 'highlighting'
 ################################################################################
 import global_data
 import board
@@ -39,7 +40,12 @@ class Range_Object:
         
     '''
     
-    def __init__(self, location, include_self, rows, columns, target_type):
+    def __init__(self,
+                 location,
+                 include_self,
+                 rows,
+                 columns,
+                 target_type):
         """
         Constructs all relevant attributes; already explained above
         """
@@ -49,6 +55,7 @@ class Range_Object:
         self.rows = rows
         self.columns = columns
         self.target_list = []
+        self.action_type = action_type
         
     def reset_list(self):
         '''
@@ -349,23 +356,37 @@ def horizontal(range_object):
         if self_value:
             range_object.target_list.append(self_value)
 
-
             
 def print_distances(range_object):
     '''
     show all locations that were put within the list
     (mostly for debugging really
     '''
+    try:
+        x = range_object.location[0]
+        y = range_object.location[1]
+    except:
+        print("***bad location data.  Aborting map display.***")
+        return
+    
+    if game_board[x][y].piece:
+        mover_perks = game_board[x][y].piece.active_buffs
     #print("Valid locations: ",range_object.target_list)
     for i in range(range_object.rows):
         for j in range(range_object.columns):
+            #if a piece is within range
             if (i, j) in range_object.target_list:
                 if (game_board[i][j].piece):
+                    #if piece belongs to the player
                     if (game_board[i][j].piece.owned_by ==
                         global_data.current_player_turn):
-                            print("[[ally ]]", end="")
+                            if ("cannibalism" in mover_perks):
+                                print("[[ally ]]", end="")
+                            else:
+                                print("|*ally *|", end="")
                     else:
                         print( "[[enemy]]", end="")
+                        
                 #put in different tile types here#
                 elif (game_board[i][j].tile_type == "default"):
                     print("[[     ]]", end="")
@@ -411,3 +432,35 @@ def print_distances(range_object):
                     print("| error |", end="")
         print("")
 
+def highlight_tiles(range_object, action_type):
+    try:
+        x = range_object.location[0]
+        y = range_object.location[1]
+
+    #blue all    
+    if action_type == "neutral":
+        pass
+    
+    #red enemies, grey all else
+    elif action_type == "hurt_enemies":
+        pass
+    
+    #blue empty spaces
+    elif action_type == "truly_empty":
+        pass
+
+    #allies green, all else grey
+    elif action_type == "help_allies":
+        pass
+    
+    #allies green, enemies red
+    elif action_type == "help_allies_hurt_enemies":
+        pass
+
+    #enemies green, all else grey
+    elif action_type == "help_enemies":
+        pass
+
+    #allies red, all else grey
+    elif action_type == "hurt_allies":
+        pass
