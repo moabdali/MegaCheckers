@@ -436,6 +436,9 @@ def highlight_tiles(range_object, action_type):
     try:
         x = range_object.location[0]
         y = range_object.location[1]
+    except:
+        print("An error occurred while highlighting")
+        return
 
     #blue all    
     if action_type == "neutral":
