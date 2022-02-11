@@ -9,17 +9,17 @@
 
 import  PySimpleGUI as sg
 import  random
-from    playsound import playsound
+#from    playsound import playsound
 import  global_data
 import  board
 
 # playsound is an unreliable module; since sound isn't a necessity, we can
 # try/catch it easily without any downside; a period  is used for debugging
-def playSoundExceptionCatcher(fileName, block = True):
-    try:
-        playsound(fileName, block)
-    except:
-        print("*")
+##def playSoundExceptionCatcher(fileName, block = True):
+##    try:
+##        playsound(fileName, block)
+##    except:
+##        print("*")
 
 ################################################################################
 # @brief repair_floor the tiles repair themselves a little each turn (1 step)

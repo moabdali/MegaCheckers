@@ -7,6 +7,7 @@
 # 2022-Feb-07.....moabdali.....Cleaned up comments/debugs, added a function for
 #                              grouping together the functions/actions that
 #                              occur between turns
+# 2022-Feb-10.....moabdali.....Added some distance checking and display
 ###############################################################################
 import  global_data
 from    tile import tile
@@ -17,6 +18,8 @@ import  PySimpleGUI as sg
 import  random
 import  items
 import  between_turns
+import  python_distances
+
 
 # for ease of reading, I scrunched together the functions that run between each turn
 #   note that the order of functions is pretty important in some cases.  Some notable
@@ -69,6 +72,18 @@ while True:
         list_of_functions_between_turns()
     # denote that the turn hasn't ended    
     turn_end = False
+
+    ## delete me ##
+    #location = [ (0,0), (0,5), (0,9), (1,1), (1,8), (5,5),(9,0), (9,5), (9,9)]
+    #location = [0,0]
+##    for i in location:
+##        range_object = python_distances.Range_Object(i, True, rows, columns, "all")
+##        range_object.reset_list()
+##        python_distances.horizontal(range_object)
+##        python_distances.print_distances(range_object)
+    
+    ## delete me ##
+    
     
     board.print_ascii_table()
     print(global_data.current_player_turn,"'s turn.")
@@ -98,6 +113,13 @@ while True:
         start_location = global_data.current_turn_piece_location
         print("Start location for already-moved piece is", start_location)
 
+    #delete this
+    range_object = python_distances.Range_Object(start_location, False, rows, columns, "all")
+    range_object.reset_list()
+    python_distances.cross(range_object)
+    python_distances.print_distances(range_object)
+    #end delete this
+    
     # if you were unable to move the piece (because you picked a bad start location)
     if not move_piece.select_piece(start_location):
         continue
