@@ -55,7 +55,6 @@ class Range_Object:
         self.rows = rows
         self.columns = columns
         self.target_list = []
-        self.action_type = action_type
         
     def reset_list(self):
         '''
@@ -432,14 +431,16 @@ def print_distances(range_object):
                     print("| error |", end="")
         print("")
 
-def highlight_tiles(range_object, action_type):
+def highlight_tiles(range_object, action_type = None):
     try:
         x = range_object.location[0]
         y = range_object.location[1]
     except:
         print("An error occurred while highlighting")
         return
-
+    
+    if action_type == None:
+        return
     #blue all    
     if action_type == "neutral":
         pass
