@@ -4,22 +4,20 @@
 #   DATE            AUTHOR      CHANGES
 #   2022-Feb-05     moabdali    initial creation
 #   2022-Feb-06     moabdali    added checks for damaged floor
-#
+#   2022-Feb-17     moabdali    check for orphaned spy dumps
 ################################################################################
 
-import  PySimpleGUI as sg
-import  random
-#from    playsound import playsound
-import  global_data
-import  board
+# from    playsound import playsound
+import global_data
+
 
 # playsound is an unreliable module; since sound isn't a necessity, we can
 # try/catch it easily without any downside; a period  is used for debugging
-##def playSoundExceptionCatcher(fileName, block = True):
-##    try:
-##        playsound(fileName, block)
-##    except:
-##        print("*")
+# def playSoundExceptionCatcher(fileName, block = True):
+#    try:
+#        playsound(fileName, block)
+#    except:
+#        print("*")
 
 ################################################################################
 # @brief repair_floor the tiles repair themselves a little each turn (1 step)
@@ -48,7 +46,8 @@ def repair_floor(game_board):
             elif each_tile.tile_type == "damaged1":
                 each_tile.tile_type = "default"
                 each_tile.tile_height = 0
-                
+
+
 ################################################################################
 # @brief switch_turns change the current term to the opposite player's turn
 ################################################################################
@@ -65,7 +64,7 @@ def switch_turns():
 #                       and for determining if the game is over
 # @param[in] game_board we're counting the the number of pieces on the board
 ################################################################################
-def count_pieces(game_board = None):
+def count_pieces(game_board=None):
     player1count = 0
     player2count = 0
     for row in game_board:
@@ -77,21 +76,22 @@ def count_pieces(game_board = None):
                     player2count += 1
     print("Player 1 pieces: ", player1count)
     print("Player 2 pieces: ", player2count)
-    
+
     if player1count > 0 and player2count > 0:
         return
     # if control reaches here, then there is at least one loser
-    
+
     # technically should only be "==0", but just to be safe we'll catch
     # negatives by using <= 0
-    elif player1count <= 0 and player2count > 0:
+    elif player1count <= 0 < player2count:
         print("Player 2 wins.")
-    elif player2count <= 0 and player1count > 0:
+    elif player2count <= 0 < player1count:
         print("Player 1 wins.")
-    elif (player1count <= 0 and player2count <= 0):
+    elif player1count <= 0 and player2count <= 0:
         print("You both suck apparently - both players lost")
     input("Hit enter to exit.")
     raise SystemExit
+
 
 ################################################################################
 # @brief set_current_turn_piece_to_false set all the pieces to have a false
@@ -109,13 +109,21 @@ def set_current_turn_piece_to_false(game_board):
                 each_tile.piece.current_turn_piece = False
 
 
-
-
 def reset_moves_left(gb):
     for r_index, row in enumerate(gb):
         for tile_index, each_tile in enumerate(row):
             if each_tile.piece:
                 if each_tile.piece.move_distance_max > 1:
-                    #print("MOVE MAX IS",  gb[r_index][tile_index].piece.move_distance_max)
+                    # print("MOVE MAX IS",  gb[r_index][tile_index].piece.move_distance_max)
                     gb[r_index][tile_index].piece.moves_left = gb[r_index][tile_index].piece.move_distance_max
-                    #print("moves left internally set to ",gb[r_index][tile_index].piece.moves_left)
+                    # print("moves left internally set to ",gb[r_index][tile_index].piece.moves_left)
+
+
+def abandoned_spy_drops(game_board):
+    for row in game_board:
+        for each_tile in row:
+            if not each_tile.secret_agent:
+                if each_tile.secret_agent_list:
+                    print("""An abandoned secret agent cache was found by\
+bandits and is lost forever now.""")
+                    each_tile.secret_agent_list = []

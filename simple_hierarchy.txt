@@ -1,0 +1,175 @@
+main:
+	import: between_turns, board, global_data, items, move_piece, python_distances,
+		piece from piece
+	
+	functions: def list_of_functions_between_turns()
+
+between_turns:
+	import: global_data
+
+	functions: 	repair_floor(game_board)
+			switch_turns()
+			count_pieces(game_board = None)
+			set_current_turn_piece_to_false(game_board)
+			reset_moves_left(gb)
+			abandoned_spy_drops(game_board)
+
+board:
+	import: random; display, global_data, tile, piece
+
+	functions:	print_all_tile_info(detailed_info = False)
+			initialize_start()
+			print_ascii_table()
+			verify_location_data(expected = False)
+			find_empty_tiles()
+			find_current_turn_pieces()
+
+display:
+	import: global_data
+	
+	functions:	print_ascii_board(game_board, rows, columns)
+
+global_data:
+	import: (none)
+	
+	functions:	get_orb_generation_count()
+	
+	variables:	columns, rows, set_items_option_list, chosen_items_option,
+			items_probability_type, current_player_turn, move_restriction,
+			current_turn_piece_location, turn_count, orb_cycle_list,
+			spooky_hand, spooky_hand_turn_counter, hotspot_list,
+			recall_count, player_AutoWin, player_AutoWin_turn, screen_size,
+			show_item_explanations, damaged_floor
+
+items:
+	import: copy, random; board, global_data
+
+	functions:	generate_item_orbs()
+			get_item()
+			show_items(piece)
+			cancel_item()
+			use_item(piece)
+			remove_item(item_chosen, piece)
+			item_logic(item = None, piece = None)
+			
+move_piece:
+	import: board, global_data, items, python_distances
+	
+	functions:	select_piece(start_location)
+			valid_move(start_location
+			move_piece(start_location, end_location)
+			check_item_pickups()
+			secret_agent_check()
+			check_if_piece_fell()
+			move_again(end_location)
+			get_start_end_coords(start_location, end_location)
+
+piece:
+	import: global_data
+
+	CLASS:
+		piece:	
+			__init__(self, start_location = [0,0])
+			print_location()
+			print_items()
+			remove_all_buffs()
+			remove_all_debuffs()
+			remove_an_item(item_chosen=None)
+			process_move_type()
+			print_detailed_info()
+
+			active_buffs	[list]
+			active_debuffs	[list]
+			avatar
+			berzerker_attacks_left
+			berzerker_meat_count
+			bowl_motion
+			bowl_orientation
+			current_turn_piece
+			death_mark
+			force_field_turn
+			grey
+			move_distance_max
+			move_type
+			moves_left
+			owned_by
+			piece_exp
+			piece_level
+			piece_type
+			recall_turn
+			standing_on_self_orb
+			sticky_time_bomb
+			stored_items	[list]
+			x_location
+			y_location
+
+python_distances:
+	import: board, global_data
+
+	CLASS:
+		Range_Object:
+			__init__(location, include_self, rows, columns, target_type)
+			reset_list()
+
+			columns
+			include_self
+			location
+			rows
+			target_list
+			target_type
+			
+			
+			preview_range(range_object, start_piece)
+			self_check(range_object)
+			validate_tile(range_object, target_tile)
+
+			up(range_object)
+			down(range_object)
+			left(range_object)
+			right(range_object)
+			up_left(range_object)
+			down_left(range_object)
+			up_right(range_object)
+			down_right(range_object)
+
+			cross(range_object)
+			diagonals(range_object)
+			radial(range_object)
+			vertical(range_object)
+			horizontal(range_object)
+
+			print_distances(range_object, action_type = None)
+			highlight_tiles(range_object, action_type = None)
+
+tile:
+	import:		PySimpleGUI as sg
+	
+	CLASS:
+		tile:
+			__init__(x=0, y=0)
+			print_info(detailed_info = False)
+			print_detailed_info()
+
+			cross_Laser
+			dump_list
+			highlight
+			highlight_brown
+			highlight_green
+			highlight_red
+			hori_Laser
+			occupied
+			orb_eater
+			piece
+			purity_tile
+			recall_backup
+			recall_turn
+			secret_agent
+			secret_agent_list
+			snake
+			start_location
+			tile_damage
+			tile_height
+			tile_type
+			vert_Laser
+			worm_hole_1
+			worm_hole_2 

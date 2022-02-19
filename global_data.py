@@ -16,7 +16,7 @@ items_probability_type = set_items_option_list[chosen_items_option]
 current_player_turn = "player_2"
 
 move_restriction = False
-current_turn_piece_location = [0,0]
+current_turn_piece_location = [0, 0]
 
 
 # how many turns have elapsed?
@@ -33,20 +33,20 @@ spooky_hand_turn_counter = 15
 
 # determines where hotspots are located (teleports that your players
 # can jump to
-hotspot = []
+hotspot_list = []
 
 # number of recalls that are available
 recall_count = 0
 
 # DEBUG: make better comments for this
-playerAutoWin = 0
-playerAutoWinTurn = False
+player_AutoWin = 0
+player_AutoWin_Turn = False
 
 # DEBUG: screen settings; keep normal for now
-screenSize = "normal"
+screen_size = "normal"
 
 # do players want to see extended item explanations on pickup?
-showItemExplanations = True
+show_item_explanations = True
 
 # state of the floor
 damaged_floor = (
@@ -60,8 +60,8 @@ damaged_floor = (
                 "damaged7",
                 "damaged8")
 
+
 # how many orbs do we want to generate this turn?
 def get_orb_generation_count():
     item_cycle = turn_count % 11
     return orb_cycle_list[item_cycle]
-    

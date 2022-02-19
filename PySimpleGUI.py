@@ -125,11 +125,11 @@ port = 'PySimpleGUI'
 
 # all of the tkinter involved imports
 import tkinter as tk
-from tkinter import filedialog
-from tkinter.colorchooser import askcolor
-from tkinter import ttk
-import tkinter.scrolledtext as tkst
 import tkinter.font
+import tkinter.scrolledtext as tkst
+from tkinter import filedialog
+from tkinter import ttk
+from tkinter.colorchooser import askcolor
 from uuid import uuid4
 
 # end of tkinter specific imports
@@ -166,7 +166,6 @@ except Exception as e:
 
 import threading
 import itertools
-import os
 import json
 import configparser
 import queue
@@ -644,8 +643,8 @@ else:
 DEFAULT_USER_SETTINGS_WIN_PATH = r'~\AppData\Local\PySimpleGUI\settings'
 DEFAULT_USER_SETTINGS_LINUX_PATH = r'~/.config/PySimpleGUI/settings'
 DEFAULT_USER_SETTINGS_MAC_PATH = r'~/Library/Application Support/PySimpleGUI/settings'
-DEFAULT_USER_SETTINGS_TRINKET_PATH = r'.'
-DEFAULT_USER_SETTINGS_REPLIT_PATH = r'.'
+DEFAULT_USER_SETTINGS_TRINKET_PATH = r'../../Desktop/python practice 2d arrays/MegaCheckers-Mega-Checkers-Refactored'
+DEFAULT_USER_SETTINGS_REPLIT_PATH = r'../../Desktop/python practice 2d arrays/MegaCheckers-Mega-Checkers-Refactored'
 DEFAULT_USER_SETTINGS_UNKNOWN_OS_PATH = r'~/Library/Application Support/PySimpleGUI/settings'
 DEFAULT_USER_SETTINGS_PATH = None  # value set by user to override all paths above
 DEFAULT_USER_SETTINGS_PYSIMPLEGUI_PATH = None  # location of the global PySimpleGUI settings
@@ -20135,7 +20134,7 @@ class UserSettings:
             elif running_mac():
                 path = os.path.expanduser(DEFAULT_USER_SETTINGS_MAC_PATH)
             else:
-                path = '.'
+                path = '../../Desktop/python practice 2d arrays/MegaCheckers-Mega-Checkers-Refactored'
 
         full_filename = os.path.join(path, filename)
         return (full_filename, path, filename)
