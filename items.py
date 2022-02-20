@@ -4,7 +4,7 @@
 #   DATE            AUTHOR      CHANGES
 #   2022-Feb-05     moabdali    initial creation
 #   2022-Feb-06     moabdali    added weighted probabilities for items
-#
+#   2022-Feb-19     moabdali    Trap orb work
 ################################################################################
 
 import copy
@@ -213,10 +213,20 @@ if global_data.items_probability_type == "balanced":
 def generate_item_orbs():
     empty_squares = board.find_empty_tiles()
     num_orbs_to_spawn = global_data.get_orb_generation_count()
+    if len(empty_squares) <= 0:
+            print("No space left to spawn item orbs.")
     while (num_orbs_to_spawn > 0 and
            len(empty_squares) > 0):
         tl = random.choice(empty_squares)
-        board.game_board[tl[0]][tl[1]].tile_type = "item_orb"
+        if global_data.trap_orbs_turn < global_data.turn_count:
+            if random.randint(0,100) < global_data.trap_orbs_percent:
+                board.game_board[tl[0]][tl[1]].trap_orb = "the game"
+                print("PLACED A TRAP ORB")
+            else:
+                board.game_board[tl[0]][tl[1]].item_orb = True
+        else:
+            board.game_board[tl[0]][tl[1]].item_orb = True
+            print("Placed normal orb")
         empty_squares.remove(tl)
         num_orbs_to_spawn -= 1
 

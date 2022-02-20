@@ -5,11 +5,11 @@
 #   2022-Feb-05     moabdali    initial creation
 #   2022-Feb-06     moabdali    added checks for damaged floor
 #   2022-Feb-17     moabdali    check for orphaned spy dumps
+#   2022-Feb-19     moabdali    Trap orb work
 ################################################################################
 
 # from    playsound import playsound
 import global_data
-
 
 # playsound is an unreliable module; since sound isn't a necessity, we can
 # try/catch it easily without any downside; a period  is used for debugging

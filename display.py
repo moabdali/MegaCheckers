@@ -5,6 +5,8 @@
 # 2022-Feb-11 moabdali  Small change to show on print_ascii_board which pieces
 #                       items or buffs active
 # 2022-Feb-17 moabdali  Secret agent display logic
+# 2022-Feb-19 moabdali  Trap orb work, failsafes for mismatch with occupied/none
+################################################################################
 
 import global_data
 
@@ -29,7 +31,7 @@ def print_ascii_board(game_board, rows, columns):
             cur_piece = cur_tile.piece
 
             # if there is a piece on the tile, display the piece
-            if cur_tile.occupied:
+            if cur_tile.occupied and cur_tile.piece:
                 if cur_piece.owned_by == "player_1":
                     # denotes has an item
                     if len(cur_piece.stored_items) > 0:
@@ -67,11 +69,15 @@ def print_ascii_board(game_board, rows, columns):
 
                 else:
                     line_1 += "|E OCU|"
+
+            # reported as having a piece, but there's nothing there
+            elif cur_tile.occupied and not cur_tile.piece:
+                line_1 += "|OCNON|"
+
             # if not occupied, set the top row to unoccupied    
             else:
                 line_1 += "|     |"
 
-            # if unoccupied, just show the height
             if cur_tile.tile_type == "default":
                 if cur_tile.tile_height == -3:
                     line_2 += "|-----|"
@@ -87,53 +93,61 @@ def print_ascii_board(game_board, rows, columns):
                     line_2 += "| +++ |"
                 elif cur_tile.tile_height == 3:
                     line_2 += "|+++++|"
+                # error height
                 else:
-                    line_2 += "|?????|"
+                    line_2 += "|??x??|"
 
-            # Secret code here
-
-            # damaged ground display
-            elif cur_tile.tile_type == "destroyed":
-                line_2 += "|XXXXX|"
-
-            elif cur_tile.tile_type == "damaged8":
-                line_2 += "|XX8XX|"
-
-            elif cur_tile.tile_type == "damaged7":
-                line_2 += "|XX7XX|"
-
-            elif cur_tile.tile_type == "damaged6":
-                line_2 += "|XX6XX|"
-
-            elif cur_tile.tile_type == "damaged5":
-                line_2 += "|XX5XX|"
-
-            elif cur_tile.tile_type == "damaged4":
-                line_2 += "|XX4XX|"
-
-            elif cur_tile.tile_type == "damaged3":
-                line_2 += "|XX3XX|"
-
-            elif cur_tile.tile_type == "damaged2":
-                line_2 += "|XX2XX|"
-
-            elif cur_tile.tile_type == "damaged1":
-                line_2 += "|XX1XX|"
-
-            # if an item_orb
-            if cur_tile.tile_type == "item_orb":
-                line_3 += "|\u0332<\u0332<\u0332#\u0332>\u0332>|"
-                line_2 += "|     |"
-            elif cur_tile.tile_type == "secret agent":
-                if not cur_tile.piece and cur_tile.secret_agent:
+                ##############################
+                # other default tile modifiers
+                ##############################
+                if cur_tile.secret_agent:
                     if cur_tile.secret_agent == global_data.current_player_turn:
                         line_3 += "|\u0332S\u0332P\u0332Y\u0332:\u0332)|"
                     else:
                         line_3 += "|\u0332S\u0332P\u0332Y\u0332:\u0332(|"
-            # if not destroyed and not an item orb
-            else:
-                line_3 += "|_____|"
+                # if an item_orb
+                elif cur_tile.item_orb:
+                    line_3 += "|\u0332<\u0332<\u0332#\u0332>\u0332>|"
+                elif cur_tile.trap_orb:
+                    line_3 += "|\u0332<\u0332<\u0332!\u0332>\u0332>|"
+                # nothing here (or hidden item?)
+                else:
+                    line_3 += "|_____|"
+            # Secret code here
 
+            ##################################################
+            # damaged ground display (competes with "default")
+            ##################################################
+            elif cur_tile.tile_type == "destroyed":
+                line_2 += "|XXXXX|"
+                line_3 += "|_____|"
+            elif cur_tile.tile_type == "damaged8":
+                line_2 += "|XX8XX|"
+                line_3 += "|_____|"
+            elif cur_tile.tile_type == "damaged7":
+                line_2 += "|XX7XX|"
+                line_3 += "|_____|"
+            elif cur_tile.tile_type == "damaged6":
+                line_2 += "|XX6XX|"
+                line_3 += "|_____|"
+            elif cur_tile.tile_type == "damaged5":
+                line_2 += "|XX5XX|"
+                line_3 += "|_____|"
+            elif cur_tile.tile_type == "damaged4":
+                line_2 += "|XX4XX|"
+                line_3 += "|_____|"
+            elif cur_tile.tile_type == "damaged3":
+                line_2 += "|XX3XX|"
+                line_3 += "|_____|"
+            elif cur_tile.tile_type == "damaged2":
+                line_2 += "|XX2XX|"
+                line_3 += "|_____|"
+            elif cur_tile.tile_type == "damaged1":
+                line_2 += "|XX1XX|"
+                line_3 += "|_____|"
+            # error
+            else:
+                line_3 += "|?????|"
         print(line_1)
         print(line_2 + f" {row} ")
         print(line_3)

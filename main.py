@@ -11,6 +11,7 @@
 # 2022-Feb-16.....moabdali.....Fixed logic for "move again" and "shuffle" such
 #                               that the current turn piece is preserved
 # 2022-Feb-17.....moabdali.....Secret Agent implemented
+# 2022-Feb-18.....moabdali.....Trap orb work
 ###############################################################################
 import between_turns
 import board
@@ -31,7 +32,10 @@ from piece import Piece
 #   Likewise, reset moves only after we know the piece isn't going to die.  Count pieces
 #   obviously must be done last, as it checks counts for game win conditions
 def list_of_functions_between_turns():
+    board.verify_location_data()
     global_data.turn_count += 1
+    if global_data.turn_count == global_data.trap_orbs_turn:
+        print("Trap orbs will begin to spawn randomly.")
     global_data.move_restriction = False
     between_turns.switch_turns()
     move_piece.check_if_piece_fell()

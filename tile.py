@@ -1,3 +1,6 @@
+# 2022-Feb-19.....moabdali.....Trap orb work, clear tile function
+################################################################################
+
 import PySimpleGUI as sg
 
 
@@ -22,6 +25,8 @@ class Tile:
         self.hori_laser = False
         self.vert_laser = False
         self.cross_laser = False
+        self.item_orb = None
+        self.trap_orb = None
         # the orb_eater is a harmless mouse that eats item orbs
         # if True, the mouse exists here
         self.orb_eater = False
@@ -51,8 +56,16 @@ class Tile:
         self.highlight_green = False  # green
         self.highlight_brown = False  # brown
 
-    def print_info(self, detailed_info=False):
+    def clear_tile(self):
+        self.item_orb = None
+        self.trap_orb = None
+        self.secret_agent = None
 
+    def kill_piece_on_tile(self):
+        self.occupied = False
+        self.piece = None
+
+    def print_info(self, detailed_info=False):
         print("Location: ", self.start_location)
         print("Tile type: ", self.tile_type)
         print("Tile height: ", self.tile_height)
@@ -70,7 +83,6 @@ class Tile:
         print("===============================================")
 
     def print_detailed_info(self):
-
         if self.tile_type == "default":
             sg.popup(
                 # f"This is a regular tile with an elevation of {self.tile_height}",

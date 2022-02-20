@@ -379,7 +379,10 @@ def print_distances(range_object, action_type=None):
     if game_board[x][y].piece:
         mover_perks = game_board[x][y].piece.active_buffs
     # print("Valid locations: ",range_object.target_list)
+    row_index = 0
+    print("     0   ||   1   ||  2    ||   3   ||   4   ||   5   ||   6   ||  7    ||   8   ||   9   |")
     for i in range(range_object.rows):
+        print(row_index, end="")
         for j in range(range_object.columns):
             # if a piece is within range
             if (i, j) in range_object.target_list:
@@ -403,10 +406,14 @@ def print_distances(range_object, action_type=None):
                             print("[*spy:)*]", end="")
                         else:
                             print("[[spy:(]]", end="")
+
+                    elif game_board[i][j].item_orb:
+                        print("[[item ]]", end="")
+                    elif game_board[i][j].trap_orb:
+                        print("[[item*]]", end="")
                     else:
                         print("[[     ]]", end="")
-                elif game_board[i][j].tile_type == "item_orb":
-                    print("[[item ]]", end="")
+
                 elif (game_board[i][j].tile_type in ("damaged1",
                                                      "damaged2",
                                                      "damaged3",
@@ -424,10 +431,7 @@ def print_distances(range_object, action_type=None):
 
             # if piece is not within range
             else:
-
-                if game_board[i][j].tile_type == "item_orb":
-                    print("| item  |", end="")
-                elif (game_board[i][j].tile_type in ("damaged1",
+                if (game_board[i][j].tile_type in ("damaged1",
                                                      "damaged2",
                                                      "damaged3",
                                                      "damaged4",
@@ -458,11 +462,17 @@ def print_distances(range_object, action_type=None):
                             print("| spy:) |", end="")
                         else:
                             print("| spy:( |", end="")
+                    elif game_board[i][j].item_orb:
+                        print("| item  |", end="")
+                    elif game_board[i][j].trap_orb:
+                        print("| item* |", end="")
                     else:
                         print("|       |", end="")
                 else:
                     print("| error |", end="")
-        print("")
+        print(row_index)
+        row_index+=1
+    print("     0   ||   1   ||  2    ||   3   ||   4   ||   5   ||   6   ||  7    ||   8   ||   9   |")
 
 
 def highlight_tiles(range_object, action_type=None):

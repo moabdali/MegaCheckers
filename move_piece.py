@@ -5,6 +5,7 @@
 # 2022-Feb-06.....moabdali.....Check item pickups, added cannibalism check,
 #                               added death checks for jumping onto damaged tiles
 # 2022-Feb-17.....moabdali.....Secret Agent implemented
+# 2022-Feb-18.....moabdali.....Trap orb work
 ################################################################################
 
 import board
@@ -220,7 +221,7 @@ them as you are burdened.""")
         print("Killed an enemy!")
         return True
 
-    if end_tile.tile_type == "item_orb":
+    if end_tile.item_orb:
         print("You picked up an item.")
         return True
     
@@ -291,18 +292,34 @@ def move_piece(start_location, end_location):
 def check_item_pickups():
     for row in game_board:
         for each_tile in row:
-            if (each_tile.tile_type == "item_orb" and
+            if (each_tile.item_orb and
                     each_tile.piece and
                     each_tile.piece.owned_by == global_data.current_player_turn and
                     "burdened" not in each_tile.piece.active_debuffs):
                 
-                each_tile.tile_type = "default"
+                each_tile.item_orb = False
                 received_item = items.get_item()
                 each_tile.piece.stored_items.append(received_item)
                 print(global_data.current_player_turn+f"""'s piece picked up an
 item! ({received_item})""")
-
-
+            # trap orb check for allied piece
+            elif (each_tile.trap_orb and
+                        each_tile.piece and
+                        each_tile.piece.owned_by == each_tile.trap_orb):
+                    print(global_data.current_player_turn + f"""'s piece is precariously standing on an allied trap\
+ orb.  Good thing you didn't try to pick it up!""")
+            # trap orb for unallied pieces
+            elif (each_tile.trap_orb and
+                    each_tile.piece and
+                    each_tile.piece.owned_by != each_tile.trap_orb):
+                # forcefield check
+                if each_tile.piece.owned_by == global_data.current_player_turn:
+                    print(f"Your piece blew up by {each_tile.trap_orb}'s trap orb.")
+                else:
+                    print(f"Your opponent's piece was blown up by {each_tile.trap_orb}'s trap orb")
+                each_tile.kill_piece_on_tile()
+                each_tile.clear_tile()
+                #board.verify_location_data()
 # check for secret agent
 def secret_agent_check():
     for row in game_board:

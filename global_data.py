@@ -1,3 +1,10 @@
+################################################################################
+# Changelog:
+# Date............Author.......Change
+# 2022-Feb-04.....moabdali.....Initial Version
+# 2022-Feb-19.....moabdali.....Trap orb work
+################################################################################
+
 # dimensions of the playing field
 columns = 10
 rows = 10
@@ -21,6 +28,8 @@ current_turn_piece_location = [0, 0]
 
 # how many turns have elapsed?
 turn_count = 0
+trap_orbs_percent = 30
+trap_orbs_turn = 0
 
 # this determines the number of item orbs that show up
 orb_cycle_list = [3, 3, 0, 1, 2, 1, 1, 0, 1, 0, 0]

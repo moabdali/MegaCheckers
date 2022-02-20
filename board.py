@@ -112,6 +112,9 @@ reported unoccupied.  Updating status.""")
 {each_tile.piece.y_location} doesn't match the true location {row_index},{col_index}.  Updating.""")
                     each_tile.piece.x_location = row_index
                     each_tile.piece.y_location = col_index
+                if each_tile.occupied and not each_tile.piece:
+                    print("Listed as occupied, but nothing there.  This is bad!")
+                    each_tile.occupied = False
     if changes_occurred and expected:
         print("updated location info :)")
 
@@ -122,7 +125,9 @@ def find_empty_tiles():
     for row_index, row in enumerate(game_board):
         for col_index, each_tile in enumerate(row):
             if not each_tile.occupied and each_tile.tile_type == "default":
-                empty_tiles.append(each_tile.start_location)
+                if (not each_tile.secret_agent and
+                        not each_tile.item_orb):
+                    empty_tiles.append(each_tile.start_location)
     return empty_tiles
 
 

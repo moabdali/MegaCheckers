@@ -39,6 +39,7 @@ class Piece:
         self.piece_level = 1
         self.piece_exp = 0
 
+
     def print_location(self):
         print(f"Location is {self.x_location}, {self.y_location}.")
 
